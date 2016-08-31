@@ -17,10 +17,13 @@ import android.webkit.MimeTypeMap;
 
 public class CommonUtil {
 
-    public static final String TAG = "CommonUtil";
+    public static final String TAG = CommonUtil.class.getSimpleName();
+
+    private CommonUtil() {
+    }
 
     public static void showIME(Context context) {
-        InputMethodManager imm = (InputMethodManager) context
+        final InputMethodManager imm = (InputMethodManager) context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
                 InputMethodManager.HIDE_NOT_ALWAYS);
@@ -30,22 +33,24 @@ public class CommonUtil {
         if (view == null) {
             return;
         }
-        InputMethodManager imm = (InputMethodManager) context
+        final InputMethodManager imm = (InputMethodManager) context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public final static String getMimeType(String url) {
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+    public static String getMimeType(String url) {
+        final String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        //noinspection UnnecessaryLocalVariable
+        final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                 extension);
         return mimeType;
     }
 
     public static int getUid(Context context) {
         try {
-            PackageManager pm = context.getPackageManager();
-            ApplicationInfo ai = pm.getApplicationInfo(
+            final PackageManager pm = context.getPackageManager();
+            //noinspection WrongConstant // TODO Resolve
+            final ApplicationInfo ai = pm.getApplicationInfo(
                     context.getPackageName(), PackageManager.GET_ACTIVITIES);
             return ai.uid;
         } catch (NameNotFoundException e) {

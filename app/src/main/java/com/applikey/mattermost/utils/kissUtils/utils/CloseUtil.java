@@ -11,32 +11,32 @@ import java.net.Socket;
 
 public class CloseUtil {
 
-    public static final void close(Closeable closeable) {
+    private CloseUtil() {
+    }
+
+    public static void close(Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException e) {
-
+            } catch (IOException ignored) {
             }
         }
     }
 
-    public static final void close(Socket closeable) {
+    public static void close(Socket closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException e) {
-
+            } catch (IOException ignored) {
             }
         }
     }
 
-    public static final void close(ServerSocket closeable) {
+    public static void close(ServerSocket closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
-            } catch (IOException e) {
-
+            } catch (IOException ignored) {
             }
         }
     }

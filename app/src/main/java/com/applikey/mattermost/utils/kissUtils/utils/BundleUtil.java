@@ -13,7 +13,10 @@ import java.util.Set;
 
 public class BundleUtil {
 
-    public static final String TAG = "BundleUtil";
+    public static final String TAG = BundleUtil.class.getSimpleName();
+
+    private BundleUtil() {
+    }
 
     public static String getString(Bundle bundle, String key) {
         return getString(bundle, key, "");
@@ -53,7 +56,7 @@ public class BundleUtil {
             return df;
         }
         T value = df;
-        Object obj = bundle.get(key);
+        final Object obj = bundle.get(key);
         if (obj != null && value.getClass().isAssignableFrom(obj.getClass())) {
             value = (T) obj;
         } else {
@@ -62,18 +65,18 @@ public class BundleUtil {
         return value;
     }
 
-    public static final void showContent(Bundle bundle) {
+    public static void showContent(Bundle bundle) {
         if (bundle == null) {
             return;
         }
 
-        StringBuilder builder = new StringBuilder();
-        builder.append("bundle contnet\n");
-        Set<String> keys = bundle.keySet();
+        final StringBuilder builder = new StringBuilder();
+        builder.append("bundle content\n");
+        final Set<String> keys = bundle.keySet();
         for (String key : keys) {
-            builder.append("[" + key + "]<->[" + bundle.get(key) + "]\n");
+            builder.append("[").append(key).append("]<->[").append(bundle.get(key)).append("]\n");
         }
-        String content = builder.toString();
+        final String content = builder.toString();
         LogUtil.d(TAG, content);
     }
 

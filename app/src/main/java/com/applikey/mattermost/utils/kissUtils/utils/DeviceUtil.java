@@ -32,54 +32,57 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-
 //hardware related functions
 public class DeviceUtil {
 
     public static final String TAG = "DeviceUtil";
 
+    private DeviceUtil() {
+    }
+
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public static String getBuildInfo() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         // alpha sort
-        sb.append("board: " + Build.BOARD).append("\nbrand: " + Build.BRAND)
-                .append("\ncpu_abi: " + Build.CPU_ABI)
-                .append("\ncpu_abi2: " + Build.CPU_ABI2)
-                .append("\ndevice: " + Build.DEVICE)
-                .append("\ndisplay: " + Build.DISPLAY)
-                .append("\nfingerprint: " + Build.FINGERPRINT)
-                .append("\nhardware: " + Build.HARDWARE)
-                .append("\nid: " + Build.ID)
-                .append("\nmanufacture: " + Build.MANUFACTURER)
-                .append("\nmodel: " + Build.MODEL)
-                .append("\nproduct: " + Build.PRODUCT)
-                .append("\nradio: " + Build.RADIO)
-                .append("\nsdk_int: " + Build.VERSION.SDK_INT);
+        sb.append("board: ").append(Build.BOARD).append("\nbrand: ").append(Build.BRAND)
+                .append("\ncpu_abi: ").append(Build.CPU_ABI)
+                .append("\ncpu_abi2: ").append(Build.CPU_ABI2)
+                .append("\ndevice: ").append(Build.DEVICE)
+                .append("\ndisplay: ").append(Build.DISPLAY)
+                .append("\nfingerprint: ").append(Build.FINGERPRINT)
+                .append("\nhardware: ").append(Build.HARDWARE)
+                .append("\nid: ").append(Build.ID)
+                .append("\nmanufacture: ").append(Build.MANUFACTURER)
+                .append("\nmodel: ").append(Build.MODEL)
+                .append("\nproduct: ").append(Build.PRODUCT)
+                .append("\nradio: ").append(Build.RADIO)
+                .append("\nsdk_int: ").append(Build.VERSION.SDK_INT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            sb.append("\nserial: " + Build.SERIAL);
+            sb.append("\nserial: ").append(Build.SERIAL);
         }
-        sb.append("\ntype: " + Build.TYPE).append("\ntags: " + Build.TAGS);
+        sb.append("\ntype: ").append(Build.TYPE).append("\ntags: ").append(Build.TAGS);
 
         return sb.toString();
     }
 
     public static String getProductInfo() {
-        String brand = Build.BRAND;
-        String model = Build.MODEL;
-        String manufacture = Build.MANUFACTURER;
-        String finalInfo = brand + " " + model + "/" + manufacture;
+        final String brand = Build.BRAND;
+        final String model = Build.MODEL;
+        final String manufacture = Build.MANUFACTURER;
+        //noinspection UnnecessaryLocalVariable
+        final String finalInfo = brand + " " + model + "/" + manufacture;
         return finalInfo;
     }
 
-    public static final Point getScreenSize() {
-        Context context = KissTools.getApplicationContext();
-        WindowManager wm = (WindowManager) context
+    public static Point getScreenSize() {
+        final Context context = KissTools.getApplicationContext();
+        final WindowManager wm = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
+        final Display display = wm.getDefaultDisplay();
 
-        DisplayMetrics metrics = new DisplayMetrics();
+        final DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         // since SDK_INT = 1;
         int widthPixels = metrics.widthPixels;
@@ -97,7 +100,7 @@ public class DeviceUtil {
         // includes window decorations (status bar bar/menu bar)
         else if (Build.VERSION.SDK_INT >= 17) {
             try {
-                Point realSize = new Point();
+                final Point realSize = new Point();
                 Display.class.getMethod("getRealSize", Point.class).invoke(
                         display, realSize);
                 widthPixels = realSize.x;
@@ -108,27 +111,30 @@ public class DeviceUtil {
         return new Point(widthPixels, heightPixels);
     }
 
-    public static final float getScreenDensity() {
-        Context context = KissTools.getApplicationContext();
-        Resources resources = context.getResources();
-        DisplayMetrics dm = resources.getDisplayMetrics();
-        float screenDensity = dm.density;
+    public static float getScreenDensity() {
+        final Context context = KissTools.getApplicationContext();
+        final Resources resources = context.getResources();
+        final DisplayMetrics dm = resources.getDisplayMetrics();
+        //noinspection UnnecessaryLocalVariable
+        final float screenDensity = dm.density;
         return screenDensity;
     }
 
     public static int getScreenDensityDpi() {
-        Context context = KissTools.getApplicationContext();
-        Resources resources = context.getResources();
-        DisplayMetrics dm = resources.getDisplayMetrics();
-        int screenDensityDpi = dm.densityDpi;
+        final Context context = KissTools.getApplicationContext();
+        final Resources resources = context.getResources();
+        final DisplayMetrics dm = resources.getDisplayMetrics();
+        //noinspection UnnecessaryLocalVariable
+        final int screenDensityDpi = dm.densityDpi;
         return screenDensityDpi;
     }
 
-    public static final String getBluetoothMac() {
-        BluetoothAdapter adapter = null;
+    public static String getBluetoothMac() {
+        BluetoothAdapter adapter;
         String bluetoothMac = null;
         try {
             adapter = BluetoothAdapter.getDefaultAdapter();
+            //noinspection MissingPermission // TODO Resolve if needed
             bluetoothMac = adapter.getAddress();
         } catch (Exception e) {
             e.printStackTrace();
@@ -140,11 +146,11 @@ public class DeviceUtil {
         return bluetoothMac;
     }
 
-    public static final String getWlanMac() {
-        Context context = KissTools.getApplicationContext();
+    public static String getWlanMac() {
+        final Context context = KissTools.getApplicationContext();
         String wlanMac = null;
         try {
-            WifiManager wm = (WifiManager) context
+            final WifiManager wm = (WifiManager) context
                     .getSystemService(Context.WIFI_SERVICE);
             wlanMac = wm.getConnectionInfo().getMacAddress();
         } catch (Exception e) {
@@ -156,54 +162,53 @@ public class DeviceUtil {
         return wlanMac;
     }
 
-    public static final String getAndroidId() {
-        Context context = KissTools.getApplicationContext();
+    public static String getAndroidId() {
+        final Context context = KissTools.getApplicationContext();
         String androidID = null;
         try {
             androidID = Secure.getString(context.getContentResolver(),
                     Secure.ANDROID_ID);
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
         return androidID;
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public static final String getSerialId() {
+    public static String getSerialId() {
         return Build.SERIAL;
     }
 
-    public static final String getDeviceId() {
-        Context context = KissTools.getApplicationContext();
+    public static String getDeviceId() {
+        final Context context = KissTools.getApplicationContext();
         String deviceIMEI = null;
         try {
-            TelephonyManager teleManager = (TelephonyManager) context
+            final TelephonyManager teleManager = (TelephonyManager) context
                     .getSystemService(Context.TELEPHONY_SERVICE);
             deviceIMEI = teleManager.getDeviceId();
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
         return deviceIMEI;
     }
 
     public static double getScreenInches() {
-        Context context = KissTools.getApplicationContext();
+        final Context context = KissTools.getApplicationContext();
         double screenInches = -1;
         try {
-            Resources resources = context.getResources();
-            DisplayMetrics dm = resources.getDisplayMetrics();
-            Point point = getScreenSize();
-            double width = Math.pow(point.x / dm.xdpi, 2);
-            double height = Math.pow(point.y / dm.ydpi, 2);
+            final Resources resources = context.getResources();
+            final DisplayMetrics dm = resources.getDisplayMetrics();
+            final Point point = getScreenSize();
+            final double width = Math.pow(point.x / dm.xdpi, 2);
+            final double height = Math.pow(point.y / dm.ydpi, 2);
             screenInches = Math.sqrt(width + height);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return screenInches;
     }
 
     public static int dp2px(int dip) {
-        Context context = KissTools.getApplicationContext();
-        Resources resources = context.getResources();
+        final Context context = KissTools.getApplicationContext();
+        final Resources resources = context.getResources();
+        //noinspection UnnecessaryLocalVariable
         int px = Math
                 .round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                         dip, resources.getDisplayMetrics()));
@@ -211,26 +216,28 @@ public class DeviceUtil {
     }
 
     public static int px2dp(int px) {
-        Context context = KissTools.getApplicationContext();
-        DisplayMetrics displayMetrics = context.getResources()
+        final Context context = KissTools.getApplicationContext();
+        final DisplayMetrics displayMetrics = context.getResources()
                 .getDisplayMetrics();
-        int dp = Math.round(px
+        //noinspection UnnecessaryLocalVariable
+        final int dp = Math.round(px
                 / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return dp;
     }
 
     public static int sp2px(float sp) {
-        Context context = KissTools.getApplicationContext();
+        final Context context = KissTools.getApplicationContext();
         final float scale = context.getResources().getDisplayMetrics().scaledDensity;
+        //noinspection UnnecessaryLocalVariable
         int px = Math.round(sp * scale);
         return px;
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public static final boolean hasFrontCamera() {
-        int number = Camera.getNumberOfCameras();
+    public static boolean hasFrontCamera() {
+        final int number = Camera.getNumberOfCameras();
         for (int index = 0; index < number; index++) {
-            CameraInfo ci = new CameraInfo();
+            final CameraInfo ci = new CameraInfo();
             Camera.getCameraInfo(index, ci);
             if (ci.facing == CameraInfo.CAMERA_FACING_FRONT) {
                 return true;
@@ -240,10 +247,10 @@ public class DeviceUtil {
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public static final boolean hasBackCamera() {
-        int number = Camera.getNumberOfCameras();
+    public static boolean hasBackCamera() {
+        final int number = Camera.getNumberOfCameras();
         for (int index = 0; index < number; index++) {
-            CameraInfo ci = new CameraInfo();
+            final CameraInfo ci = new CameraInfo();
             Camera.getCameraInfo(index, ci);
             if (ci.facing == CameraInfo.CAMERA_FACING_BACK) {
                 return true;
@@ -253,21 +260,21 @@ public class DeviceUtil {
     }
 
     public static boolean hasSensor(int type) {
-        Context context = KissTools.getApplicationContext();
-        SensorManager manager = (SensorManager) context
+        final Context context = KissTools.getApplicationContext();
+        final SensorManager manager = (SensorManager) context
                 .getSystemService(Context.SENSOR_SERVICE);
         return manager.getDefaultSensor(type) != null;
     }
 
-    public static final long getTotalMemory() {
-        String memInfoPath = "/proc/meminfo";
+    public static long getTotalMemory() {
+        final String memInfoPath = "/proc/meminfo";
         String str2;
-        long initial_memory = 0;
+        long initial_memory;
         try {
-            FileReader fr = new FileReader(memInfoPath);
-            BufferedReader bf = new BufferedReader(fr, 8192);
+            final FileReader fr = new FileReader(memInfoPath);
+            final BufferedReader bf = new BufferedReader(fr, 8192);
             str2 = bf.readLine();// total memory size
-            String[] as = str2.split("\\s+");
+            final String[] as = str2.split("\\s+");
             initial_memory = Integer.valueOf(as[1]).intValue() * 1024;
             bf.close();
             return initial_memory;
@@ -276,7 +283,7 @@ public class DeviceUtil {
         }
     }
 
-    public static final boolean screenCap(String localPath) {
+    public static boolean screenCap(String localPath) {
         if (FileUtil.exists(localPath)) {
             FileUtil.delete(localPath);
         }
@@ -285,13 +292,13 @@ public class DeviceUtil {
             return false;
         }
 
-        ShellUtil shell = new ShellUtil();
+        final ShellUtil shell = new ShellUtil();
         // failed to run 'su' command
         if (shell.prepare(true)) {
             return false;
         }
-        String command = "screencap -p '" + localPath + ",";
-        ShellResult result = shell.execute(command);
+        final String command = "screencap -p '" + localPath + ",";
+        final ShellResult result = shell.execute(command);
         return (result != null && result.success());
     }
 }

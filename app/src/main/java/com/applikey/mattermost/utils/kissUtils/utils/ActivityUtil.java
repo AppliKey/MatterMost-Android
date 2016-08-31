@@ -16,12 +16,15 @@ import java.util.List;
 
 public class ActivityUtil {
 
+    private ActivityUtil() {
+    }
+
     public static void chooseImage(Activity activity, String title,
             int requestCode) {
-        Intent intent = new Intent();
+        final Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_PICK);
-        Intent chooser = Intent.createChooser(intent, title);
+        final Intent chooser = Intent.createChooser(intent, title);
         startActivityForResult(activity, chooser, requestCode);
     }
 
@@ -29,7 +32,7 @@ public class ActivityUtil {
         if (context == null || clazz == null) {
             return false;
         }
-        Intent intent = new Intent(context, clazz);
+        final Intent intent = new Intent(context, clazz);
         return startActivity(context, intent);
     }
 
@@ -68,8 +71,8 @@ public class ActivityUtil {
     }
 
     public static boolean isIntentResolved(Context context, Intent intent) {
-        PackageManager packageManager = context.getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(
+        final PackageManager packageManager = context.getPackageManager();
+        final List<ResolveInfo> activities = packageManager.queryIntentActivities(
                 intent, 0);
         return (activities != null && activities.size() > 0);
     }
@@ -78,7 +81,7 @@ public class ActivityUtil {
         if (activity == null) {
             return null;
         }
-        View view = activity.getWindow().getDecorView().getRootView();
+        final View view = activity.getWindow().getDecorView().getRootView();
         return ViewUtil.capture(view);
     }
 }

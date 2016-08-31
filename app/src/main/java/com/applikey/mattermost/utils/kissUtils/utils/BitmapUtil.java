@@ -40,16 +40,19 @@ import java.io.InputStream;
 
 public class BitmapUtil {
 
-    public static final String TAG = "BitmapUtil";
+    public static final String TAG = BitmapUtil.class.getSimpleName();
+
+    private BitmapUtil() {
+    }
 
     public static ImageSize getImageSize(String absPath) {
         if (TextUtils.isEmpty(absPath)) {
             return null;
         }
-        Options options = getOptions(absPath);
-        int width = options.outWidth;
-        int height = options.outHeight;
-        ImageSize size = new ImageSize(width, height);
+        final Options options = getOptions(absPath);
+        final int width = options.outWidth;
+        final int height = options.outHeight;
+        final ImageSize size = new ImageSize(width, height);
         return size;
     }
 
@@ -58,7 +61,7 @@ public class BitmapUtil {
         if (bitmap == null) {
             return 0;
         }
-        int bitmapSize = 0;
+        int bitmapSize;
         if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB_MR1) {
             bitmapSize = bitmap.getByteCount();
         } else {
@@ -75,7 +78,7 @@ public class BitmapUtil {
         if (TextUtils.isEmpty(absPath)) {
             return null;
         }
-        Options options = new Options();
+        final Options options = new Options();
         options.inPreferredConfig = Config.ALPHA_8;
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(absPath, options);
@@ -83,21 +86,21 @@ public class BitmapUtil {
     }
 
     public static Options getOptions(String absPath, int desireWidth,
-            int desireHeight) {
+                                     int desireHeight) {
         if (!FileUtil.exists(absPath) || desireWidth <= 0 || desireHeight <= 0) {
             return null;
         }
-        Options options = getOptions(absPath);
-        int scaleW = sampleSize(options.outWidth, desireWidth);
-        int scaleH = sampleSize(options.outHeight, desireWidth);
+        final Options options = getOptions(absPath);
+        final int scaleW = sampleSize(options.outWidth, desireWidth);
+        final int scaleH = sampleSize(options.outHeight, desireWidth);
         options.inSampleSize = scaleH > scaleW ? scaleH : scaleW;
         options.inJustDecodeBounds = false;
         return options;
     }
 
     public static Bitmap getAssetBitmap(Context context, String filePath) {
-        AssetManager assetManager = context.getAssets();
-        InputStream ips = null;
+        final AssetManager assetManager = context.getAssets();
+        InputStream ips;
         Bitmap bitmap = null;
         try {
             ips = assetManager.open(filePath);
@@ -115,9 +118,9 @@ public class BitmapUtil {
         }
 
         LogUtil.d(TAG, "decode bitmap " + absPath);
-        long enter = System.currentTimeMillis();
-        Bitmap bitmap = BitmapFactory.decodeFile(absPath);
-        long delta = System.currentTimeMillis() - enter;
+        final long enter = System.currentTimeMillis();
+        final Bitmap bitmap = BitmapFactory.decodeFile(absPath);
+        final long delta = System.currentTimeMillis() - enter;
         LogUtil.v(TAG, "decode bitmap time " + delta);
 
         return bitmap;
@@ -144,18 +147,18 @@ public class BitmapUtil {
 
         LogUtil.d(TAG, "decode bitmap " + absPath + " width " + width
                 + " height " + height);
-        long enter = System.currentTimeMillis();
-        Options options = getOptions(absPath, width, height);
+        final long enter = System.currentTimeMillis();
+        final Options options = getOptions(absPath, width, height);
         Bitmap bitmap = BitmapFactory.decodeFile(absPath, options);
         if (bitmap == null) {
             LogUtil.i(TAG, "decode bitmap failed " + absPath);
             return null;
         }
 
-        int rotate = getRotate(absPath);
+        final int rotate = getRotate(absPath);
         bitmap = rotateImage(bitmap, rotate);
         System.gc();
-        long delta = System.currentTimeMillis() - enter;
+        final long delta = System.currentTimeMillis() - enter;
         LogUtil.v(TAG, "decode bitmap time " + delta);
         return bitmap;
     }
@@ -164,9 +167,9 @@ public class BitmapUtil {
         if (bitmap == null) {
             return bitmap;
         }
-        Matrix matrix = new Matrix();
+        final Matrix matrix = new Matrix();
         matrix.setRotate(rotate);
-        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+        final Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
                 bitmap.getHeight(), matrix, true);
         if (rotated != null && !rotated.equals(bitmap)) {
             bitmap.recycle();
@@ -186,9 +189,9 @@ public class BitmapUtil {
         }
 
         try {
-            File outFile = new File(absPath);
-            FileOutputStream fos = new FileOutputStream(outFile);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            final File outFile = new File(absPath);
+            final FileOutputStream fos = new FileOutputStream(outFile);
+            final BufferedOutputStream bos = new BufferedOutputStream(fos);
             bitmap.compress(Bitmap.CompressFormat.PNG, quality, bos);
             bos.flush();
             bos.close();
@@ -205,16 +208,17 @@ public class BitmapUtil {
         if (bitmap == null) {
             return null;
         }
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+        final int width = bitmap.getWidth();
+        final int height = bitmap.getHeight();
         if (width == height) {
             LogUtil.w(TAG, "no need to square image");
             return bitmap;
         }
-        int x = (height < width) ? ((width - height) / 2) : 0;
-        int y = (width < height) ? ((height - width) / 2) : 0;
-        int pixels = width < height ? width : height;
-        Bitmap square = Bitmap.createBitmap(bitmap, x, y, pixels, pixels);
+        final int x = (height < width) ? ((width - height) / 2) : 0;
+        final int y = (width < height) ? ((height - width) / 2) : 0;
+        final int pixels = width < height ? width : height;
+        //noinspection UnnecessaryLocalVariable
+        final Bitmap square = Bitmap.createBitmap(bitmap, x, y, pixels, pixels);
         return square;
     }
 
@@ -224,7 +228,7 @@ public class BitmapUtil {
             return 0;
         }
 
-        ExifInterface exifInterface = null;
+        ExifInterface exifInterface;
         try {
             exifInterface = new ExifInterface(absPath);
         } catch (IOException e) {
@@ -232,7 +236,7 @@ public class BitmapUtil {
             return 0;
         }
 
-        int orientation = exifInterface.getAttributeInt(
+        final int orientation = exifInterface.getAttributeInt(
                 ExifInterface.TAG_ORIENTATION,
                 ExifInterface.ORIENTATION_UNDEFINED);
         int rotate = 0;
@@ -254,13 +258,13 @@ public class BitmapUtil {
     }
 
     public static Bitmap resizeImage(Bitmap bitmap, int desireWidth,
-            int desireHeight, boolean isEnlarge) {
+                                     int desireHeight, boolean isEnlarge) {
         if (bitmap == null || desireHeight <= 0 || desireWidth <= 0) {
             return null;
         }
 
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+        final int width = bitmap.getWidth();
+        final int height = bitmap.getHeight();
 
         if (width <= 0 || height <= 0) {
             return bitmap;
@@ -278,39 +282,38 @@ public class BitmapUtil {
             scale = (float) desireWidth / (float) width;
         }
 
-        Matrix matrix = new Matrix();
+        final Matrix matrix = new Matrix();
         matrix.postScale(scale, scale);
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 
         return bitmap;
     }
 
-    public final static Bitmap getThumbnail(String absPath, int width,
-            int height) {
+    public static Bitmap getThumbnail(String absPath, int width,
+                                      int height) {
         if (!FileUtil.exists(absPath) || width <= 0 || height <= 0) {
             return null;
         }
-        Options options = getOptions(absPath, width, height);
+        final Options options = getOptions(absPath, width, height);
         try {
-            Bitmap bitmap = BitmapFactory.decodeFile(absPath, options);
-            Bitmap result = ThumbnailUtils.extractThumbnail(bitmap, width,
+            final Bitmap bitmap = BitmapFactory.decodeFile(absPath, options);
+            //noinspection UnnecessaryLocalVariable
+            final Bitmap result = ThumbnailUtils.extractThumbnail(bitmap, width,
                     height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
             // recycle(bitmap);
             return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } catch (OutOfMemoryError e) {
+        } catch (Exception | OutOfMemoryError e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public final static Bitmap getVideoThumbnail(String absPath, int width,
-            int height) {
+    public static Bitmap getVideoThumbnail(String absPath, int width,
+                                           int height) {
         if (!FileUtil.exists(absPath) || width <= 0 || height <= 0) {
             return null;
         }
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         bitmap = ThumbnailUtils.createVideoThumbnail(absPath,
                 Images.Thumbnails.MINI_KIND);
         LogUtil.d(TAG, "bitmap width " + bitmap.getWidth() + " height "
@@ -320,14 +323,14 @@ public class BitmapUtil {
         return bitmap;
     }
 
-    public final static Bitmap waterMark(Context context, Bitmap bitmap,
-            int waterResId, int gravity) {
-        Drawable waterPrintDrawable = context.getResources().getDrawable(
+    public static Bitmap waterMark(Context context, Bitmap bitmap,
+                                   int waterResId, int gravity) {
+        final Drawable waterPrintDrawable = context.getResources().getDrawable(
                 waterResId);
-        int waterPrintWidth = waterPrintDrawable.getIntrinsicWidth();
-        int waterPrintHeight = waterPrintDrawable.getIntrinsicHeight();
-        int w = bitmap.getWidth();
-        int h = bitmap.getHeight();
+        final int waterPrintWidth = waterPrintDrawable.getIntrinsicWidth();
+        final int waterPrintHeight = waterPrintDrawable.getIntrinsicHeight();
+        final int w = bitmap.getWidth();
+        final int h = bitmap.getHeight();
         if (gravity == Gravity.CENTER) {
             waterPrintDrawable.setBounds((w - waterPrintWidth) / 2,
                     (h - waterPrintHeight) / 2, (w + waterPrintWidth) / 2,
@@ -336,31 +339,32 @@ public class BitmapUtil {
             waterPrintDrawable.setBounds((w - waterPrintWidth) / 2, h,
                     (w + waterPrintWidth) / 2, h + waterPrintHeight);
         }
-        Canvas mCanvas = new Canvas(bitmap);
+        final Canvas mCanvas = new Canvas(bitmap);
         waterPrintDrawable.draw(mCanvas);
         return bitmap;
     }
 
-    public final static Bitmap toRounded(Context context, Bitmap bitmap,
-            int color, int borderDips, int desireWidth) {
+    public static Bitmap toRounded(Context context, Bitmap bitmap,
+                                   int color, int borderDips, int desireWidth) {
         try {
-            Bitmap bitmap0 = squareImage(bitmap);
-            Bitmap bitmap1 = resizeImage(bitmap0, desireWidth, desireWidth,
+            final Bitmap bitmap0 = squareImage(bitmap);
+            final Bitmap bitmap1 = resizeImage(bitmap0, desireWidth, desireWidth,
                     true);
-            int toPX = DeviceUtil.dp2px(borderDips);
+            final int toPX = DeviceUtil.dp2px(borderDips);
             int maxBorder = (desireWidth / 2) / 5;
             maxBorder = maxBorder > 15 ? 15 : maxBorder;
             final int borderSizePx = toPX > maxBorder ? maxBorder : toPX;
 
+            //noinspection UnnecessaryLocalVariable
             final int size = desireWidth;
-            int center = (int) (size / 2);
-            int left = (int) ((desireWidth - size) / 2);
-            int top = (int) ((desireWidth - size) / 2);
-            int right = left + size;
-            int bottom = top + size;
+            final int center = (int) (size / 2);
+            final int left = (int) ((desireWidth - size) / 2);
+            final int top = (int) ((desireWidth - size) / 2);
+            final int right = left + size;
+            final int bottom = top + size;
 
-            Bitmap output = Bitmap.createBitmap(size, size, Config.ARGB_8888);
-            Canvas canvas = new Canvas(output);
+            final Bitmap output = Bitmap.createBitmap(size, size, Config.ARGB_8888);
+            final Canvas canvas = new Canvas(output);
             final Paint paint = new Paint();
 
             final Rect src = new Rect(left, top, right, bottom);
@@ -392,30 +396,30 @@ public class BitmapUtil {
 
     public static Bitmap toRoundCorner(Context context, Bitmap bitmap) {
         try {
-            int w = bitmap.getWidth();
-            int h = bitmap.getHeight();
+            final int w = bitmap.getWidth();
+            final int h = bitmap.getHeight();
             final int delta = DeviceUtil.dp2px(5);
             final float roundPx = DeviceUtil.dp2px(14);
             final Paint paint = new Paint();
             paint.setAntiAlias(true);
 
 			/* draw round foreground */
-            int foreW = w - 2 * delta;
-            int foreH = h - 2 * delta;
-            Bitmap foreBmp = Bitmap
+            final int foreW = w - 2 * delta;
+            final int foreH = h - 2 * delta;
+            final Bitmap foreBmp = Bitmap
                     .createBitmap(foreW, foreH, Config.ARGB_8888);
-            Rect rect = new Rect(0, 0, foreW, foreH);
-            RectF rectF = new RectF(rect);
-            Canvas canvas0 = new Canvas(foreBmp);
+            final Rect rect = new Rect(0, 0, foreW, foreH);
+            final RectF rectF = new RectF(rect);
+            final Canvas canvas0 = new Canvas(foreBmp);
             canvas0.drawRoundRect(rectF, roundPx, roundPx, paint);
             paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
             canvas0.drawBitmap(bitmap, null, rect, paint);
 
 			/* draw round background */
-            Drawable drawable = getDrawbale(0xffffffff, (int) (delta + roundPx));
+            final Drawable drawable = getDrawbale(0xffffffff, (int) (delta + roundPx));
             drawable.setBounds(0, 0, w, h);
-            Bitmap result = Bitmap.createBitmap(w, h, Config.ARGB_8888);
-            Canvas canvas = new Canvas(result);
+            final Bitmap result = Bitmap.createBitmap(w, h, Config.ARGB_8888);
+            final Canvas canvas = new Canvas(result);
             drawable.draw(canvas);
             canvas.drawBitmap(foreBmp, delta, delta, null);
             recycle(foreBmp, bitmap);
@@ -427,54 +431,54 @@ public class BitmapUtil {
         }
     }
 
-    public final static GradientDrawable getDrawbale(int argb, int radius) {
-        GradientDrawable drawable = new GradientDrawable();
+    public static GradientDrawable getDrawbale(int argb, int radius) {
+        final GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(radius);
         drawable.setColor(argb);
         return drawable;
     }
 
-    public final static Bitmap drawRing(Bitmap bitmap, int deltaRadius,
-            int color) {
-        int w = bitmap.getWidth();
-        int dia = deltaRadius * 2 + w;
-        float radius = (float) dia / 2;
-        Bitmap resultBitmap = Bitmap.createBitmap(dia, dia, Config.ARGB_8888);
-        Paint paint = new Paint();
+    public static Bitmap drawRing(Bitmap bitmap, int deltaRadius,
+                                  int color) {
+        final int w = bitmap.getWidth();
+        final int dia = deltaRadius * 2 + w;
+        final float radius = (float) dia / 2;
+        final Bitmap resultBitmap = Bitmap.createBitmap(dia, dia, Config.ARGB_8888);
+        final Paint paint = new Paint();
         paint.setColor(color);
         paint.setAlpha(128);
         paint.setAntiAlias(true);
-        Canvas canvas = new Canvas(resultBitmap);
+        final Canvas canvas = new Canvas(resultBitmap);
         canvas.drawCircle(radius, radius, radius, paint);
         canvas.drawBitmap(bitmap, deltaRadius, deltaRadius, null);
         return resultBitmap;
     }
 
-    public final static Bitmap getRound(int argb, int dia) {
-        float radius = dia / 2;
-        Bitmap resultBitmap = Bitmap.createBitmap(dia, dia, Config.ARGB_8888);
-        Paint paint = new Paint();
+    public static Bitmap getRound(int argb, int dia) {
+        final float radius = dia / 2;
+        final Bitmap resultBitmap = Bitmap.createBitmap(dia, dia, Config.ARGB_8888);
+        final Paint paint = new Paint();
         paint.setColor(argb);
         paint.setAntiAlias(true);
-        Canvas canvas = new Canvas(resultBitmap);
+        final Canvas canvas = new Canvas(resultBitmap);
         canvas.drawCircle(radius, radius, radius, paint);
         return resultBitmap;
     }
 
-    public final static Bitmap stretch(Bitmap bitmap, int height) {
+    public static Bitmap stretch(Bitmap bitmap, int height) {
         if (bitmap == null) {
             return null;
         }
         if (height <= bitmap.getHeight()) {
             return bitmap;
         }
-        int w = bitmap.getWidth();
-        int h = bitmap.getHeight();
-        int tmpHeight = 1;
-        Bitmap resultBitmap = Bitmap.createBitmap(w, height, Config.ARGB_8888);
-        Canvas mCanvas = new Canvas(resultBitmap);
+        final int w = bitmap.getWidth();
+        final int h = bitmap.getHeight();
+        final int tmpHeight = 1;
+        final Bitmap resultBitmap = Bitmap.createBitmap(w, height, Config.ARGB_8888);
+        final Canvas mCanvas = new Canvas(resultBitmap);
         mCanvas.drawBitmap(bitmap, 0, 0, null);
-        Bitmap tmp = Bitmap
+        final Bitmap tmp = Bitmap
                 .createBitmap(bitmap, 0, h - tmpHeight, w, tmpHeight);
         bitmap.recycle();
         for (int index = 0; index < (height - h) / tmpHeight; index++) {
@@ -488,27 +492,27 @@ public class BitmapUtil {
         if (bitmap == null) {
             return null;
         }
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+        final int width = bitmap.getWidth();
+        final int height = bitmap.getHeight();
         if (width == 0 || height == 0) {
             return null;
         }
-        float rota = 345;
-        double radians = Math.toRadians(rota);
+        final float rota = 345;
+        final double radians = Math.toRadians(rota);
         /* after rotate , the new width is the original width */
-        int rotateWidth = (int) (width / (Math.abs(Math.sin(radians)) + Math
+        final int rotateWidth = (int) (width / (Math.abs(Math.sin(radians)) + Math
                 .abs(Math.cos(radians))));
-        int delta = (width - rotateWidth) / 2;
+        final int delta = (width - rotateWidth) / 2;
 
         // result
-        Bitmap result = Bitmap.createBitmap(width, width, Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
+        final Bitmap result = Bitmap.createBitmap(width, width, Config.ARGB_8888);
+        final Canvas canvas = new Canvas(result);
         // foreground
-        Bitmap foreBmp = resizeImage(bitmap, rotateWidth, rotateWidth, true);
+        final Bitmap foreBmp = resizeImage(bitmap, rotateWidth, rotateWidth, true);
         // rotate
-        Matrix matrix = new Matrix();
+        final Matrix matrix = new Matrix();
         matrix.postRotate(rota);
-        Bitmap rotate = Bitmap.createBitmap(foreBmp, 0, 0, rotateWidth,
+        final Bitmap rotate = Bitmap.createBitmap(foreBmp, 0, 0, rotateWidth,
                 rotateWidth, matrix, true);
         canvas.drawBitmap(rotate, 0, 0, null);
         canvas.drawBitmap(foreBmp, delta, delta, null);
@@ -517,25 +521,25 @@ public class BitmapUtil {
     }
 
     public static Bitmap drawLayoutDropShadow(Bitmap bitmap) {
-        BlurMaskFilter blurFilter = new BlurMaskFilter(2,
+        final BlurMaskFilter blurFilter = new BlurMaskFilter(2,
                 BlurMaskFilter.Blur.OUTER);
-        Paint shadowPaint = new Paint();
+        final Paint shadowPaint = new Paint();
         shadowPaint.setMaskFilter(blurFilter);
-        int[] offsetXY = {5, 5};
-        Bitmap shadowBitmap = bitmap.extractAlpha(shadowPaint, offsetXY);
-        Bitmap shadowImage32 = shadowBitmap.copy(Config.ARGB_8888, true);
-        Canvas c = new Canvas(shadowImage32);
+        final int[] offsetXY = {5, 5};
+        final Bitmap shadowBitmap = bitmap.extractAlpha(shadowPaint, offsetXY);
+        final Bitmap shadowImage32 = shadowBitmap.copy(Config.ARGB_8888, true);
+        final Canvas c = new Canvas(shadowImage32);
         c.drawBitmap(bitmap, 0, 0, null);
         return shadowImage32;
     }
 
     public static Bitmap blur(Bitmap origin, int radius) {
-        int iterations = 1;
-        int width = origin.getWidth();
-        int height = origin.getHeight();
-        int[] inPixels = new int[width * height];
-        int[] outPixels = new int[width * height];
-        Bitmap bitmap = Bitmap.createBitmap(width, height,
+        final int iterations = 1;
+        final int width = origin.getWidth();
+        final int height = origin.getHeight();
+        final int[] inPixels = new int[width * height];
+        final int[] outPixels = new int[width * height];
+        final Bitmap bitmap = Bitmap.createBitmap(width, height,
                 Config.ARGB_8888);
         origin.getPixels(inPixels, 0, width, 0, 0, width, height);
         for (int index = 0; index < iterations; index++) {
@@ -547,10 +551,10 @@ public class BitmapUtil {
     }
 
     private static void blur(int[] in, int[] out, int width, int height,
-            int radius) {
-        int widthMinus1 = width - 1;
-        int tableSize = 2 * radius + 1;
-        int divide[] = new int[256 * tableSize];
+                             int radius) {
+        final int widthMinus1 = width - 1;
+        final int tableSize = 2 * radius + 1;
+        final int divide[] = new int[256 * tableSize];
 
         for (int index = 0; index < 256 * tableSize; index++) {
             divide[index] = index / tableSize;
@@ -563,7 +567,7 @@ public class BitmapUtil {
             int ta = 0, tr = 0, tg = 0, tb = 0;
 
             for (int i = -radius; i <= radius; i++) {
-                int rgb = in[inIndex + clamp(i, 0, width - 1)];
+                final int rgb = in[inIndex + clamp(i, 0, width - 1)];
                 ta += (rgb >> 24) & 0xff;
                 tr += (rgb >> 16) & 0xff;
                 tg += (rgb >> 8) & 0xff;
@@ -580,8 +584,8 @@ public class BitmapUtil {
                 int i2 = x - radius;
                 if (i2 < 0)
                     i2 = 0;
-                int rgb1 = in[inIndex + i1];
-                int rgb2 = in[inIndex + i2];
+                final int rgb1 = in[inIndex + i1];
+                final int rgb2 = in[inIndex + i2];
 
                 ta += ((rgb1 >> 24) & 0xff) - ((rgb2 >> 24) & 0xff);
                 tr += ((rgb1 & 0xff0000) - (rgb2 & 0xff0000)) >> 16;
@@ -609,7 +613,7 @@ public class BitmapUtil {
         return sample;
     }
 
-    private final static void recycle(Bitmap... bitmaps) {
+    private static void recycle(Bitmap... bitmaps) {
         if (bitmaps == null || bitmaps.length == 0) {
             return;
         }

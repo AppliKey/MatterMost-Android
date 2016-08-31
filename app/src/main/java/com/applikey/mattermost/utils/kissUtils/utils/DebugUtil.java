@@ -9,13 +9,15 @@ import android.content.pm.ApplicationInfo;
 
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 
-
 public class DebugUtil {
 
-    public static boolean isDebugable() {
+    private DebugUtil() {
+    }
+
+    public static boolean isDebuggable() {
         try {
-            Context context = KissTools.getApplicationContext();
-            ApplicationInfo info = context.getApplicationInfo();
+            final Context context = KissTools.getApplicationContext();
+            final ApplicationInfo info = context.getApplicationInfo();
             return (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         } catch (Exception e) {
             e.printStackTrace();
