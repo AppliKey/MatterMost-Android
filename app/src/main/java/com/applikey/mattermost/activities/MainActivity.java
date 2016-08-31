@@ -17,7 +17,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity {
-    
+
     private static final String TAG = "MainActivity";
     @Inject
     Prefs mPrefs;

@@ -4,7 +4,6 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.storage.db.DB;
 import com.applikey.mattermost.storage.db.DbImpl;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.storage.preferences.PrefsImpl;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
 
@@ -37,7 +36,7 @@ public class GlobalModule {
     @Provides
     @PerApp
     Prefs providePrefs() {
-        return new PrefsImpl(mApp);
+        return new Prefs(mApp);
     }
 
     @Provides
