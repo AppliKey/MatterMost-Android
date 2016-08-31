@@ -1,6 +1,5 @@
 package com.applikey.mattermost.fragments;
 
-
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,10 +21,8 @@ import butterknife.ButterKnife;
 
 public abstract class BaseFragment extends RxFragment {
 
-
     @Inject
     EventBus mEventBus;
-
 
     private ProgressDialog mProgressDialog;
 

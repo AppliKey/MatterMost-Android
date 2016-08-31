@@ -28,11 +28,9 @@ import rx.subjects.BehaviorSubject;
 
 public abstract class BaseActivity extends AppCompatActivity implements ActivityLifecycleProvider {
 
-
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
     @Inject
     EventBus mEventBus;
-
 
     @Inject
     ImageLoader mImageLoader;
