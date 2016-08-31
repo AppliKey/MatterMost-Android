@@ -1,10 +1,8 @@
 package com.applikey.mattermost.storage.db;
 
-
 import android.content.Context;
 
-public class DbImpl implements DB {
-
+public class DbImpl {
 
     private Context mContext;
 
