@@ -8,13 +8,13 @@ import com.applikey.mattermost.utils.kissUtils.utils.FileUtil;
 
 public class KVPreference implements KVDataSet {
 
-    public static final String TAG = "KVPreference";
+    private static final String TAG = KVPreference.class.getSimpleName();
 
     private static final String DEFAULT_NAME = "kv_sp";
 
-    private SharedPreferences sp;
-    private String spName;
-    private Context spContext;
+    private final SharedPreferences sp;
+    private final String spName;
+    private final Context spContext;
 
     public KVPreference(Context context) {
         this(context, DEFAULT_NAME);
@@ -23,13 +23,13 @@ public class KVPreference implements KVDataSet {
     public KVPreference(Context context, String name) {
         this.spContext = context;
         this.spName = name;
-        int mode = Context.MODE_PRIVATE;
-        sp = spContext.getSharedPreferences(spName, mode);
+        sp = spContext.getSharedPreferences(spName, Context.MODE_PRIVATE);
     }
 
     @Override
     public String get(String key) {
-        String value = sp.getString(key, null);
+        //noinspection UnnecessaryLocalVariable
+        final String value = sp.getString(key, null);
         return value;
     }
 
@@ -39,7 +39,8 @@ public class KVPreference implements KVDataSet {
             return false;
         }
 
-        boolean succeed = sp.edit().putString(key, value).commit();
+        //noinspection UnnecessaryLocalVariable
+        final boolean succeed = sp.edit().putString(key, value).commit();
         return succeed;
     }
 
@@ -49,21 +50,23 @@ public class KVPreference implements KVDataSet {
             return false;
         }
 
-        boolean succeed = sp.edit().remove(key).commit();
+        //noinspection UnnecessaryLocalVariable
+        final boolean succeed = sp.edit().remove(key).commit();
         return succeed;
     }
 
     @Override
     public boolean clear() {
-        boolean succeed = sp.edit().clear().commit();
+        //noinspection UnnecessaryLocalVariable
+        final boolean succeed = sp.edit().clear().commit();
         return succeed;
     }
 
     @Override
     public boolean delete() {
         boolean succeed = clear();
-        String absPath = spContext.getFilesDir().getParent() + "/shared_prefs/";
-        absPath = absPath + spName + ".xml";
+        final String absPath = spContext.getFilesDir().getParent() + "/shared_prefs/"
+                + spName + ".xml";
         succeed |= FileUtil.delete(absPath);
         return succeed;
     }

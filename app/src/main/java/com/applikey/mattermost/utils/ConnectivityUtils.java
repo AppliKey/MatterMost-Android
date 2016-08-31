@@ -14,7 +14,7 @@ import rx.schedulers.Schedulers;
 public class ConnectivityUtils {
 
     @NonNull
-    Observable<Boolean> getConnectivityObservable(@NonNull Context context) {
+    public Observable<Boolean> getConnectivityObservable(@NonNull Context context) {
         return new ReactiveNetwork()
                 .enableInternetCheck()
                 .observeConnectivity(context)

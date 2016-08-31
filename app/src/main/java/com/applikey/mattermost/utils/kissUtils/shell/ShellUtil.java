@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ShellUtil {
 
     public static final String TAG = "ShellUtil";
@@ -51,7 +50,7 @@ public class ShellUtil {
     }
 
     public ShellResult execute(String command) {
-        List<String> commands = new ArrayList<String>();
+        final List<String> commands = new ArrayList<String>();
         commands.add(command);
         return execute(commands);
     }
@@ -116,7 +115,7 @@ public class ShellUtil {
                 successBuilder.append(line).append(KissEnv.LINE_SEPARATOR);
             }
             String[] fields = line.split(" ");
-            if (fields != null && fields.length >= 2 && fields[1] != null) {
+            if (fields.length >= 2 && fields[1] != null) {
                 resultCode = NumberUtil.parse(fields[1], resultCode);
             }
             successMsg = successBuilder.toString();

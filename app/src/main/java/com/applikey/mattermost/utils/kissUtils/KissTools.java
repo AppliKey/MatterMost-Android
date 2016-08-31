@@ -16,17 +16,20 @@ public class KissTools {
     public static final String TAG = "KissTools";
     private static WeakReference<Context> contextRef;
 
+    private KissTools() {
+    }
+
     public static void setContext(Context context) {
         if (context == null) {
             throw new InvalidParameterException("Invalid context parameter!");
         }
 
-        Context appContext = context.getApplicationContext();
+        final Context appContext = context.getApplicationContext();
         contextRef = new WeakReference<Context>(appContext);
     }
 
     public static Context getApplicationContext() {
-        Context context = contextRef.get();
+        final Context context = contextRef.get();
         if (context == null) {
             throw new InvalidParameterException("Context parameter not set!");
         } else {

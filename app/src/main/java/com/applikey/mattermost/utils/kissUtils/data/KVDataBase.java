@@ -16,12 +16,12 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
 
     public static final String TAG = "KVDataBase";
 
-    public static final int DB_VERSION = 1;
-    public static final String DEFAULT_DB_NAME = "kv_data.db";
-    public static final String DEFAULT_TABLE_NAME = "key_value";
+    private static final int DB_VERSION = 1;
+    private static final String DEFAULT_DB_NAME = "kv_data.db";
+    private static final String DEFAULT_TABLE_NAME = "key_value";
 
-    private Context dbContext;
-    private String dbName;
+    private final Context dbContext;
+    private final String dbName;
 
     public KVDataBase(Context context) {
         this(context, DEFAULT_DB_NAME);
@@ -40,7 +40,9 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + DEFAULT_TABLE_NAME);
 
+        onCreate(db);
     }
 
     public String get(String key) {
@@ -48,10 +50,10 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
             return null;
         }
 
-        String sql = "SELECT * FROM " + DEFAULT_TABLE_NAME + " WHERE key='"
+        final String sql = "SELECT * FROM " + DEFAULT_TABLE_NAME + " WHERE key='"
                 + key + "'";
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(sql, null);
+        final SQLiteDatabase db = getWritableDatabase();
+        final Cursor cursor = db.rawQuery(sql, null);
         String value = null;
         if (cursor.moveToFirst()) {
             value = cursor.getString(cursor.getColumnIndex("value"));
@@ -67,9 +69,9 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
             return false;
         }
 
-        SQLiteDatabase db = getWritableDatabase();
+        final SQLiteDatabase db = getWritableDatabase();
         db.execSQL("INSERT OR REPLACE INTO " + DEFAULT_TABLE_NAME
-                + "(key, value) VALUES(?, ?)", new Object[] {key, value});
+                + "(key, value) VALUES(?, ?)", new Object[]{key, value});
         db.close();
         return true;
     }
@@ -78,9 +80,9 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
         if (TextUtils.isEmpty(key)) {
             return false;
         }
-        String sql = "DELETE FROM " + DEFAULT_TABLE_NAME + " WHERE key " + "='"
+        final String sql = "DELETE FROM " + DEFAULT_TABLE_NAME + " WHERE key " + "='"
                 + key + "'";
-        SQLiteDatabase db = getWritableDatabase();
+        final SQLiteDatabase db = getWritableDatabase();
         db.execSQL(sql);
         db.close();
         return true;
@@ -88,8 +90,8 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
 
     @Override
     public boolean clear() {
-        String sql = "DELETE * FROM " + DEFAULT_TABLE_NAME;
-        SQLiteDatabase db = getWritableDatabase();
+        final String sql = "DELETE * FROM " + DEFAULT_TABLE_NAME;
+        final SQLiteDatabase db = getWritableDatabase();
         db.execSQL(sql);
         db.close();
         return true;
@@ -97,18 +99,18 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
 
     @Override
     public boolean delete() {
-        String absPath = dbContext.getFilesDir().getParent() + "/databases/";
-        absPath = absPath + dbName;
+        final String absPath = dbContext.getFilesDir().getParent() + "/databases/" + dbName;
+        //noinspection UnnecessaryLocalVariable
         boolean succeed = FileUtil.delete(absPath);
         return succeed;
     }
 
     public List<String> list() {
-        String sql = "SELECT * FROM " + DEFAULT_TABLE_NAME
+        final String sql = "SELECT * FROM " + DEFAULT_TABLE_NAME
                 + " ORDER BY id  ASC";
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(sql, null);
-        LinkedList<String> values = new LinkedList<String>();
+        final SQLiteDatabase db = getWritableDatabase();
+        final Cursor cursor = db.rawQuery(sql, null);
+        final LinkedList<String> values = new LinkedList<String>();
         while (cursor.moveToNext()) {
             String value = cursor.getString(cursor.getColumnIndex("value"));
             values.addLast(value);

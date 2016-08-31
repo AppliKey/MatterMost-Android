@@ -1,6 +1,5 @@
 package com.applikey.mattermost.utils;
 
-
 public class DateUtils {
 
     public static CharSequence getRelatedDate(long timeMs) {

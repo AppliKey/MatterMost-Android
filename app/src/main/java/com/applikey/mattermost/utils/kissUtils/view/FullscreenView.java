@@ -30,7 +30,7 @@ public class FullscreenView extends LinearLayout implements
 
     public FullscreenView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Activity activity = (Activity) getContext();
+        final Activity activity = (Activity) getContext();
         decorView = activity.getWindow().getDecorView();
     }
 
@@ -51,7 +51,7 @@ public class FullscreenView extends LinearLayout implements
     @Override
     public void onSystemUiVisibilityChange(int visibility) {
         Log.d(TAG, "onSystemUiVisibilityChange " + visibility);
-        boolean fullscreen = (visibility & SYSTEM_UI_FLAG_LOW_PROFILE) != 0;
+        final boolean fullscreen = (visibility & SYSTEM_UI_FLAG_LOW_PROFILE) != 0;
         tvTitleBar.setVisibility(fullscreen ? View.INVISIBLE : View.VISIBLE);
     }
 

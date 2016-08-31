@@ -12,9 +12,9 @@ import java.util.Stack;
 
 public class FragmentStack<T extends Fragment> {
 
-    private Stack<T> fragmentStack;
-    private FragmentManager fragmentManager;
-    private int contentId;
+    private final Stack<T> fragmentStack;
+    private final FragmentManager fragmentManager;
+    private final int contentId;
 
     public FragmentStack(FragmentManager fragmentManager, int contentId) {
         this.fragmentManager = fragmentManager;
@@ -28,12 +28,12 @@ public class FragmentStack<T extends Fragment> {
         }
 
         if (!fragmentStack.isEmpty()) {
-            T topFragment = fragmentStack.peek();
+            final T topFragment = fragmentStack.peek();
             hideFragment(topFragment);
         }
 
         fragmentStack.push(t);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(contentId, t).commitAllowingStateLoss();
         return true;
     }
@@ -43,7 +43,7 @@ public class FragmentStack<T extends Fragment> {
             return false;
         }
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.show(fragment).commitAllowingStateLoss();
 
         // for the 'show' method will not trigger onResume event
@@ -60,12 +60,12 @@ public class FragmentStack<T extends Fragment> {
             return false;
         }
 
-        int stackSize = fragmentStack.size();
+        final int stackSize = fragmentStack.size();
         if (index < 0 || index >= stackSize) {
             return false;
         }
 
-        T fragment = fragmentStack.get(index);
+        final T fragment = fragmentStack.get(index);
         return removeFragment(fragment);
     }
 
@@ -74,12 +74,12 @@ public class FragmentStack<T extends Fragment> {
             return false;
         }
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.remove(t).commitAllowingStateLoss();
 
         fragmentStack.remove(t);
         if (!fragmentStack.isEmpty()) {
-            T topFragment = fragmentStack.peek();
+            final T topFragment = fragmentStack.peek();
             showFragment(topFragment);
         }
         return true;
@@ -90,12 +90,11 @@ public class FragmentStack<T extends Fragment> {
             return false;
         }
 
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        final FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.hide(fragment).commitAllowingStateLoss();
 
         // for the 'hide' method will not trigger onPause event
         fragment.onPause();
         return true;
     }
-
 }

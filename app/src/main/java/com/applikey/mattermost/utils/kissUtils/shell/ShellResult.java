@@ -6,11 +6,11 @@ package com.applikey.mattermost.utils.kissUtils.shell;
 
 public class ShellResult {
 
-    public static final String TAG = "ShellResult";
+    public static final String TAG = ShellResult.class.getSimpleName();
 
-    public int resultCode;
-    public String successMsg;
-    public String errorMsg;
+    private int resultCode;
+    private String successMsg;
+    private String errorMsg;
 
     public ShellResult() {
         this.resultCode = -1;
@@ -28,5 +28,17 @@ public class ShellResult {
 
     public boolean success() {
         return (resultCode == 0);
+    }
+
+    public int getResultCode() {
+        return resultCode;
+    }
+
+    public String getSuccessMsg() {
+        return successMsg;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
     }
 }

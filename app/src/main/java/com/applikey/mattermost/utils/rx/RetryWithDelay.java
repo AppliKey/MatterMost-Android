@@ -9,14 +9,14 @@ import rx.functions.Func1;
 public class RetryWithDelay
         implements Func1<Observable<? extends Throwable>, Observable<?>> {
 
-    private final int _maxRetries;
-    private final int _retryDelayMillis;
-    private int _retryCount;
+    private final int maxRetries;
+    private final int retryDelayMillis;
+    private int retryCount;
 
     public RetryWithDelay(final int maxRetries, final int retryDelayMillis) {
-        _maxRetries = maxRetries;
-        _retryDelayMillis = retryDelayMillis;
-        _retryCount = 0;
+        this.maxRetries = maxRetries;
+        this.retryDelayMillis = retryDelayMillis;
+        retryCount = 0;
     }
 
     public static RetryWithDelay getDefaultInstance() {
@@ -26,11 +26,11 @@ public class RetryWithDelay
     @Override
     public Observable<?> call(Observable<? extends Throwable> attempts) {
         return attempts.flatMap(throwable -> {
-            if (++_retryCount < _maxRetries) {
+            if (++retryCount < maxRetries) {
                 // When this Observable calls onNext, the original
                 // Observable will be retried (i.e. re-subscribed).
 
-                return Observable.timer(_retryCount * _retryDelayMillis,
+                return Observable.timer(retryCount * retryDelayMillis,
                         TimeUnit.MILLISECONDS);
             }
 

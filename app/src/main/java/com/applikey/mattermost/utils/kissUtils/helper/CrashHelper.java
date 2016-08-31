@@ -23,15 +23,15 @@ import java.lang.Thread.UncaughtExceptionHandler;
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class CrashHelper implements UncaughtExceptionHandler {
 
-    public static final String TAG = "CrashHelper";
+    public static final String TAG = CrashHelper.class.getSimpleName();
 
     @SuppressLint("NewApi")
-    public static final void init(Application application) {
+    public static void init(Application application) {
         if (Thread.getDefaultUncaughtExceptionHandler() instanceof CrashHelper) {
             return;
         }
 
-        CrashHelper helper = new CrashHelper();
+        final CrashHelper helper = new CrashHelper();
         Thread.setDefaultUncaughtExceptionHandler(helper);
     }
 
@@ -39,23 +39,24 @@ public class CrashHelper implements UncaughtExceptionHandler {
     public void uncaughtException(Thread thread, Throwable ex) {
         final String name = thread.getName();
 
-        String crashMessage = StringUtil.stringify(ex);
-        StringBuilder builder = new StringBuilder();
-        builder.append("crash in thread " + name);
-        builder.append("crash detail message:\n");
-        builder.append(crashMessage);
+        final String crashMessage = StringUtil.stringify(ex);
+        final StringBuilder builder = new StringBuilder()
+                .append("crash in thread ")
+                .append(name)
+                .append("crash detail message:\n")
+                .append(crashMessage);
 
-        long time = System.currentTimeMillis();
-        String format = TimeUtil.FILE_FORMAT;
-        String fileName = TimeUtil.format(time, format) + ".txt";
-        String crashFolder = MediaUtil.getFileDir("crash_log");
-        String filePath = crashFolder + "/" + fileName;
+        final long time = System.currentTimeMillis();
+        final String format = TimeUtil.FILE_FORMAT;
+        final String fileName = TimeUtil.format(time, format) + ".txt";
+        final String crashFolder = MediaUtil.getFileDir("crash_log");
+        final String filePath = crashFolder + "/" + fileName;
         LogUtil.e(TAG, builder.toString());
         FileUtil.write(filePath, builder.toString());
         showMessage("application cashed!");
         try {
             Thread.sleep(2500);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         System.exit(1);
     }

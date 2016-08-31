@@ -4,12 +4,14 @@
 
 package com.applikey.mattermost.utils.kissUtils.formatter;
 
+import android.support.annotation.Nullable;
+
 import java.text.DecimalFormat;
 
 public class DiskFormatter {
 
-    public static final int UNIT = 1024;
-    public static final String FORMAT = "#.00";
+    private static final int UNIT = 1024;
+    private static final String FORMAT = "#.00";
 
     public static final String B = "B";
     public static final String KB = "KB";
@@ -41,9 +43,8 @@ public class DiskFormatter {
     }
 
     public String format(double size) {
-        String result = null;
         if (size < 0) {
-            return result;
+            return null;
         } else if (size < kbUnit) {
             return size + "B";
         } else if (size < mbUnit) {
@@ -65,9 +66,10 @@ public class DiskFormatter {
     }
 
     private String division(double size, double unit) {
-        double result = size / unit;
-        DecimalFormat df = new DecimalFormat(format);
-        String formatted = df.format(result);
+        final double result = size / unit;
+        final DecimalFormat df = new DecimalFormat(format);
+        //noinspection UnnecessaryLocalVariable
+        final String formatted = df.format(result);
         return formatted;
     }
 }
