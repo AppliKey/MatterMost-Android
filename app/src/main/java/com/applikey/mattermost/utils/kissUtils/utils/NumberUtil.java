@@ -10,10 +10,14 @@ import java.math.BigDecimal;
 
 public class NumberUtil {
 
+    private NumberUtil() {
+    }
+
     public static double multiply(double d1, double d2) {
-        BigDecimal bd1 = new BigDecimal(Double.toString(d1));
-        BigDecimal bd2 = new BigDecimal(Double.toString(d2));
-        double result = bd1.multiply(bd2).doubleValue();
+        final BigDecimal bd1 = new BigDecimal(Double.toString(d1));
+        final BigDecimal bd2 = new BigDecimal(Double.toString(d2));
+        //noinspection UnnecessaryLocalVariable
+        final double result = bd1.multiply(bd2).doubleValue();
         return result;
     }
 

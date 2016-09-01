@@ -17,11 +17,6 @@ public class KeyboardUtil implements OnGlobalLayoutListener {
     private View mRootView;
     private KeyboardListener mListener;
 
-    static public interface KeyboardListener {
-
-        public void onKeyboardVisible(boolean visible);
-    }
-
     public KeyboardUtil(Activity activity) {
         mVisible = false;
         mHeight = 0;
@@ -53,7 +48,7 @@ public class KeyboardUtil implements OnGlobalLayoutListener {
             return;
         }
 
-        int height = mRootView.getHeight();
+        final int height = mRootView.getHeight();
 
         if (!mVisible && mHeight > (height + 100)) {
             mVisible = true;
@@ -64,5 +59,9 @@ public class KeyboardUtil implements OnGlobalLayoutListener {
             mListener.onKeyboardVisible(mVisible);
             mHeight = height;
         }
+    }
+
+    public interface KeyboardListener {
+        void onKeyboardVisible(boolean visible);
     }
 }

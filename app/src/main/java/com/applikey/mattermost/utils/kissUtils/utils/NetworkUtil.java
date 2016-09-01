@@ -16,39 +16,17 @@ import android.telephony.TelephonyManager;
 
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 
-
 public class NetworkUtil {
 
     public static final String TAG = "NetworkHelper";
     private NetworkType type;
-    ;
     private NetworkListener listener;
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateNetwork();
-        }
-    };
-
-    public static enum NetworkType {
-        WIFI_FAST,
-        MOBILE_FAST,
-        MOBILE_MIDDLE,
-        MOBILE_SLOW,
-        NONE,
-    }
-
-    public interface NetworkListener {
-
-        public void onNetworkChanged(NetworkType ot, NetworkType nt);
-    }
 
     private NetworkUtil() {
         type = NetworkType.NONE;
         updateNetwork();
 
-        IntentFilter filter = new IntentFilter();
+        final IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         KissTools.getApplicationContext().registerReceiver(receiver, filter);
     }
@@ -61,9 +39,9 @@ public class NetworkUtil {
         listener = l;
     }
 
-    private final void updateNetwork() {
-        NetworkInfo networkInfo = getNetworkInfo();
-        NetworkType t = type;
+    private void updateNetwork() {
+        final NetworkInfo networkInfo = getNetworkInfo();
+        final NetworkType t = type;
         type = checkType(networkInfo);
         if (type != t && listener != null) {
             listener.onNetworkChanged(t, type);
@@ -71,9 +49,9 @@ public class NetworkUtil {
         LogUtil.i(TAG, "network [type] " + type);
     }
 
-    private final synchronized NetworkInfo getNetworkInfo() {
-        Context context = KissTools.getApplicationContext();
-        ConnectivityManager manager = (ConnectivityManager) context
+    private synchronized NetworkInfo getNetworkInfo() {
+        final Context context = KissTools.getApplicationContext();
+        final ConnectivityManager manager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         return manager.getActiveNetworkInfo();
     }
@@ -83,8 +61,8 @@ public class NetworkUtil {
             return NetworkType.NONE;
         }
 
-        int type = info.getType();
-        int subType = info.getSubtype();
+        final int type = info.getType();
+        final int subType = info.getSubtype();
         if ((type == ConnectivityManager.TYPE_WIFI)
                 || (type == ConnectivityManager.TYPE_ETHERNET)) {
             return NetworkType.WIFI_FAST;
@@ -116,5 +94,25 @@ public class NetworkUtil {
         }
 
         return NetworkType.NONE;
+    }
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateNetwork();
+        }
+    };
+
+    public enum NetworkType {
+        WIFI_FAST,
+        MOBILE_FAST,
+        MOBILE_MIDDLE,
+        MOBILE_SLOW,
+        NONE,
+    }
+
+    public interface NetworkListener {
+        void onNetworkChanged(NetworkType ot, NetworkType nt);
     }
 }

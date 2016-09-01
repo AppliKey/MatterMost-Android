@@ -16,8 +16,12 @@ public class DrawableUtil {
 
     public static final String TAG = "DrawableUtil";
 
+    private DrawableUtil() {
+    }
+
     public static Drawable fromColor(int color) {
-        ColorDrawable cd = new ColorDrawable(color);
+        //noinspection UnnecessaryLocalVariable
+        final ColorDrawable cd = new ColorDrawable(color);
         return cd;
     }
 
@@ -26,7 +30,7 @@ public class DrawableUtil {
             return null;
         }
         @SuppressWarnings("deprecation")
-        BitmapDrawable bd = new BitmapDrawable(bitmap);
+        final BitmapDrawable bd = new BitmapDrawable(bitmap);
         return bd;
     }
 
@@ -40,9 +44,9 @@ public class DrawableUtil {
         int height = drawable.getIntrinsicHeight();
         height = height > 0 ? height : 1;
 
-        Bitmap bitmap = Bitmap.createBitmap(width, height,
+        final Bitmap bitmap = Bitmap.createBitmap(width, height,
                 Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
+        final Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
 

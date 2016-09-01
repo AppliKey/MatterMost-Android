@@ -15,45 +15,48 @@ public class SecurityUtil {
 
     public static final String TAG = "SecurityUtil";
 
+    private SecurityUtil() {
+    }
+
     public static String getMD5(String text) {
-        String md5 = null;
         if (TextUtils.isEmpty(text)) {
-            return md5;
+            return null;
         }
-        MessageDigest md5Digest = null;
+        MessageDigest md5Digest;
         try {
             md5Digest = MessageDigest.getInstance("MD5");
         } catch (Exception e) {
             e.printStackTrace();
-            return md5;
+            return null;
         }
-        char[] charArray = text.toCharArray();
-        byte[] byteArray = new byte[charArray.length];
+        final char[] charArray = text.toCharArray();
+        final byte[] byteArray = new byte[charArray.length];
 
         for (int index = 0; index < charArray.length; index++) {
             byteArray[index] = (byte) charArray[index];
         }
 
-        byte[] md5Bytes = md5Digest.digest(byteArray);
-        StringBuffer hexValue = new StringBuffer();
+        final byte[] md5Bytes = md5Digest.digest(byteArray);
+        final StringBuilder hexValue = new StringBuilder();
 
-        for (int index = 0; index < md5Bytes.length; index++) {
-            int val = ((int) md5Bytes[index]) & 0xff;
+        for (byte md5Byte : md5Bytes) {
+            int val = ((int) md5Byte) & 0xff;
             if (val < 16) {
                 hexValue.append("0");
             }
             hexValue.append(Integer.toHexString(val));
         }
 
-        md5 = hexValue.toString();
+        //noinspection UnnecessaryLocalVariable
+        final String md5 = hexValue.toString();
         return md5;
     }
 
     public static String bytes2Hex(byte[] bytes) {
         String hs = "";
         String stmp = "";
-        for (int n = 0; n < bytes.length; n++) {
-            stmp = (Integer.toHexString(bytes[n] & 0XFF));
+        for (byte aByte : bytes) {
+            stmp = (Integer.toHexString(aByte & 0XFF));
             if (stmp.length() == 1) {
                 hs += "0" + stmp;
             } else {
@@ -64,19 +67,18 @@ public class SecurityUtil {
     }
 
     public static String getSHA1(String text) {
-        String sha1 = null;
         if (TextUtils.isEmpty(text)) {
-            return sha1;
+            return null;
         }
-        MessageDigest sha1Digest = null;
+        MessageDigest sha1Digest;
         try {
             sha1Digest = MessageDigest.getInstance("SHA-1");
         } catch (Exception e) {
-            return sha1;
+            return null;
         }
-        byte[] textBytes = text.getBytes();
+        final byte[] textBytes = text.getBytes();
         sha1Digest.update(textBytes, 0, text.length());
-        byte[] sha1hash = sha1Digest.digest();
+        final byte[] sha1hash = sha1Digest.digest();
         return bytes2Hex(sha1hash);
     }
 }

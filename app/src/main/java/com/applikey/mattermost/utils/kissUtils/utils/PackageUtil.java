@@ -20,42 +20,45 @@ public class PackageUtil {
 
     private static final String BOOT_START_PERMISSION = "android.permission.RECEIVE_BOOT_COMPLETED";
 
+    private PackageUtil() {
+    }
+
     // install package normally
-    public static final boolean install(String filePath) {
+    public static boolean install(String filePath) {
         if (!FileUtil.exists(filePath)) {
             return false;
         }
-        Intent intent = new Intent(Intent.ACTION_VIEW);
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.parse("file://" + filePath),
                 "application/vnd.android.package-archive");
-        Context context = KissTools.getApplicationContext();
+        final Context context = KissTools.getApplicationContext();
         return ActivityUtil.startActivity(context, intent);
     }
 
     // install package silently
-    public static final boolean silentInstall(String filePath) {
+    public static boolean silentInstall(String filePath) {
         if (!FileUtil.exists(filePath)) {
             return false;
         }
 
-        String command = new StringBuilder().append("pm install ")
-                .append(filePath.replace(" ", "\\ ")).toString();
-        ShellUtil shell = new ShellUtil();
+        final String command = "pm install " +
+                filePath.replace(" ", "\\ ");
+        final ShellUtil shell = new ShellUtil();
         shell.prepare(true);
-        ShellResult result = shell.execute(command);
-        return (result.resultCode == 0);
+        final ShellResult result = shell.execute(command);
+        return (result.getResultCode() == 0);
     }
 
     // uninstall package normally
-    public static final boolean uninstall(String packageName) {
+    public static boolean uninstall(String packageName) {
         if (TextUtils.isEmpty(packageName)) {
             return false;
         }
 
-        Intent intent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:"
+        final Intent intent = new Intent(Intent.ACTION_DELETE, Uri.parse("package:"
                 + packageName));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Context context = KissTools.getApplicationContext();
+        final Context context = KissTools.getApplicationContext();
         return ActivityUtil.startActivity(context, intent);
     }
 
@@ -64,21 +67,21 @@ public class PackageUtil {
             return false;
         }
 
-        String command = new StringBuilder().append("pm uninstall")
-                .append(keepData ? " -k " : " ")
-                .append(packageName.replace(" ", "\\ ")).toString();
-        ShellUtil shell = new ShellUtil();
+        final String command = "pm uninstall" +
+                (keepData ? " -k " : " ") +
+                packageName.replace(" ", "\\ ");
+        final ShellUtil shell = new ShellUtil();
         shell.prepare(true);
-        ShellResult result = shell.execute(command);
-        return (result.resultCode == 0);
+        final ShellResult result = shell.execute(command);
+        return (result.getResultCode() == 0);
     }
 
     public static PackageInfo getPackageInfo(String packageName) {
         PackageInfo packageInfo = null;
-        Context context = KissTools.getApplicationContext();
-        PackageManager packageManager = context.getPackageManager();
+        final Context context = KissTools.getApplicationContext();
+        final PackageManager packageManager = context.getPackageManager();
         try {
-            int flags = PackageManager.GET_ACTIVITIES | PackageManager.GET_GIDS
+            final int flags = PackageManager.GET_ACTIVITIES | PackageManager.GET_GIDS
                     | PackageManager.GET_CONFIGURATIONS
                     | PackageManager.GET_INSTRUMENTATION
                     | PackageManager.GET_PERMISSIONS
@@ -88,15 +91,15 @@ public class PackageUtil {
                     | PackageManager.GET_SIGNATURES
                     | PackageManager.GET_UNINSTALLED_PACKAGES;
             packageInfo = packageManager.getPackageInfo(packageName, flags);
-        } catch (Exception ignore) {
+        } catch (Exception ignored) {
         }
         return packageInfo;
     }
 
     public static boolean isBootStart(String packageName) {
-        Context context = KissTools.getApplicationContext();
-        PackageManager pm = context.getPackageManager();
-        int flag = pm.checkPermission(BOOT_START_PERMISSION, packageName);
+        final Context context = KissTools.getApplicationContext();
+        final PackageManager pm = context.getPackageManager();
+        final int flag = pm.checkPermission(BOOT_START_PERMISSION, packageName);
         return (flag == PackageManager.PERMISSION_GRANTED);
     }
 
@@ -117,7 +120,7 @@ public class PackageUtil {
 
     public static String getPackageDir(String packageName) {
         String applicationDir = null;
-        PackageInfo pi = getPackageInfo(packageName);
+        final PackageInfo pi = getPackageInfo(packageName);
         if (pi != null) {
             applicationDir = pi.applicationInfo.dataDir;
         }

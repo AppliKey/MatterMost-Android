@@ -20,27 +20,30 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
 
-    public static final String TAG = "ZipUtil";
+    private static final String TAG = ZipUtil.class.getSimpleName();
 
     private final static int BUFFER_SIZE = 8192;
 
+    private ZipUtil() {
+    }
+
     public static boolean zip(String filePath, String zipPath) {
         try {
-            File file = new File(filePath);
-            BufferedInputStream bis = null;
-            FileOutputStream fos = new FileOutputStream(zipPath);
-            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(
+            BufferedInputStream bis;
+            final File file = new File(filePath);
+            final FileOutputStream fos = new FileOutputStream(zipPath);
+            final ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(
                     fos));
             if (file.isDirectory()) {
                 int baseLength = file.getParent().length() + 1;
                 zipFolder(zos, file, baseLength);
             } else {
-                byte data[] = new byte[BUFFER_SIZE];
-                FileInputStream fis = new FileInputStream(filePath);
+                final byte data[] = new byte[BUFFER_SIZE];
+                final FileInputStream fis = new FileInputStream(filePath);
                 bis = new BufferedInputStream(fis, BUFFER_SIZE);
-                String entryName = file.getName();
+                final String entryName = file.getName();
                 Log.i(TAG, "zip entry " + entryName);
-                ZipEntry entry = new ZipEntry(entryName);
+                final ZipEntry entry = new ZipEntry(entryName);
                 zos.putNextEntry(entry);
                 int count;
                 while ((count = bis.read(data, 0, BUFFER_SIZE)) != -1) {
@@ -67,22 +70,22 @@ public class ZipUtil {
         }
 
         try {
-            FileInputStream fin = new FileInputStream(zipPath);
-            ZipInputStream zin = new ZipInputStream(fin);
-            ZipEntry ze = null;
+            final FileInputStream fin = new FileInputStream(zipPath);
+            final ZipInputStream zin = new ZipInputStream(fin);
+            ZipEntry ze;
             while ((ze = zin.getNextEntry()) != null) {
-                String entryName = ze.getName();
+                final String entryName = ze.getName();
                 LogUtil.d(TAG, "unzip entry " + entryName);
 
-                String entryPath = unzipFolder + "/" + entryName;
+                final String entryPath = unzipFolder + "/" + entryName;
                 if (ze.isDirectory()) {
                     FileUtil.mkdirs(entryPath);
                 } else {
                     if (!FileUtil.create(entryPath, true)) {
                         continue;
                     }
-                    FileOutputStream fout = new FileOutputStream(entryPath);
-                    byte[] buffer = new byte[BUFFER_SIZE];
+                    final FileOutputStream fout = new FileOutputStream(entryPath);
+                    final byte[] buffer = new byte[BUFFER_SIZE];
                     int len;
                     while ((len = zin.read(buffer)) != -1) {
                         fout.write(buffer, 0, len);
@@ -104,7 +107,7 @@ public class ZipUtil {
         if (zos == null || folder == null) {
             return;
         }
-        File[] fileList = folder.listFiles();
+        final File[] fileList = folder.listFiles();
 
         if (fileList == null || fileList.length == 0) {
             return;
@@ -114,14 +117,14 @@ public class ZipUtil {
             if (file.isDirectory()) {
                 zipFolder(zos, file, baseLength);
             } else {
-                byte data[] = new byte[BUFFER_SIZE];
-                String unmodifiedFilePath = file.getPath();
-                String realPath = unmodifiedFilePath.substring(baseLength);
+                final byte data[] = new byte[BUFFER_SIZE];
+                final String unmodifiedFilePath = file.getPath();
+                final String realPath = unmodifiedFilePath.substring(baseLength);
                 Log.i(TAG, "zip entry " + realPath);
-                FileInputStream fi = new FileInputStream(unmodifiedFilePath);
-                BufferedInputStream bis = new BufferedInputStream(fi,
+                final FileInputStream fi = new FileInputStream(unmodifiedFilePath);
+                final BufferedInputStream bis = new BufferedInputStream(fi,
                         BUFFER_SIZE);
-                ZipEntry entry = new ZipEntry(realPath);
+                final ZipEntry entry = new ZipEntry(realPath);
                 zos.putNextEntry(entry);
                 int count;
                 while ((count = bis.read(data, 0, BUFFER_SIZE)) != -1) {

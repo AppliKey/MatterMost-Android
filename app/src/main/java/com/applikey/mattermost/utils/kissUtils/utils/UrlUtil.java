@@ -15,14 +15,17 @@ public class UrlUtil {
 
     public static final String TAG = "UrlUtil";
 
+    private UrlUtil () {
+    }
+
     public static String encode(String url) {
         if (TextUtils.isEmpty(url)) {
             return url;
         }
 
         String encodedURL = "";
-        String[] temp = url.split("/");
-        int length = temp.length;
+        final String[] temp = url.split("/");
+        final int length = temp.length;
         for (int index = 0; index < length; index++) {
             try {
                 temp[index] = URLEncoder.encode(temp[index], "UTF-8");
@@ -47,14 +50,13 @@ public class UrlUtil {
         Uri uri = null;
         try {
             uri = Uri.parse(url);
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
         return uri;
     }
 
     public static String getParam(String url, String key) {
-        Uri uri = parse(url);
+        final Uri uri = parse(url);
         if (uri == null) {
             return null;
         }

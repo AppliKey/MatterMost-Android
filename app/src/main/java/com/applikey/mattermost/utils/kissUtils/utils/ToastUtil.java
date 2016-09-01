@@ -16,7 +16,10 @@ import com.applikey.mattermost.utils.kissUtils.KissTools;
 
 public class ToastUtil {
 
-    public static Toast mToast;
+    private static Toast mToast;
+
+    private ToastUtil() {
+    }
 
     public static void show(int resId) {
         initToast();
@@ -50,7 +53,7 @@ public class ToastUtil {
         if (mToast != null) {
             return;
         }
-        Context context = KissTools.getApplicationContext();
+        final Context context = KissTools.getApplicationContext();
         if (context == null) {
             return;
         }

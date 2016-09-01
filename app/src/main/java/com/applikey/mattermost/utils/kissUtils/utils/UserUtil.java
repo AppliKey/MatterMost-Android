@@ -10,13 +10,16 @@ public class UserUtil {
 
     public static final String TAG = "UserUtil";
 
+    private UserUtil() {
+    }
+
     private static String userId;
 
-    public static final String getUserId() {
+    public static String getUserId() {
         return userId;
     }
 
-    public static final void setUserId(String id) {
+    public static void setUserId(String id) {
         userId = id;
     }
 }

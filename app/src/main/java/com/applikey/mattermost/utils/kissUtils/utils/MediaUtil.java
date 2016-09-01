@@ -17,20 +17,23 @@ import java.io.File;
 
 public class MediaUtil {
 
-    public static final String TAG = "MediaUtil";
+    public static final String TAG = MediaUtil.class.getSimpleName();
+
+    private MediaUtil() {
+    }
 
     public static String getAppDir() {
         String appDir = null;
-        Context context = KissTools.getApplicationContext();
+        final Context context = KissTools.getApplicationContext();
         if (mediaMounted()) {
-            File fileDir = context.getExternalFilesDir("");
+            final File fileDir = context.getExternalFilesDir("");
             if (fileDir.exists()) {
                 appDir = FileUtil.getParent(fileDir);
             }
         }
 
         if (appDir == null) {
-            File fileDir = context.getFilesDir();
+            final File fileDir = context.getFilesDir();
             if (fileDir.exists()) {
                 appDir = FileUtil.getParent(fileDir);
             }
@@ -39,7 +42,7 @@ public class MediaUtil {
     }
 
     public static String getFileDir(String dirName) {
-        String appDir = getAppDir();
+        final String appDir = getAppDir();
         if (TextUtils.isEmpty(appDir)) {
             return null;
         }
@@ -47,12 +50,13 @@ public class MediaUtil {
         if (TextUtils.isEmpty(dirName)) {
             return appDir;
         }
-        String fileDir = appDir + "/" + dirName;
+        //noinspection UnnecessaryLocalVariable
+        final String fileDir = appDir + "/" + dirName;
         return fileDir;
     }
 
     public static boolean mediaMounted() {
-        String state = Environment.getExternalStorageState();
+        final String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;
         } else {

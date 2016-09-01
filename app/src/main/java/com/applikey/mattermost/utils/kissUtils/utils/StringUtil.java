@@ -17,15 +17,15 @@ import java.util.regex.Pattern;
 
 public class StringUtil {
 
-    public static final String TAG = "StringUtil";
+    public static final String TAG = StringUtil.class.getSimpleName();
 
     public static final String regEmail
             = "^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|("
-			+ "([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
+            + "([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
     public static final String regCnChar = "[\u4E00-\u9FFF]+";
     public static final String regIpAddress
             = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
-			+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
     private static Pattern urlPattern = Pattern
             .compile("((?:(http|https|Http|Https):\\/\\/"
                     + "(?:(?:[a-zA-Z0-9\\$\\-\\_\\.\\+\\!\\*\\'\\(\\)\\,\\;\\?\\&\\=]|"
@@ -47,11 +47,14 @@ public class StringUtil {
                     + "(?:\\:\\d{1,5})?)(\\/(?:(?:[a-zA-Z0-9\\;\\/\\?\\:\\@\\&\\=\\#\\~%\\-\\."
                     + "\\+\\!\\*\\'\\(\\)\\,\\_])|(?:\\%[a-fA-F0-9]{2}))*)?");
 
-    public static final String cutText(String text, int maxLength) {
+    private StringUtil() {
+    }
+
+    public static String cutText(String text, int maxLength) {
         if (isEmpty(text) || maxLength < 0) {
             return text;
         }
-        int length = text.length();
+        final int length = text.length();
         if (length > maxLength) {
             return text.substring(0, maxLength);
         }
@@ -63,8 +66,8 @@ public class StringUtil {
             return false;
         }
 
-        Pattern pattern = Pattern.compile(regEmail);
-        Matcher matcher = pattern.matcher(text);
+        final Pattern pattern = Pattern.compile(regEmail);
+        final Matcher matcher = pattern.matcher(text);
         return matcher.find();
     }
 
@@ -73,32 +76,29 @@ public class StringUtil {
             return false;
         }
 
-        Pattern pattern = Pattern.compile(regIpAddress);
-        Matcher macher = pattern.matcher(text);
-        return macher.matches();
+        final Pattern pattern = Pattern.compile(regIpAddress);
+        final Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
     }
 
     public static String stringify(Throwable t) {
         if (t == null) {
             return null;
         }
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw);
         t.printStackTrace(pw);
         return sw.toString();
     }
 
     public static boolean isEmpty(String text) {
-        if (text == null || text.length() == 0) {
-            return true;
-        }
-        return false;
+        return text == null || text.length() == 0;
     }
 
     public static List<String> extractUrls(String text) {
-        List<String> urls = new ArrayList<String>();
+        final List<String> urls = new ArrayList<>();
 
-        Matcher matcher = urlPattern.matcher(text);
+        final Matcher matcher = urlPattern.matcher(text);
         while (matcher.find()) {
             urls.add(matcher.group());
         }

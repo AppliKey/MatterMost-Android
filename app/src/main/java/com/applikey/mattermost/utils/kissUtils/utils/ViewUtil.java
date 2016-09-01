@@ -24,15 +24,19 @@ import java.lang.reflect.Method;
 
 public class ViewUtil {
 
-    public static final String TAG = "ViewUtil";
+    public static final String TAG = ViewUtil.class.getSimpleName();
 
-    public final static int measureTextWidth(TextView view, String text) {
+    private ViewUtil() {
+    }
+
+    public static int measureTextWidth(TextView view, String text) {
         if (TextUtils.isEmpty(text)) {
             return 0;
         }
 
-        TextPaint paint = view.getPaint();
-        int width = (int) paint.measureText(text);
+        final TextPaint paint = view.getPaint();
+        //noinspection UnnecessaryLocalVariable
+        final int width = (int) paint.measureText(text);
         return width;
     }
 
@@ -41,21 +45,22 @@ public class ViewUtil {
             return false;
         }
 
-        int eventX = (int) event.getRawX();
-        int eventY = (int) event.getRawY();
+        final int eventX = (int) event.getRawX();
+        final int eventY = (int) event.getRawY();
 
-        int[] location = new int[2];
+        final int[] location = new int[2];
         view.getLocationOnScreen(location);
 
-        int width = view.getWidth();
-        int height = view.getHeight();
-        int left = location[0];
-        int top = location[1];
-        int right = left + width;
-        int bottom = top + height;
+        final int width = view.getWidth();
+        final int height = view.getHeight();
+        final int left = location[0];
+        final int top = location[1];
+        final int right = left + width;
+        final int bottom = top + height;
 
-        Rect rect = new Rect(left, top, right, bottom);
-        boolean contains = rect.contains(eventX, eventY);
+        final Rect rect = new Rect(left, top, right, bottom);
+        //noinspection UnnecessaryLocalVariable
+        final boolean contains = rect.contains(eventX, eventY);
         return contains;
     }
 
@@ -64,10 +69,10 @@ public class ViewUtil {
             return new Point();
         }
 
-        int[] location = new int[2];
+        final int[] location = new int[2];
         view.getLocationOnScreen(location);
-        int x = location[0] + view.getWidth() / 2;
-        int y = location[1] + view.getHeight() / 2;
+        final int x = location[0] + view.getWidth() / 2;
+        final int y = location[1] + view.getHeight() / 2;
         return new Point(x, y);
     }
 
@@ -88,7 +93,7 @@ public class ViewUtil {
             return;
         }
 
-        ViewParent parent = view.getParent();
+        final ViewParent parent = view.getParent();
         if (parent instanceof ViewGroup) {
             ((ViewGroup) parent).removeView(view);
         }
@@ -98,10 +103,10 @@ public class ViewUtil {
         if (view == null) {
             return null;
         }
-        boolean oldEnabled = view.isDrawingCacheEnabled();
+        final boolean oldEnabled = view.isDrawingCacheEnabled();
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
-        Bitmap bitmap = view.getDrawingCache();
+        final Bitmap bitmap = view.getDrawingCache();
         if (!oldEnabled) {
             view.setDrawingCacheEnabled(false);
         }
@@ -111,9 +116,9 @@ public class ViewUtil {
     public static void toggleSoftInput(TextView tv, boolean enable) {
         Method setShowSoftInputOnFocus = null;
         try {
-            Method[] methods = tv.getClass().getMethods();
+            final Method[] methods = tv.getClass().getMethods();
             for (Method m : methods) {
-                String name = m.getName();
+                final String name = m.getName();
                 if (name.equals("setSoftInputShownOnFocus")) {
                     setShowSoftInputOnFocus = tv.getClass().getMethod(
                             "setSoftInputShownOnFocus", boolean.class);

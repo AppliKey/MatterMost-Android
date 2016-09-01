@@ -21,8 +21,11 @@ import java.security.MessageDigest;
 
 public class FileUtil {
 
-    public static final String TAG = "FileUtil";
+    private static final String TAG = FileUtil.class.getSimpleName();
     private static final int IO_BUFFER_SIZE = 16384;
+
+    private FileUtil() {
+    }
 
     public static boolean create(String absPath) {
         return create(absPath, false);
@@ -37,11 +40,11 @@ public class FileUtil {
             return true;
         }
 
-        String parentPath = getParent(absPath);
+        final String parentPath = getParent(absPath);
         mkdirs(parentPath, force);
 
         try {
-            File file = new File(absPath);
+            final File file = new File(absPath);
             return file.createNewFile();
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +57,7 @@ public class FileUtil {
     }
 
     public static boolean mkdirs(String absPath, boolean force) {
-        File file = new File(absPath);
+        final File file = new File(absPath);
         if (exists(absPath) && !isFolder(absPath)) {
             if (!force) {
                 return false;
@@ -63,6 +66,7 @@ public class FileUtil {
             }
         }
         try {
+            //noinspection ResultOfMethodCallIgnored
             file.mkdirs();
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,8 +96,8 @@ public class FileUtil {
         }
 
         try {
-            File srcFile = new File(srcPath);
-            File dstFile = new File(dstPath);
+            final File srcFile = new File(srcPath);
+            final File dstFile = new File(dstPath);
             return srcFile.renameTo(dstFile);
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,7 +110,7 @@ public class FileUtil {
             return false;
         }
 
-        File file = new File(absPath);
+        final File file = new File(absPath);
         return delete(file);
     }
 
@@ -120,7 +124,7 @@ public class FileUtil {
         }
 
         boolean result = true;
-        File files[] = file.listFiles();
+        final File files[] = file.listFiles();
         for (int index = 0; index < files.length; index++) {
             result |= delete(files[index]);
         }
@@ -133,7 +137,7 @@ public class FileUtil {
         if (TextUtils.isEmpty(absPath)) {
             return false;
         }
-        File file = new File(absPath);
+        final File file = new File(absPath);
         return exists(file);
     }
 
@@ -157,8 +161,8 @@ public class FileUtil {
         if (!exists(absPath)) {
             return 0;
         }
-        File file = new File(absPath);
-        File[] children = file.listFiles();
+        final File file = new File(absPath);
+        final File[] children = file.listFiles();
         if (children == null || children.length == 0) {
             return 0;
         }
@@ -172,8 +176,7 @@ public class FileUtil {
         try {
             File file = new File(absPath);
             absPath = file.getCanonicalPath();
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
         return absPath;
     }
@@ -182,7 +185,7 @@ public class FileUtil {
         if (absPath == null) {
             return 0;
         }
-        File file = new File(absPath);
+        final File file = new File(absPath);
         return size(file);
     }
 
@@ -197,14 +200,13 @@ public class FileUtil {
             return length;
         }
 
-        File files[] = file.listFiles();
+        final File files[] = file.listFiles();
         if (files == null || files.length == 0) {
             return length;
         }
 
-        int size = files.length;
-        for (int index = 0; index < size; index++) {
-            File child = files[index];
+        final int size = files.length;
+        for (File child : files) {
             length += size(child);
         }
         return length;
@@ -241,8 +243,8 @@ public class FileUtil {
             return false;
         }
 
-        FileInputStream in = null;
-        FileOutputStream out = null;
+        FileInputStream in;
+        FileOutputStream out;
 
         // get streams
         try {
@@ -261,7 +263,7 @@ public class FileUtil {
         }
 
         try {
-            byte[] buffer = new byte[IO_BUFFER_SIZE];
+            final byte[] buffer = new byte[IO_BUFFER_SIZE];
             int length;
             while ((length = is.read(buffer)) != -1) {
                 os.write(buffer, 0, length);
@@ -273,38 +275,38 @@ public class FileUtil {
         } finally {
             try {
                 is.close();
-            } catch (Exception ignore) {
+            } catch (Exception ignored) {
             }
             try {
                 os.close();
-            } catch (Exception ignore) {
+            } catch (Exception ignored) {
 
             }
         }
         return true;
     }
 
-    public final static boolean isFile(String absPath) {
+    public static boolean isFile(String absPath) {
         boolean exists = exists(absPath);
         if (!exists) {
             return false;
         }
 
-        File file = new File(absPath);
+        final File file = new File(absPath);
         return isFile(file);
     }
 
-    public final static boolean isFile(File file) {
-        return file == null ? false : file.isFile();
+    public static boolean isFile(File file) {
+        return file != null && file.isFile();
     }
 
-    public final static boolean isFolder(String absPath) {
+    public static boolean isFolder(String absPath) {
         boolean exists = exists(absPath);
         if (!exists) {
             return false;
         }
 
-        File file = new File(absPath);
+        final File file = new File(absPath);
         return file.isDirectory();
     }
 
@@ -319,43 +321,43 @@ public class FileUtil {
             if (file.getParent() == null) {
                 canon = file;
             } else {
-                File canonDir = file.getParentFile().getCanonicalFile();
+                final File canonDir = file.getParentFile().getCanonicalFile();
                 canon = new File(canonDir, file.getName());
             }
             isSymlink = !canon.getCanonicalFile().equals(
                     canon.getAbsoluteFile());
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return isSymlink;
     }
 
-    public final static String getName(File file) {
+    public static String getName(File file) {
         return file == null ? null : getName(file.getAbsolutePath());
     }
 
-    public final static String getName(String absPath) {
+    public static String getName(String absPath) {
         if (TextUtils.isEmpty(absPath)) {
             return absPath;
         }
 
         String fileName = null;
-        int index = absPath.lastIndexOf("/");
+        final int index = absPath.lastIndexOf("/");
         if (index >= 0 && index < (absPath.length() - 1)) {
             fileName = absPath.substring(index + 1, absPath.length());
         }
         return fileName;
     }
 
-    public final static String getParent(File file) {
+    public static String getParent(File file) {
         return file == null ? null : file.getParent();
     }
 
-    public final static String getParent(String absPath) {
+    public static String getParent(String absPath) {
         if (TextUtils.isEmpty(absPath)) {
             return null;
         }
         absPath = cleanPath(absPath);
-        File file = new File(absPath);
+        final File file = new File(absPath);
         return getParent(file);
     }
 
@@ -363,12 +365,12 @@ public class FileUtil {
         return file == null ? null : getStem(file.getName());
     }
 
-    public final static String getStem(String fileName) {
+    public static String getStem(String fileName) {
         if (TextUtils.isEmpty(fileName)) {
             return null;
         }
 
-        int index = fileName.lastIndexOf(".");
+        final int index = fileName.lastIndexOf(".");
         if (index > 0) {
             return fileName.substring(0, index);
         } else {
@@ -385,7 +387,7 @@ public class FileUtil {
             return "";
         }
 
-        int index = fileName.lastIndexOf('.');
+        final int index = fileName.lastIndexOf('.');
         if (index < 0 || index >= (fileName.length() - 1)) {
             return "";
         }
@@ -396,7 +398,7 @@ public class FileUtil {
         if (file == null) {
             return "*/*";
         }
-        String fileName = file.getName();
+        final String fileName = file.getName();
         return getMimeType(fileName);
     }
 
@@ -404,9 +406,9 @@ public class FileUtil {
         if (TextUtils.isEmpty(fileName)) {
             return "*/*";
         }
-        String extension = getExtension(fileName);
-        MimeTypeMap map = MimeTypeMap.getSingleton();
-        String type = map.getMimeTypeFromExtension(extension);
+        final String extension = getExtension(fileName);
+        final MimeTypeMap map = MimeTypeMap.getSingleton();
+        final String type = map.getMimeTypeFromExtension(extension);
         if (TextUtils.isEmpty(type)) {
             return "*/*";
         } else {
@@ -418,13 +420,13 @@ public class FileUtil {
         if (TextUtils.isEmpty(absPath)) {
             return null;
         }
-        File file = new File(absPath);
+        final File file = new File(absPath);
 
         if (!file.exists() || file.isDirectory()) {
             return null;
         }
         String fileSHA1 = null;
-        FileInputStream fis = null;
+        FileInputStream fis;
         try {
             fis = new FileInputStream(file);
         } catch (FileNotFoundException e1) {
@@ -434,8 +436,8 @@ public class FileUtil {
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-1");
-            byte[] buffer = new byte[IO_BUFFER_SIZE];
-            int length = 0;
+            final byte[] buffer = new byte[IO_BUFFER_SIZE];
+            int length;
             while ((length = fis.read(buffer)) > 0) {
                 messageDigest.update(buffer, 0, length);
             }
@@ -460,12 +462,12 @@ public class FileUtil {
         if (TextUtils.isEmpty(absPath)) {
             return null;
         }
-        File file = new File(absPath);
+        final File file = new File(absPath);
         if (!file.exists() || file.isDirectory()) {
             return null;
         }
         String fileMD5 = null;
-        FileInputStream fis = null;
+        FileInputStream fis;
         try {
             fis = new FileInputStream(file);
         } catch (FileNotFoundException e1) {
@@ -475,8 +477,8 @@ public class FileUtil {
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("MD5");
-            byte[] buffer = new byte[IO_BUFFER_SIZE];
-            int length = 0;
+            final byte[] buffer = new byte[IO_BUFFER_SIZE];
+            int length;
             while ((length = fis.read(buffer)) > 0) {
                 messageDigest.update(buffer, 0, length);
             }
@@ -497,7 +499,7 @@ public class FileUtil {
         return fileMD5;
     }
 
-    public static final boolean write(String absPath, String text) {
+    public static boolean write(String absPath, String text) {
         if (!create(absPath, true)) {
             return false;
         }
@@ -509,8 +511,7 @@ public class FileUtil {
             pw = new PrintWriter(fos);
             pw.write(text);
             pw.flush();
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         } finally {
             CloseUtil.close(pw);
             CloseUtil.close(fos);
@@ -519,7 +520,7 @@ public class FileUtil {
         return true;
     }
 
-    public static final boolean write(String absPath, InputStream ips) {
+    public static boolean write(String absPath, InputStream ips) {
         if (!create(absPath, true)) {
             return false;
         }
@@ -527,7 +528,7 @@ public class FileUtil {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(absPath);
-            byte buffer[] = new byte[IO_BUFFER_SIZE];
+            final byte buffer[] = new byte[IO_BUFFER_SIZE];
             int count = ips.read(buffer);
             for (; count != -1; ) {
                 fos.write(buffer, 0, count);
@@ -535,7 +536,6 @@ public class FileUtil {
             }
             fos.flush();
         } catch (Exception e) {
-            //
             return false;
         } finally {
             CloseUtil.close(fos);
@@ -545,7 +545,7 @@ public class FileUtil {
     }
 
 
-    public static final InputStream getStream(String absPath) {
+    public static InputStream getStream(String absPath) {
         InputStream inputStream = null;
 
         try {

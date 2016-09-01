@@ -8,7 +8,7 @@ package com.applikey.mattermost.utils.kissUtils.utils;
 
 public class ImageSize {
 
-    public static final String TAG = "ImageSize";
+    public static final String TAG = ImageSize.class.getSimpleName();
 
     private int mWidth;
     private int mHeight;
@@ -44,7 +44,7 @@ public class ImageSize {
         return mWidth + "x" + mHeight;
     }
 
-    public static final boolean valid(ImageSize size) {
+    public static boolean valid(ImageSize size) {
         if (size != null && size.getWidth() > 0 && size.getHeight() > 0) {
             return true;
         } else {

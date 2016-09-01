@@ -20,7 +20,7 @@ import java.io.RandomAccessFile;
 
 public class LogUtil {
 
-    public final static String TAG = "LogUtil";
+    public final static String TAG = LogUtil.class.getSimpleName();
     public final static int LOG_VERBOSE = Log.VERBOSE;
     public final static int LOG_DEBUG = Log.DEBUG;
     public final static int LOG_INFO = Log.INFO;
@@ -36,7 +36,9 @@ public class LogUtil {
     private static int mLogPriority = LOG_DEFAULT;
     private static boolean mFileLog = false;
     private static StringBuilder mStringBuilder = new StringBuilder();
-    ;
+
+    private LogUtil() {
+    }
 
     public static int getLogPriority() {
         return mLogPriority;
@@ -87,23 +89,23 @@ public class LogUtil {
     }
 
     private static void log(int priority, Throwable ex, String tag,
-            String message) {
+                            String message) {
         if (priority < mLogPriority) {
             return;
         }
 
         if (ex != null) {
             message = message == null ? ex.getMessage() : message;
-            String logBody = Log.getStackTraceString(ex);
+            final String logBody = Log.getStackTraceString(ex);
             message = String.format(LOG_FORMAT, message, logBody);
         }
 
         String text = message;
-        int partLen = 0;
+        int partLen;
         int length = text.length();
-        while (text != null && length > 0) {
+        while (length > 0) {
             partLen = length > LOG_MAX_LEN ? LOG_MAX_LEN : length;
-            String partLog = text.substring(0, partLen);
+            final String partLog = text.substring(0, partLen);
             Log.println(priority, tag, partLog);
             text = text.substring(partLen);
             length = text.length();
@@ -112,7 +114,7 @@ public class LogUtil {
         if (mFileLog) {
             synchronized (mStringBuilder) {
                 mStringBuilder.append(message);
-                int builderLen = mStringBuilder.length();
+                final int builderLen = mStringBuilder.length();
                 if (builderLen > LOG_MAX_MEM) {
                     writeLog();
                 }
@@ -129,20 +131,20 @@ public class LogUtil {
     }
 
     private static void write2LogFile() {
-        String log = null;
+        String log;
         synchronized (mStringBuilder) {
             log = mStringBuilder.toString();
             int length = mStringBuilder.length();
             mStringBuilder.delete(0, length);
         }
 
-        String logFolder = getLogFolder();
+        final String logFolder = getLogFolder();
         if (TextUtils.isEmpty(logFolder)) {
             return;
         }
 
-        String logPath = logFolder + "/bestutils.log";
-        File logFile = new File(logPath);
+        final String logPath = logFolder + "/bestutils.log";
+        final File logFile = new File(logPath);
         if (!logFile.exists()) {
             FileUtil.create(logPath);
         }
@@ -151,7 +153,7 @@ public class LogUtil {
         }
 
         try {
-            FileOutputStream fos = new FileOutputStream(logFile, true);
+            final FileOutputStream fos = new FileOutputStream(logFile, true);
             fos.write(log.getBytes());
             fos.close();
         } catch (Exception e) {
@@ -163,11 +165,11 @@ public class LogUtil {
         BufferedOutputStream bos = null;
         RandomAccessFile raf = null;
         try {
-            String logFolder = getLogFolder();
+            final String logFolder = getLogFolder();
             if (TextUtils.isEmpty(logFolder)) {
                 return;
             }
-            String tempLog = logFolder + "/temp.log";
+            final String tempLog = logFolder + "/temp.log";
             FileUtil.delete(tempLog);
             if (!FileUtil.create(tempLog)) {
                 return;
@@ -176,12 +178,13 @@ public class LogUtil {
             bos = new BufferedOutputStream(new FileOutputStream(tempLog));
             raf = new RandomAccessFile(logFile, "r");
             raf.seek(LOG_FILE_LEN / 2);
-            int readLen = 0;
-            byte[] readBuff = new byte[1024];
+            int readLen;
+            final byte[] readBuff = new byte[1024];
             while ((readLen = raf.read(readBuff)) != -1) {
                 bos.write(readBuff, 0, readLen);
             }
 
+            //noinspection ResultOfMethodCallIgnored
             logFile.delete();
             FileUtil.move(tempLog, logFile.getAbsolutePath());
         } catch (IOException e) {
@@ -200,9 +203,10 @@ public class LogUtil {
         }
     }
 
-    private static final String getLogFolder() {
-        File cacheFolder = KissTools.getApplicationContext().getExternalCacheDir();
-        String logFolder = cacheFolder.getAbsolutePath() + "/KissTools";
+    private static String getLogFolder() {
+        final File cacheFolder = KissTools.getApplicationContext().getExternalCacheDir();
+        //noinspection UnnecessaryLocalVariable
+        final String logFolder = cacheFolder.getAbsolutePath() + "/KissTools";
         return logFolder;
     }
 }

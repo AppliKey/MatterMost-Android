@@ -16,9 +16,9 @@ import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends BaseActivity {
+public class SampleActivity extends BaseActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "SampleActivity";
     @Inject
     Prefs mPrefs;
     @Inject

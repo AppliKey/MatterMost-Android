@@ -36,7 +36,7 @@ public class VerifyUtil {
     }
 
     public boolean verify(File file) {
-        FileInputStream fis = null;
+        FileInputStream fis;
         try {
             fis = new FileInputStream(file);
         } catch (Exception e) {
@@ -49,14 +49,14 @@ public class VerifyUtil {
         boolean verified = false;
         try {
             byte[] keyBytes = Base64.decode(signKey, Base64.NO_WRAP);
-            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
-            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
-            PublicKey publicKey = keyFactory.generatePublic(spec);
+            final X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+            final KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
+            final PublicKey publicKey = keyFactory.generatePublic(spec);
 
-            Signature signer = Signature.getInstance(signAlgorithm);
+            final Signature signer = Signature.getInstance(signAlgorithm);
             signer.initVerify(publicKey);
 
-            byte[] buffer = new byte[BUFFER_SIZE];
+            final byte[] buffer = new byte[BUFFER_SIZE];
             int count;
             while ((count = is.read(buffer)) > 0) {
                 signer.update(buffer, 0, count);

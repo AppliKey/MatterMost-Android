@@ -11,11 +11,13 @@ import android.graphics.drawable.Drawable;
 
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 
-
 public class ResourceUtil {
 
-    public static final String getString(int resId) {
-        Context context = KissTools.getApplicationContext();
+    private ResourceUtil() {
+    }
+
+    public static String getString(int resId) {
+        final Context context = KissTools.getApplicationContext();
         if (context == null || resId <= 0) {
             return null;
         }
@@ -27,8 +29,8 @@ public class ResourceUtil {
         return null;
     }
 
-    public static final String getString(int resId, Object... args) {
-        Context context = KissTools.getApplicationContext();
+    public static String getString(int resId, Object... args) {
+        final Context context = KissTools.getApplicationContext();
         if (context == null || resId <= 0) {
             return null;
         }
@@ -40,8 +42,8 @@ public class ResourceUtil {
         return null;
     }
 
-    public static final Drawable getDrawable(int resId) {
-        Context context = KissTools.getApplicationContext();
+    public static Drawable getDrawable(int resId) {
+        final Context context = KissTools.getApplicationContext();
         if (context == null || resId <= 0) {
             return null;
         }

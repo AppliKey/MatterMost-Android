@@ -19,23 +19,23 @@ import java.util.LinkedList;
 
 public class MessageUtil {
 
-    public static final String TAG = "Messager";
+    private static final String TAG = MessageUtil.class.getSimpleName();
 
-    public static final String BROADCAST_PARAM = "broadcast_param";
-    public static final String REQUEST_ACTION = "request_action";
-    public static final String RESPONSE_ACTION = "response_action";
+    private static final String BROADCAST_PARAM = "broadcast_param";
+    private static final String REQUEST_ACTION = "request_action";
+    private static final String RESPONSE_ACTION = "response_action";
 
     private static volatile MessageUtil instance;
     private LocalBroadcastManager mManager;
     private LinkedList<BroadcastReceiver> mReceivers;
 
     private MessageUtil() {
-        mReceivers = new LinkedList<BroadcastReceiver>();
+        mReceivers = new LinkedList<>();
         mManager = LocalBroadcastManager.getInstance(KissTools
                 .getApplicationContext());
     }
 
-    public static final MessageUtil sharedInstance() {
+    public static MessageUtil sharedInstance() {
         synchronized (MessageUtil.class) {
             if (instance == null) {
                 instance = new MessageUtil();
@@ -50,6 +50,7 @@ public class MessageUtil {
             return;
         }
 
+        //noinspection SynchronizeOnNonFinalField
         synchronized (mManager) {
             if (mReceivers.contains(receiver)) {
                 LogUtil.e(TAG, "unregister old receiver!");
@@ -71,6 +72,7 @@ public class MessageUtil {
             return;
         }
 
+        //noinspection SynchronizeOnNonFinalField
         synchronized (mManager) {
             mReceivers.remove(receiver);
             mManager.unregisterReceiver(receiver);
@@ -81,7 +83,7 @@ public class MessageUtil {
         if (intent == null) {
             return;
         }
-        String action = intent.getAction();
+        final String action = intent.getAction();
         LogUtil.d(TAG, "sendBroadcast " + action);
         mManager.sendBroadcast(intent);
     }
@@ -92,7 +94,7 @@ public class MessageUtil {
             return;
         }
 
-        Intent intent = new Intent(action);
+        final Intent intent = new Intent(action);
         if (!TextUtils.isEmpty(info)) {
             intent.putExtra(BROADCAST_PARAM, info);
         }
