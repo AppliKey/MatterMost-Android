@@ -1,6 +1,5 @@
 package com.applikey.mattermost.activities;
 
-
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
