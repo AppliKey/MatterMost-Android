@@ -1,8 +1,15 @@
 <resources>
-    <string name="app_name">project_name</string>
+    <string name="app_name">Mattermost Native Client</string>
 
     <string name="please_wait">Please wait.</string>
-    <string name="example_server">54.234.249.244</string>
+    <string name="example_server">127.0.0.1:8065</string>
     <string name="proceed">Proceed</string>
     <string name="enter_mattermost_server_url">Enter Mattermost Server URL</string>
+    <string name="invalid_server_url">Please enter valid server address</string>
+    <string name="please_enter_your_credentials">Please Enter Your Credentials</string>
+    <string name="email">Email</string>
+    <string name="authorize">Authorize</string>
+    <string name="password">Password</string>
+    <string name="default_server_text">54.234.249.244/applikeyteam</string>
+    <string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>
 </resources>

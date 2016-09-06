@@ -13,6 +13,7 @@ import com.applikey.mattermost.Constants;
 public class Prefs {
 
     private static final String KEY_USER_ID = Constants.PACKAGE_NAME + ".USER_ID";
+    private static final String KEY_SERVER_URL = Constants.PACKAGE_NAME + ".SERVER_URL";
 
     private SharedPreferences mSharedPreferences;
 
@@ -27,5 +28,14 @@ public class Prefs {
 
     public void setCurrentUserId(@Nullable String id) {
         mSharedPreferences.edit().putString(KEY_USER_ID, id).apply();
+    }
+
+    @Nullable
+    public String getCurrentServerUrl() {
+        return mSharedPreferences.getString(KEY_SERVER_URL, null);
+    }
+
+    public void setCurrentServerUrl(String currentServerUrl) {
+        mSharedPreferences.edit().putString(KEY_SERVER_URL, currentServerUrl).apply();
     }
 }

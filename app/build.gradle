@@ -6,6 +6,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
+    compileOptions.incremental = false
+
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
@@ -104,5 +106,8 @@ dependencies {
     compile 'com.tasomaniac:delayed-progress:0.3'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
 
-
+    // mvp
+    compile 'com.arello-mobile:moxy:0.5.4'
+    compile 'com.arello-mobile:moxy-android:0.5.4'
+    apt 'com.arello-mobile:moxy-compiler:0.5.4'
 }

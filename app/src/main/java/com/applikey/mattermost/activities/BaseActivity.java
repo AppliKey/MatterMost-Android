@@ -25,6 +25,9 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
+/**
+ * This class is taken from Skeleton Project.
+ */
 public abstract class BaseActivity extends AppCompatActivity implements ActivityLifecycleProvider {
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
@@ -78,12 +81,14 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
         mDialog.show();
     }
 
+    // TODO Make sure these changes do not break anything.
+    // They at least disable minimal showing time, as I see
     public void hideLoadingDialog() {
         if (mDialog != null) {
-            if (mDialog.isShowing()) {
+//            if (mDialog.isShowing()) {
                 mDialog.dismiss();
-                return;
-            }
+//                return;
+//            }
             mDialog = null;
         }
     }

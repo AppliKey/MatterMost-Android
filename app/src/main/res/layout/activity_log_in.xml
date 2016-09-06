@@ -7,43 +7,42 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".activities.ChooseServerActivity">
+    tools:context=".activities.LogInActivity">
 
     <EditText
-        android:text="@string/default_server_text"
-        android:id="@+id/et_server"
+        android:text="@string/default_login_text"
+        android:id="@+id/et_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_welcome"
-        android:layout_toEndOf="@+id/sp_http"
-        android:hint="@string/example_server"
-        android:inputType="textEmailAddress"
+        android:layout_below="@+id/tv_enter_credentials"
+        android:hint="@string/email"
+        android:maxLines="1" />
+
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_login"
+        android:hint="@string/password"
+        android:inputType="textPassword"
         android:maxLines="1" />
 
     <Button
-        android:id="@+id/b_proceed"
+        android:id="@+id/b_authorize"
         style="@style/Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_server"
+        android:layout_below="@+id/et_password"
         android:layout_marginTop="@dimen/margin_default"
-        android:text="@string/proceed" />
-
-    <Spinner
-        android:id="@+id/sp_http"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/b_proceed"
-        android:layout_below="@+id/tv_welcome"
-        android:entries="@array/http_types" />
+        android:text="@string/authorize" />
 
     <TextView
-        android:id="@+id/tv_welcome"
+        android:id="@+id/tv_enter_credentials"
         style="@style/TextHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:gravity="center_horizontal"
-        android:text="@string/enter_mattermost_server_url" />
+        android:text="@string/please_enter_your_credentials" />
 </RelativeLayout>
