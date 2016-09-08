@@ -6,6 +6,7 @@ import com.applikey.mattermost.storage.db.DbImpl;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.PrimitiveConverterFactory;
 import com.applikey.mattermost.web.Api;
+import com.applikey.mattermost.web.ApiDelegate;
 import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -70,11 +72,12 @@ public class GlobalModule {
         final OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder();
         okClientBuilder.addInterceptor(chain -> {
             Request request = chain.request();
-//                Headers headers = request.headers().newBuilder().add(“Authorization”, mApiKey)
-// .build();
+            // TODO Check if we have to do it manually, or it's done automatically
+//            final String authToken = prefs.getAuthToken();
+//            if (authToken != null) {
+//                final Headers headers = request.headers().newBuilder().add("token", authToken).build();
 //                request = request.newBuilder().headers(headers).build();
-            // TODO you can add your authorization headers here like in example above
-            request = request.newBuilder().build();
+//            }
             return chain.proceed(request);
         });
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
@@ -91,23 +94,10 @@ public class GlobalModule {
         return okClientBuilder.build();
     }
 
-    // TODO Find a way to provide a new one. Probably setup the wrapper delegate with "pool"
     @Provides
     @PerApp
-    Retrofit provideRestAdapter(OkHttpClient okHttpClient, ServerUrlFactory urlFactory) {
-        return new Retrofit.Builder()
-                .baseUrl(urlFactory.getServerUrl())
-                .client(okHttpClient)
-                .addConverterFactory(PrimitiveConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-    }
-
-    @Provides
-    @PerApp
-    Api provideApi(Retrofit restAdapter) {
-        return restAdapter.create(Api.class);
+    Api provideApi(OkHttpClient okHttpClient, ServerUrlFactory serverUrlFactory) {
+        return new ApiDelegate(okHttpClient, serverUrlFactory);
     }
 
 }

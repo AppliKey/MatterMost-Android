@@ -8,9 +8,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,10 +55,21 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     }
 
     @Override
-    public void onValidServerEntered() {
+    public void onTeamsRetrieved(Map<String, Team> teams) {
+        if (teams.isEmpty()) {
+            final String message = getResources().getString(R.string.no_teams_received);
+            etServerUrl.setError(message);
+            return;
+        }
+
         final Intent intent = new Intent(this, LogInActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
         startActivity(intent);
+    }
+
+    @Override
+    public void onTeamsReceiveFailed(Throwable cause) {
+        final String message = getResources().getString(R.string.no_teams_received);
+        etServerUrl.setError(message);
     }
 }

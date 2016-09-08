@@ -14,6 +14,7 @@ public class Prefs {
 
     private static final String KEY_USER_ID = Constants.PACKAGE_NAME + ".USER_ID";
     private static final String KEY_SERVER_URL = Constants.PACKAGE_NAME + ".SERVER_URL";
+    private static final String KEY_AUTH_TOKEN = Constants.PACKAGE_NAME + ".AUTH_TOKEN";
 
     private SharedPreferences mSharedPreferences;
 
@@ -37,5 +38,14 @@ public class Prefs {
 
     public void setCurrentServerUrl(String currentServerUrl) {
         mSharedPreferences.edit().putString(KEY_SERVER_URL, currentServerUrl).apply();
+    }
+
+    @Nullable
+    public String getAuthToken() {
+        return mSharedPreferences.getString(KEY_AUTH_TOKEN, null);
+    }
+
+    public void setKeyAuthToken(String authToken) {
+        mSharedPreferences.edit().putString(KEY_AUTH_TOKEN, authToken).apply();
     }
 }
