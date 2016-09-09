@@ -1,11 +1,13 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.app.Activity;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.mvp.views.LogInView;
+import com.applikey.mattermost.storage.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -24,6 +26,9 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
 
     @Inject
     Prefs mPrefs;
+
+    @Inject
+    TeamStorage teamStorage;
 
     public LogInPresenter() {
         App.getComponent().inject(this);
@@ -45,6 +50,13 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
                     ErrorHandler.handleError(context, throwable);
                     view.onUnsuccessfulAuth(throwable);
                 });
+    }
+
+    public void getInitialData() {
+        teamStorage.listAll()
+        .subscribe(entries -> {
+            getView().displayTeams(entries);
+        });
     }
 
     private void cacheHeaders(Response<AuthenticationResponse> response) {

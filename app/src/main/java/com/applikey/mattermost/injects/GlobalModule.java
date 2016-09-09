@@ -2,9 +2,9 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.storage.db.DbImpl;
+import com.applikey.mattermost.storage.Db;
+import com.applikey.mattermost.storage.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.utils.PrimitiveConverterFactory;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
 import com.applikey.mattermost.web.ServerUrlFactory;
@@ -19,13 +19,9 @@ import java.util.concurrent.TimeUnit;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
-import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class GlobalModule {
@@ -52,12 +48,6 @@ public class GlobalModule {
     @PerApp
     Prefs providePrefs() {
         return new Prefs(mApp);
-    }
-
-    @Provides
-    @PerApp
-    DbImpl provideDb() {
-        return new DbImpl(mApp);
     }
 
     @Provides
@@ -98,6 +88,18 @@ public class GlobalModule {
     @PerApp
     Api provideApi(OkHttpClient okHttpClient, ServerUrlFactory serverUrlFactory) {
         return new ApiDelegate(okHttpClient, serverUrlFactory);
+    }
+
+    @Provides
+    @PerApp
+    Db provideDb() {
+        return new Db(mApp);
+    }
+
+    @Provides
+    @PerApp
+    TeamStorage provideTeamStorage() {
+        return new TeamStorage();
     }
 
 }

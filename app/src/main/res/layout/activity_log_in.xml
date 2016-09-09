@@ -9,14 +9,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activities.LogInActivity">
 
+    <Spinner
+        android:id="@+id/sp_team"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <EditText
-        android:text="@string/default_login_text"
         android:id="@+id/et_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_enter_credentials"
         android:hint="@string/email"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:text="@string/default_login_text" />
 
     <EditText
         android:id="@+id/et_password"
@@ -41,8 +46,7 @@
         style="@style/TextHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/sp_team"
         android:gravity="center_horizontal"
         android:text="@string/please_enter_your_credentials" />
 </RelativeLayout>

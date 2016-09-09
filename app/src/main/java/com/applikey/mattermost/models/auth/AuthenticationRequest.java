@@ -9,15 +9,15 @@ public class AuthenticationRequest {
 
     @SerializedName("team_id")
     @Expose
-    public String teamId;
+    private String teamId;
 
     @SerializedName("login_id")
     @Expose
-    public String login;
+    private String login;
 
     @SerializedName("password")
     @Expose
-    public String password;
+    private String password;
 
     public AuthenticationRequest() {
     }
@@ -26,5 +26,17 @@ public class AuthenticationRequest {
         this.teamId = teamId;
         this.login = login;
         this.password = password;
+    }
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

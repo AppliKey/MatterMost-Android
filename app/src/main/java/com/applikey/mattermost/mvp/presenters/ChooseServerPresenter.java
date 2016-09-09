@@ -2,6 +2,7 @@ package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
+import com.applikey.mattermost.storage.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -24,6 +25,9 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
     @Inject
     Prefs mPrefs;
 
+    @Inject
+    TeamStorage teamStorage;
+
     public ChooseServerPresenter() {
         App.getComponent().inject(this);
     }
@@ -40,11 +44,13 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
         }
         mPrefs.setCurrentServerUrl(fullServerUrl);
 
-        // TODO Save teams
         mApi.listTeams()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onTeamsRetrieved, view::onTeamsReceiveFailed);
+                .subscribe(response -> {
+                    teamStorage.saveTeams(response.values());
+                    view.onTeamsRetrieved(response);
+                }, view::onTeamsReceiveFailed);
     }
 
     // TODO Add proper validation
