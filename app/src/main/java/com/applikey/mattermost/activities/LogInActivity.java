@@ -24,6 +24,8 @@ import rx.Observable;
 
 public class LogInActivity extends BaseMvpActivity implements LogInView {
 
+    private static final String TAG = "LogInActivity";
+
     @Bind(R.id.sp_team)
     Spinner spTeam;
     @Bind(R.id.et_login)
@@ -48,7 +50,17 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @Override
     protected void onStart() {
         super.onStart();
+
+        Log.d(TAG, "onStart");
+
         initUi();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d(TAG, "onResume");
     }
 
     @OnClick(R.id.b_authorize)

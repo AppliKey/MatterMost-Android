@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.util.Log;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.applikey.mattermost.storage.TeamStorage;
@@ -17,6 +19,8 @@ import rx.schedulers.Schedulers;
 
 public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView> {
 
+    private static final String TAG = ChooseServerPresenter.class.getSimpleName();
+
     private static final String URL_END_DELIMITER = "/";
 
     @Inject
@@ -33,7 +37,13 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
     }
 
     public void chooseServer(String httpPrefix, String serverUrl) {
+
+        Log.d(TAG, "chooseServer: Start");
+
         final ChooseServerView view = getView();
+
+        Log.d(TAG, "chooseServer: getView");
+
         if (!validateServer(serverUrl)) {
             view.showValidationError();
             return;
