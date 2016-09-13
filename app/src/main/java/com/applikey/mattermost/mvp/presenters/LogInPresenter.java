@@ -67,6 +67,10 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
                 }));
     }
 
+    public void unSubscribe() {
+        mSubscription.unsubscribe();
+    }
+
     private void cacheHeaders(Response<AuthenticationResponse> response) {
         final Headers headers = response.headers();
         final String authenticationToken = headers.get("token");

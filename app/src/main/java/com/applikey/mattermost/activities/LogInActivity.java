@@ -57,10 +57,10 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onDestroy() {
+        presenter.unSubscribe();
 
-        Log.d(TAG, "onResume");
+        super.onDestroy();
     }
 
     @OnClick(R.id.b_authorize)
