@@ -10,6 +10,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.adapters.TeamAdapter;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.views.LogInView;
@@ -73,13 +74,9 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @Override
     public void displayTeams(List<Team> teams) {
-        // Set spinner items data
-        Observable.from(teams).map(Team::getDisplayName).toList().subscribe(names -> {
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>
-                    (this, android.R.layout.simple_spinner_item, names);
-            spTeam.setAdapter(arrayAdapter);
-        });
-
+        final ArrayAdapter<Team> arrayAdapter = new TeamAdapter(this);
+        arrayAdapter.addAll(teams);
+        spTeam.setAdapter(arrayAdapter);
     }
 
     @Override
