@@ -73,7 +73,10 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         showLoading();
         final String login = etLogin.getText().toString();
         final String password = etPassword.getText().toString();
-        presenter.authorize(this, login, password);
+
+        final Team selectedTeam = (Team) spTeam.getSelectedItem();
+
+        presenter.authorize(this, selectedTeam.getId(), login, password);
     }
 
     @Override

@@ -41,10 +41,9 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
     }
 
     // TODO: pre-validation. NOTE: Use stringutils
-    public void authorize(final Activity context, String email, String password) {
+    public void authorize(Activity context, String teamId, String email, String password) {
         final LogInView view = getView();
-        // TODO Set team
-        final AuthenticationRequest request = new AuthenticationRequest("", email, password);
+        final AuthenticationRequest request = new AuthenticationRequest(teamId, email, password);
 
         mSubscription.add(mApi.authorize(request)
                 .subscribeOn(Schedulers.io())
