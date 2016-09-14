@@ -1,16 +1,20 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.web.RequestError;
 import com.applikey.mattermost.mvp.views.LogInView;
 import com.applikey.mattermost.storage.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -49,11 +53,11 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(signInResponse -> {
-                    cacheHeaders(signInResponse);
-                    view.onSuccessfulAuth();
+                    // TODO Handle 4xx codes, etc
+                    handleSuccessfulResponse(signInResponse);
                 }, throwable -> {
                     ErrorHandler.handleError(context, throwable);
-                    view.onUnsuccessfulAuth(throwable);
+                    view.onUnsuccessfulAuth(throwable.getMessage());
                 }));
     }
 
@@ -68,6 +72,29 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
 
     public void unSubscribe() {
         mSubscription.unsubscribe();
+    }
+
+    private void handleSuccessfulResponse(Response<AuthenticationResponse> response) {
+        final int code = response.code();
+
+        final int codesGroup = code / 100;
+
+        // Handle success
+        if (codesGroup == 2) {
+            cacheHeaders(response);
+            getView().onSuccessfulAuth();
+            return;
+        }
+
+        // Handle failure
+        try {
+            final String message = RequestError.fromJson(response.errorBody().string())
+                    .getMessage();
+            getView().onUnsuccessfulAuth(message);
+            ErrorHandler.handleError(message);
+        } catch (IOException e) {
+            ErrorHandler.handleError(e);
+        }
     }
 
     private void cacheHeaders(Response<AuthenticationResponse> response) {

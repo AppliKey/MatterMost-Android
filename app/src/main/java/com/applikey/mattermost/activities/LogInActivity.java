@@ -102,9 +102,9 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     }
 
     @Override
-    public void onUnsuccessfulAuth(Throwable throwable) {
+    public void onUnsuccessfulAuth(String message) {
         hideLoading();
-        Toast.makeText(this, "Authentication unsuccessful : " + throwable.getMessage(),
+        Toast.makeText(this, "Authentication unsuccessful : " + message,
                 Toast.LENGTH_SHORT).show();
     }
 

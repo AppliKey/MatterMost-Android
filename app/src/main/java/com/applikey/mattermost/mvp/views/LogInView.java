@@ -15,5 +15,5 @@ public interface LogInView extends MvpView {
 
     void onSuccessfulAuth();
 
-    void onUnsuccessfulAuth(Throwable throwable);
+    void onUnsuccessfulAuth(String message);
 }

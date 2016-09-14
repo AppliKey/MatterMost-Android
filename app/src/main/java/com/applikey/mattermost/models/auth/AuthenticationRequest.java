@@ -3,7 +3,6 @@ package com.applikey.mattermost.models.auth;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-// TODO Try playing around with this class
 @SuppressWarnings("WeakerAccess")
 public class AuthenticationRequest {
 
