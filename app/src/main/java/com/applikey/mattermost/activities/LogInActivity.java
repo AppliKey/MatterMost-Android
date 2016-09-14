@@ -39,6 +39,8 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @InjectPresenter
     LogInPresenter presenter;
 
+    private TeamAdapter mTeamAdapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,8 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         setContentView(R.layout.activity_log_in);
 
         ButterKnife.bind(this);
+        mTeamAdapter = new TeamAdapter(this);
+        spTeam.setAdapter(mTeamAdapter);
     }
 
     @Override
@@ -74,9 +78,8 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @Override
     public void displayTeams(List<Team> teams) {
-        final ArrayAdapter<Team> arrayAdapter = new TeamAdapter(this);
-        arrayAdapter.addAll(teams);
-        spTeam.setAdapter(arrayAdapter);
+        mTeamAdapter.addAll(teams);
+        mTeamAdapter.notifyDataSetChanged();
     }
 
     @Override
