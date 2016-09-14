@@ -6,12 +6,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="Button" parent="Widget.AppCompat.Button.Colored">
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+    <style name="Button" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/round_button_gradient</item>
     </style>
 
-    <style name="TextHeading">
+    <style name="TextWelcomeHeading">
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textSize">@dimen/text_welcome_heading_size</item>
+        <item name="android:padding">@dimen/text_heading_padding</item>
+    </style>
+
+    <style name="TextHeadingSecondary">
+        <item name="android:textColor">@color/textSecondary</item>
         <item name="android:textSize">@dimen/text_heading_size</item>
         <item name="android:padding">@dimen/text_heading_padding</item>
     </style>
+
 </resources>

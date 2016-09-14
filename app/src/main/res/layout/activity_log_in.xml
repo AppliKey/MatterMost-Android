@@ -43,7 +43,7 @@
 
     <TextView
         android:id="@+id/tv_enter_credentials"
-        style="@style/TextHeading"
+        style="@style/TextWelcomeHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/sp_team"

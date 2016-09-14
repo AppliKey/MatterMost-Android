@@ -9,41 +9,61 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activities.ChooseServerActivity">
 
-    <EditText
-        android:text="@string/default_server_text"
-        android:id="@+id/et_server"
+    <TextView
+        android:id="@+id/tv_welcome"
+        style="@style/TextWelcomeHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_welcome"
-        android:layout_toEndOf="@+id/sp_http"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/welcome_screen_headers_margin_top"
+        android:gravity="center_horizontal"
+        android:text="@string/welcome_to_mattermost" />
+
+    <TextView
+        android:id="@+id/tv_subheading"
+        style="@style/TextHeadingSecondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_welcome"
+        android:layout_marginBottom="@dimen/welcome_screen_headers_margin_bottom"
+        android:gravity="center_horizontal"
+        android:text="@string/all_your_team_communication" />
+
+    <TextView
+        android:id="@+id/tv_url"
+        style="@style/TextHeadingSecondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_subheading"
+        android:text="@string/enter_server_url_capt" />
+
+    <Spinner
+        android:id="@+id/sp_http"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_url"
+        android:layout_alignBaseline="@+id/et_server"
+        android:entries="@array/http_types" />
+
+    <EditText
+        android:id="@id/et_server"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_url"
+        android:layout_toEndOf="@id/sp_http"
         android:hint="@string/example_server"
         android:inputType="textEmailAddress"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:text="@string/default_server_text" />
 
     <Button
         android:id="@+id/b_proceed"
         style="@style/Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_server"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/margin_default"
         android:text="@string/proceed" />
 
-    <Spinner
-        android:id="@+id/sp_http"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/b_proceed"
-        android:layout_below="@+id/tv_welcome"
-        android:entries="@array/http_types" />
-
-    <TextView
-        android:id="@+id/tv_welcome"
-        style="@style/TextHeading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:gravity="center_horizontal"
-        android:text="@string/enter_mattermost_server_url" />
 </RelativeLayout>

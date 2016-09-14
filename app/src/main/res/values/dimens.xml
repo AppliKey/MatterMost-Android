@@ -1,9 +1,13 @@
 <resources>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">32dp</dimen>
+    <dimen name="activity_vertical_margin">32dp</dimen>
 
-    <dimen name="text_heading_size">18sp</dimen>
+    <dimen name="text_heading_size">16sp</dimen>
+    <dimen name="text_welcome_heading_size">26sp</dimen>
     <dimen name="text_heading_padding">8dp</dimen>
 
     <dimen name="margin_default">16dp</dimen>
+
+    <dimen name="welcome_screen_headers_margin_top">72dp</dimen>
+    <dimen name="welcome_screen_headers_margin_bottom">48dp</dimen>
 </resources>
