@@ -45,6 +45,9 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@id/sp_team"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
             android:background="@color/separator" />
 
         <TextView
