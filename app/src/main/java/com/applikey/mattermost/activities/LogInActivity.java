@@ -113,8 +113,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @Override
     public void onUnsuccessfulAuth(String message) {
         hideLoading();
-        Toast.makeText(this, "Authentication unsuccessful : " + message,
-                Toast.LENGTH_SHORT).show();
+        etPassword.setError(message);
     }
 
     private void initUi() {

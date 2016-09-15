@@ -52,10 +52,7 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
         mSubscription.add(mApi.authorize(request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(signInResponse -> {
-                    // TODO Handle 4xx codes, etc
-                    handleSuccessfulResponse(signInResponse);
-                }, throwable -> {
+                .subscribe(this::handleSuccessfulResponse, throwable -> {
                     ErrorHandler.handleError(context, throwable);
                     view.onUnsuccessfulAuth(throwable.getMessage());
                 }));
