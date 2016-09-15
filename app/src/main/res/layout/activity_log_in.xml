@@ -36,7 +36,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_your_team"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:background="@android:color/transparent"
+            android:spinnerMode="dropdown" />
 
         <TextView
             android:id="@+id/tv_email"
@@ -67,12 +69,12 @@
             android:text="@string/password_capt" />
 
         <EditText
-            android:hint="@string/enter_your_password"
             android:id="@+id/et_password"
             style="@style/EditTextPrimary.PushRight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_password"
+            android:hint="@string/enter_your_password"
             android:inputType="textPassword"
             android:maxLines="1" />
 

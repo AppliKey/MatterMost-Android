@@ -16,7 +16,9 @@ public class TeamAdapter extends ArrayAdapter<Team> {
     private String mUnknownTeamResource;
 
     public TeamAdapter(Context context) {
-        super(context, android.R.layout.simple_spinner_item);
+        super(context, R.layout.spinner_item_team);
+
+        setDropDownViewResource(R.layout.spinner_item_team_dropdown);
 
         mUnknownTeamResource = context.getResources().getString(R.string.unknown);
     }
@@ -34,6 +36,11 @@ public class TeamAdapter extends ArrayAdapter<Team> {
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        return getView(position, convertView, parent);
+        final TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+
+        final Team item = getItem(position);
+        view.setText(item != null ? item.getDisplayName() : mUnknownTeamResource);
+
+        return view;
     }
 }
