@@ -11,4 +11,6 @@
     <color name="textSecondary">@android:color/darker_gray</color>
 
     <color name="noResource">#FF00CC</color>
+
+    <color name="separator">#757575</color>
 </resources>

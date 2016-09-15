@@ -40,12 +40,19 @@
             android:background="@android:color/transparent"
             android:spinnerMode="dropdown" />
 
+        <View
+            android:id="@+id/separator_team"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/sp_team"
+            android:background="@color/separator" />
+
         <TextView
             android:id="@+id/tv_email"
             style="@style/TextHeadingSecondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/sp_team"
+            android:layout_below="@id/separator_team"
             android:layout_marginTop="@dimen/margin_default"
             android:text="@string/email_capt" />
 
