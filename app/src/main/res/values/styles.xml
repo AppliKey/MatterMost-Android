@@ -32,4 +32,16 @@
         <item name="android:paddingBottom">@dimen/edit_text_bottom_padding</item>
     </style>
 
+    <style name="EditTextPrimary.PushRight">
+        <item name="android:layout_marginStart">@dimen/edit_text_push_right</item>
+    </style>
+
+    <style name="ImageButton">
+        <item name="android:clickable">true</item>
+        <item name="android:layout_width">@dimen/image_button_dimen</item>
+        <item name="android:layout_height">@dimen/image_button_dimen</item>
+        <item name="android:padding">@dimen/image_button_padding</item>
+        <item name="android:foreground">?selectableItemBackground</item>
+    </style>
+
 </resources>

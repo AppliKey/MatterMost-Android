@@ -64,7 +64,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
         final Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
-        finish();
+//        finish();
     }
 
     @Override

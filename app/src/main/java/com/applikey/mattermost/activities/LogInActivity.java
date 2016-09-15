@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +36,9 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     EditText etPassword;
     @Bind(R.id.b_authorize)
     Button bAuthorize;
+
+    @Bind(R.id.back)
+    View vBack;
 
     @InjectPresenter
     LogInPresenter presenter;
@@ -77,6 +81,11 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         final Team selectedTeam = (Team) spTeam.getSelectedItem();
 
         presenter.authorize(this, selectedTeam.getId(), login, password);
+    }
+
+    @OnClick(R.id.back)
+    void onBack() {
+        finish();
     }
 
     @Override

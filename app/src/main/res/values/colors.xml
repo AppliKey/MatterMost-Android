@@ -9,4 +9,6 @@
 
     <color name="textPrimary">@android:color/black</color>
     <color name="textSecondary">@android:color/darker_gray</color>
+
+    <color name="noResource">#FF00CC</color>
 </resources>

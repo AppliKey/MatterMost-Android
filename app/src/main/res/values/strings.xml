@@ -9,11 +9,16 @@
     <string name="no_teams_received">Could not receive teams</string>
     <string name="please_enter_your_credentials">Please Enter Your Credentials</string>
     <string name="email">Email</string>
-    <string name="authorize">Authorize</string>
+    <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
     <string name="default_server_text">54.234.249.244</string>
     <string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>
     <string name="unknown">UNKNOWN</string>
     <string name="all_your_team_communication">All your team communication in one\nplace, searchable and accessible\nanywhere.</string>
     <string name="enter_server_url_capt">ENTER SERVER URL</string>
+    <string name="your_team_capt">YOUR TEAM</string>
+    <string name="email_capt">EMAIL</string>
+    <string name="password_capt">PASSWORD</string>
+    <string name="content_descr_back">Back</string>
+    <string name="enter_your_password">Enter your password</string>
 </resources>
