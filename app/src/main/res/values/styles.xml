@@ -4,12 +4,16 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
 
     <style name="Button" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:background">@drawable/round_button_gradient</item>
+        <item name="android:textSize">@dimen/text_primary_button</item>
+        <item name="android:padding">16dp</item>
     </style>
 
     <style name="TextWelcomeHeading">
@@ -22,6 +26,10 @@
         <item name="android:textColor">@color/textSecondary</item>
         <item name="android:textSize">@dimen/text_heading_size</item>
         <item name="android:padding">@dimen/text_heading_padding</item>
+    </style>
+
+    <style name="EditTextPrimary">
+        <item name="android:paddingBottom">@dimen/edit_text_bottom_padding</item>
     </style>
 
 </resources>

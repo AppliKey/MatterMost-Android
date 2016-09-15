@@ -5,6 +5,9 @@
     <dimen name="text_heading_size">16sp</dimen>
     <dimen name="text_welcome_heading_size">26sp</dimen>
     <dimen name="text_heading_padding">8dp</dimen>
+    <dimen name="text_primary_button">18sp</dimen>
+
+    <dimen name="edit_text_bottom_padding">20dp</dimen>
 
     <dimen name="margin_default">16dp</dimen>
 
