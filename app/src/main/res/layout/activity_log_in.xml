@@ -11,8 +11,9 @@
         style="@style/ImageButton"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:background="@color/noResource"
-        android:contentDescription="@string/content_descr_back" />
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/content_descr_back"
+        android:src="@drawable/ic_back_shevron" />
 
     <RelativeLayout
         android:id="@+id/content"

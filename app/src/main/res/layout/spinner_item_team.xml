@@ -4,7 +4,7 @@
     style="?android:attr/spinnerItemStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:drawableEnd="@drawable/no_resource"
+    android:drawableEnd="@drawable/ic_down_shevron"
     android:drawablePadding="@dimen/image_button_padding"
     android:maxLines="1"
     android:textSize="@dimen/spinner_text_size" />
