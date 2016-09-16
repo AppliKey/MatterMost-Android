@@ -1,5 +1,6 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -107,7 +108,10 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @Override
     public void onSuccessfulAuth() {
         hideLoading();
-        Toast.makeText(this, "Authentication successful", Toast.LENGTH_SHORT).show();
+
+        final Intent intent = new Intent(this, ChatListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override
