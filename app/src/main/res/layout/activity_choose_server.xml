@@ -58,7 +58,7 @@
         android:maxLines="1"
         android:text="@string/default_server_text" />
 
-    <Button
+    <com.applikey.mattermost.views.SafeButton
         android:id="@+id/b_proceed"
         style="@style/Button"
         android:layout_width="match_parent"

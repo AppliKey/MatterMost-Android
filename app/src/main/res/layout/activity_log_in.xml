@@ -89,7 +89,7 @@
             android:inputType="textPassword"
             android:maxLines="1" />
 
-        <Button
+        <com.applikey.mattermost.views.SafeButton
             android:id="@+id/b_authorize"
             style="@style/Button"
             android:layout_width="match_parent"
