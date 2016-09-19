@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.LogInActivity" />
-        <activity android:name=".activities.ChatListActivity"></activity>
+        <activity android:name=".activities.ChatListActivity" />
+        <activity android:name=".activities.ChooseTeamActivity"></activity>
     </application>
 
 </manifest>

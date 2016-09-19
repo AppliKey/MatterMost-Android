@@ -109,7 +109,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     public void onSuccessfulAuth() {
         hideLoading();
 
-        final Intent intent = new Intent(this, ChatListActivity.class);
+        final Intent intent = new Intent(this, ChooseTeamActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

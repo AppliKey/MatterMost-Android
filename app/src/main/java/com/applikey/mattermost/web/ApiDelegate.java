@@ -14,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.Path;
 import rx.Observable;
 
 public class ApiDelegate implements Api {
@@ -65,5 +66,30 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Map<String, Team>> listTeams() {
         return getRealApi().listTeams();
+    }
+
+    @Override
+    public Observable<Response> getMe() {
+        return getRealApi().getMe();
+    }
+
+    @Override
+    public Observable<Response> getInitialLoad() {
+        return getRealApi().getInitialLoad();
+    }
+
+    @Override
+    public Observable<Response> getDirectProfiles() {
+        return getRealApi().getDirectProfiles();
+    }
+
+    @Override
+    public Observable<Response> getTeamProfiles(@Path("teamId") String teamId) {
+        return getRealApi().getTeamProfiles(teamId);
+    }
+
+    @Override
+    public Observable<Response> getUserStatuses() {
+        return getRealApi().getUserStatuses();
     }
 }
