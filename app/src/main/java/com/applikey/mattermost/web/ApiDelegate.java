@@ -14,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
 import retrofit2.http.Path;
 import rx.Observable;
 
@@ -91,5 +92,10 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Response> getUserStatuses() {
         return getRealApi().getUserStatuses();
+    }
+
+    @Override
+    public Observable<Response> sendPasswordReset(@Field("email") String email) {
+        return getRealApi().sendPasswordReset(email);
     }
 }

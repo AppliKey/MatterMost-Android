@@ -8,6 +8,8 @@ import java.util.Map;
 
 import retrofit2.Response;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -36,4 +38,8 @@ public interface Api {
 
     @GET("/api/v3/users/statuses")
     Observable<Response> getUserStatuses();
+
+    @POST("/api/v3/users/send_password_reset")
+    @FormUrlEncoded
+    Observable<Response> sendPasswordReset(@Field("email") String email);
 }
