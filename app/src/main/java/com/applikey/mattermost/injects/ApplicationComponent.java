@@ -5,9 +5,9 @@ import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.fragments.BaseFragment;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
+import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
-import com.applikey.mattermost.storage.Db;
-import com.applikey.mattermost.storage.TeamStorage;
+import com.applikey.mattermost.storage.db.TeamStorage;
 
 import dagger.Component;
 
@@ -30,6 +30,8 @@ public interface ApplicationComponent {
     void inject(LogInPresenter presenter);
 
     void inject(ChooseServerPresenter presenter);
+
+    void inject(ChooseTeamPresenter presenter);
 
     // Storages
     void inject(TeamStorage storage);

@@ -11,7 +11,6 @@
         style="@style/ImageButton"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:background="@android:color/transparent"
         android:contentDescription="@string/content_descr_back"
         android:src="@drawable/ic_back_shevron" />
 
@@ -25,39 +24,11 @@
         android:paddingTop="@dimen/activity_vertical_margin">
 
         <TextView
-            android:id="@+id/tv_your_team"
-            style="@style/TextHeadingSecondary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/login_screen_content_margin_top"
-            android:text="@string/your_team_capt" />
-
-        <Spinner
-            android:id="@+id/sp_team"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_your_team"
-            android:layout_marginTop="4dp"
-            android:background="@android:color/transparent"
-            android:spinnerMode="dropdown" />
-
-        <View
-            android:id="@+id/separator_team"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/sp_team"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:background="@color/separator" />
-
-        <TextView
             android:id="@+id/tv_email"
             style="@style/TextHeadingSecondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/separator_team"
-            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginTop="@dimen/login_screen_content_margin_top"
             android:text="@string/email_capt" />
 
         <EditText

@@ -2,8 +2,8 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.storage.Db;
-import com.applikey.mattermost.storage.TeamStorage;
+import com.applikey.mattermost.storage.db.Db;
+import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;

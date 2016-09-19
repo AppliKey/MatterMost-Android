@@ -4,18 +4,11 @@ import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
-import com.applikey.mattermost.storage.TeamStorage;
+import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
-import com.applikey.mattermost.web.ErrorHandler;
-import com.arellomobile.mvp.MvpPresenter;
-
-import java.util.Set;
 
 import javax.inject.Inject;
-
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView> {
 
@@ -54,13 +47,7 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
         }
         mPrefs.setCurrentServerUrl(fullServerUrl);
 
-        mApi.listTeams()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    teamStorage.saveTeams(response.values());
-                    view.onTeamsRetrieved(response);
-                }, view::onTeamsReceiveFailed);
+        view.onValidServerChosen();
     }
 
     // TODO Add proper validation

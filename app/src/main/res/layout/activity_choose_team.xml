@@ -4,10 +4,40 @@
     android:id="@+id/activity_choose_team"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.applikey.mattermost.activities.ChooseTeamActivity">
+
+    <ImageButton
+        android:id="@+id/back"
+        style="@style/ImageButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/content_descr_back"
+        android:src="@drawable/ic_back_shevron" />
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_marginBottom="@dimen/teams_screen_headers_margin_bottom"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/image_button_dimen">
+
+        <TextView
+            android:id="@+id/tv_password"
+            style="@style/TextHeadingSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/your_team_capt" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_teams"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </RelativeLayout>

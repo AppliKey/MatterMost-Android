@@ -1,4 +1,4 @@
-package com.applikey.mattermost.storage;
+package com.applikey.mattermost.storage.db;
 
 import android.content.Context;
 

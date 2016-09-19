@@ -17,10 +17,12 @@
 
     <dimen name="login_screen_content_margin_top">80dp</dimen>
 
+    <dimen name="teams_screen_headers_margin_bottom">72dp</dimen>
+
     <dimen name="image_button_dimen">48dp</dimen>
     <dimen name="image_button_padding">12dp</dimen>
 
     <dimen name="spinner_text_size">18sp</dimen>
-    <dimen name="spinner_min_height">32sp</dimen>
+    <dimen name="vertical_min_height">48dp</dimen>
     <dimen name="spinner_teams_dropdown_min_height">56dp</dimen>
 </resources>

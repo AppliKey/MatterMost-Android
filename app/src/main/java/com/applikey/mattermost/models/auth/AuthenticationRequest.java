@@ -6,10 +6,6 @@ import com.google.gson.annotations.SerializedName;
 @SuppressWarnings("WeakerAccess")
 public class AuthenticationRequest {
 
-    @SerializedName("team_id")
-    @Expose
-    private String teamId;
-
     @SerializedName("login_id")
     @Expose
     private String login;
@@ -21,14 +17,9 @@ public class AuthenticationRequest {
     public AuthenticationRequest() {
     }
 
-    public AuthenticationRequest(String teamId, String login, String password) {
-        this.teamId = teamId;
+    public AuthenticationRequest(String login, String password) {
         this.login = login;
         this.password = password;
-    }
-
-    public String getTeamId() {
-        return teamId;
     }
 
     public String getLogin() {

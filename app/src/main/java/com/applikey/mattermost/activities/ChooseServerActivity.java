@@ -8,7 +8,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -55,21 +54,27 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     }
 
     @Override
-    public void onTeamsRetrieved(Map<String, Team> teams) {
-        if (teams.isEmpty()) {
-            final String message = getResources().getString(R.string.no_teams_received);
-            etServerUrl.setError(message);
-            return;
-        }
-
+    public void onValidServerChosen() {
         final Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
-//        finish();
     }
-
-    @Override
-    public void onTeamsReceiveFailed(Throwable cause) {
-        final String message = getResources().getString(R.string.no_teams_received);
-        etServerUrl.setError(message);
-    }
+//
+//    @Override
+//    public void onTeamsRetrieved(Map<String, Team> teams) {
+//        if (teams.isEmpty()) {
+//            final String message = getResources().getString(R.string.no_teams_received);
+//            etServerUrl.setError(message);
+//            return;
+//        }
+//
+//        final Intent intent = new Intent(this, LogInActivity.class);
+//        startActivity(intent);
+////        finish();
+//    }
+//
+//    @Override
+//    public void onTeamsReceiveFailed(Throwable cause) {
+//        final String message = getResources().getString(R.string.no_teams_received);
+//        etServerUrl.setError(message);
+//    }
 }

@@ -5,32 +5,25 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.adapters.TeamAdapter;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.views.LogInView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Observable;
 
 public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     private static final String TAG = "LogInActivity";
 
-    @Bind(R.id.sp_team)
-    Spinner spTeam;
     @Bind(R.id.et_login)
     EditText etLogin;
     @Bind(R.id.et_password)
@@ -42,9 +35,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     View vBack;
 
     @InjectPresenter
-    LogInPresenter presenter;
-
-    private TeamAdapter mTeamAdapter;
+    LogInPresenter mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,8 +44,6 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         setContentView(R.layout.activity_log_in);
 
         ButterKnife.bind(this);
-        mTeamAdapter = new TeamAdapter(this);
-        spTeam.setAdapter(mTeamAdapter);
     }
 
     @Override
@@ -62,13 +51,11 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         super.onStart();
 
         Log.d(TAG, "onStart");
-
-        initUi();
     }
 
     @Override
     protected void onDestroy() {
-        presenter.unSubscribe();
+        mPresenter.unSubscribe();
 
         super.onDestroy();
     }
@@ -79,20 +66,12 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         final String login = etLogin.getText().toString();
         final String password = etPassword.getText().toString();
 
-        final Team selectedTeam = (Team) spTeam.getSelectedItem();
-
-        presenter.authorize(this, selectedTeam.getId(), login, password);
+        mPresenter.authorize(this, login, password);
     }
 
     @OnClick(R.id.back)
     void onBack() {
         finish();
-    }
-
-    @Override
-    public void displayTeams(List<Team> teams) {
-        mTeamAdapter.addAll(teams);
-        mTeamAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -107,11 +86,12 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @Override
     public void onSuccessfulAuth() {
-        hideLoading();
-
-        final Intent intent = new Intent(this, ChooseTeamActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+//        hideLoading();
+//
+//        final Intent intent = new Intent(this, ChooseTeamActivity.class);
+////        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        startActivity(intent);
+        loadTeams();
     }
 
     @Override
@@ -120,7 +100,21 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         etPassword.setError(message);
     }
 
-    private void initUi() {
-        presenter.getInitialData();
+    @Override
+    public void onTeamsRetrieved(Map<String, Team> teams) {
+        hideLoading();
+
+        final Intent intent = new Intent(this, ChooseTeamActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onTeamsReceiveFailed(Throwable cause) {
+        hideLoading();
+        etLogin.setError(cause.getMessage());
+    }
+
+    private void loadTeams() {
+        mPresenter.loadTeams();
     }
 }

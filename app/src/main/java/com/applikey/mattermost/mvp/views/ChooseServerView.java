@@ -9,7 +9,5 @@ public interface ChooseServerView extends MvpView {
 
     void showValidationError();
 
-    void onTeamsRetrieved(Map<String, Team> teams);
-
-    void onTeamsReceiveFailed(Throwable cause);
+    void onValidServerChosen();
 }

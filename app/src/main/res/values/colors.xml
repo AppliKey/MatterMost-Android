@@ -13,4 +13,5 @@
     <color name="noResource">#FF00CC</color>
 
     <color name="separator">#757575</color>
+    <color name="separator_light">#757575</color>
 </resources>
