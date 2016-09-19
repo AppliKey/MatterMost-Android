@@ -24,4 +24,5 @@
     <string name="password_capt">PASSWORD</string>
     <string name="content_descr_back">Back</string>
     <string name="enter_your_password">Enter your password</string>
+    <string name="forgot_password_capt">FORGOT PASSWORD</string>
 </resources>

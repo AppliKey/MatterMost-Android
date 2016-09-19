@@ -74,6 +74,12 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         finish();
     }
 
+    @OnClick(R.id.b_restore_password)
+    void onRestoreClicked() {
+        final Intent intent = new Intent(this, RestorePasswordActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void showLoading() {
         showLoadingDialog();
@@ -86,11 +92,6 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @Override
     public void onSuccessfulAuth() {
-//        hideLoading();
-//
-//        final Intent intent = new Intent(this, ChooseTeamActivity.class);
-////        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        startActivity(intent);
         loadTeams();
     }
 

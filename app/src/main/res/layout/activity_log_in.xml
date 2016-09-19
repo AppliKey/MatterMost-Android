@@ -58,17 +58,27 @@
             android:layout_below="@+id/tv_password"
             android:hint="@string/enter_your_password"
             android:inputType="textPassword"
-            android:text="@string/default_password"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:text="@string/default_password" />
 
         <com.applikey.mattermost.views.SafeButton
             android:id="@+id/b_authorize"
             style="@style/Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@+id/b_restore_password"
             android:layout_marginTop="@dimen/margin_default"
             android:text="@string/sign_in" />
+
+
+        <com.applikey.mattermost.views.SafeButton
+            android:id="@id/b_restore_password"
+            style="@style/BorderlessButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="@dimen/margin_default"
+            android:text="@string/forgot_password_capt" />
 
     </RelativeLayout>
 </RelativeLayout>
