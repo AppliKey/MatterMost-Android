@@ -2,6 +2,7 @@ package com.applikey.mattermost.storage.db;
 
 import android.content.Context;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -36,9 +37,32 @@ public class Db {
         realm.close();
     }
 
+    public void saveTransactionalWithRemoval(RealmObject object) {
+        final Realm realm = getRealm();
+        realm.beginTransaction();
+        realm.delete(object.getClass());
+        realm.copyToRealmOrUpdate(object);
+        realm.commitTransaction();
+        realm.close();
+    }
+
     public void saveTransactional(Iterable<? extends RealmObject> objects) {
         final Realm realm = getRealm();
         realm.beginTransaction();
+        realm.copyToRealmOrUpdate(objects);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public void saveTransactionalWithRemoval(Iterable<? extends RealmObject> objects) {
+        final Iterator<? extends RealmObject> iterator = objects.iterator();
+        if (!iterator.hasNext()) {
+            return;
+        }
+        final Realm realm = getRealm();
+        realm.beginTransaction();
+        final Class<? extends RealmObject> clazz = iterator.next().getClass();
+        realm.delete(clazz);
         realm.copyToRealmOrUpdate(objects);
         realm.commitTransaction();
         realm.close();

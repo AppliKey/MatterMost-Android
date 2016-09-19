@@ -11,11 +11,14 @@
     <string name="email">Email</string>
     <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
-    <string name="default_server_text">54.234.249.244</string>
-    <string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>
+    <string name="default_server_text">192.168.1.205:8065</string>
+    <!--<string name="default_server_text">54.234.249.244</string>-->
+    <string name="default_login_text">tester</string>
+    <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
     <string name="unknown">UNKNOWN</string>
+    <string name="default_password">zxD123</string>
     <string name="all_your_team_communication">All your team communication in one\nplace, searchable and accessible\nanywhere.</string>
-    <string name="enter_server_url_capt">ENTER SERVER URL</string>
+    <string name="enter_server_url_capt">ENTE R SERVER URL</string>
     <string name="your_team_capt">YOUR TEAM</string>
     <string name="email_capt">EMAIL</string>
     <string name="password_capt">PASSWORD</string>

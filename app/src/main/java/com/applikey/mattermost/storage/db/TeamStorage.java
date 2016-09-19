@@ -22,8 +22,8 @@ public class TeamStorage {
         App.getComponent().inject(this);
     }
 
-    public void saveTeams(Iterable<Team> teams) {
-        mDb.saveTransactional(teams);
+    public void saveTeamsWithRemoval(Iterable<Team> teams) {
+        mDb.saveTransactionalWithRemoval(teams);
     }
 
     public Observable<List<Team>> listAll() {

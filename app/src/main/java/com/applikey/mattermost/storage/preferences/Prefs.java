@@ -48,4 +48,12 @@ public class Prefs {
     public void setKeyAuthToken(String authToken) {
         mSharedPreferences.edit().putString(KEY_AUTH_TOKEN, authToken).apply();
     }
+
+    public void setValue(String key, String value) {
+        mSharedPreferences.edit().putString(key, value).apply();
+    }
+
+    public String getValue(String key) {
+        return mSharedPreferences.getString(key, null);
+    }
 }

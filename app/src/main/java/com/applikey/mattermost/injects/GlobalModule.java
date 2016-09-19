@@ -7,6 +7,7 @@ import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
+import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -51,6 +53,11 @@ public class GlobalModule {
     }
 
     @Provides
+    BearerTokenFactory provideTokenFactory(Prefs prefs) {
+        return new BearerTokenFactory(prefs);
+    }
+
+    @Provides
     @PerApp
     ServerUrlFactory provideServerUrlFactory(Prefs prefs) {
         return new ServerUrlFactory(prefs);
@@ -58,16 +65,15 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    OkHttpClient provideOkHttpClient() {
+    OkHttpClient provideOkHttpClient(BearerTokenFactory tokenFactory) {
         final OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder();
         okClientBuilder.addInterceptor(chain -> {
             Request request = chain.request();
-            // TODO Check if we have to do it manually, or it's done automatically
-//            final String authToken = prefs.getAuthToken();
-//            if (authToken != null) {
-//                final Headers headers = request.headers().newBuilder().add("token", authToken).build();
-//                request = request.newBuilder().headers(headers).build();
-//            }
+            final String authToken = tokenFactory.getBearerTokenString();
+            if (authToken != null) {
+                final Headers headers = request.headers().newBuilder().add("Authorization", authToken).build();
+                request = request.newBuilder().headers(headers).build();
+            }
             return chain.proceed(request);
         });
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();

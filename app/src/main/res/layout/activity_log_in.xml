@@ -58,6 +58,7 @@
             android:layout_below="@+id/tv_password"
             android:hint="@string/enter_your_password"
             android:inputType="textPassword"
+            android:text="@string/default_password"
             android:maxLines="1" />
 
         <com.applikey.mattermost.views.SafeButton

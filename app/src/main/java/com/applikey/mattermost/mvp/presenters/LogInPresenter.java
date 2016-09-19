@@ -10,6 +10,7 @@ import com.applikey.mattermost.mvp.views.LogInView;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
+import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
 
 import java.io.IOException;
@@ -30,6 +31,9 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
 
     @Inject
     Prefs mPrefs;
+
+    @Inject
+    BearerTokenFactory mTokenFactory;
 
     @Inject
     TeamStorage mTeamStorage;
@@ -62,7 +66,7 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
-                    mTeamStorage.saveTeams(response.values());
+                    mTeamStorage.saveTeamsWithRemoval(response.values());
                     view.onTeamsRetrieved(response);
                 }, view::onTeamsReceiveFailed);
     }
@@ -96,8 +100,8 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
 
     private void cacheHeaders(Response<AuthenticationResponse> response) {
         final Headers headers = response.headers();
-        final String authenticationToken = headers.get("token");
+        final String authenticationToken = headers.get("Token");
 
-        mPrefs.setKeyAuthToken(authenticationToken);
+        mTokenFactory.setBearerToken(authenticationToken);
     }
 }

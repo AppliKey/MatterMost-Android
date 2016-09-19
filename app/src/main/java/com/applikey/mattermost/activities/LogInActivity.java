@@ -104,6 +104,11 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     public void onTeamsRetrieved(Map<String, Team> teams) {
         hideLoading();
 
+        if (teams.size() == 0) {
+            etPassword.setError(getResources().getString(R.string.no_teams_received));
+            return;
+        }
+
         final Intent intent = new Intent(this, ChooseTeamActivity.class);
         startActivity(intent);
     }
