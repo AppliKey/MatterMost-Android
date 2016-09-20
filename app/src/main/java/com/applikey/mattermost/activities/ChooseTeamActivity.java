@@ -38,6 +38,11 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
         setContentView(R.layout.activity_choose_team);
 
         ButterKnife.bind(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         mPresenter.getInitialData();
     }

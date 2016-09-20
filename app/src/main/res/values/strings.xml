@@ -11,7 +11,7 @@
     <string name="email">Email</string>
     <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
-    <string name="default_server_text">192.168.1.205:8065</string>
+    <string name="default_server_text">192.168.42.115:8065</string>
     <!--<string name="default_server_text">54.234.249.244</string>-->
     <string name="default_login_text">tester</string>
     <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
