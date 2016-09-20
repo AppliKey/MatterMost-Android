@@ -1,9 +1,12 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.LinearLayout;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.TeamListAdapter;
@@ -20,6 +23,9 @@ import butterknife.OnClick;
 
 public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamView {
 
+    @Bind(R.id.content)
+    LinearLayout llContent;
+
     @Bind(R.id.rv_teams)
     RecyclerView rvTeams;
 
@@ -32,6 +38,11 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
         setContentView(R.layout.activity_choose_team);
 
         ButterKnife.bind(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         mPresenter.getInitialData();
     }
@@ -47,9 +58,15 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
 
     @Override
     public void onTeamChosen() {
-        final Intent intent = new Intent(this, ChatListActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        startActivity(ChatListActivity.getIntent(this));
+    }
+
+    @Override
+    public void onFailure(String message) {
+        final String resultMessage = getResources().getString(R.string.could_not_receive_teams)
+                + ": " + message;
+        Snackbar.make(llContent, resultMessage + message,
+                Snackbar.LENGTH_INDEFINITE).show();
     }
 
     @Override
@@ -67,4 +84,8 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     private final TeamListAdapter.TeamClickListener mTeamClickListener = team -> {
         mPresenter.chooseTeam(team);
     };
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, ChooseTeamActivity.class);
+    }
 }

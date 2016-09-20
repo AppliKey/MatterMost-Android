@@ -25,7 +25,7 @@
 
         <TextView
             android:id="@+id/tv_email"
-            style="@style/TextHeadingSecondary"
+            style="@style/TextHeadingSecondary.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/login_screen_content_margin_top"
@@ -43,7 +43,7 @@
 
         <TextView
             android:id="@+id/tv_password"
-            style="@style/TextHeadingSecondary"
+            style="@style/TextHeadingSecondary.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/et_login"

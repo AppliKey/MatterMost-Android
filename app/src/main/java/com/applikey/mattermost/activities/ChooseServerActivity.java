@@ -1,6 +1,5 @@
 package com.applikey.mattermost.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Button;
@@ -11,8 +10,6 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-
-import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,7 +52,6 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
     @Override
     public void onValidServerChosen() {
-        final Intent intent = new Intent(this, LogInActivity.class);
-        startActivity(intent);
+        startActivity(LogInActivity.getIntent(this));
     }
 }

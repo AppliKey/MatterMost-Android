@@ -18,12 +18,14 @@
     <string name="unknown">UNKNOWN</string>
     <string name="default_password">zxD123</string>
     <string name="all_your_team_communication">All your team communication in one\nplace, searchable and accessible\nanywhere.</string>
-    <string name="enter_server_url_capt">ENTE R SERVER URL</string>
-    <string name="your_team_capt">YOUR TEAM</string>
+    <string name="enter_server_url_capt">ENTER SERVER URL</string>
+    <string name="your_team_capt">Select your team</string>
     <string name="email_capt">EMAIL</string>
     <string name="password_capt">PASSWORD</string>
     <string name="content_descr_back">Back</string>
     <string name="enter_your_password">Enter your password</string>
     <string name="forgot_password_capt">FORGOT PASSWORD</string>
     <string name="restore_password_capt">RESTORE PASSWORD</string>
+
+    <string name="could_not_receive_teams">Could not receive teams</string>
 </resources>

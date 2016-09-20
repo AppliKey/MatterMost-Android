@@ -31,8 +31,9 @@
         android:text="@string/all_your_team_communication" />
 
     <TextView
+        android:paddingStart="4dp"
         android:id="@+id/tv_url"
-        style="@style/TextHeadingSecondary"
+        style="@style/TextHeadingSecondary.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_subheading"
@@ -44,7 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/et_server"
         android:layout_below="@id/tv_url"
-        android:entries="@array/http_types" />
+        android:entries="@array/http_types"
+        android:visibility="gone" />
 
     <EditText
         android:id="@id/et_server"

@@ -11,6 +11,9 @@ import com.applikey.mattermost.models.team.Team;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 @SuppressWarnings("NullableProblems")
 public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHolder> {
 
@@ -65,13 +68,16 @@ public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHo
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private final View mRoot;
-        private final TextView mName;
+
+        @Bind(R.id.name)
+        TextView mName;
 
         ViewHolder(View itemView) {
             super(itemView);
 
             mRoot = itemView;
-            mName = (TextView) itemView.findViewById(R.id.name);
+
+            ButterKnife.bind(this, itemView);
         }
 
         TextView getName() {

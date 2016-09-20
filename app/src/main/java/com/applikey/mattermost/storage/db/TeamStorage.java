@@ -24,7 +24,7 @@ public class TeamStorage {
     }
 
     public void saveTeamsWithRemoval(Iterable<Team> teams) {
-        mDb.saveTransactionalWithRemoval(teams);
+        mDb.saveTransactionalWithRemovalAsync(teams);
     }
 
     public Observable<List<Team>> listAll() {
