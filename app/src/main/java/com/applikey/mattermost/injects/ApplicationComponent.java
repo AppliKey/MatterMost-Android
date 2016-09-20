@@ -4,6 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.fragments.BaseFragment;
+import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
@@ -35,6 +36,8 @@ public interface ApplicationComponent {
     void inject(ChooseTeamPresenter presenter);
 
     void inject(RestorePasswordPresenter presenter);
+
+    void inject(ChatListPresenter presenter);
 
     // Storages
     void inject(TeamStorage storage);

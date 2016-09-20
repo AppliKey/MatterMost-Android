@@ -75,6 +75,31 @@ public class Db {
                 .filter(response -> !response.isEmpty());
     }
 
+    public <T extends RealmObject> Observable<T> listSingeRealmObject(
+            Class<T> tClass,
+            String primaryKeyColumnName, String primaryKey) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(primaryKeyColumnName, primaryKey)
+                .findFirstAsync()
+                .<T>asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
+                .map(realm::copyFromRealm);
+    }
+
+    public Observable<DictionaryEntry> getSingleDictionaryEntry(String key) {
+        final Realm realm = getRealm();
+        return realm
+                .where(DictionaryEntry.class)
+                .equalTo("key", key)
+                .findFirstAsync()
+                .<DictionaryEntry>asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
+                .map(realm::copyFromRealm);
+
+    }
+
     private Realm getRealm() {
         return Realm.getDefaultInstance();
     }
