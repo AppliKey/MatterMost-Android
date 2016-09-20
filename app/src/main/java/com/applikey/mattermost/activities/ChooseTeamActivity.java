@@ -1,5 +1,6 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,9 +48,7 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
 
     @Override
     public void onTeamChosen() {
-        final Intent intent = new Intent(this, ChatListActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        startActivity(ChatListActivity.getIntent(this));
     }
 
     @Override
@@ -67,4 +66,8 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     private final TeamListAdapter.TeamClickListener mTeamClickListener = team -> {
         mPresenter.chooseTeam(team);
     };
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, ChooseTeamActivity.class);
+    }
 }

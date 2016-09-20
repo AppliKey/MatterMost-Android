@@ -1,5 +1,6 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -76,8 +77,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @OnClick(R.id.b_restore_password)
     void onRestoreClicked() {
-        final Intent intent = new Intent(this, RestorePasswordActivity.class);
-        startActivity(intent);
+        startActivity(RestorePasswordActivity.getIntent(this));
     }
 
     @Override
@@ -110,8 +110,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
             return;
         }
 
-        final Intent intent = new Intent(this, ChooseTeamActivity.class);
-        startActivity(intent);
+        startActivity(ChooseTeamActivity.getIntent(this));
     }
 
     @Override
@@ -122,5 +121,9 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     private void loadTeams() {
         mPresenter.loadTeams();
+    }
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, LogInActivity.class);
     }
 }

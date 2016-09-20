@@ -1,5 +1,7 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -57,5 +59,9 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
         super.onDestroy();
 
         mPresenter.unSubscribe();
+    }
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, RestorePasswordActivity.class);
     }
 }
