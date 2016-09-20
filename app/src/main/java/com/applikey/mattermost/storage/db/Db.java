@@ -71,8 +71,9 @@ public class Db {
                 .where(tClass)
                 .findAllAsync()
                 .asObservable()
-                .map(realm::copyFromRealm)
-                .filter(response -> !response.isEmpty());
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
     }
 
     private Realm getRealm() {
