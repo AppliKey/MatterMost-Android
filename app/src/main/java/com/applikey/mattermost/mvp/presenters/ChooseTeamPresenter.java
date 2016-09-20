@@ -6,6 +6,7 @@ import com.applikey.mattermost.mvp.views.ChooseTeamView;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
+import com.applikey.mattermost.web.ErrorHandler;
 
 import javax.inject.Inject;
 
@@ -30,9 +31,11 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
     }
 
     public void getInitialData() {
+        final ChooseTeamView view = getView();
         mSubscription.add(mTeamStorage.listAll()
-                .subscribe(entries -> {
-                    getView().displayTeams(entries);
+                .subscribe(view::displayTeams, throwable -> {
+                    ErrorHandler.handleError(throwable);
+                    getView().onFailure(throwable.getMessage());
                 }));
     }
 

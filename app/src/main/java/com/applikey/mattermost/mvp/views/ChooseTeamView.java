@@ -10,4 +10,6 @@ public interface ChooseTeamView extends MvpView {
     void displayTeams(List<Team> teams);
 
     void onTeamChosen();
+
+    void onFailure(String message);
 }

@@ -3,8 +3,10 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.LinearLayout;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.TeamListAdapter;
@@ -20,6 +22,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamView {
+
+    @Bind(R.id.content)
+    LinearLayout llContent;
 
     @Bind(R.id.rv_teams)
     RecyclerView rvTeams;
@@ -49,6 +54,14 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     @Override
     public void onTeamChosen() {
         startActivity(ChatListActivity.getIntent(this));
+    }
+
+    @Override
+    public void onFailure(String message) {
+        final String resultMessage = getResources().getString(R.string.could_not_receive_teams)
+                + ": " + message;
+        Snackbar.make(llContent, resultMessage + message,
+                Snackbar.LENGTH_INDEFINITE).show();
     }
 
     @Override
