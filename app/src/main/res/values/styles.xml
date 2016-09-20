@@ -33,8 +33,13 @@
         <item name="android:padding">@dimen/text_heading_padding</item>
     </style>
 
+    <style name="TextHeadingSecondary.Small">
+        <item name="android:textSize">@dimen/text_heading_small_size</item>
+    </style>
+
     <style name="EditTextPrimary">
         <item name="android:paddingBottom">@dimen/edit_text_bottom_padding</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="EditTextPrimary.PushRight">

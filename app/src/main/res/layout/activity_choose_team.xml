@@ -19,19 +19,21 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
         android:layout_marginBottom="@dimen/teams_screen_headers_margin_bottom"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/image_button_dimen">
+        android:layout_marginTop="@dimen/image_button_dimen"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_password"
-            style="@style/TextHeadingSecondary"
+            style="@style/TextWelcomeHeading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/your_team_capt" />
+            android:gravity="center_horizontal"
+            android:text="@string/your_team_capt"
+            android:layout_marginBottom="34dp"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_teams"
