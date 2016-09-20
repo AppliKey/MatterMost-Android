@@ -17,7 +17,10 @@ public class Db {
     // TODO Use server as realm identifier
     private static final String REALM_NAME = "Test1.realm";
 
+    private final Executor mWritesExecutor;
+
     public Db(Context context) {
+        mWritesExecutor = Executors.newCachedThreadPool();
         final RealmConfiguration config = new RealmConfiguration.Builder(context)
                 .name(REALM_NAME)
                 .schemaVersion(0)
@@ -34,13 +37,15 @@ public class Db {
         realm.close();
     }
 
-    public void saveTransactionalWithRemoval(RealmObject object) {
-        final Realm realm = getRealm();
-        realm.beginTransaction();
-        realm.delete(object.getClass());
-        realm.copyToRealmOrUpdate(object);
-        realm.commitTransaction();
-        realm.close();
+    public void saveTransactionalWithRemovalAsync(RealmObject object) {
+        mWritesExecutor.execute(() -> {
+            final Realm realm = getRealm();
+            realm.beginTransaction();
+            realm.delete(object.getClass());
+            realm.copyToRealmOrUpdate(object);
+            realm.commitTransaction();
+            realm.close();
+        });
     }
 
     public void saveTransactional(Iterable<? extends RealmObject> objects) {
@@ -51,18 +56,20 @@ public class Db {
         realm.close();
     }
 
-    public void saveTransactionalWithRemoval(Iterable<? extends RealmObject> objects) {
-        final Iterator<? extends RealmObject> iterator = objects.iterator();
-        if (!iterator.hasNext()) {
-            return;
-        }
-        final Realm realm = getRealm();
-        realm.beginTransaction();
-        final Class<? extends RealmObject> clazz = iterator.next().getClass();
-        realm.delete(clazz);
-        realm.copyToRealmOrUpdate(objects);
-        realm.commitTransaction();
-        realm.close();
+    public void saveTransactionalWithRemovalAsync(Iterable<? extends RealmObject> objects) {
+        mWritesExecutor.execute(() -> {
+            final Iterator<? extends RealmObject> iterator = objects.iterator();
+            if (!iterator.hasNext()) {
+                return;
+            }
+            final Realm realm = getRealm();
+            realm.beginTransaction();
+            final Class<? extends RealmObject> clazz = iterator.next().getClass();
+            realm.delete(clazz);
+            realm.copyToRealmOrUpdate(objects);
+            realm.commitTransaction();
+            realm.close();
+        });
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjects(Class<T> tClass) {
