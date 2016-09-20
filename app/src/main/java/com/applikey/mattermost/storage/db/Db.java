@@ -17,8 +17,6 @@ public class Db {
     // TODO Use server as realm identifier
     private static final String REALM_NAME = "Test1.realm";
 
-    private final Executor mWritesExecutor;
-
     public Db(Context context) {
         final RealmConfiguration config = new RealmConfiguration.Builder(context)
                 .name(REALM_NAME)
@@ -26,7 +24,6 @@ public class Db {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(config);
-        mWritesExecutor = Executors.newCachedThreadPool();
     }
 
     public void saveTransactional(RealmObject object) {
