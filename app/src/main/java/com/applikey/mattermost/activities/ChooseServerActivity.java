@@ -58,23 +58,4 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         final Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
     }
-//
-//    @Override
-//    public void onTeamsRetrieved(Map<String, Team> teams) {
-//        if (teams.isEmpty()) {
-//            final String message = getResources().getString(R.string.no_teams_received);
-//            etServerUrl.setError(message);
-//            return;
-//        }
-//
-//        final Intent intent = new Intent(this, LogInActivity.class);
-//        startActivity(intent);
-////        finish();
-//    }
-//
-//    @Override
-//    public void onTeamsReceiveFailed(Throwable cause) {
-//        final String message = getResources().getString(R.string.no_teams_received);
-//        etServerUrl.setError(message);
-//    }
 }
