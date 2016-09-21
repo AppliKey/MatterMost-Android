@@ -1,28 +1,44 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.util.Log;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
+import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.arellomobile.mvp.MvpPresenter;
-
-import java.util.Set;
+import com.applikey.mattermost.web.Api;
 
 import javax.inject.Inject;
 
 public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView> {
 
+    private static final String TAG = ChooseServerPresenter.class.getSimpleName();
+
     private static final String URL_END_DELIMITER = "/";
 
     @Inject
+    Api mApi;
+
+    @Inject
     Prefs mPrefs;
+
+    @Inject
+    TeamStorage teamStorage;
 
     public ChooseServerPresenter() {
         App.getComponent().inject(this);
     }
 
     public void chooseServer(String httpPrefix, String serverUrl) {
+
+        Log.d(TAG, "chooseServer: Start");
+
+        final ChooseServerView view = getView();
+
+        Log.d(TAG, "chooseServer: getView");
+
         if (!validateServer(serverUrl)) {
-            getView().showValidationError();
+            view.showValidationError();
             return;
         }
         String fullServerUrl = httpPrefix + serverUrl;
@@ -30,7 +46,8 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
             fullServerUrl += URL_END_DELIMITER;
         }
         mPrefs.setCurrentServerUrl(fullServerUrl);
-        getView().onValidServerEntered();
+
+        view.onValidServerChosen();
     }
 
     // TODO Add proper validation

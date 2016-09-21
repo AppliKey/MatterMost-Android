@@ -25,7 +25,7 @@ public class KissTools {
         }
 
         final Context appContext = context.getApplicationContext();
-        contextRef = new WeakReference<Context>(appContext);
+        contextRef = new WeakReference<>(appContext);
     }
 
     public static Context getApplicationContext() {

@@ -3,17 +3,16 @@ package com.applikey.mattermost.models.auth;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-// TODO Try playing around with this class
 @SuppressWarnings("WeakerAccess")
 public class AuthenticationRequest {
 
     @SerializedName("login_id")
     @Expose
-    public String login;
+    private String login;
 
     @SerializedName("password")
     @Expose
-    public String password;
+    private String password;
 
     public AuthenticationRequest() {
     }
@@ -21,5 +20,13 @@ public class AuthenticationRequest {
     public AuthenticationRequest(String login, String password) {
         this.login = login;
         this.password = password;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

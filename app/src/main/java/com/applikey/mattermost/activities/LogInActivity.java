@@ -1,21 +1,29 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.views.LogInView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LogInActivity extends BaseMvpActivity implements LogInView {
+
+    private static final String TAG = "LogInActivity";
 
     @Bind(R.id.et_login)
     EditText etLogin;
@@ -24,8 +32,11 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @Bind(R.id.b_authorize)
     Button bAuthorize;
 
+    @Bind(R.id.back)
+    View vBack;
+
     @InjectPresenter
-    LogInPresenter presenter;
+    LogInPresenter mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,12 +47,37 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         ButterKnife.bind(this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.d(TAG, "onStart");
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.unSubscribe();
+
+        super.onDestroy();
+    }
+
     @OnClick(R.id.b_authorize)
     void onAuthorize() {
         showLoading();
         final String login = etLogin.getText().toString();
         final String password = etPassword.getText().toString();
-        presenter.authorize(this, login, password);
+
+        mPresenter.authorize(this, login, password);
+    }
+
+    @OnClick(R.id.back)
+    void onBack() {
+        finish();
+    }
+
+    @OnClick(R.id.b_restore_password)
+    void onRestoreClicked() {
+        startActivity(RestorePasswordActivity.getIntent(this));
     }
 
     @Override
@@ -56,14 +92,38 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @Override
     public void onSuccessfulAuth() {
-        hideLoading();
-        Toast.makeText(this, "Authentication successful", Toast.LENGTH_SHORT).show();
+        loadTeams();
     }
 
     @Override
-    public void onUnsuccessfulAuth(Throwable throwable) {
+    public void onUnsuccessfulAuth(String message) {
         hideLoading();
-        Toast.makeText(this, "Authentication unsuccessful : " + throwable.getMessage(),
-                Toast.LENGTH_SHORT).show();
+        etPassword.setError(message);
+    }
+
+    @Override
+    public void onTeamsRetrieved(Map<String, Team> teams) {
+        hideLoading();
+
+        if (teams.size() == 0) {
+            etPassword.setError(getResources().getString(R.string.no_teams_received));
+            return;
+        }
+
+        startActivity(ChooseTeamActivity.getIntent(this));
+    }
+
+    @Override
+    public void onTeamsReceiveFailed(Throwable cause) {
+        hideLoading();
+        etLogin.setError(cause.getMessage());
+    }
+
+    private void loadTeams() {
+        mPresenter.loadTeams();
+    }
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, LogInActivity.class);
     }
 }

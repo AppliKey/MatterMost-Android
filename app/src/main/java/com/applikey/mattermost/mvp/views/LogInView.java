@@ -1,6 +1,9 @@
 package com.applikey.mattermost.mvp.views;
 
+import com.applikey.mattermost.models.team.Team;
 import com.arellomobile.mvp.MvpView;
+
+import java.util.Map;
 
 public interface LogInView extends MvpView {
 
@@ -10,5 +13,9 @@ public interface LogInView extends MvpView {
 
     void onSuccessfulAuth();
 
-    void onUnsuccessfulAuth(Throwable throwable);
+    void onUnsuccessfulAuth(String message);
+
+    void onTeamsRetrieved(Map<String, Team> teams);
+
+    void onTeamsReceiveFailed(Throwable cause);
 }

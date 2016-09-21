@@ -2,10 +2,12 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.storage.db.DbImpl;
+import com.applikey.mattermost.storage.db.Db;
+import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.utils.PrimitiveConverterFactory;
 import com.applikey.mattermost.web.Api;
+import com.applikey.mattermost.web.ApiDelegate;
+import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
@@ -18,12 +20,10 @@ import java.util.concurrent.TimeUnit;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class GlobalModule {
@@ -53,9 +53,8 @@ public class GlobalModule {
     }
 
     @Provides
-    @PerApp
-    DbImpl provideDb() {
-        return new DbImpl(mApp);
+    BearerTokenFactory provideTokenFactory(Prefs prefs) {
+        return new BearerTokenFactory(prefs);
     }
 
     @Provides
@@ -66,15 +65,15 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    OkHttpClient provideOkHttpClient() {
+    OkHttpClient provideOkHttpClient(BearerTokenFactory tokenFactory) {
         final OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder();
         okClientBuilder.addInterceptor(chain -> {
             Request request = chain.request();
-//                Headers headers = request.headers().newBuilder().add(“Authorization”, mApiKey)
-// .build();
-//                request = request.newBuilder().headers(headers).build();
-            // TODO you can add your authorization headers here like in example above
-            request = request.newBuilder().build();
+            final String authToken = tokenFactory.getBearerTokenString();
+            if (authToken != null) {
+                final Headers headers = request.headers().newBuilder().add("Authorization", authToken).build();
+                request = request.newBuilder().headers(headers).build();
+            }
             return chain.proceed(request);
         });
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
@@ -91,23 +90,22 @@ public class GlobalModule {
         return okClientBuilder.build();
     }
 
-    // TODO Find a way to provide a new one. Probably setup the wrapper delegate with "pool"
     @Provides
     @PerApp
-    Retrofit provideRestAdapter(OkHttpClient okHttpClient, ServerUrlFactory urlFactory) {
-        return new Retrofit.Builder()
-                .baseUrl(urlFactory.getServerUrl())
-                .client(okHttpClient)
-                .addConverterFactory(PrimitiveConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
+    Api provideApi(OkHttpClient okHttpClient, ServerUrlFactory serverUrlFactory) {
+        return new ApiDelegate(okHttpClient, serverUrlFactory);
     }
 
     @Provides
     @PerApp
-    Api provideApi(Retrofit restAdapter) {
-        return restAdapter.create(Api.class);
+    Db provideDb() {
+        return new Db(mApp);
+    }
+
+    @Provides
+    @PerApp
+    TeamStorage provideTeamStorage() {
+        return new TeamStorage();
     }
 
 }

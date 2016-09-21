@@ -48,7 +48,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     }
 
     public ApplicationComponent getComponent() {
-        return ((App) getApplication()).getComponent();
+        return App.getComponent();
     }
 
     public void hideKeyboard() {

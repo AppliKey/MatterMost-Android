@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextHeadingSecondary.Small">
+        <item name="android:letterSpacing">0.3</item>
+        <item name="android:textSize">@dimen/text_heading_small_size</item>
+    </style>
+
+    <style name="Button" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:clickable">true</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/round_button_gradient</item>
+        <item name="android:textSize">@dimen/text_primary_button</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:letterSpacing">0.3</item>
+    </style>
+
+    <style name="BorderlessButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/textSecondary</item>
+        <item name="android:letterSpacing">0.3</item>
+    </style>
+
+</resources>

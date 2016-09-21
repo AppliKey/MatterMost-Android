@@ -8,6 +8,10 @@ import com.applikey.mattermost.injects.DaggerApplicationComponent;
 import com.applikey.mattermost.injects.GlobalModule;
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
+import com.facebook.stetho.Stetho;
+import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
+
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -26,6 +30,12 @@ public class App extends Application {
                 .globalModule(new GlobalModule(this))
                 .build();
         mComponent.inject(this);
+
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                        .build());
     }
 
     public static ApplicationComponent getComponent() {

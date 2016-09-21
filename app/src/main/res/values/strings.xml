@@ -3,13 +3,29 @@
 
     <string name="please_wait">Please wait.</string>
     <string name="example_server">127.0.0.1:8065</string>
-    <string name="proceed">Proceed</string>
-    <string name="enter_mattermost_server_url">Enter Mattermost Server URL</string>
+    <string name="next">Next</string>
+    <string name="welcome_to_mattermost">Welcome to Mattermost</string>
     <string name="invalid_server_url">Please enter valid server address</string>
+    <string name="no_teams_received">Could not receive teams</string>
     <string name="please_enter_your_credentials">Please Enter Your Credentials</string>
     <string name="email">Email</string>
-    <string name="authorize">Authorize</string>
+    <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
-    <string name="default_server_text">54.234.249.244/applikeyteam</string>
-    <string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>
+    <string name="default_server_text">192.168.42.115:8065</string>
+    <!--<string name="default_server_text">54.234.249.244</string>-->
+    <string name="default_login_text">tester</string>
+    <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
+    <string name="unknown">UNKNOWN</string>
+    <string name="default_password">zxD123</string>
+    <string name="all_your_team_communication">All your team communication in one\nplace, searchable and accessible\nanywhere.</string>
+    <string name="enter_server_url_capt">ENTER SERVER URL</string>
+    <string name="your_team_capt">Select your team</string>
+    <string name="email_capt">EMAIL</string>
+    <string name="password_capt">PASSWORD</string>
+    <string name="content_descr_back">Back</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="forgot_password_capt">FORGOT PASSWORD</string>
+    <string name="restore_password_capt">RESTORE PASSWORD</string>
+
+    <string name="could_not_receive_teams">Could not receive teams</string>
 </resources>

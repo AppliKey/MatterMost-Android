@@ -1,6 +1,5 @@
 package com.applikey.mattermost.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Button;
@@ -52,10 +51,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     }
 
     @Override
-    public void onValidServerEntered() {
-        final Intent intent = new Intent(this, LogInActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        startActivity(intent);
+    public void onValidServerChosen() {
+        startActivity(LogInActivity.getIntent(this));
     }
 }

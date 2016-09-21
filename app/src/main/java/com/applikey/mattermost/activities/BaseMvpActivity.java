@@ -1,6 +1,7 @@
 package com.applikey.mattermost.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.arellomobile.mvp.MvpDelegate;
 
@@ -8,6 +9,8 @@ import com.arellomobile.mvp.MvpDelegate;
  * This class is taken from Moxy samples, and extended from {@link BaseActivity}.
  */
 public abstract class BaseMvpActivity extends BaseActivity {
+
+    private static final String TAG = BaseMvpActivity.class.getSimpleName();
 
     private MvpDelegate<? extends BaseMvpActivity> mMvpDelegate;
 
@@ -19,14 +22,19 @@ public abstract class BaseMvpActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
 
         getMvpDelegate().onDetach();
+    }
 
+    @Override
+    protected void onDestroy() {
         if (isFinishing()) {
             getMvpDelegate().onDestroy();
         }
+
+        super.onDestroy();
     }
 
     @Override
