@@ -13,6 +13,8 @@ import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.regex.Pattern;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import javax.inject.Inject;
 
 public class App extends Application {
@@ -25,6 +27,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         KissTools.setContext(this);
         mComponent = DaggerApplicationComponent.builder()
                 .globalModule(new GlobalModule(this))
