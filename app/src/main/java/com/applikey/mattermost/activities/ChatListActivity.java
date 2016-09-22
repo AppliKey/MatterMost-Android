@@ -13,17 +13,17 @@ import android.support.v7.widget.Toolbar;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.fragments.ChatListFragment;
-import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
-import com.applikey.mattermost.mvp.views.ChatListView;
+import com.applikey.mattermost.mvp.presenters.ChatListPagePresenter;
+import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ChatListActivity extends BaseMvpActivity implements ChatListView {
+public class ChatListActivity extends BaseMvpActivity implements ChatListScreenView {
 
     @InjectPresenter
-    ChatListPresenter mPresenter;
+    ChatListPagePresenter mPresenter;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -57,8 +57,8 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListView {
                 tab.setIcon(ChatListFragment.TabBehavior.getItemBehavior(i).getIcon());
             }
         }
-        mTabLayout.setOnTabSelectedListener(mOnTabSelectedListener);
-        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
+//        mTabLayout.setOnTabSelectedListener(mOnTabSelectedListener);
+//        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
     }
 
     @Override

@@ -11,8 +11,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import com.facebook.stetho.Stetho;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
-import java.util.regex.Pattern;
-
 import javax.inject.Inject;
 
 public class App extends Application {

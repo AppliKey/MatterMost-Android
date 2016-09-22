@@ -2,14 +2,22 @@ package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.view.View;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.groups.ChannelsWithMetadata;
+import com.applikey.mattermost.mvp.presenters.ChannelsListPresenter;
+import com.applikey.mattermost.mvp.views.ChannelsListView;
 import com.applikey.mattermost.utils.kissUtils.utils.BundleUtil;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class ChatListFragment extends BaseMvpFragment {
+public class ChatListFragment extends BaseMvpFragment implements ChannelsListView {
 
     private static final String BEHAVIOR_KEY = "TabBehavior";
     private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
+
+    @InjectPresenter
+    ChannelsListPresenter mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -19,6 +27,15 @@ public class ChatListFragment extends BaseMvpFragment {
 
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (mTabBehavior == TabBehavior.CHANNELS) {
+            mPresenter.getInitialData();
+        }
     }
 
     public static ChatListFragment newInstance(TabBehavior behavior) {
@@ -34,6 +51,18 @@ public class ChatListFragment extends BaseMvpFragment {
 
     public TabBehavior getBehavior() {
         return mTabBehavior;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mPresenter.unSubscribe();
+    }
+
+    @Override
+    public void displayInitialData(ChannelsWithMetadata channelsWithMetadata) {
+        showToast("Got channels: " + channelsWithMetadata.keySet().size());
     }
 
     public enum TabBehavior {

@@ -1,21 +1,21 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.mvp.views.ChatListView;
+import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.TeamStorage;
 
 import javax.inject.Inject;
 
 import rx.subscriptions.CompositeSubscription;
 
-public class ChatListPresenter extends SingleViewPresenter<ChatListView> {
+public class ChatListPagePresenter extends SingleViewPresenter<ChatListScreenView> {
 
     @Inject
     TeamStorage mTeamStorage;
 
     private final CompositeSubscription mSubscription = new CompositeSubscription();
 
-    public ChatListPresenter() {
+    public ChatListPagePresenter() {
         App.getComponent().inject(this);
     }
 
