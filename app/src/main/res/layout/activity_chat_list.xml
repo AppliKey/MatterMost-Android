@@ -14,4 +14,17 @@
         android:layout_height="?actionBarSize"
         app:navigationIcon="@drawable/ic_hamburgher" />
 
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabs"
+        style="@style/ChatListTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabMode="fixed" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vpChatList"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" />
+
 </LinearLayout>

@@ -14,4 +14,7 @@
 
     <color name="separator">#757575</color>
     <color name="separator_light">#757575</color>
+
+    <color name="tabSelected">#2bce7c</color>
+    <color name="tabUnSelected">#c9cdd4</color>
 </resources>
