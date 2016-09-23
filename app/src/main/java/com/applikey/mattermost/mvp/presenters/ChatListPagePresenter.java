@@ -26,6 +26,6 @@ public class ChatListPagePresenter extends SingleViewPresenter<ChatListScreenVie
     }
 
     public void unSubscribe() {
-        mSubscription.unsubscribe();
+        mSubscription.clear();
     }
 }

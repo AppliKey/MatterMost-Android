@@ -14,6 +14,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class ChannelsListPresenter extends SingleViewPresenter<ChannelsListView> {
@@ -32,13 +35,14 @@ public class ChannelsListPresenter extends SingleViewPresenter<ChannelsListView>
 
     public void getInitialData() {
         final ChannelsListView view = getView();
-        mSubscription.add(mChannelStorage.list().subscribe(channelResult -> {
-            mSubscription.add(mChannelStorage.listMembership().subscribe(membershipResult -> {
-                final ChannelsWithMetadata result =
-                        transform(channelResult, membershipResult);
-                view.displayInitialData(result);
-            }, ErrorHandler::handleError));
-        }, ErrorHandler::handleError));
+        mSubscription.add(
+                Observable.zip(
+                        mChannelStorage.list(),
+                        mChannelStorage.listMembership(),
+                        this::transform)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(view::displayInitialData, ErrorHandler::handleError));
     }
 
     private ChannelsWithMetadata transform(List<Channel> channels,
@@ -59,6 +63,6 @@ public class ChannelsListPresenter extends SingleViewPresenter<ChannelsListView>
     }
 
     public void unSubscribe() {
-        mSubscription.unsubscribe();
+        mSubscription.clear();
     }
 }

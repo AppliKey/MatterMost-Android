@@ -60,6 +60,6 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
     }
 
     public void unSubscribe() {
-        mSubscription.unsubscribe();
+        mSubscription.clear();
     }
 }

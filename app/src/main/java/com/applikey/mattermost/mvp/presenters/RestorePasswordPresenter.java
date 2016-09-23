@@ -43,7 +43,7 @@ public class RestorePasswordPresenter extends SingleViewPresenter<RestorePasswor
     }
 
     public void unSubscribe() {
-        mSubscription.unsubscribe();
+        mSubscription.clear();
     }
 
     private boolean validateEmailFormat(String email) {

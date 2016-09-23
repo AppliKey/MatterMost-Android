@@ -72,7 +72,7 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
     }
 
     public void unSubscribe() {
-        mSubscription.unsubscribe();
+        mSubscription.clear();
     }
 
     private void handleSuccessfulResponse(Response<AuthenticationResponse> response) {
