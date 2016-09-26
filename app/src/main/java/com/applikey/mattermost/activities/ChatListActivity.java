@@ -12,7 +12,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
-import com.applikey.mattermost.fragments.ChatListFragment;
+import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.mvp.presenters.ChatListPagePresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -54,11 +54,13 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         for (int i = 0; i < mTabLayout.getTabCount(); i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
             if (tab != null) {
-                tab.setIcon(ChatListFragment.TabBehavior.getItemBehavior(i).getIcon());
+                tab.setIcon(ChannelListFragment.TabBehavior.getItemBehavior(i).getIcon());
             }
         }
-//        mTabLayout.setOnTabSelectedListener(mOnTabSelectedListener);
-//        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
+
+        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
+        mTabLayout.setOnTabSelectedListener(mOnTabSelectedListener);
+        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
     }
 
     @Override
@@ -79,52 +81,56 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         return intent;
     }
 
-    private final TabLayout.OnTabSelectedListener mOnTabSelectedListener =
-            new TabLayout.OnTabSelectedListener() {
+    private class TabSelectedListener extends TabLayout.ViewPagerOnTabSelectedListener {
 
-                private int selectedTabColor = -1;
-                private int unSelectedTabColor = -1;
+        private int selectedTabColor = -1;
+        private int unSelectedTabColor = -1;
 
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    final Drawable icon = tab.getIcon();
-                    if (icon != null) {
-                        icon.setColorFilter(getSelectedTabColor(), PorterDuff.Mode.SRC_IN);
-                    }
-                }
+        TabSelectedListener(ViewPager viewPager) {
+            super(viewPager);
+        }
 
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-                    final Drawable icon = tab.getIcon();
-                    if (icon != null) {
-                        icon.setColorFilter(getUnSelectedTabColor(), PorterDuff.Mode.SRC_IN);
-                    }
-                }
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            super.onTabSelected(tab);
+            final Drawable icon = tab.getIcon();
+            if (icon != null) {
+                icon.setColorFilter(getSelectedTabColor(), PorterDuff.Mode.SRC_IN);
+            }
+        }
 
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-                    final Drawable icon = tab.getIcon();
-                    if (icon != null) {
-                        icon.setColorFilter(getSelectedTabColor(), PorterDuff.Mode.SRC_IN);
-                    }
-                }
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+            super.onTabUnselected(tab);
+            final Drawable icon = tab.getIcon();
+            if (icon != null) {
+                icon.setColorFilter(getUnSelectedTabColor(), PorterDuff.Mode.SRC_IN);
+            }
+        }
 
-                private int getSelectedTabColor() {
-                    if (selectedTabColor == -1) {
-                        selectedTabColor = ContextCompat.getColor(ChatListActivity.this,
-                                R.color.tabSelected);
-                    }
-                    return selectedTabColor;
-                }
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+            super.onTabReselected(tab);
+            final Drawable icon = tab.getIcon();
+            if (icon != null) {
+                icon.setColorFilter(getSelectedTabColor(), PorterDuff.Mode.SRC_IN);
+            }
+        }
 
-                private int getUnSelectedTabColor() {
-                    if (unSelectedTabColor == -1) {
-                        unSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
-                                R.color.tabUnSelected);
-                    }
-                    return unSelectedTabColor;
-                }
-            };
+        private int getSelectedTabColor() {
+            if (selectedTabColor == -1) {
+                selectedTabColor = ContextCompat.getColor(ChatListActivity.this,
+                        R.color.tabSelected);
+            }
+            return selectedTabColor;
+        }
 
-
+        private int getUnSelectedTabColor() {
+            if (unSelectedTabColor == -1) {
+                unSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
+                        R.color.tabUnSelected);
+            }
+            return unSelectedTabColor;
+        }
+    }
 }

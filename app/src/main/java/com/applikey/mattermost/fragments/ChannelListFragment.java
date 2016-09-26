@@ -2,22 +2,34 @@ package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.adapters.GroupAdapter;
 import com.applikey.mattermost.models.groups.ChannelsWithMetadata;
 import com.applikey.mattermost.mvp.presenters.ChannelsListPresenter;
 import com.applikey.mattermost.mvp.views.ChannelsListView;
 import com.applikey.mattermost.utils.kissUtils.utils.BundleUtil;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class ChatListFragment extends BaseMvpFragment implements ChannelsListView {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+public class ChannelListFragment extends BaseMvpFragment implements ChannelsListView {
 
     private static final String BEHAVIOR_KEY = "TabBehavior";
     private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
 
     @InjectPresenter
     ChannelsListPresenter mPresenter;
+
+    @Bind(R.id.rv_channels)
+    RecyclerView rvChannels;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,6 +41,16 @@ public class ChatListFragment extends BaseMvpFragment implements ChannelsListVie
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_channels, container, false);
+
+        ButterKnife.bind(this, view);
+
+        return view;
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -38,8 +60,8 @@ public class ChatListFragment extends BaseMvpFragment implements ChannelsListVie
         }
     }
 
-    public static ChatListFragment newInstance(TabBehavior behavior) {
-        final ChatListFragment fragment = new ChatListFragment();
+    public static ChannelListFragment newInstance(TabBehavior behavior) {
+        final ChannelListFragment fragment = new ChannelListFragment();
 
         final Bundle bundle = new Bundle();
         bundle.putInt(BEHAVIOR_KEY, behavior.ordinal());
@@ -62,7 +84,9 @@ public class ChatListFragment extends BaseMvpFragment implements ChannelsListVie
 
     @Override
     public void displayInitialData(ChannelsWithMetadata channelsWithMetadata) {
-        showToast("Got channels: " + channelsWithMetadata.keySet().size());
+        final GroupAdapter adapter = new GroupAdapter(channelsWithMetadata.values());
+        rvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rvChannels.setAdapter(adapter);
     }
 
     public enum TabBehavior {

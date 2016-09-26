@@ -9,15 +9,22 @@ package com.applikey.mattermost.utils.kissUtils.utils;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
+import com.applikey.mattermost.utils.DateUtils;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
 public class TimeUtil {
 
+    private static final int MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
+
     public static final String TAG = TimeUtil.class.getSimpleName();
 
+    public static final String DEFAULT_FORMAT_TIME_ONLY = "HH:mm";
+    public static final String DEFAULT_FORMAT_DATE_ONLY = "yyyy-MM-dd";
     public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String FILE_FORMAT = "yyyy_MM_dd_HH_mm_ss_SSS";
@@ -44,6 +51,31 @@ public class TimeUtil {
         final SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_FORMAT);
         final Date date = new Date(time);
         return sdf.format(date);
+    }
+
+    public static String formatTimeOnly(long time) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_FORMAT_TIME_ONLY);
+        final Date date = new Date(time);
+        return sdf.format(date);
+    }
+
+    public static String formatDateOnly(long time) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_FORMAT_DATE_ONLY);
+        final Date date = new Date(time);
+        return sdf.format(date);
+    }
+
+    public static String formatTimeOrDate(long time) {
+        final Date now = new Date();
+
+        final boolean sameDay = time / MILLISECONDS_IN_DAY ==
+                now.getTime() / MILLISECONDS_IN_DAY;
+
+        if (sameDay) {
+            return formatTimeOnly(time);
+        } else {
+            return formatDateOnly(time);
+        }
     }
 
     public static String format(long time, String format) {

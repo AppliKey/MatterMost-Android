@@ -3,6 +3,7 @@ package com.applikey.mattermost.mvp.presenters;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.data.MutableTuple;
 import com.applikey.mattermost.models.groups.Channel;
+import com.applikey.mattermost.models.groups.ChannelWithMetadata;
 import com.applikey.mattermost.models.groups.ChannelsWithMetadata;
 import com.applikey.mattermost.models.groups.Membership;
 import com.applikey.mattermost.mvp.views.ChannelsListView;
@@ -16,7 +17,6 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class ChannelsListPresenter extends SingleViewPresenter<ChannelsListView> {
@@ -40,7 +40,6 @@ public class ChannelsListPresenter extends SingleViewPresenter<ChannelsListView>
                         mChannelStorage.list(),
                         mChannelStorage.listMembership(),
                         this::transform)
-                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayInitialData, ErrorHandler::handleError));
     }
@@ -50,13 +49,13 @@ public class ChannelsListPresenter extends SingleViewPresenter<ChannelsListView>
         final ChannelsWithMetadata channelsWithMetadata =
                 new ChannelsWithMetadata(channels.size());
         for (Channel channel : channels) {
-            channelsWithMetadata.put(channel.getId(), new MutableTuple<>(channel));
+            channelsWithMetadata.put(channel.getId(), new ChannelWithMetadata(channel));
         }
         for (Membership membership : memberships) {
-            final MutableTuple<Channel, Membership> membershipTuple =
+            final ChannelWithMetadata membershipTuple =
                     channelsWithMetadata.get(membership.getChannelId());
             if (membershipTuple != null) {
-                membershipTuple.setY(membership);
+                membershipTuple.setMembership(membership);
             }
         }
         return channelsWithMetadata;

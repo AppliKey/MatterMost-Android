@@ -26,4 +26,11 @@
     <dimen name="spinner_text_size">18sp</dimen>
     <dimen name="vertical_min_height">48dp</dimen>
     <dimen name="spinner_teams_dropdown_min_height">56dp</dimen>
+
+    <dimen name="list_item_margin">20dp</dimen>
+    <dimen name="list_item_margin_double">40dp</dimen>
+    <dimen name="list_item_image">60dp</dimen>
+    <dimen name="list_item_heading_text">18sp</dimen>
+    <dimen name="list_item_secondary_text">14sp</dimen>
+    <dimen name="list_item_heading_bottom_margin">5dp</dimen>
 </resources>

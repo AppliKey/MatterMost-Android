@@ -2,10 +2,14 @@ package com.applikey.mattermost.models.groups;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Comparator;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class Channel extends RealmObject {
+
+    public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
 
     @PrimaryKey
     @SerializedName("id")
@@ -28,6 +32,9 @@ public class Channel extends RealmObject {
 
     @SerializedName("last_post_at")
     private long lastPostAt;
+
+    @SerializedName("create_at")
+    private long createdAt;
 
     public String getId() {
         return id;
@@ -85,6 +92,14 @@ public class Channel extends RealmObject {
         this.lastPostAt = lastPostAt;
     }
 
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public enum ChannelType {
         PUBLIC("O"),
         PRIVATE("P");
@@ -111,6 +126,22 @@ public class Channel extends RealmObject {
                     throw new IllegalArgumentException("Wrong channel type");
                 }
             }
+        }
+    }
+
+    private static class ComparatorByDate implements Comparator<Channel> {
+        @Override
+        public int compare(Channel o1, Channel o2) {
+            final long o1time = o1.getLastPostAt() != 0 ? o1.getLastPostAt() : o1.getCreatedAt();
+            final long o2time = o2.getLastPostAt() != 0 ? o2.getLastPostAt() : o2.getCreatedAt();
+
+            if (o1time > o2time) {
+                return -1;
+            }
+            if (o1time == o2time) {
+                return 0;
+            }
+            return 1;
         }
     }
 }
