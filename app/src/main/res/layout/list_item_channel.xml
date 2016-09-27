@@ -1,62 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/list_item_margin"
-    android:layout_marginTop="@dimen/list_item_margin">
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_preview_image"
-        android:layout_width="@dimen/list_item_image"
-        android:layout_height="@dimen/list_item_image"
-        android:layout_marginLeft="@dimen/list_item_margin"
-        android:layout_marginRight="@dimen/list_item_margin"
-        android:scaleType="fitXY"
-        android:src="@drawable/no_resource" />
-
-    <ImageView
-        android:id="@+id/iv_channel_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tv_channel_name"
-        android:layout_marginBottom="4dp"
-        android:layout_marginRight="8dp"
-        android:layout_toRightOf="@id/iv_preview_image"
-        android:scaleType="center"
-        android:src="@drawable/ic_private_group" />
-
-    <TextView
-        android:id="@+id/tv_channel_name"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/tv_last_message_time"
-        android:layout_toRightOf="@id/iv_channel_icon"
-        android:singleLine="true"
-        android:textColor="@color/textListPrimary"
-        android:textSize="@dimen/list_item_heading_text" />
+        android:layout_marginBottom="@dimen/list_item_margin"
+        android:layout_marginTop="@dimen/list_item_margin">
 
-    <TextView
-        android:id="@id/tv_last_message_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/tv_channel_name"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="@dimen/list_item_margin"
-        android:layout_marginRight="@dimen/list_item_margin"
-        android:textColor="@color/textListSecondary"
-        android:textSize="@dimen/list_item_secondary_text" />
+        <ImageView
+            android:id="@+id/iv_preview_image"
+            android:layout_width="@dimen/list_item_image"
+            android:layout_height="@dimen/list_item_image"
+            android:layout_marginLeft="@dimen/list_item_margin"
+            android:layout_marginRight="@dimen/list_item_margin"
+            android:scaleType="fitXY"
+            android:src="@drawable/no_resource" />
 
-    <TextView
-        android:id="@+id/tv_message_preview"
+        <ImageView
+            android:id="@+id/iv_channel_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tv_channel_name"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@id/iv_preview_image"
+            android:scaleType="center"
+            android:src="@drawable/ic_private_group" />
+
+        <TextView
+            android:id="@+id/tv_channel_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/tv_last_message_time"
+            android:layout_toRightOf="@id/iv_channel_icon"
+            android:singleLine="true"
+            android:textColor="@color/textListPrimary"
+            android:textSize="@dimen/list_item_heading_text" />
+
+        <TextView
+            android:id="@id/tv_last_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@id/tv_channel_name"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="@dimen/list_item_margin"
+            android:layout_marginRight="@dimen/list_item_margin"
+            android:textColor="@color/textListSecondary"
+            android:textSize="@dimen/list_item_secondary_text" />
+
+        <TextView
+            android:id="@+id/tv_message_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_channel_name"
+            android:layout_marginRight="@dimen/list_item_margin_double"
+            android:layout_marginTop="@dimen/list_item_heading_bottom_margin"
+            android:layout_toRightOf="@id/iv_preview_image"
+            android:maxLines="2"
+            android:text="@string/example_message_preview"
+            android:textColor="@color/textListSecondary"
+            android:textSize="@dimen/list_item_secondary_text" />
+
+    </RelativeLayout>
+
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_channel_name"
-        android:layout_marginRight="@dimen/list_item_margin_double"
-        android:layout_marginTop="@dimen/list_item_heading_bottom_margin"
-        android:layout_toRightOf="@id/iv_preview_image"
-        android:maxLines="2"
-        android:text="@string/example_message_preview"
-        android:textColor="@color/textListSecondary"
-        android:textSize="@dimen/list_item_secondary_text" />
-
-</RelativeLayout>
+        android:layout_height="1dp"
+        android:background="@color/separator_list" />
+</LinearLayout>

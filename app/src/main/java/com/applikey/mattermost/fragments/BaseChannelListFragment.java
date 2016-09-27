@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.GroupAdapter;
@@ -26,6 +27,9 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
 
     @Bind(R.id.rv_channels)
     RecyclerView rvChannels;
+
+    @Bind(R.id.tv_empty_state)
+    TextView tvEmptyState;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +55,16 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
     public void onStart() {
         super.onStart();
 
+        tvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
+
         getPresenter().getInitialData();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -63,6 +76,12 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
 
     @Override
     public void displayInitialData(ChannelsWithMetadata channelsWithMetadata) {
+        if (channelsWithMetadata.isEmpty()) {
+            tvEmptyState.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        tvEmptyState.setVisibility(View.GONE);
         final GroupAdapter adapter = new GroupAdapter(channelsWithMetadata.values());
         rvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvChannels.setAdapter(adapter);
@@ -111,4 +130,6 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
     }
 
     protected abstract ChatListPresenter getPresenter();
+
+    protected abstract int getEmptyStateTextId();
 }

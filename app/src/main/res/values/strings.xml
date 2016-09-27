@@ -3,7 +3,7 @@
 
     <string name="please_wait">Please wait.</string>
     <string name="example_server">54.234.249.244</string>
-    <!--<string name="example_server">127.0.0.1:8065</string>-->
+    <!--<string name="example_server">192.168.45.115:8065</string>-->
     <string name="proceed">Proceed</string>
     <string name="enter_mattermost_server_url">Enter Mattermost Server URL</string>
     <string name="next">Next</string>
@@ -14,7 +14,7 @@
     <string name="email">Email</string>
     <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
-    <string name="default_server_text">54.234.249.244</string>
+    <string name="default_server_text">192.168.42.115:8065</string>
     <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
     <!--<string name="default_server_text">54.234.249.244</string>-->
     <string name="default_login_text">tester</string>
@@ -33,4 +33,7 @@
 
     <string name="could_not_receive_teams">Could not receive teams</string>
     <string name="example_message_preview">Message Preview will be displayed here</string>
+
+    <string name="no_channels_available">No Channels Available</string>
+    <string name="no_groups_available">No Groups Available</string>
 </resources>

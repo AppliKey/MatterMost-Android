@@ -1,6 +1,5 @@
 package com.applikey.mattermost;
 
-
 import android.app.Application;
 
 import com.applikey.mattermost.injects.ApplicationComponent;
@@ -10,8 +9,6 @@ import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.facebook.stetho.Stetho;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
-
-import java.util.regex.Pattern;
 
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
