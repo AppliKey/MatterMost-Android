@@ -21,7 +21,11 @@
         <activity android:name=".activities.LogInActivity" />
         <activity android:name=".activities.ChatListActivity" />
         <activity android:name=".activities.ChooseTeamActivity" />
-        <activity android:name=".activities.RestorePasswordActivity"></activity>
+        <activity android:name=".activities.RestorePasswordActivity" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="0c7675012470bd5f6ee23c7d90806bb92d1c4bd8" />
     </application>
 
 </manifest>

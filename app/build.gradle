@@ -1,8 +1,19 @@
+buildscript {
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+    repositories {
+        jcenter()
+        maven { url 'https://maven.fabric.io/public' }
+    }
+}
+
 plugins {
     id "me.tatarka.retrolambda" version "3.2.2"
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 
@@ -68,6 +79,7 @@ repositories {
     maven {
         url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
     }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
@@ -91,7 +103,6 @@ dependencies {
     compile "com.squareup.okhttp3:logging-interceptor:3.1.2"
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile "com.github.aurae.retrofit2:converter-logansquare:1.4.0"
-
 
     // rx
     compile 'io.reactivex:rxandroid:1.1.0'
@@ -118,4 +129,9 @@ dependencies {
     // stetho
     compile 'com.facebook.stetho:stetho:1.4.0'
     compile 'com.uphyca:stetho_realm:0.9.0'
+
+    // crashlytics
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.3@aar') {
+        transitive = true;
+    }
 }
