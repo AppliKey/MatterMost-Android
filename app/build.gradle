@@ -131,7 +131,7 @@ dependencies {
     compile 'com.uphyca:stetho_realm:0.9.0'
 
     // crashlytics
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.3@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.4@aar') {
         transitive = true;
     }
 }
