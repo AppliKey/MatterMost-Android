@@ -19,6 +19,7 @@
         style="@style/ChatListTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:tabIndicatorHeight="0px"
         app:tabMode="fixed" />
 
     <android.support.v4.view.ViewPager

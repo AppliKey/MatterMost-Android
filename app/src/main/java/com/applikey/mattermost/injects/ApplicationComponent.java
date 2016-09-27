@@ -4,10 +4,12 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.fragments.BaseFragment;
+import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelsListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListPagePresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
+import com.applikey.mattermost.mvp.presenters.GroupsListPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -42,6 +44,10 @@ public interface ApplicationComponent {
     void inject(ChatListPagePresenter presenter);
 
     void inject(ChannelsListPresenter presenter);
+
+    void inject(GroupsListPresenter presenter);
+
+    void inject(BaseChatListPresenter presenter);
 
     // Storages
     void inject(TeamStorage storage);

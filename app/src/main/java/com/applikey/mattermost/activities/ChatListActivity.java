@@ -12,7 +12,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
-import com.applikey.mattermost.fragments.ChannelListFragment;
+import com.applikey.mattermost.fragments.BaseChannelListFragment;
 import com.applikey.mattermost.mvp.presenters.ChatListPagePresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -54,7 +54,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         for (int i = 0; i < mTabLayout.getTabCount(); i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
             if (tab != null) {
-                tab.setIcon(ChannelListFragment.TabBehavior.getItemBehavior(i).getIcon());
+                tab.setIcon(BaseChannelListFragment.TabBehavior.getItemBehavior(i).getIcon());
             }
         }
 

@@ -6,9 +6,9 @@ import com.applikey.mattermost.web.ErrorHandler;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class ChannelsListPresenter extends BaseChatListPresenter {
+public class GroupsListPresenter extends BaseChatListPresenter {
 
-    public ChannelsListPresenter() {
+    public GroupsListPresenter() {
         super();
     }
 
@@ -17,7 +17,7 @@ public class ChannelsListPresenter extends BaseChatListPresenter {
         final ChannelsListView view = getView();
         getSubscription().add(
                 Observable.zip(
-                        mChannelStorage.listOpen(),
+                        mChannelStorage.listClosed(),
                         mChannelStorage.listMembership(),
                         this::transform)
                         .observeOn(AndroidSchedulers.mainThread())

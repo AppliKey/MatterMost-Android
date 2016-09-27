@@ -10,12 +10,13 @@ import io.realm.annotations.PrimaryKey;
 public class Channel extends RealmObject {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
+    public static final String FIELD_NAME_TYPE = "type";
 
     @PrimaryKey
     @SerializedName("id")
     private String id;
 
-    @SerializedName("type")
+    @SerializedName(FIELD_NAME_TYPE)
     private String type;
 
     @SerializedName("display_name")

@@ -24,6 +24,16 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Channel.class);
     }
 
+    public Observable<List<Channel>> listOpen() {
+        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.PUBLIC.getRepresentation());
+    }
+
+    public Observable<List<Channel>> listClosed() {
+        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.PRIVATE.getRepresentation());
+    }
+
     public Observable<List<Membership>> listMembership() {
         return mDb.listRealmObjects(Membership.class);
     }

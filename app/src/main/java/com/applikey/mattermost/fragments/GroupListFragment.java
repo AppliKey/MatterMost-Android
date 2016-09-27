@@ -4,18 +4,19 @@ import android.os.Bundle;
 
 import com.applikey.mattermost.mvp.presenters.ChannelsListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.GroupsListPresenter;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class ChannelListFragment extends BaseChannelListFragment {
+public class GroupListFragment extends BaseChannelListFragment {
 
     @InjectPresenter
-    ChannelsListPresenter mPresenter;
+    GroupsListPresenter mPresenter;
 
     public static BaseChannelListFragment newInstance() {
-        final BaseChannelListFragment fragment = new ChannelListFragment();
+        final BaseChannelListFragment fragment = new GroupListFragment();
 
         final Bundle bundle = new Bundle();
-        bundle.putInt(BaseChannelListFragment.BEHAVIOR_KEY, TabBehavior.CHANNELS.ordinal());
+        bundle.putInt(BaseChannelListFragment.BEHAVIOR_KEY, TabBehavior.GROUPS.ordinal());
 
         fragment.setArguments(bundle);
 
