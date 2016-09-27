@@ -27,6 +27,8 @@
     <dimen name="vertical_min_height">48dp</dimen>
     <dimen name="spinner_teams_dropdown_min_height">56dp</dimen>
 
+    <dimen name="small_icon_size">24dp</dimen>
+
     <dimen name="list_item_margin">20dp</dimen>
     <dimen name="list_item_margin_double">40dp</dimen>
     <dimen name="list_item_image">60dp</dimen>

@@ -50,11 +50,22 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         holder.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDate(lastPostAt != 0 ? lastPostAt :
                         data.getChannel().getCreatedAt()));
+
+        setChannelIconVisibility(holder, data);
     }
 
     @Override
     public int getItemCount() {
         return mDataSet != null ? mDataSet.size() : 0;
+    }
+
+    private void setChannelIconVisibility(ViewHolder viewHolder, ChannelWithMetadata element) {
+        final String type = element.getChannel().getType();
+        if (Channel.ChannelType.PUBLIC.getRepresentation().equals(type)) {
+            viewHolder.getChannelIcon().setVisibility(View.GONE);
+        } else {
+            viewHolder.getChannelIcon().setVisibility(View.VISIBLE);
+        }
     }
 
     /* package */
@@ -64,6 +75,9 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
         @Bind(R.id.iv_preview_image)
         ImageView mPreviewImage;
+
+        @Bind(R.id.iv_channel_icon)
+        ImageView mChannelIcon;
 
         @Bind(R.id.tv_channel_name)
         TextView mChannelName;
@@ -88,6 +102,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
         ImageView getPreviewImage() {
             return mPreviewImage;
+        }
+
+        ImageView getChannelIcon() {
+            return mChannelIcon;
         }
 
         TextView getChannelName() {

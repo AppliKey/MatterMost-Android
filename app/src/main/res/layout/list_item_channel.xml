@@ -14,12 +14,23 @@
         android:scaleType="fitXY"
         android:src="@drawable/no_resource" />
 
+    <ImageView
+        android:id="@+id/iv_channel_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tv_channel_name"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="8dp"
+        android:layout_toRightOf="@id/iv_preview_image"
+        android:scaleType="center"
+        android:src="@drawable/ic_private_group" />
+
     <TextView
         android:id="@+id/tv_channel_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/tv_last_message_time"
-        android:layout_toRightOf="@id/iv_preview_image"
+        android:layout_toRightOf="@id/iv_channel_icon"
         android:singleLine="true"
         android:textColor="@color/textListPrimary"
         android:textSize="@dimen/list_item_heading_text" />
