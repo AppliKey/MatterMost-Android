@@ -5,6 +5,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
@@ -115,4 +116,9 @@ public class GlobalModule {
         return new ChannelStorage();
     }
 
+    @Provides
+    @PerApp
+    UserStorage provideUserStorage() {
+        return new UserStorage();
+    }
 }

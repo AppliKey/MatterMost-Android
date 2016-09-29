@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.models.groups.Channel;
-import com.applikey.mattermost.models.groups.ChannelWithMetadata;
+import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelWithMetadata;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
+public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     private List<ChannelWithMetadata> mDataSet = null;
 
-    public GroupAdapter(Collection<ChannelWithMetadata> dataSet) {
+    public ChatListAdapter(Collection<ChannelWithMetadata> dataSet) {
         super();
 
         mDataSet = new ArrayList<>(dataSet.size());
@@ -33,25 +33,24 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
     }
 
     @Override
-    public GroupAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ChatListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_channel, parent, false);
-
+                .inflate(R.layout.list_item_chat, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(GroupAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
         final ChannelWithMetadata data = mDataSet.get(position);
 
         final long lastPostAt = data.getChannel().getLastPostAt();
 
-        holder.getChannelName().setText(data.getChannel().getDisplayName());
-        holder.getLastMessageTime().setText(
+        vh.getChannelName().setText(data.getChannel().getDisplayName());
+        vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDate(lastPostAt != 0 ? lastPostAt :
                         data.getChannel().getCreatedAt()));
 
-        setChannelIconVisibility(holder, data);
+        setChannelIconVisibility(vh, data);
     }
 
     @Override
@@ -61,10 +60,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
     private void setChannelIconVisibility(ViewHolder viewHolder, ChannelWithMetadata element) {
         final String type = element.getChannel().getType();
-        if (Channel.ChannelType.PUBLIC.getRepresentation().equals(type)) {
-            viewHolder.getChannelIcon().setVisibility(View.GONE);
-        } else {
+        if (Channel.ChannelType.PRIVATE.getRepresentation().equals(type)) {
             viewHolder.getChannelIcon().setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.getChannelIcon().setVisibility(View.GONE);
         }
     }
 

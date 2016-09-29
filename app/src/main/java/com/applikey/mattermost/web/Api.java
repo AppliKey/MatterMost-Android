@@ -2,8 +2,9 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
-import com.applikey.mattermost.models.groups.ChannelResponse;
+import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
+import com.applikey.mattermost.models.user.User;
 
 import java.util.Map;
 
@@ -32,10 +33,10 @@ public interface Api {
     Observable<Response> getInitialLoad();
 
     @GET("/api/v3/users/direct_profiles")
-    Observable<Response> getDirectProfiles();
+    Observable<Map<String, User>> getDirectProfiles();
 
     @GET("/api/v3/users/profiles/{teamId}")
-    Observable<Response> getTeamProfiles(@Path("teamId") String teamId);
+    Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
 
     @GET("/api/v3/users/statuses")
     Observable<Response> getUserStatuses();

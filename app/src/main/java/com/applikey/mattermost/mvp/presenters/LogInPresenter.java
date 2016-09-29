@@ -21,9 +21,7 @@ import okhttp3.Headers;
 import retrofit2.Response;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
-// TODO unsubscribe composite subscription OR migrate to RxPresenter (like RxFragment and RxActivity)
 public class LogInPresenter extends SingleViewPresenter<LogInView> {
 
     @Inject
@@ -38,12 +36,8 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
     @Inject
     TeamStorage mTeamStorage;
 
-    private CompositeSubscription mSubscription;
-
     public LogInPresenter() {
         App.getComponent().inject(this);
-
-        mSubscription = new CompositeSubscription();
     }
 
     // TODO: pre-validation. NOTE: Use stringutils
@@ -71,10 +65,6 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
                 }, view::onTeamsReceiveFailed);
     }
 
-    public void unSubscribe() {
-        mSubscription.clear();
-    }
-
     private void handleSuccessfulResponse(Response<AuthenticationResponse> response) {
         final int code = response.code();
 
@@ -83,6 +73,8 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
         // Handle success
         if (codesGroup == 2) {
             cacheHeaders(response);
+
+            mPrefs.setCurrentUserId(response.body().getId());
             getView().onSuccessfulAuth();
             return;
         }

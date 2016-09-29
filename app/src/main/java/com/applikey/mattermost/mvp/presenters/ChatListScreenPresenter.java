@@ -6,16 +6,12 @@ import com.applikey.mattermost.storage.db.TeamStorage;
 
 import javax.inject.Inject;
 
-import rx.subscriptions.CompositeSubscription;
-
-public class ChatListPagePresenter extends SingleViewPresenter<ChatListScreenView> {
+public class ChatListScreenPresenter extends SingleViewPresenter<ChatListScreenView> {
 
     @Inject
     TeamStorage mTeamStorage;
 
-    private final CompositeSubscription mSubscription = new CompositeSubscription();
-
-    public ChatListPagePresenter() {
+    public ChatListScreenPresenter() {
         App.getComponent().inject(this);
     }
 
@@ -23,9 +19,5 @@ public class ChatListPagePresenter extends SingleViewPresenter<ChatListScreenVie
         mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team -> {
             getView().setToolbarTitle(team.getDisplayName());
         }));
-    }
-
-    public void unSubscribe() {
-        mSubscription.clear();
     }
 }

@@ -1,4 +1,4 @@
-package com.applikey.mattermost.models.groups;
+package com.applikey.mattermost.models.channel;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -103,7 +103,8 @@ public class Channel extends RealmObject {
 
     public enum ChannelType {
         PUBLIC("O"),
-        PRIVATE("P");
+        PRIVATE("P"),
+        DIRECT("D");
 
         private final String representation;
 
@@ -122,6 +123,9 @@ public class Channel extends RealmObject {
                 }
                 case "P": {
                     return PRIVATE;
+                }
+                case "D": {
+                    return DIRECT;
                 }
                 default: {
                     throw new IllegalArgumentException("Wrong channel type");

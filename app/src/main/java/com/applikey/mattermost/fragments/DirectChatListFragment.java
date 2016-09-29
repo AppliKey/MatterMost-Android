@@ -4,19 +4,19 @@ import android.os.Bundle;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
-import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
+import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class GroupListFragment extends BaseChatListFragment {
+public class DirectChatListFragment extends BaseChatListFragment {
 
     @InjectPresenter
-    GroupListPresenter mPresenter;
+    DirectChatListPresenter mPresenter;
 
-    public static BaseChatListFragment newInstance() {
-        final BaseChatListFragment fragment = new GroupListFragment();
+    public static DirectChatListFragment newInstance() {
+        final DirectChatListFragment fragment = new DirectChatListFragment();
 
         final Bundle bundle = new Bundle();
-        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, TabBehavior.GROUPS.ordinal());
+        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, TabBehavior.DIRECT.ordinal());
 
         fragment.setArguments(bundle);
 
@@ -33,6 +33,6 @@ public class GroupListFragment extends BaseChatListFragment {
 
     @Override
     protected int getEmptyStateTextId() {
-        return R.string.no_groups_available;
+        return R.string.no_direct_chats_available;
     }
 }

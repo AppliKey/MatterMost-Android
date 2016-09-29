@@ -1,4 +1,4 @@
-package com.applikey.mattermost.models.groups;
+package com.applikey.mattermost.models.channel;
 
 import java.util.Comparator;
 

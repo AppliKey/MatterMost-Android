@@ -36,4 +36,5 @@
 
     <string name="no_channels_available">No Channels Available</string>
     <string name="no_groups_available">No Groups Available</string>
+    <string name="no_direct_chats_available">No Direct Chats Available</string>
 </resources>

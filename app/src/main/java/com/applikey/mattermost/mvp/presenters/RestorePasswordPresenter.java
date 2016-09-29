@@ -9,7 +9,6 @@ import com.applikey.mattermost.web.ErrorHandler;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
 
 public class RestorePasswordPresenter extends SingleViewPresenter<RestorePasswordView> {
 
@@ -17,8 +16,6 @@ public class RestorePasswordPresenter extends SingleViewPresenter<RestorePasswor
 
     @Inject
     Api mApi;
-
-    private CompositeSubscription mSubscription = new CompositeSubscription();
 
     public RestorePasswordPresenter() {
         App.getComponent().inject(this);
@@ -40,10 +37,6 @@ public class RestorePasswordPresenter extends SingleViewPresenter<RestorePasswor
                     ErrorHandler.handleError(throwable);
                     view.onFailure(throwable.getMessage());
                 }));
-    }
-
-    public void unSubscribe() {
-        mSubscription.clear();
     }
 
     private boolean validateEmailFormat(String email) {

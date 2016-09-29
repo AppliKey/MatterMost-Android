@@ -1,5 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-public interface UnsubscribeablePresenter {
+/* package */ interface UnsubscribeablePresenter {
     void unSubscribe();
 }
