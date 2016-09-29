@@ -50,7 +50,8 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         mViewPager.setAdapter(new ChatListPagerAdapter(getSupportFragmentManager()));
 
         mTabLayout.setupWithViewPager(mViewPager);
-        for (int i = 0; i < mTabLayout.getTabCount(); i++) {
+        final int tabCount = mTabLayout.getTabCount();
+        for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
             if (tab != null) {
                 tab.setIcon(BaseChatListFragment.TabBehavior.getItemBehavior(i).getIcon());
@@ -60,6 +61,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
         mTabLayout.setOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
+        mViewPager.setOffscreenPageLimit(tabCount - 1);
     }
 
     @Override
