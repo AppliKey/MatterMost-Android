@@ -7,6 +7,7 @@ import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
 import com.applikey.mattermost.web.BearerTokenFactory;
@@ -44,8 +45,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    ImageLoader provideImageLoader() {
-        return new PicassoImageLoader(mApp);
+    ImageLoader provideImageLoader(OkHttpClient client) {
+        return new PicassoImageLoader(mApp, client);
     }
 
     @Provides
@@ -120,5 +121,11 @@ public class GlobalModule {
     @PerApp
     UserStorage provideUserStorage() {
         return new UserStorage();
+    }
+
+    @Provides
+    @PerApp
+    ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory) {
+        return new ImagePathHelper(serverUrlFactory);
     }
 }

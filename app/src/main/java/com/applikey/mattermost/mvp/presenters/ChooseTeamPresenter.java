@@ -10,6 +10,7 @@ import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
@@ -37,6 +38,9 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
     @Inject
     ChannelStorage mChannelStorage;
 
+    @Inject
+    ImagePathHelper mImagePathHelper;
+
     public ChooseTeamPresenter() {
         App.getComponent().inject(this);
     }
@@ -63,12 +67,20 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
                 .doOnNext(response -> {
                     final ChannelResponse channelResponse = response.getChannelResponse();
                     mChannelStorage.saveChannelResponse(channelResponse);
-                    mUserStorage.saveUsers(response.getDirectProfiles());
+                    final Map<String, User> contacts = response.getDirectProfiles();
+                    addImagePathInfo(contacts);
+                    mUserStorage.saveUsers(contacts);
                 })
                 .observeOn(Schedulers.io()) // Try main thread
                 .subscribe(response -> {
                     view.onTeamChosen();
                 }, ErrorHandler::handleError));
+    }
+
+    private void addImagePathInfo(Map<String, User> users) {
+        for (User user : users.values()) {
+            user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
+        }
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,

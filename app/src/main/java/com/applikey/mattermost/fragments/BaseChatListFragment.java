@@ -10,12 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListAdapter;
 import com.applikey.mattermost.models.channel.ChannelsWithMetadata;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.utils.kissUtils.utils.BundleUtil;
+import com.applikey.mattermost.web.images.ImageLoader;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,6 +35,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     @Bind(R.id.tv_empty_state)
     TextView tvEmptyState;
 
+    @Inject
+    ImageLoader mImageLoader;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +46,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
+
+        App.getComponent().inject(this);
     }
 
     @Nullable
@@ -84,7 +93,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         rvChannels.setVisibility(View.VISIBLE);
         tvEmptyState.setVisibility(View.GONE);
-        final ChatListAdapter adapter = new ChatListAdapter(channelsWithMetadata.values());
+        final ChatListAdapter adapter = new ChatListAdapter(channelsWithMetadata.values(),
+                mImageLoader);
         rvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvChannels.setAdapter(adapter);
     }

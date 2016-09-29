@@ -11,6 +11,8 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelWithMetadata;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
+import com.applikey.mattermost.web.images.ImageLoader;
+import com.applikey.mattermost.web.images.PicassoImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,10 +25,12 @@ import butterknife.ButterKnife;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     private List<ChannelWithMetadata> mDataSet = null;
+    private ImageLoader mImageLoader;
 
-    public ChatListAdapter(Collection<ChannelWithMetadata> dataSet) {
+    public ChatListAdapter(Collection<ChannelWithMetadata> dataSet, ImageLoader imageLoader) {
         super();
 
+        mImageLoader = imageLoader;
         mDataSet = new ArrayList<>(dataSet.size());
         mDataSet.addAll(dataSet);
         Collections.sort(mDataSet, ChannelWithMetadata.COMPARATOR_BY_DATE);
@@ -50,12 +54,21 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
                 TimeUtil.formatTimeOrDate(lastPostAt != 0 ? lastPostAt :
                         data.getChannel().getCreatedAt()));
 
+        setChannelIcon(vh, data);
         setChannelIconVisibility(vh, data);
     }
 
     @Override
     public int getItemCount() {
         return mDataSet != null ? mDataSet.size() : 0;
+    }
+
+    private void setChannelIcon(ViewHolder viewHolder, ChannelWithMetadata element) {
+
+        final String previewImagePath = element.getChannel().getPreviewImagePath();
+        if (previewImagePath != null && !previewImagePath.isEmpty()) {
+            mImageLoader.displayImage(previewImagePath, viewHolder.getPreviewImage());
+        }
     }
 
     private void setChannelIconVisibility(ViewHolder viewHolder, ChannelWithMetadata element) {

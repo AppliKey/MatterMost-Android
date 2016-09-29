@@ -3,6 +3,7 @@ package com.applikey.mattermost.injects;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
+import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.BaseFragment;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
@@ -26,6 +27,8 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     // Components
+    void inject(BaseChatListFragment fragment);
+
     void inject(BaseFragment fragment);
 
     void inject(BaseActivity baseActivity);

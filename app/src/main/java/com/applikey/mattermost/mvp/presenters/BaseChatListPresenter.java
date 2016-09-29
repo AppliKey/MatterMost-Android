@@ -65,7 +65,7 @@ public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatList
                 new ChannelsWithMetadata(channels.size());
         for (Channel channel : channels) {
             if (channel.getType().equals(directChannelType)) {
-                updateDirectChannelDisplayName(channel, userMap, currentUserId);
+                updateDirectChannelData(channel, userMap, currentUserId);
             }
 
             channelsWithMetadata.put(channel.getId(), new ChannelWithMetadata(channel));
@@ -80,14 +80,15 @@ public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatList
         return channelsWithMetadata;
     }
 
-    private void updateDirectChannelDisplayName(Channel channel, Map<String, User> contacts,
-                                                String currentUserId) {
+    private void updateDirectChannelData(Channel channel, Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelId = channel.getName();
         final String otherUserId = extractOtherUserId(channelId, currentUserId);
 
         final User user = contacts.get(otherUserId);
         if (user != null) {
             channel.setDisplayName(User.getDisplayableName(user));
+            channel.setPreviewImagePath(user.getProfileImage());
         }
     }
 

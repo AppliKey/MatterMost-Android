@@ -32,11 +32,13 @@ public class User extends RealmObject {
     @SerializedName("update_at")
     private long updateAt;
 
+    private String profileImage;
+
     public User() {
     }
 
     public User(String id, String username, String email, String firstName,
-                String lastName, long lastActivityAt, long updateAt) {
+                String lastName, long lastActivityAt, long updateAt, String profileImage) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -44,6 +46,7 @@ public class User extends RealmObject {
         this.lastName = lastName;
         this.lastActivityAt = lastActivityAt;
         this.updateAt = updateAt;
+        this.profileImage = profileImage;
     }
 
     public String getId() {
@@ -100,6 +103,14 @@ public class User extends RealmObject {
 
     public void setLastActivityAt(long lastActivityAt) {
         this.lastActivityAt = lastActivityAt;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public static String getDisplayableName(User user) {

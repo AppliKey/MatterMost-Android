@@ -116,6 +116,7 @@ dependencies {
 
     // image loading and processing
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
     // views
     compile 'com.tasomaniac:delayed-progress:0.3'

@@ -37,6 +37,8 @@ public class Channel extends RealmObject {
     @SerializedName("create_at")
     private long createdAt;
 
+    private String previewImagePath;
+
     public String getId() {
         return id;
     }
@@ -99,6 +101,14 @@ public class Channel extends RealmObject {
 
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPreviewImagePath() {
+        return previewImagePath;
+    }
+
+    public void setPreviewImagePath(String previewImagePath) {
+        this.previewImagePath = previewImagePath;
     }
 
     public enum ChannelType {
