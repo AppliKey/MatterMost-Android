@@ -3,7 +3,6 @@
 
     <string name="please_wait">Please wait.</string>
     <string name="example_server">54.234.249.244</string>
-    <!--<string name="example_server">192.168.45.115:8065</string>-->
     <string name="proceed">Proceed</string>
     <string name="enter_mattermost_server_url">Enter Mattermost Server URL</string>
     <string name="next">Next</string>
@@ -14,13 +13,7 @@
     <string name="email">Email</string>
     <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
-    <string name="default_server_text">192.168.42.115:8065</string>
-    <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
-    <!--<string name="default_server_text">54.234.249.244</string>-->
-    <string name="default_login_text">tester</string>
-    <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
     <string name="unknown">UNKNOWN</string>
-    <string name="default_password">zxD123</string>
     <string name="all_your_team_communication">All your team communication in one\nplace, searchable and accessible\nanywhere.</string>
     <string name="enter_server_url_capt">ENTER SERVER URL</string>
     <string name="your_team_capt">Select your team</string>
@@ -37,4 +30,13 @@
     <string name="no_channels_available">No Channels Available</string>
     <string name="no_groups_available">No Groups Available</string>
     <string name="no_direct_chats_available">No Direct Chats Available</string>
+
+
+    <string name="default_server_text">192.168.42.115:8065</string>
+    <!--<string name="default_server_text"></string>-->
+    <string name="default_login_text">tester</string>
+    <!--<string name="default_login_text"></string>-->
+    <string name="default_password">zxD123</string>
+    <!--<string name="default_password"></string>-->
+
 </resources>
