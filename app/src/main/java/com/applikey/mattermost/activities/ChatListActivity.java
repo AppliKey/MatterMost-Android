@@ -59,7 +59,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         }
 
         final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
-        mTabLayout.setOnTabSelectedListener(mOnTabSelectedListener);
+        mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
         mViewPager.setOffscreenPageLimit(tabCount - 1);
     }
