@@ -2,6 +2,7 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -106,6 +107,12 @@ public class GlobalModule {
     @PerApp
     TeamStorage provideTeamStorage() {
         return new TeamStorage();
+    }
+
+    @Provides
+    @PerApp
+    ChannelStorage provideChannelStorage() {
+        return new ChannelStorage();
     }
 
 }

@@ -2,6 +2,7 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.groups.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.utils.PrimitiveConverterFactory;
 
@@ -97,5 +98,10 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Response> sendPasswordReset(@Field("email") String email) {
         return getRealApi().sendPasswordReset(email);
+    }
+
+    @Override
+    public Observable<ChannelResponse> listChannels(@Path("teamId") String teamId) {
+        return getRealApi().listChannels(teamId);
     }
 }

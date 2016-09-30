@@ -37,14 +37,32 @@ public class Db {
         realm.close();
     }
 
+    public void saveTransactionalWithRemoval(RealmObject object) {
+        final Realm realm = getRealm();
+        realm.beginTransaction();
+        realm.delete(object.getClass());
+        realm.copyToRealmOrUpdate(object);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public void saveTransactionalWithRemoval(Iterable<? extends RealmObject> objects) {
+        final Iterator<? extends RealmObject> iterator = objects.iterator();
+        if (!iterator.hasNext()) {
+            return;
+        }
+        final Realm realm = getRealm();
+        realm.beginTransaction();
+        final Class<? extends RealmObject> clazz = iterator.next().getClass();
+        realm.delete(clazz);
+        realm.copyToRealmOrUpdate(objects);
+        realm.commitTransaction();
+        realm.close();
+    }
+
     public void saveTransactionalWithRemovalAsync(RealmObject object) {
         mWritesExecutor.execute(() -> {
-            final Realm realm = getRealm();
-            realm.beginTransaction();
-            realm.delete(object.getClass());
-            realm.copyToRealmOrUpdate(object);
-            realm.commitTransaction();
-            realm.close();
+            saveTransactionalWithRemoval(object);
         });
     }
 
@@ -58,17 +76,7 @@ public class Db {
 
     public void saveTransactionalWithRemovalAsync(Iterable<? extends RealmObject> objects) {
         mWritesExecutor.execute(() -> {
-            final Iterator<? extends RealmObject> iterator = objects.iterator();
-            if (!iterator.hasNext()) {
-                return;
-            }
-            final Realm realm = getRealm();
-            realm.beginTransaction();
-            final Class<? extends RealmObject> clazz = iterator.next().getClass();
-            realm.delete(clazz);
-            realm.copyToRealmOrUpdate(objects);
-            realm.commitTransaction();
-            realm.close();
+            saveTransactionalWithRemoval(objects);
         });
     }
 
@@ -81,6 +89,47 @@ public class Db {
                 .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
+                                                                                String fieldName,
+                                                                                String value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> Observable<T> listSingeRealmObject(
+            Class<T> tClass,
+            String primaryKeyColumnName, String primaryKey) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(primaryKeyColumnName, primaryKey)
+                .findFirstAsync()
+                .<T>asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
+    }
+
+    public Observable<DictionaryEntry> getSingleDictionaryEntry(String key) {
+        final Realm realm = getRealm();
+        return realm
+                .where(DictionaryEntry.class)
+                .equalTo("key", key)
+                .findFirstAsync()
+                .<DictionaryEntry>asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
+
     }
 
     private Realm getRealm() {

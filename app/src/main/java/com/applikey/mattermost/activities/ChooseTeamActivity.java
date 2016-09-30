@@ -58,6 +58,7 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
 
     @Override
     public void onTeamChosen() {
+        hideLoadingDialog();
         startActivity(ChatListActivity.getIntent(this));
     }
 
@@ -73,6 +74,7 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     protected void onDestroy() {
         super.onDestroy();
 
+        hideLoadingDialog();
         mPresenter.unSubscribe();
     }
 
@@ -82,6 +84,7 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     }
 
     private final TeamListAdapter.TeamClickListener mTeamClickListener = team -> {
+        showLoadingDialog();
         mPresenter.chooseTeam(team);
     };
 

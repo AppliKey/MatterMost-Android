@@ -10,8 +10,15 @@
     <color name="textPrimary">@android:color/black</color>
     <color name="textSecondary">@android:color/darker_gray</color>
 
+    <color name="textListPrimary">#242933</color>
+    <color name="textListSecondary">#919499</color>
+
     <color name="noResource">#FF00CC</color>
 
     <color name="separator">#757575</color>
     <color name="separator_light">#757575</color>
+    <color name="separator_list">#edeff2</color>
+
+    <color name="tabSelected">#2bce7c</color>
+    <color name="tabUnSelected">#c9cdd4</color>
 </resources>

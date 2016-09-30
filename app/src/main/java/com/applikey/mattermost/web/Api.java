@@ -2,6 +2,7 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.groups.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
 
 import java.util.Map;
@@ -42,4 +43,8 @@ public interface Api {
     @POST("/api/v3/users/send_password_reset")
     @FormUrlEncoded
     Observable<Response> sendPasswordReset(@Field("email") String email);
+
+    // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
+    @GET("/api/v3/teams/{teamId}/channels/")
+    Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
 }

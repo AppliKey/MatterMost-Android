@@ -55,4 +55,12 @@
         <item name="android:background">?selectableItemBackground</item>
     </style>
 
+    <style name="ChatListTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/ChatListTabLayoutTextAppearance</item>
+    </style>
+
+    <style name="ChatListTabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+    </style>
+
 </resources>
