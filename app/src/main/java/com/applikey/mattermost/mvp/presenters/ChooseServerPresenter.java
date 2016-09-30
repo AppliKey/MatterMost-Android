@@ -14,6 +14,8 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
 
     private static final String TAG = ChooseServerPresenter.class.getSimpleName();
 
+    private static final String HTTP_PREFIX = "http://";
+    private static final String HTTPS_PREFIX = "https://";
     private static final String URL_END_DELIMITER = "/";
 
     @Inject
@@ -41,7 +43,12 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
             view.showValidationError();
             return;
         }
-        String fullServerUrl = httpPrefix + serverUrl;
+        String fullServerUrl = serverUrl;
+
+        if (!serverUrl.startsWith(HTTP_PREFIX) && !serverUrl.startsWith(HTTPS_PREFIX)) {
+            fullServerUrl = httpPrefix + serverUrl;
+        }
+
         if (!fullServerUrl.endsWith(URL_END_DELIMITER)) {
             fullServerUrl += URL_END_DELIMITER;
         }
