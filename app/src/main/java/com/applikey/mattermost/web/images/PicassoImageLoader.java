@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
+import com.applikey.mattermost.utils.image.PicassoCircularTransformation;
 import com.applikey.mattermost.utils.rx.RetryWithDelay;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
@@ -17,9 +18,11 @@ import rx.schedulers.Schedulers;
 public class PicassoImageLoader implements ImageLoader {
 
     private final Picasso picasso;
+    private final PicassoCircularTransformation transformation;
 
     public PicassoImageLoader(Context context, OkHttpClient client) {
         picasso = new Picasso.Builder(context).downloader(new OkHttp3Downloader(client)).build();
+        transformation = new PicassoCircularTransformation();
     }
 
     @Override
@@ -32,6 +35,11 @@ public class PicassoImageLoader implements ImageLoader {
     @Override
     public void displayImage(@NonNull String url, @NonNull ImageView imageView) {
         picasso.load(url).into(imageView);
+    }
+
+    @Override
+    public void displayCircularImage(@NonNull String url, @NonNull ImageView imageView) {
+        picasso.load(url).transform(transformation).into(imageView);
     }
 
     @Override

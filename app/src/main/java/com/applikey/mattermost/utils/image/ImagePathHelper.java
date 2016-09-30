@@ -1,4 +1,4 @@
-package com.applikey.mattermost.utils;
+package com.applikey.mattermost.utils.image;
 
 import com.applikey.mattermost.web.ServerUrlFactory;
 

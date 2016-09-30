@@ -67,7 +67,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         final String previewImagePath = element.getChannel().getPreviewImagePath();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            mImageLoader.displayImage(previewImagePath, viewHolder.getPreviewImage());
+            mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
         }
     }
 

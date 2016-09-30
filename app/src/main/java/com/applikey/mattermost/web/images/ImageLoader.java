@@ -13,6 +13,8 @@ public interface ImageLoader {
 
     void displayImage(@NonNull String url, @NonNull ImageView imageView);
 
+    void displayCircularImage(@NonNull String url, @NonNull ImageView imageView);
+
     void dropMemoryCache();
 
 }
