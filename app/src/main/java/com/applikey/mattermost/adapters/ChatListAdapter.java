@@ -82,7 +82,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     private void setStatusIconVisibility(ViewHolder vh, ChannelWithMetadata data) {
-        if (Channel.ChannelType.PRIVATE.getRepresentation().equals(data.getChannel().getType())) {
+        if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getChannel().getType())) {
             vh.getStatusBackground().setVisibility(View.VISIBLE);
             vh.getStatus().setVisibility(View.VISIBLE);
         } else {
