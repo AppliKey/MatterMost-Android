@@ -6,6 +6,7 @@ import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Response;
@@ -38,8 +39,11 @@ public interface Api {
     @GET("/api/v3/users/profiles/{teamId}")
     Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
 
-    @GET("/api/v3/users/statuses")
-    Observable<Response> getUserStatuses();
+    @POST("/api/v3/users/status")
+    Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds);
+
+    @GET("/api/v3/users/status")
+    Observable<Map<String, String>> getUserStatuses();
 
     @POST("/api/v3/users/send_password_reset")
     @FormUrlEncoded

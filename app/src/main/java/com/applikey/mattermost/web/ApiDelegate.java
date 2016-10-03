@@ -91,7 +91,12 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response> getUserStatuses() {
+    public Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds) {
+        return getRealApi().getUserStatusesCompatible(userIds);
+    }
+
+    @Override
+    public Observable<Map<String, String>> getUserStatuses() {
         return getRealApi().getUserStatuses();
     }
 

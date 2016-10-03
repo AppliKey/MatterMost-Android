@@ -15,6 +15,7 @@ import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -70,10 +71,37 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
                     final Map<String, User> contacts = response.getDirectProfiles();
                     addImagePathInfo(contacts);
                     mUserStorage.saveUsers(contacts);
+
+                    final Set<String> keys = contacts.keySet();
+                    final String[] userIds = keys.toArray(new String[]{});
+
+                    // TODO: Remove v3.3 API support
+
+                    // v3.3 Compatible
+                    mSubscription.add(mApi.getUserStatusesCompatible(userIds)
+                            .subscribeOn(Schedulers.io())
+                            .doOnNext(response1 -> {
+                                mUserStorage.saveStatuses(response1);
+                            })
+                            .observeOn(Schedulers.io())
+                            .subscribe(response2 -> {
+                                view.onTeamChosen();
+                            }, error -> {
+                                // v3.4 Compatible
+                                // we are trying to call modern API
+                                mSubscription.add(mApi.getUserStatuses()
+                                        .subscribeOn(Schedulers.io())
+                                        .doOnNext(response1 -> {
+                                            mUserStorage.saveStatuses(response1);
+                                        })
+                                        .observeOn(Schedulers.io())
+                                        .subscribe(response2 -> {
+                                            view.onTeamChosen();
+                                        }, ErrorHandler::handleError));
+                            }));
                 })
                 .observeOn(Schedulers.io()) // Try main thread
                 .subscribe(response -> {
-                    view.onTeamChosen();
                 }, ErrorHandler::handleError));
     }
 
