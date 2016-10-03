@@ -56,6 +56,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         setChannelIcon(vh, data);
         setChannelIconVisibility(vh, data);
+        setStatusIconVisibility(vh, data);
     }
 
     @Override
@@ -80,6 +81,16 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         }
     }
 
+    private void setStatusIconVisibility(ViewHolder vh, ChannelWithMetadata data) {
+        if (Channel.ChannelType.PRIVATE.getRepresentation().equals(data.getChannel().getType())) {
+            vh.getStatusBackground().setVisibility(View.VISIBLE);
+            vh.getStatus().setVisibility(View.VISIBLE);
+        } else {
+            vh.getStatusBackground().setVisibility(View.GONE);
+            vh.getStatus().setVisibility(View.GONE);
+        }
+    }
+
     /* package */
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -90,6 +101,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         @Bind(R.id.iv_channel_icon)
         ImageView mChannelIcon;
+
+        @Bind(R.id.iv_status_bg)
+        ImageView mStatusBackground;
+
+        @Bind(R.id.iv_status)
+        ImageView mStatus;
 
         @Bind(R.id.tv_channel_name)
         TextView mChannelName;
@@ -118,6 +135,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         ImageView getChannelIcon() {
             return mChannelIcon;
+        }
+
+        ImageView getStatusBackground() {
+            return mStatusBackground;
+        }
+
+        ImageView getStatus() {
+            return mStatus;
         }
 
         TextView getChannelName() {
