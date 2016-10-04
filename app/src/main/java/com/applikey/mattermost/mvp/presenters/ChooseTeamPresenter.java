@@ -91,9 +91,7 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
                                 // we are trying to call modern API
                                 mSubscription.add(mApi.getUserStatuses()
                                         .subscribeOn(Schedulers.io())
-                                        .doOnNext(response1 -> {
-                                            mUserStorage.saveStatuses(response1);
-                                        })
+                                        .doOnNext(response1 -> mUserStorage.saveStatuses(response1))
                                         .observeOn(Schedulers.io())
                                         .subscribe(response2 -> {
                                             view.onTeamChosen();
