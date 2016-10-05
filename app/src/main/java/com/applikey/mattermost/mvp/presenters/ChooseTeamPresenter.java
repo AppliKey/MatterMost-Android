@@ -15,7 +15,6 @@ import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
