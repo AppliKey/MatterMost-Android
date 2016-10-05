@@ -39,6 +39,7 @@
             android:layout_below="@id/tv_email"
             android:hint="@string/email"
             android:maxLines="1"
+            android:singleLine="true"
             android:text="@string/default_login_text" />
 
         <TextView

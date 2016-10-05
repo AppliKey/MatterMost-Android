@@ -3,17 +3,20 @@ package com.applikey.mattermost.injects;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
+import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.BaseFragment;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
-import com.applikey.mattermost.mvp.presenters.ChannelsListPresenter;
-import com.applikey.mattermost.mvp.presenters.ChatListPagePresenter;
+import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
+import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
-import com.applikey.mattermost.mvp.presenters.GroupsListPresenter;
+import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.db.UserStorage;
 
 import dagger.Component;
 
@@ -24,6 +27,8 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     // Components
+    void inject(BaseChatListFragment fragment);
+
     void inject(BaseFragment fragment);
 
     void inject(BaseActivity baseActivity);
@@ -41,11 +46,13 @@ public interface ApplicationComponent {
 
     void inject(RestorePasswordPresenter presenter);
 
-    void inject(ChatListPagePresenter presenter);
+    void inject(ChatListScreenPresenter presenter);
 
-    void inject(ChannelsListPresenter presenter);
+    void inject(ChannelListPresenter presenter);
 
-    void inject(GroupsListPresenter presenter);
+    void inject(GroupListPresenter presenter);
+
+    void inject(DirectChatListPresenter presenter);
 
     void inject(BaseChatListPresenter presenter);
 
@@ -53,4 +60,6 @@ public interface ApplicationComponent {
     void inject(TeamStorage storage);
 
     void inject(ChannelStorage storage);
+
+    void inject(UserStorage storage);
 }

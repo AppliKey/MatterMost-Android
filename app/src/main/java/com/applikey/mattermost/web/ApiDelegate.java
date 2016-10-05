@@ -2,12 +2,12 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
-import com.applikey.mattermost.models.groups.ChannelResponse;
+import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.PrimitiveConverterFactory;
 
 import java.util.Map;
-import java.util.Objects;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Response;
@@ -81,17 +81,22 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response> getDirectProfiles() {
+    public Observable<Map<String, User>> getDirectProfiles() {
         return getRealApi().getDirectProfiles();
     }
 
     @Override
-    public Observable<Response> getTeamProfiles(@Path("teamId") String teamId) {
+    public Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId) {
         return getRealApi().getTeamProfiles(teamId);
     }
 
     @Override
-    public Observable<Response> getUserStatuses() {
+    public Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds) {
+        return getRealApi().getUserStatusesCompatible(userIds);
+    }
+
+    @Override
+    public Observable<Map<String, String>> getUserStatuses() {
         return getRealApi().getUserStatuses();
     }
 

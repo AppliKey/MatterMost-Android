@@ -13,10 +13,11 @@ public class ErrorHandler {
     public static void handleError(Context context, Throwable throwable) {
         // TODO
         throwable.printStackTrace();
+        Log.e(TAG, throwable.getMessage());
     }
 
     public static void handleError(Throwable throwable) {
-        throwable.printStackTrace();
+        Log.e(TAG, throwable.getMessage());
     }
 
     public static void handleError(String message) {

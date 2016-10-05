@@ -1,5 +1,6 @@
-package com.applikey.mattermost.models.groups;
+package com.applikey.mattermost.models.channel;
 
+import com.applikey.mattermost.models.user.UserStatus;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
@@ -36,6 +37,11 @@ public class Channel extends RealmObject {
 
     @SerializedName("create_at")
     private long createdAt;
+
+    // Application-specific fields
+    private String previewImagePath;
+
+    private int status;
 
     public String getId() {
         return id;
@@ -101,9 +107,26 @@ public class Channel extends RealmObject {
         this.createdAt = createdAt;
     }
 
+    public String getPreviewImagePath() {
+        return previewImagePath;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setPreviewImagePath(String previewImagePath) {
+        this.previewImagePath = previewImagePath;
+    }
+
     public enum ChannelType {
         PUBLIC("O"),
-        PRIVATE("P");
+        PRIVATE("P"),
+        DIRECT("D");
 
         private final String representation;
 
@@ -122,6 +145,9 @@ public class Channel extends RealmObject {
                 }
                 case "P": {
                     return PRIVATE;
+                }
+                case "D": {
+                    return DIRECT;
                 }
                 default: {
                     throw new IllegalArgumentException("Wrong channel type");

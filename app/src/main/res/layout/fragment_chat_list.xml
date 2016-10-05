@@ -6,13 +6,14 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_channels"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_empty_state"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </RelativeLayout>

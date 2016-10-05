@@ -10,17 +10,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.adapters.GroupAdapter;
-import com.applikey.mattermost.models.groups.ChannelsWithMetadata;
+import com.applikey.mattermost.adapters.ChatListAdapter;
+import com.applikey.mattermost.models.channel.ChannelsWithMetadata;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
-import com.applikey.mattermost.mvp.views.ChannelsListView;
+import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.utils.kissUtils.utils.BundleUtil;
+import com.applikey.mattermost.web.images.ImageLoader;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public abstract class BaseChannelListFragment extends BaseMvpFragment implements ChannelsListView {
+public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
     private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
@@ -31,6 +35,9 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
     @Bind(R.id.tv_empty_state)
     TextView tvEmptyState;
 
+    @Inject
+    ImageLoader mImageLoader;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,12 +46,14 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
 
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
+
+        App.getComponent().inject(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_channels, container, false);
+        final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
         ButterKnife.bind(this, view);
 
@@ -61,13 +70,6 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        ButterKnife.unbind(this);
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
 
@@ -78,11 +80,14 @@ public abstract class BaseChannelListFragment extends BaseMvpFragment implements
     public void displayInitialData(ChannelsWithMetadata channelsWithMetadata) {
         if (channelsWithMetadata.isEmpty()) {
             tvEmptyState.setVisibility(View.VISIBLE);
+            rvChannels.setVisibility(View.GONE);
             return;
         }
 
+        rvChannels.setVisibility(View.VISIBLE);
         tvEmptyState.setVisibility(View.GONE);
-        final GroupAdapter adapter = new GroupAdapter(channelsWithMetadata.values());
+        final ChatListAdapter adapter = new ChatListAdapter(channelsWithMetadata.values(),
+                mImageLoader);
         rvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvChannels.setAdapter(adapter);
     }

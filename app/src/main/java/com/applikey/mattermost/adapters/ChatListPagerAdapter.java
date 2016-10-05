@@ -1,30 +1,22 @@
 package com.applikey.mattermost.adapters;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.applikey.mattermost.fragments.BaseChannelListFragment;
+import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.EmptyChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
-import com.applikey.mattermost.mvp.presenters.ChannelsListPresenter;
-import com.applikey.mattermost.mvp.presenters.GroupsListPresenter;
-
-import static com.applikey.mattermost.fragments.BaseChannelListFragment.TabBehavior.getItemBehavior;
+import com.applikey.mattermost.fragments.DirectChatListFragment;
 
 public class ChatListPagerAdapter extends FragmentPagerAdapter {
 
     // We skip undefined page. This should be changed later on after we introduce disabling unread page
-    private final int pageCount = BaseChannelListFragment.TabBehavior.values().length - 1;
+    private final int pageCount = BaseChatListFragment.TabBehavior.values().length - 1;
 
-    private final Context mContext;
-
-    public ChatListPagerAdapter(Context context, FragmentManager fm) {
+    public ChatListPagerAdapter(FragmentManager fm) {
         super(fm);
-
-        mContext = context;
     }
 
     @Override
@@ -35,6 +27,9 @@ public class ChatListPagerAdapter extends FragmentPagerAdapter {
             }
             case 3: {
                 return GroupListFragment.newInstance();
+            }
+            case 4: {
+                return DirectChatListFragment.newInstance();
             }
             default: {
                 return EmptyChatListFragment.newInstance();

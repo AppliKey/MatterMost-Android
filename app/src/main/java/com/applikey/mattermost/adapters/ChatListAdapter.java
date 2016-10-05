@@ -8,9 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.models.groups.Channel;
-import com.applikey.mattermost.models.groups.ChannelWithMetadata;
+import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelWithMetadata;
+import com.applikey.mattermost.models.user.UserStatus;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
+import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,38 +22,41 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> {
+public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     private List<ChannelWithMetadata> mDataSet = null;
+    private ImageLoader mImageLoader;
 
-    public GroupAdapter(Collection<ChannelWithMetadata> dataSet) {
+    public ChatListAdapter(Collection<ChannelWithMetadata> dataSet, ImageLoader imageLoader) {
         super();
 
+        mImageLoader = imageLoader;
         mDataSet = new ArrayList<>(dataSet.size());
         mDataSet.addAll(dataSet);
         Collections.sort(mDataSet, ChannelWithMetadata.COMPARATOR_BY_DATE);
     }
 
     @Override
-    public GroupAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ChatListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_channel, parent, false);
-
+                .inflate(R.layout.list_item_chat, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(GroupAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
         final ChannelWithMetadata data = mDataSet.get(position);
 
         final long lastPostAt = data.getChannel().getLastPostAt();
 
-        holder.getChannelName().setText(data.getChannel().getDisplayName());
-        holder.getLastMessageTime().setText(
+        vh.getChannelName().setText(data.getChannel().getDisplayName());
+        vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDate(lastPostAt != 0 ? lastPostAt :
                         data.getChannel().getCreatedAt()));
 
-        setChannelIconVisibility(holder, data);
+        setChannelIcon(vh, data);
+        setChannelIconVisibility(vh, data);
+        setStatusIcon(vh, data);
     }
 
     @Override
@@ -59,12 +64,34 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
         return mDataSet != null ? mDataSet.size() : 0;
     }
 
+    private void setChannelIcon(ViewHolder viewHolder, ChannelWithMetadata element) {
+
+        final String previewImagePath = element.getChannel().getPreviewImagePath();
+        if (previewImagePath != null && !previewImagePath.isEmpty()) {
+            mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
+        }
+    }
+
     private void setChannelIconVisibility(ViewHolder viewHolder, ChannelWithMetadata element) {
         final String type = element.getChannel().getType();
-        if (Channel.ChannelType.PUBLIC.getRepresentation().equals(type)) {
-            viewHolder.getChannelIcon().setVisibility(View.GONE);
-        } else {
+        if (Channel.ChannelType.PRIVATE.getRepresentation().equals(type)) {
             viewHolder.getChannelIcon().setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.getChannelIcon().setVisibility(View.GONE);
+        }
+    }
+
+    private void setStatusIcon(ViewHolder vh, ChannelWithMetadata data) {
+        if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getChannel().getType())) {
+            final UserStatus.Status status = UserStatus.Status.from(data.getChannel().getStatus());
+            if (status != null) {
+                vh.getStatus().setImageResource(status.getDrawableId());
+            }
+            vh.getStatusBackground().setVisibility(View.VISIBLE);
+            vh.getStatus().setVisibility(View.VISIBLE);
+        } else {
+            vh.getStatusBackground().setVisibility(View.GONE);
+            vh.getStatus().setVisibility(View.GONE);
         }
     }
 
@@ -78,6 +105,12 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
         @Bind(R.id.iv_channel_icon)
         ImageView mChannelIcon;
+
+        @Bind(R.id.iv_status_bg)
+        ImageView mStatusBackground;
+
+        @Bind(R.id.iv_status)
+        ImageView mStatus;
 
         @Bind(R.id.tv_channel_name)
         TextView mChannelName;
@@ -106,6 +139,14 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.ViewHolder> 
 
         ImageView getChannelIcon() {
             return mChannelIcon;
+        }
+
+        ImageView getStatusBackground() {
+            return mStatusBackground;
+        }
+
+        ImageView getStatus() {
+            return mStatus;
         }
 
         TextView getChannelName() {

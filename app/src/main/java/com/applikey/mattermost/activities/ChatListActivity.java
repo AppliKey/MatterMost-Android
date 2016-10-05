@@ -12,8 +12,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
-import com.applikey.mattermost.fragments.BaseChannelListFragment;
-import com.applikey.mattermost.mvp.presenters.ChatListPagePresenter;
+import com.applikey.mattermost.fragments.BaseChatListFragment;
+import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 public class ChatListActivity extends BaseMvpActivity implements ChatListScreenView {
 
     @InjectPresenter
-    ChatListPagePresenter mPresenter;
+    ChatListScreenPresenter mPresenter;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -47,20 +47,21 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     private void initView() {
         mPresenter.applyInitialViewState();
 
-        mViewPager.setAdapter(new ChatListPagerAdapter(ChatListActivity.this,
-                getSupportFragmentManager()));
+        mViewPager.setAdapter(new ChatListPagerAdapter(getSupportFragmentManager()));
 
         mTabLayout.setupWithViewPager(mViewPager);
-        for (int i = 0; i < mTabLayout.getTabCount(); i++) {
+        final int tabCount = mTabLayout.getTabCount();
+        for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
             if (tab != null) {
-                tab.setIcon(BaseChannelListFragment.TabBehavior.getItemBehavior(i).getIcon());
+                tab.setIcon(BaseChatListFragment.TabBehavior.getItemBehavior(i).getIcon());
             }
         }
 
         final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
-        mTabLayout.setOnTabSelectedListener(mOnTabSelectedListener);
+        mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
+        mViewPager.setOffscreenPageLimit(tabCount - 1);
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
-import com.applikey.mattermost.models.groups.ChannelResponse;
+import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
+import com.applikey.mattermost.models.user.User;
 
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Response;
@@ -32,13 +34,16 @@ public interface Api {
     Observable<Response> getInitialLoad();
 
     @GET("/api/v3/users/direct_profiles")
-    Observable<Response> getDirectProfiles();
+    Observable<Map<String, User>> getDirectProfiles();
 
     @GET("/api/v3/users/profiles/{teamId}")
-    Observable<Response> getTeamProfiles(@Path("teamId") String teamId);
+    Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
 
-    @GET("/api/v3/users/statuses")
-    Observable<Response> getUserStatuses();
+    @POST("/api/v3/users/status")
+    Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds);
+
+    @GET("/api/v3/users/status")
+    Observable<Map<String, String>> getUserStatuses();
 
     @POST("/api/v3/users/send_password_reset")
     @FormUrlEncoded

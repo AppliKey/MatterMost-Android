@@ -1,9 +1,9 @@
 package com.applikey.mattermost.storage.db;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.models.groups.Channel;
-import com.applikey.mattermost.models.groups.ChannelResponse;
-import com.applikey.mattermost.models.groups.Membership;
+import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.channel.Membership;
 
 import java.util.List;
 
@@ -32,6 +32,11 @@ public class ChannelStorage {
     public Observable<List<Channel>> listClosed() {
         return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.PRIVATE.getRepresentation());
+    }
+
+    public Observable<List<Channel>> listDirect() {
+        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.DIRECT.getRepresentation());
     }
 
     public Observable<List<Membership>> listMembership() {

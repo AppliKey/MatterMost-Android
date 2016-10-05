@@ -1,6 +1,4 @@
-package com.applikey.mattermost.models.groups;
-
-import com.applikey.mattermost.data.MutableTuple;
+package com.applikey.mattermost.models.channel;
 
 import java.util.HashMap;
 
