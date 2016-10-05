@@ -31,6 +31,7 @@
     <string name="no_groups_available">No Groups Available</string>
     <string name="no_direct_chats_available">No Direct Chats Available</string>
 
+    <string name="action_search">Search</string>
 
     <!--<string name="default_server_text">192.168.0.100:8065</string>-->
     <string name="default_server_text">192.168.42.115:8065</string>
