@@ -1,5 +1,6 @@
 package com.applikey.mattermost.models.channel;
 
+import com.applikey.mattermost.models.user.UserStatus;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
@@ -37,7 +38,10 @@ public class Channel extends RealmObject {
     @SerializedName("create_at")
     private long createdAt;
 
+    // Application-specific fields
     private String previewImagePath;
+
+    private int status;
 
     public String getId() {
         return id;
@@ -105,6 +109,14 @@ public class Channel extends RealmObject {
 
     public String getPreviewImagePath() {
         return previewImagePath;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public void setPreviewImagePath(String previewImagePath) {

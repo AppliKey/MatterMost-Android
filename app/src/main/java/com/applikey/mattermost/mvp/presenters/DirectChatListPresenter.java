@@ -22,11 +22,13 @@ public class DirectChatListPresenter extends BaseChatListPresenter {
 
     public void getInitialData() {
         final ChatListView view = getView();
+        // TODO Introduce DTO object
         mSubscription.add(
                 Observable.zip(
                         mChannelStorage.listDirect(),
                         mChannelStorage.listMembership(),
                         mUserStorage.listDirectProfiles(),
+                        mUserStorage.listStatuses(),
                         this::transform)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayInitialData, ErrorHandler::handleError));

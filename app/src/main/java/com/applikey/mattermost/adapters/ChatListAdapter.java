@@ -10,9 +10,9 @@ import android.widget.TextView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelWithMetadata;
+import com.applikey.mattermost.models.user.UserStatus;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
-import com.applikey.mattermost.web.images.PicassoImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +56,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         setChannelIcon(vh, data);
         setChannelIconVisibility(vh, data);
-        setStatusIconVisibility(vh, data);
+        setStatusIcon(vh, data);
     }
 
     @Override
@@ -81,8 +81,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         }
     }
 
-    private void setStatusIconVisibility(ViewHolder vh, ChannelWithMetadata data) {
+    private void setStatusIcon(ViewHolder vh, ChannelWithMetadata data) {
         if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getChannel().getType())) {
+            final UserStatus.Status status = UserStatus.Status.from(data.getChannel().getStatus());
+            if (status != null) {
+                vh.getStatus().setImageResource(status.getDrawableId());
+            }
             vh.getStatusBackground().setVisibility(View.VISIBLE);
             vh.getStatus().setVisibility(View.VISIBLE);
         } else {

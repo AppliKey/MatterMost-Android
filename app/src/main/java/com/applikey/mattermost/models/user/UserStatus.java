@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.user;
 
+import com.applikey.mattermost.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,16 +44,32 @@ public class UserStatus extends RealmObject {
     }
 
     public enum Status {
-        ONLINE, AWAY, OFFLINE;
+        OFFLINE(R.drawable.indicator_status_offline),
+        ONLINE(R.drawable.indicator_status_online),
+        AWAY(R.drawable.indicator_status_idle);
+
+        private final int drawableId;
+
+        Status(int drawableId) {
+            this.drawableId = drawableId;
+        }
+
+        public int getDrawableId() {
+            return drawableId;
+        }
 
         private static final Map<String, Status> representations = new HashMap<String, Status>() {{
+            put("offline", OFFLINE);
             put("online", ONLINE);
             put("away", AWAY);
-            put("offline", OFFLINE);
         }};
 
         public static Status from(String representation) {
             return representations.get(representation);
+        }
+
+        public static Status from(int ordinal) {
+            return values()[ordinal];
         }
     }
 }

@@ -32,13 +32,15 @@ public class User extends RealmObject {
     @SerializedName("update_at")
     private long updateAt;
 
+    // Application-specific fields
     private String profileImage;
 
     public User() {
     }
 
     public User(String id, String username, String email, String firstName,
-                String lastName, long lastActivityAt, long updateAt, String profileImage) {
+                String lastName, long lastActivityAt, long updateAt,
+                String profileImage) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -133,12 +135,4 @@ public class User extends RealmObject {
 
         return builder.toString();
     }
-
-    public final static Comparator<User> COMPARATOR_BY_NAME = (u1, u2) -> {
-        final String u1Name = getDisplayableName(u1);
-        final String u2Name = getDisplayableName(u2);
-
-        return u1Name.compareTo(u2Name);
-    };
-
 }

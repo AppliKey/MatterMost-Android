@@ -41,4 +41,8 @@ public class UserStorage {
     public Observable<List<User>> listDirectProfiles() {
         return mDb.listRealmObjects(User.class);
     }
+
+    public Observable<List<UserStatus>> listStatuses() {
+        return mDb.listRealmObjects(UserStatus.class);
+    }
 }

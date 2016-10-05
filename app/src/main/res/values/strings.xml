@@ -32,8 +32,8 @@
     <string name="no_direct_chats_available">No Direct Chats Available</string>
 
 
-    <string name="default_server_text">192.168.0.100:8065</string>
-    <!--<string name="default_server_text">192.168.42.115:8065</string>-->
+    <!--<string name="default_server_text">192.168.0.100:8065</string>-->
+    <string name="default_server_text">192.168.42.115:8065</string>
     <!--<string name="default_server_text" />-->
     <string name="default_login_text">tester</string>
     <!--<string name="default_login_text" />-->
