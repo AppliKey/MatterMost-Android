@@ -65,7 +65,7 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
         mSubscription.add(Observable.zip(
                 mApi.listChannels(team.getId()),
                 mApi.getTeamProfiles(team.getId()),
-                this::transform)
+                (StartupFetchResult::new))
                 .subscribeOn(Schedulers.io())
                 .doOnNext(response -> {
                     final ChannelResponse channelResponse = response.getChannelResponse();
@@ -93,10 +93,5 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
         for (User user : users.values()) {
             user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
         }
-    }
-
-    private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> directProfiles) {
-        return new StartupFetchResult(channelResponse, directProfiles);
     }
 }
