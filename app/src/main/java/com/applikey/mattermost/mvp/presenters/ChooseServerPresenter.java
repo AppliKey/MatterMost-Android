@@ -7,8 +7,11 @@ import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
+import com.applikey.mattermost.web.ErrorHandler;
 
 import javax.inject.Inject;
+
+import rx.schedulers.Schedulers;
 
 public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView> {
 
@@ -52,9 +55,18 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
         if (!fullServerUrl.endsWith(URL_END_DELIMITER)) {
             fullServerUrl += URL_END_DELIMITER;
         }
+
         mPrefs.setCurrentServerUrl(fullServerUrl);
 
-        view.onValidServerChosen();
+        mSubscription.add(mApi.ping()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(pingResponse -> {
+                    view.onValidServerChosen();
+                }, throwable -> {
+                    ErrorHandler.handleError(throwable);
+                    view.showValidationError();
+                }));
     }
 
     // TODO Add proper validation

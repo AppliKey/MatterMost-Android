@@ -20,6 +20,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
@@ -58,6 +59,7 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
     public void chooseTeam(Team team) {
         mTeamStorage.setChosenTeam(team);
         final ChooseTeamView view = getView();
+        // TODO: Remove v3.3 API support
 
         // Perform Startup Fetch
         mSubscription.add(Observable.zip(
@@ -71,36 +73,20 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
                     final Map<String, User> contacts = response.getDirectProfiles();
                     addImagePathInfo(contacts);
                     mUserStorage.saveUsers(contacts);
-
-                    final Set<String> keys = contacts.keySet();
-                    final String[] userIds = keys.toArray(new String[]{});
-
-                    // TODO: Remove v3.3 API support
-
-                    // v3.3 Compatible
-                    mSubscription.add(mApi.getUserStatusesCompatible(userIds)
-                            .subscribeOn(Schedulers.io())
-                            .doOnNext(response1 -> {
-                                mUserStorage.saveStatuses(response1);
-                            })
-                            .observeOn(Schedulers.io())
-                            .subscribe(response2 -> {
-                                view.onTeamChosen();
-                            }, error -> {
-                                // v3.4 Compatible
-                                // we are trying to call modern API
-                                mSubscription.add(mApi.getUserStatuses()
-                                        .subscribeOn(Schedulers.io())
-                                        .doOnNext(response1 -> mUserStorage.saveStatuses(response1))
-                                        .observeOn(Schedulers.io())
-                                        .subscribe(response2 -> {
-                                            view.onTeamChosen();
-                                        }, ErrorHandler::handleError));
-                            }));
                 })
-                .observeOn(Schedulers.io()) // Try main thread
+                .map(response -> response.getDirectProfiles().keySet())
+                .map(keys -> keys.toArray(new String[]{}))
+                .flatMap(userIds -> mApi.getUserStatusesCompatible(userIds)
+                        .onErrorResumeNext(throwable -> {
+                            return mApi.getUserStatuses();
+                        })
+                        .doOnNext(response1 -> {
+                            mUserStorage.saveStatuses(response1);
+                        }))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
-                }, ErrorHandler::handleError));
+                    view.onTeamChosen();
+                }));
     }
 
     private void addImagePathInfo(Map<String, User> users) {

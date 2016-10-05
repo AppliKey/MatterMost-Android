@@ -45,17 +45,20 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         final String httpPrefix = spHttp.getSelectedItem().toString();
         final String serverUrl = etServerUrl.getText().toString();
 
+        showLoadingDialog();
         presenter.chooseServer(httpPrefix, serverUrl);
     }
 
     @Override
     public void showValidationError() {
+        hideLoadingDialog();
         final String message = getResources().getString(R.string.invalid_server_url);
         etServerUrl.setError(message);
     }
 
     @Override
     public void onValidServerChosen() {
+        hideLoadingDialog();
         startActivity(LogInActivity.getIntent(this));
     }
 
