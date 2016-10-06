@@ -55,6 +55,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
             if (tab != null) {
+                tab.setCustomView(R.layout.tab_chat_list);
                 tab.setIcon(BaseChatListFragment.TabBehavior.getItemBehavior(i).getIcon());
             }
         }
