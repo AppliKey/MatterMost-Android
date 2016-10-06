@@ -57,6 +57,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         setChannelIcon(vh, data);
         setChannelIconVisibility(vh, data);
         setStatusIcon(vh, data);
+        setUnreadStatus(vh, data);
     }
 
     @Override
@@ -95,6 +96,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         }
     }
 
+    private void setUnreadStatus(ViewHolder vh, ChannelWithMetadata data) {
+        long lastViewedAt = data.getMembership().getLastViewedAt();
+        long lastPostAt = data.getChannel().getLastPostAt();
+
+        if (lastPostAt > lastViewedAt) {
+            vh.getNotificationIcon().setVisibility(View.VISIBLE);
+        } else {
+            vh.getNotificationIcon().setVisibility(View.GONE);
+        }
+    }
+
     /* package */
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -111,6 +123,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         @Bind(R.id.iv_status)
         ImageView mStatus;
+
+        @Bind(R.id.iv_notification_icon)
+        ImageView mNotificationIcon;
 
         @Bind(R.id.tv_channel_name)
         TextView mChannelName;
@@ -159,6 +174,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         TextView getMessagePreview() {
             return mMessagePreview;
+        }
+
+        public ImageView getNotificationIcon() {
+            return mNotificationIcon;
         }
     }
 }
