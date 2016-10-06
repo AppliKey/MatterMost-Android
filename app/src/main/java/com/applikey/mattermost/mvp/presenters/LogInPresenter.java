@@ -12,6 +12,7 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.arellomobile.mvp.InjectViewState;
 
 import java.io.IOException;
 
@@ -22,7 +23,8 @@ import retrofit2.Response;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class LogInPresenter extends SingleViewPresenter<LogInView> {
+@InjectViewState
+public class LogInPresenter extends BasePresenter<LogInView> {
 
     @Inject
     Api mApi;
@@ -42,7 +44,7 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
 
     // TODO: pre-validation. NOTE: Use stringutils
     public void authorize(Activity context, String email, String password) {
-        final LogInView view = getView();
+        final LogInView view = getViewState();
         final AuthenticationRequest request = new AuthenticationRequest(email, password);
 
         mSubscription.add(mApi.authorize(request)
@@ -55,7 +57,7 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
     }
 
     public void loadTeams() {
-        final LogInView view = getView();
+        final LogInView view = getViewState();
         mApi.listTeams()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -75,7 +77,7 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
             cacheHeaders(response);
 
             mPrefs.setCurrentUserId(response.body().getId());
-            getView().onSuccessfulAuth();
+            getViewState().onSuccessfulAuth();
             return;
         }
 
@@ -83,7 +85,7 @@ public class LogInPresenter extends SingleViewPresenter<LogInView> {
         try {
             final String message = RequestError.fromJson(response.errorBody().string())
                     .getMessage();
-            getView().onUnsuccessfulAuth(message);
+            getViewState().onUnsuccessfulAuth(message);
             ErrorHandler.handleError(message);
         } catch (IOException e) {
             ErrorHandler.handleError(e);

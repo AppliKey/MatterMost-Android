@@ -34,11 +34,11 @@
     <string name="action_search">Search</string>
 
     <!--<string name="default_server_text">192.168.0.100:8065</string>-->
-    <!--<string name="default_server_text">192.168.42.115:8065</string>-->
-    <string name="default_server_text">54.234.249.244</string>
+    <string name="default_server_text">192.168.42.115:8065</string>
+    <!--<string name="default_server_text">54.234.249.244</string>-->
     <!--<string name="default_server_text" />-->
-    <string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>
-    <!--<string name="default_login_text">tester</string>-->
+    <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
+    <string name="default_login_text">tester</string>
     <!--<string name="default_login_text" />-->
     <string name="default_password">zxD123</string>
     <!--<string name="default_password">zxD123</string>-->
