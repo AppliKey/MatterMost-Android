@@ -1,7 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
-
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.applikey.mattermost.storage.db.TeamStorage;
