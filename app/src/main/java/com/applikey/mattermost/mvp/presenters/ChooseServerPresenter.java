@@ -57,7 +57,6 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
         mSubscription.add(mApi.ping()
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .subscribe(pingResponse -> {
                     view.onValidServerChosen();
                 }, throwable -> {
