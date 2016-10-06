@@ -5,6 +5,7 @@ import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.web.PingResponse;
 import com.applikey.mattermost.utils.PrimitiveConverterFactory;
 
 import java.util.Map;
@@ -108,5 +109,10 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<ChannelResponse> listChannels(@Path("teamId") String teamId) {
         return getRealApi().listChannels(teamId);
+    }
+
+    @Override
+    public Observable<PingResponse> ping() {
+        return getRealApi().ping();
     }
 }

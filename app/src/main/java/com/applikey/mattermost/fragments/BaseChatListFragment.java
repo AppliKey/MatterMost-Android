@@ -101,7 +101,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         }, UNREAD {
             @Override
             public int getIcon() {
-                return R.drawable.no_resource;
+                return R.drawable.ic_unread;
             }
         }, FAVOURITES {
             @Override

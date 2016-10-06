@@ -2,6 +2,8 @@ package com.applikey.mattermost.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -34,6 +36,8 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         setContentView(R.layout.activity_choose_server);
 
         ButterKnife.bind(this);
+
+        etServerUrl.addTextChangedListener(mTextWatcher);
     }
 
     @OnClick(R.id.b_proceed)
@@ -41,17 +45,51 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         final String httpPrefix = spHttp.getSelectedItem().toString();
         final String serverUrl = etServerUrl.getText().toString();
 
+        showLoadingDialog();
         presenter.chooseServer(httpPrefix, serverUrl);
     }
 
     @Override
     public void showValidationError() {
+        hideLoadingDialog();
         final String message = getResources().getString(R.string.invalid_server_url);
         etServerUrl.setError(message);
     }
 
     @Override
     public void onValidServerChosen() {
+        hideLoadingDialog();
         startActivity(LogInActivity.getIntent(this));
     }
+
+    private void disableButton() {
+        bProceed.setClickable(false);
+        bProceed.setBackgroundResource(R.drawable.round_button_gradient_disabled);
+    }
+
+    private void enableButton() {
+        bProceed.setClickable(true);
+        bProceed.setBackgroundResource(R.drawable.round_button_gradient);
+    }
+
+    private final TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            final String value = s.toString();
+
+            if (value.trim().isEmpty()) {
+                disableButton();
+            } else {
+                enableButton();
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
 }

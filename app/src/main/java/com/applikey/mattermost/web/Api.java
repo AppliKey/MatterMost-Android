@@ -5,6 +5,7 @@ import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.web.PingResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -52,4 +53,7 @@ public interface Api {
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")
     Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
+
+    @GET("/api/v3/general/ping")
+    Observable<PingResponse> ping();
 }
