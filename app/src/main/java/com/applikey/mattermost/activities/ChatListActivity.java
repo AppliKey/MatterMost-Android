@@ -9,7 +9,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
@@ -183,7 +182,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         private final Map<TabBehavior, ImageView> mIndicators = new HashMap<>();
 
         void handleEvent(TabIndicatorRequested event) {
-            Log.d("Tabs", "Tab updated: " + event.getBehavior().name());
             synchronized (mutex) {
                 final TabBehavior tab = event.getBehavior();
                 mIndicatorVisibilities.put(tab, event.isVisible());
@@ -193,7 +191,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
 
         void register(TabBehavior tab, ImageView indicator) {
             synchronized (mutex) {
-                Log.d("Tabs", "Tab registered: " + tab.name());
                 mIndicators.put(tab, indicator);
                 final boolean visible = mIndicatorVisibilities.containsKey(tab)
                         ? mIndicatorVisibilities.get(tab) : false;
