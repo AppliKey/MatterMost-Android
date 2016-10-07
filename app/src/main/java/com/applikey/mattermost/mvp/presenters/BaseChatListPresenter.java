@@ -18,7 +18,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatListView>
+public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         implements ChatListPresenter {
 
     @Inject

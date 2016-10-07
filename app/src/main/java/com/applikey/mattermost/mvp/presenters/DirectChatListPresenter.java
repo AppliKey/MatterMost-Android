@@ -4,12 +4,14 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
+@InjectViewState
 public class DirectChatListPresenter extends BaseChatListPresenter {
 
     @Inject
@@ -21,7 +23,7 @@ public class DirectChatListPresenter extends BaseChatListPresenter {
     }
 
     public void getInitialData() {
-        final ChatListView view = getView();
+        final ChatListView view = getViewState();
         // TODO Introduce DTO object
         mSubscription.add(
                 Observable.zip(

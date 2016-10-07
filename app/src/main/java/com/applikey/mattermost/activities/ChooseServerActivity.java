@@ -12,6 +12,9 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
+import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
+import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -20,14 +23,14 @@ import butterknife.OnClick;
 public class ChooseServerActivity extends BaseMvpActivity implements ChooseServerView {
 
     @Bind(R.id.et_server)
-    EditText etServerUrl;
+    EditText mEtServerUrl;
     @Bind(R.id.b_proceed)
-    Button bProceed;
+    Button mBtnProceed;
     @Bind(R.id.sp_http)
-    Spinner spHttp;
+    Spinner mSpHttp;
 
     @InjectPresenter
-    ChooseServerPresenter presenter;
+    ChooseServerPresenter mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,23 +40,23 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
         ButterKnife.bind(this);
 
-        etServerUrl.addTextChangedListener(mTextWatcher);
+        mEtServerUrl.addTextChangedListener(mTextWatcher);
     }
 
     @OnClick(R.id.b_proceed)
     void onProceed() {
-        final String httpPrefix = spHttp.getSelectedItem().toString();
-        final String serverUrl = etServerUrl.getText().toString();
+        final String httpPrefix = mSpHttp.getSelectedItem().toString();
+        final String serverUrl = mEtServerUrl.getText().toString();
 
         showLoadingDialog();
-        presenter.chooseServer(httpPrefix, serverUrl);
+        mPresenter.chooseServer(httpPrefix, serverUrl);
     }
 
     @Override
     public void showValidationError() {
         hideLoadingDialog();
         final String message = getResources().getString(R.string.invalid_server_url);
-        etServerUrl.setError(message);
+        mEtServerUrl.setError(message);
     }
 
     @Override
@@ -63,13 +66,13 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     }
 
     private void disableButton() {
-        bProceed.setClickable(false);
-        bProceed.setBackgroundResource(R.drawable.round_button_gradient_disabled);
+        mBtnProceed.setClickable(false);
+        mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient_disabled);
     }
 
     private void enableButton() {
-        bProceed.setClickable(true);
-        bProceed.setBackgroundResource(R.drawable.round_button_gradient);
+        mBtnProceed.setClickable(true);
+        mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient);
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
