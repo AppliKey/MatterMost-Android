@@ -13,11 +13,15 @@ import android.widget.TextView;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListAdapter;
+import com.applikey.mattermost.events.TabIndicatorRequested;
+import com.applikey.mattermost.models.channel.ChannelWithMetadata;
 import com.applikey.mattermost.models.channel.ChannelsWithMetadata;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.utils.kissUtils.utils.BundleUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
+
+import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
@@ -37,6 +41,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
     @Inject
     ImageLoader mImageLoader;
+
+    @Inject
+    EventBus mEventBus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,6 +97,17 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
                 mImageLoader);
         rvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvChannels.setAdapter(adapter);
+
+        displayUnreadIndicator(channelsWithMetadata);
+    }
+
+    private void displayUnreadIndicator(ChannelsWithMetadata channelsWithMetadata) {
+        for (ChannelWithMetadata channel : channelsWithMetadata.values()) {
+            if (channel.checkIsUnread()) {
+                mEventBus.post(new TabIndicatorRequested(mTabBehavior, true));
+                break;
+            }
+        }
     }
 
     public enum TabBehavior {

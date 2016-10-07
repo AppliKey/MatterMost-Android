@@ -97,10 +97,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     private void setUnreadStatus(ViewHolder vh, ChannelWithMetadata data) {
-        long lastViewedAt = data.getMembership().getLastViewedAt();
-        long lastPostAt = data.getChannel().getLastPostAt();
-
-        if (lastPostAt > lastViewedAt) {
+        if (data.checkIsUnread()) {
             vh.getNotificationIcon().setVisibility(View.VISIBLE);
         } else {
             vh.getNotificationIcon().setVisibility(View.GONE);

@@ -34,6 +34,13 @@ public class ChannelWithMetadata {
         this.membership = membership;
     }
 
+    public boolean checkIsUnread() {
+        long lastViewedAt = getMembership().getLastViewedAt();
+        long lastPostAt = getChannel().getLastPostAt();
+
+        return lastPostAt > lastViewedAt;
+    }
+
     private static class ComparatorByDate implements Comparator<ChannelWithMetadata> {
         @Override
         public int compare(ChannelWithMetadata o1, ChannelWithMetadata o2) {
