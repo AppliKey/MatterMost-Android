@@ -1,6 +1,5 @@
 package com.applikey.mattermost.models.channel;
 
-import com.applikey.mattermost.models.user.UserStatus;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;

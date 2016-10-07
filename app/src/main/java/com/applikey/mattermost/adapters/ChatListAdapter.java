@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelWithMetadata;
-import com.applikey.mattermost.models.user.UserStatus;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
@@ -84,7 +84,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     private void setStatusIcon(ViewHolder vh, ChannelWithMetadata data) {
         if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getChannel().getType())) {
-            final UserStatus.Status status = UserStatus.Status.from(data.getChannel().getStatus());
+            final User.Status status = User.Status.from(data.getChannel().getStatus());
             if (status != null) {
                 vh.getStatus().setImageResource(status.getDrawableId());
             }

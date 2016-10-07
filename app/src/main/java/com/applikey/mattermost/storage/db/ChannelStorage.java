@@ -4,8 +4,10 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.user.User;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -47,7 +49,9 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Membership.class);
     }
 
-    public void saveChannelResponse(ChannelResponse response) {
+    public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
+        // Transform direct channels
+
         mDb.saveTransactionalWithRemoval(response.getChannels());
         mDb.saveTransactionalWithRemoval(response.getMembershipEntries().values());
     }

@@ -5,7 +5,6 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelsWithMetadata;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.models.user.UserStatus;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -38,7 +37,6 @@ public class UnreadChatListPresenter extends BaseChatListPresenter {
                         mChannelStorage.listAll(),
                         mChannelStorage.listMembership(),
                         mUserStorage.listDirectProfiles(),
-                        mUserStorage.listStatuses(),
                         this::transform)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayInitialData, ErrorHandler::handleError));
@@ -46,8 +44,7 @@ public class UnreadChatListPresenter extends BaseChatListPresenter {
 
     private ChannelsWithMetadata transform(List<Channel> channels,
                                            List<Membership> memberships,
-                                           List<User> directContacts,
-                                           List<UserStatus> userStatuses) {
-        return transform(channels, memberships, directContacts, userStatuses, true);
+                                           List<User> directContacts) {
+        return transform(channels, memberships, directContacts, true);
     }
 }

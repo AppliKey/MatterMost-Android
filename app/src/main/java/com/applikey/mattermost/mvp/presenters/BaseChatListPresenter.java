@@ -6,7 +6,6 @@ import com.applikey.mattermost.models.channel.ChannelWithMetadata;
 import com.applikey.mattermost.models.channel.ChannelsWithMetadata;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.models.user.UserStatus;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -57,16 +56,10 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     /* package */ ChannelsWithMetadata transform(List<Channel> channels,
                                                  List<Membership> memberships,
                                                  List<User> directContacts,
-                                                 List<UserStatus> userStatuses,
                                                  boolean skipRead) {
         final Map<String, User> userMap = new HashMap<>();
         for (User directContact : directContacts) {
             userMap.put(directContact.getId(), directContact);
-        }
-
-        final Map<String, UserStatus> statusMap = new HashMap<>();
-        for (UserStatus status : userStatuses) {
-            statusMap.put(status.getId(), status);
         }
 
         final String currentUserId = mPrefs.getCurrentUserId();
@@ -76,7 +69,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 new ChannelsWithMetadata(channels.size());
         for (Channel channel : channels) {
             if (channel.getType().equals(directChannelType)) {
-                updateDirectChannelData(channel, userMap, currentUserId, statusMap);
+                updateDirectChannelData(channel, userMap, currentUserId);
             }
 
             final ChannelWithMetadata channelWithMetadata = new ChannelWithMetadata(channel);
@@ -107,8 +100,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
 
     private void updateDirectChannelData(Channel channel,
                                          Map<String, User> contacts,
-                                         String currentUserId,
-                                         Map<String, UserStatus> userStatuses) {
+                                         String currentUserId) {
         final String channelId = channel.getName();
         final String otherUserId = extractOtherUserId(channelId, currentUserId);
 
@@ -116,11 +108,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         if (user != null) {
             channel.setDisplayName(User.getDisplayableName(user));
             channel.setPreviewImagePath(user.getProfileImage());
-        }
-
-        final UserStatus status = userStatuses.get(otherUserId);
-        if (status != null) {
-            channel.setStatus(status.getStatusValue().ordinal());
+            channel.setStatus(user.getStatus());
         }
     }
 
