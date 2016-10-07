@@ -5,12 +5,14 @@ import com.applikey.mattermost.mvp.views.RestorePasswordView;
 import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
 
-public class RestorePasswordPresenter extends SingleViewPresenter<RestorePasswordView> {
+@InjectViewState
+public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView> {
 
     private static final String INVALID_EMAIL_MESSAGE = "Invalid Email";
 
@@ -22,7 +24,7 @@ public class RestorePasswordPresenter extends SingleViewPresenter<RestorePasswor
     }
 
     public void sendRestorePasswordRequest(String email) {
-        final RestorePasswordView view = getView();
+        final RestorePasswordView view = getViewState();
 
         if (!validateEmailFormat(email)) {
             view.onFailure(INVALID_EMAIL_MESSAGE);

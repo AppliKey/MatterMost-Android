@@ -6,13 +6,15 @@ import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
 import okhttp3.HttpUrl;
 import rx.schedulers.Schedulers;
 
-public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView> {
+@InjectViewState
+public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
     private static final String TAG = ChooseServerPresenter.class.getSimpleName();
 
@@ -34,7 +36,7 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
     }
 
     public void chooseServer(String httpPrefix, String serverUrl) {
-        final ChooseServerView view = getView();
+        final ChooseServerView view = getViewState();
 
         String fullServerUrl = serverUrl;
 
@@ -55,7 +57,6 @@ public class ChooseServerPresenter extends SingleViewPresenter<ChooseServerView>
 
         mSubscription.add(mApi.ping()
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .subscribe(pingResponse -> {
                     view.onValidServerChosen();
                 }, throwable -> {

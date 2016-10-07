@@ -13,6 +13,7 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.arellomobile.mvp.InjectViewState;
 
 import java.util.Map;
 
@@ -22,7 +23,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
+@InjectViewState
+public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
 
     @Inject
     Api mApi;
@@ -47,17 +49,17 @@ public class ChooseTeamPresenter extends SingleViewPresenter<ChooseTeamView> {
     }
 
     public void getInitialData() {
-        final ChooseTeamView view = getView();
+        final ChooseTeamView view = getViewState();
         mSubscription.add(mTeamStorage.listAll()
                 .subscribe(view::displayTeams, throwable -> {
                     ErrorHandler.handleError(throwable);
-                    getView().onFailure(throwable.getMessage());
+                    getViewState().onFailure(throwable.getMessage());
                 }));
     }
 
     public void chooseTeam(Team team) {
         mTeamStorage.setChosenTeam(team);
-        final ChooseTeamView view = getView();
+        final ChooseTeamView view = getViewState();
         // TODO: Remove v3.3 API support
 
         // Perform Startup Fetch

@@ -20,7 +20,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatListView>
+public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         implements ChatListPresenter {
 
     @Inject
