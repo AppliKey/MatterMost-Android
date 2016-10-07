@@ -35,8 +35,8 @@ public class ChannelWithMetadata {
     }
 
     public boolean checkIsUnread() {
-        long lastViewedAt = getMembership().getLastViewedAt();
-        long lastPostAt = getChannel().getLastPostAt();
+        final long lastViewedAt = getMembership().getLastViewedAt();
+        final long lastPostAt = getChannel().getLastPostAt();
 
         return lastPostAt > lastViewedAt;
     }
