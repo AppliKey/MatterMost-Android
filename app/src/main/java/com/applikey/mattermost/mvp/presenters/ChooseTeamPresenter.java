@@ -72,7 +72,6 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
                     final ChannelResponse channelResponse = response.getChannelResponse();
                     mChannelStorage.saveChannelResponse(channelResponse);
                     final Map<String, User> contacts = response.getDirectProfiles();
-                    addImagePathInfo(contacts);
                     mUserStorage.saveUsers(contacts);
                 })
                 .map(response -> response.getDirectProfiles().keySet())
@@ -88,11 +87,5 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
                 .subscribe(response -> {
                     view.onTeamChosen();
                 }));
-    }
-
-    private void addImagePathInfo(Map<String, User> users) {
-        for (User user : users.values()) {
-            user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
-        }
     }
 }
