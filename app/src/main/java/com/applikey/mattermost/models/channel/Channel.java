@@ -11,6 +11,7 @@ public class Channel extends RealmObject {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
+    public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
 
     @PrimaryKey
     @SerializedName("id")
@@ -40,7 +41,14 @@ public class Channel extends RealmObject {
     // Application-specific fields
     private String previewImagePath;
 
+    // Only available for direct channels
     private int status;
+
+    // Migrated from channel membership
+    private long lastViewedAt;
+
+    // Field, which represents the comparison of two fields. Please see https://github.com/realm/realm-java/issues/1615
+    private boolean hasUnreadMessages;
 
     public String getId() {
         return id;
@@ -96,6 +104,8 @@ public class Channel extends RealmObject {
 
     public void setLastPostAt(long lastPostAt) {
         this.lastPostAt = lastPostAt;
+
+        rebuildHasUnreadMessages();
     }
 
     public long getCreatedAt() {
@@ -118,8 +128,29 @@ public class Channel extends RealmObject {
         this.status = status;
     }
 
+    public long getLastViewedAt() {
+        return lastViewedAt;
+    }
+
+    public void setLastViewedAt(long lastViewedAt) {
+        this.lastViewedAt = lastViewedAt;
+
+        rebuildHasUnreadMessages();
+    }
+
     public void setPreviewImagePath(String previewImagePath) {
         this.previewImagePath = previewImagePath;
+    }
+
+    public boolean isUnread() {
+        return hasUnreadMessages;
+    }
+
+    private void rebuildHasUnreadMessages() {
+        final long lastViewedAt = getLastViewedAt();
+        final long lastPostAt = getLastPostAt();
+
+        hasUnreadMessages = lastPostAt > lastViewedAt;
     }
 
     public enum ChannelType {

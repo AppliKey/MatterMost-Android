@@ -18,10 +18,7 @@ public class ChannelListPresenter extends BaseChatListPresenter {
     public void getInitialData() {
         final ChatListView view = getViewState();
         mSubscription.add(
-                Observable.zip(
-                        mChannelStorage.listOpen(),
-                        mChannelStorage.listMembership(),
-                        this::transform)
+                mChannelStorage.listOpen()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayInitialData, ErrorHandler::handleError));
     }

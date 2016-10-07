@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
-import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 

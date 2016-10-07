@@ -105,6 +105,20 @@ public class Db {
                 .map(realm::copyFromRealm);
     }
 
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
+                                                                                String fieldName,
+                                                                                boolean value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
+    }
+
     public <T extends RealmObject> Observable<T> listSingeRealmObject(
             Class<T> tClass,
             String primaryKeyColumnName, String primaryKey) {

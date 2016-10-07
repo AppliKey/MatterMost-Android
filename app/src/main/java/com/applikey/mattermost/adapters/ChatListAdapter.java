@@ -9,13 +9,11 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.channel.ChannelWithMetadata;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,16 +22,16 @@ import butterknife.ButterKnife;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
-    private List<ChannelWithMetadata> mDataSet = null;
+    private List<Channel> mDataSet = null;
     private ImageLoader mImageLoader;
 
-    public ChatListAdapter(Collection<ChannelWithMetadata> dataSet, ImageLoader imageLoader) {
+    public ChatListAdapter(List<Channel> dataSet, ImageLoader imageLoader) {
         super();
 
         mImageLoader = imageLoader;
         mDataSet = new ArrayList<>(dataSet.size());
         mDataSet.addAll(dataSet);
-        Collections.sort(mDataSet, ChannelWithMetadata.COMPARATOR_BY_DATE);
+        Collections.sort(mDataSet, Channel.COMPARATOR_BY_DATE);
     }
 
     @Override
@@ -45,14 +43,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
-        final ChannelWithMetadata data = mDataSet.get(position);
+        final Channel data = mDataSet.get(position);
 
-        final long lastPostAt = data.getChannel().getLastPostAt();
+        final long lastPostAt = data.getLastPostAt();
 
-        vh.getChannelName().setText(data.getChannel().getDisplayName());
+        vh.getChannelName().setText(data.getDisplayName());
         vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDate(lastPostAt != 0 ? lastPostAt :
-                        data.getChannel().getCreatedAt()));
+                        data.getCreatedAt()));
 
         setChannelIcon(vh, data);
         setChannelIconVisibility(vh, data);
@@ -65,16 +63,16 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         return mDataSet != null ? mDataSet.size() : 0;
     }
 
-    private void setChannelIcon(ViewHolder viewHolder, ChannelWithMetadata element) {
+    private void setChannelIcon(ViewHolder viewHolder, Channel element) {
 
-        final String previewImagePath = element.getChannel().getPreviewImagePath();
+        final String previewImagePath = element.getPreviewImagePath();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
             mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
         }
     }
 
-    private void setChannelIconVisibility(ViewHolder viewHolder, ChannelWithMetadata element) {
-        final String type = element.getChannel().getType();
+    private void setChannelIconVisibility(ViewHolder viewHolder, Channel element) {
+        final String type = element.getType();
         if (Channel.ChannelType.PRIVATE.getRepresentation().equals(type)) {
             viewHolder.getChannelIcon().setVisibility(View.VISIBLE);
         } else {
@@ -82,9 +80,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         }
     }
 
-    private void setStatusIcon(ViewHolder vh, ChannelWithMetadata data) {
-        if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getChannel().getType())) {
-            final User.Status status = User.Status.from(data.getChannel().getStatus());
+    private void setStatusIcon(ViewHolder vh, Channel data) {
+        if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getType())) {
+            final User.Status status = User.Status.from(data.getStatus());
             if (status != null) {
                 vh.getStatus().setImageResource(status.getDrawableId());
             }
@@ -96,8 +94,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         }
     }
 
-    private void setUnreadStatus(ViewHolder vh, ChannelWithMetadata data) {
-        if (data.checkIsUnread()) {
+    private void setUnreadStatus(ViewHolder vh, Channel data) {
+        if (data.isUnread()) {
             vh.getNotificationIcon().setVisibility(View.VISIBLE);
         } else {
             vh.getNotificationIcon().setVisibility(View.GONE);

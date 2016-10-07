@@ -14,14 +14,15 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
-import com.applikey.mattermost.models.channel.ChannelWithMetadata;
-import com.applikey.mattermost.models.channel.ChannelsWithMetadata;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.utils.kissUtils.utils.BundleUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -84,8 +85,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     }
 
     @Override
-    public void displayInitialData(ChannelsWithMetadata channelsWithMetadata) {
-        if (channelsWithMetadata.isEmpty()) {
+    public void displayInitialData(List<Channel> channels) {
+        if (channels.isEmpty()) {
             tvEmptyState.setVisibility(View.VISIBLE);
             rvChannels.setVisibility(View.GONE);
             return;
@@ -93,17 +94,16 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         rvChannels.setVisibility(View.VISIBLE);
         tvEmptyState.setVisibility(View.GONE);
-        final ChatListAdapter adapter = new ChatListAdapter(channelsWithMetadata.values(),
-                mImageLoader);
+        final ChatListAdapter adapter = new ChatListAdapter(channels, mImageLoader);
         rvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         rvChannels.setAdapter(adapter);
 
-        displayUnreadIndicator(channelsWithMetadata);
+        displayUnreadIndicator(channels);
     }
 
-    private void displayUnreadIndicator(ChannelsWithMetadata channelsWithMetadata) {
-        for (ChannelWithMetadata channel : channelsWithMetadata.values()) {
-            if (channel.checkIsUnread()) {
+    private void displayUnreadIndicator(List<Channel> channels) {
+        for (Channel channel : channels) {
+            if (channel.isUnread()) {
                 mEventBus.post(new TabIndicatorRequested(mTabBehavior, true));
                 break;
             }
