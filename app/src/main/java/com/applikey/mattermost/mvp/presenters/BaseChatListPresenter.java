@@ -13,8 +13,10 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -54,7 +56,8 @@ public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatList
     /* package */ ChannelsWithMetadata transform(List<Channel> channels,
                                                  List<Membership> memberships,
                                                  List<User> directContacts,
-                                                 List<UserStatus> userStatuses) {
+                                                 List<UserStatus> userStatuses,
+                                                 boolean skipRead) {
         final Map<String, User> userMap = new HashMap<>();
         for (User directContact : directContacts) {
             userMap.put(directContact.getId(), directContact);
@@ -73,10 +76,10 @@ public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatList
         for (Channel channel : channels) {
             if (channel.getType().equals(directChannelType)) {
                 updateDirectChannelData(channel, userMap, currentUserId, statusMap);
-
             }
 
-            channelsWithMetadata.put(channel.getId(), new ChannelWithMetadata(channel));
+            final ChannelWithMetadata channelWithMetadata = new ChannelWithMetadata(channel);
+            channelsWithMetadata.put(channel.getId(), channelWithMetadata);
         }
         for (Membership membership : memberships) {
             final ChannelWithMetadata membershipTuple =
@@ -85,6 +88,19 @@ public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatList
                 membershipTuple.setMembership(membership);
             }
         }
+
+        if (skipRead) {
+            final Set<String> keys = new HashSet<>();
+            keys.addAll(channelsWithMetadata.keySet());
+
+            for (String key : keys) {
+                final ChannelWithMetadata channel = channelsWithMetadata.get(key);
+                if (!channel.checkIsUnread()) {
+                    channelsWithMetadata.remove(key);
+                }
+            }
+        }
+
         return channelsWithMetadata;
     }
 

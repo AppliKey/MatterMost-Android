@@ -39,6 +39,10 @@ public class ChannelStorage {
                 Channel.ChannelType.DIRECT.getRepresentation());
     }
 
+    public Observable<List<Channel>> listAll() {
+        return mDb.listRealmObjects(Channel.class);
+    }
+
     public Observable<List<Membership>> listMembership() {
         return mDb.listRealmObjects(Membership.class);
     }

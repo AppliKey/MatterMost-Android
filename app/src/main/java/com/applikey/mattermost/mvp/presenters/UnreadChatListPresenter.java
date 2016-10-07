@@ -9,6 +9,7 @@ import com.applikey.mattermost.models.user.UserStatus;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.arellomobile.mvp.InjectViewState;
 
 import java.util.List;
 
@@ -16,23 +17,25 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
-public class DirectChatListPresenter extends BaseChatListPresenter {
+@InjectViewState
+public class UnreadChatListPresenter extends BaseChatListPresenter {
 
     @Inject
     UserStorage mUserStorage;
 
-    public DirectChatListPresenter() {
+    public UnreadChatListPresenter() {
         super();
         App.getComponent().inject(this);
     }
 
     public void getInitialData() {
-        final ChatListView view = getView();
+        final ChatListView view = getViewState();
         // TODO Introduce DTO object
         mSubscription.add(
                 Observable.zip(
-                        mChannelStorage.listDirect(),
+                        mChannelStorage.listAll(),
                         mChannelStorage.listMembership(),
                         mUserStorage.listDirectProfiles(),
                         mUserStorage.listStatuses(),
@@ -45,6 +48,6 @@ public class DirectChatListPresenter extends BaseChatListPresenter {
                                            List<Membership> memberships,
                                            List<User> directContacts,
                                            List<UserStatus> userStatuses) {
-        return transform(channels, memberships, directContacts, userStatuses, false);
+        return transform(channels, memberships, directContacts, userStatuses, true);
     }
 }

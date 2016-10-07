@@ -9,6 +9,7 @@ import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.EmptyChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.DirectChatListFragment;
+import com.applikey.mattermost.fragments.UnreadChatListFragment;
 
 public class ChatListPagerAdapter extends FragmentPagerAdapter {
 
@@ -21,7 +22,11 @@ public class ChatListPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        // Indexes should equal to tab behavior indexes
         switch (position) {
+            case 0: {
+                return UnreadChatListFragment.newInstance();
+            }
             case 2: {
                 return ChannelListFragment.newInstance();
             }
