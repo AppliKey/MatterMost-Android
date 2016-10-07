@@ -173,7 +173,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             return mMessagePreview;
         }
 
-        public ImageView getNotificationIcon() {
+        ImageView getNotificationIcon() {
             return mNotificationIcon;
         }
     }
