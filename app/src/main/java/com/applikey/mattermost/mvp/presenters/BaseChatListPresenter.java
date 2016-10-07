@@ -53,6 +53,7 @@ public abstract class BaseChatListPresenter extends SingleViewPresenter<ChatList
         return channelsWithMetadata;
     }
 
+    // TODO Tech Debt
     /* package */ ChannelsWithMetadata transform(List<Channel> channels,
                                                  List<Membership> memberships,
                                                  List<User> directContacts,
