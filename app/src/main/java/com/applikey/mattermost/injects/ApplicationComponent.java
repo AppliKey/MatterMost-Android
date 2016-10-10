@@ -14,6 +14,7 @@ import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
+import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -55,6 +56,8 @@ public interface ApplicationComponent {
     void inject(DirectChatListPresenter presenter);
 
     void inject(BaseChatListPresenter presenter);
+
+    void inject(UnreadChatListPresenter presenter);
 
     // Storages
     void inject(TeamStorage storage);

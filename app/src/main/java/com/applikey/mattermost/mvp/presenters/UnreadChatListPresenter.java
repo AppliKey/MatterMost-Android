@@ -17,14 +17,15 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @InjectViewState
-public class DirectChatListPresenter extends BaseChatListPresenter {
+public class UnreadChatListPresenter extends BaseChatListPresenter {
 
     @Inject
     UserStorage mUserStorage;
 
-    public DirectChatListPresenter() {
+    public UnreadChatListPresenter() {
         super();
         App.getComponent().inject(this);
     }
@@ -34,7 +35,7 @@ public class DirectChatListPresenter extends BaseChatListPresenter {
         // TODO Introduce DTO object
         mSubscription.add(
                 Observable.zip(
-                        mChannelStorage.listDirect(),
+                        mChannelStorage.listAll(),
                         mChannelStorage.listMembership(),
                         mUserStorage.listDirectProfiles(),
                         mUserStorage.listStatuses(),
@@ -47,6 +48,6 @@ public class DirectChatListPresenter extends BaseChatListPresenter {
                                            List<Membership> memberships,
                                            List<User> directContacts,
                                            List<UserStatus> userStatuses) {
-        return transform(channels, memberships, directContacts, userStatuses, false);
+        return transform(channels, memberships, directContacts, userStatuses, true);
     }
 }

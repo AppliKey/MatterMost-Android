@@ -9,17 +9,29 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
-import com.applikey.mattermost.fragments.BaseChatListFragment;
+import com.applikey.mattermost.events.TabIndicatorRequested;
+import com.applikey.mattermost.fragments.BaseChatListFragment.TabBehavior;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class ChatListActivity extends BaseMvpActivity implements ChatListScreenView {
 
@@ -43,6 +55,8 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         ButterKnife.bind(this);
 
         initView();
+
+        mEventBus.register(this);
     }
 
     private void initView() {
@@ -55,7 +69,15 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
             if (tab != null) {
-                tab.setIcon(BaseChatListFragment.TabBehavior.getItemBehavior(i).getIcon());
+                tab.setCustomView(R.layout.tab_chat_list);
+                tab.setIcon(TabBehavior.getItemBehavior(i).getIcon());
+
+                final View customTab = tab.getCustomView();
+                if (customTab != null) {
+                    final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
+                    mTabIndicatorModel.register(TabBehavior.values()[i + 1],
+                            (ImageView) notificationIcon);
+                }
             }
         }
 
@@ -83,6 +105,12 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         super.onDestroy();
 
         mPresenter.unSubscribe();
+        mEventBus.unregister(this);
+    }
+
+    @Subscribe
+    public void on(TabIndicatorRequested event) {
+        mTabIndicatorModel.handleEvent(event);
     }
 
     public static Intent getIntent(Context context) {
@@ -141,6 +169,42 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
                         R.color.tabUnSelected);
             }
             return unSelectedTabColor;
+        }
+    }
+
+
+    private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
+
+    private class TabIndicatorModel {
+
+        private final Object mutex = new Object();
+
+        private final Map<TabBehavior, Boolean> mIndicatorVisibilities = new HashMap<>();
+        private final Map<TabBehavior, ImageView> mIndicators = new HashMap<>();
+
+        void handleEvent(TabIndicatorRequested event) {
+            Log.d("Tabs", "Tab updated: " + event.getBehavior().name());
+            synchronized (mutex) {
+                final TabBehavior tab = event.getBehavior();
+                mIndicatorVisibilities.put(tab, event.isVisible());
+                updateVisibility(tab, event.isVisible());
+            }
+        }
+
+        void register(TabBehavior tab, ImageView indicator) {
+            synchronized (mutex) {
+                Log.d("Tabs", "Tab registered: " + tab.name());
+                mIndicators.put(tab, indicator);
+                final boolean visible = mIndicatorVisibilities.containsKey(tab)
+                        ? mIndicatorVisibilities.get(tab) : false;
+                updateVisibility(tab, visible);
+            }
+        }
+
+        private void updateVisibility(TabBehavior tab, boolean isVisible) {
+            if (mIndicators.containsKey(tab)) {
+                mIndicators.get(tab).setVisibility(isVisible ? VISIBLE : GONE);
+            }
         }
     }
 }

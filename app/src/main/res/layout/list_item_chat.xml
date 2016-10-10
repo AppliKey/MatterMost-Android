@@ -38,15 +38,24 @@
 
         </RelativeLayout>
 
+        <ImageView
+            android:id="@+id/iv_notification_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:layout_alignBottom="@+id/tv_channel_name"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@id/iv_preview_image_layout"
+            android:src="@drawable/ic_notification" />
 
         <ImageView
             android:id="@+id/iv_channel_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/tv_channel_name"
+            android:layout_alignBottom="@id/tv_channel_name"
             android:layout_marginBottom="4dp"
             android:layout_marginRight="8dp"
-            android:layout_toRightOf="@id/iv_preview_image_layout"
+            android:layout_toRightOf="@id/iv_notification_icon"
             android:scaleType="center"
             android:src="@drawable/ic_private_group" />
 
