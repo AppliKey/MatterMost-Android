@@ -11,4 +11,9 @@
         android:layout_height="?actionBarSize"
         app:navigationIcon="@drawable/ic_hamburger" />
 
+
+    <RelativeLayout
+        android:id="@+id/l_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>
