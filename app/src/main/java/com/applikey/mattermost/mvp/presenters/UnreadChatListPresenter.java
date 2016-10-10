@@ -1,23 +1,14 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.channel.ChannelsWithMetadata;
-import com.applikey.mattermost.models.channel.Membership;
-import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.models.user.UserStatus;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class UnreadChatListPresenter extends BaseChatListPresenter {
@@ -32,22 +23,9 @@ public class UnreadChatListPresenter extends BaseChatListPresenter {
 
     public void getInitialData() {
         final ChatListView view = getViewState();
-        // TODO Introduce DTO object
         mSubscription.add(
-                Observable.zip(
-                        mChannelStorage.listAll(),
-                        mChannelStorage.listMembership(),
-                        mUserStorage.listDirectProfiles(),
-                        mUserStorage.listStatuses(),
-                        this::transform)
+                mChannelStorage.listUnread()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayInitialData, ErrorHandler::handleError));
-    }
-
-    private ChannelsWithMetadata transform(List<Channel> channels,
-                                           List<Membership> memberships,
-                                           List<User> directContacts,
-                                           List<UserStatus> userStatuses) {
-        return transform(channels, memberships, directContacts, userStatuses, true);
     }
 }

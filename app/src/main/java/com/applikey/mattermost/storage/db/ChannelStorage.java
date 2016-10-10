@@ -4,8 +4,11 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.storage.preferences.Prefs;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -15,6 +18,9 @@ public class ChannelStorage {
 
     @Inject
     Db mDb;
+
+    @Inject
+    Prefs mPrefs;
 
     public ChannelStorage() {
         App.getComponent().inject(this);
@@ -43,12 +49,52 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Channel.class);
     }
 
+    public Observable<List<Channel>> listUnread() {
+        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_UNREAD_TYPE, true);
+    }
+
     public Observable<List<Membership>> listMembership() {
         return mDb.listRealmObjects(Membership.class);
     }
 
-    public void saveChannelResponse(ChannelResponse response) {
-        mDb.saveTransactionalWithRemoval(response.getChannels());
-        mDb.saveTransactionalWithRemoval(response.getMembershipEntries().values());
+    public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
+        // Transform direct channels
+
+        final String currentUserId = mPrefs.getCurrentUserId();
+        final String directChannelType = Channel.ChannelType.DIRECT.getRepresentation();
+
+        final Map<String, Membership> membership = response.getMembershipEntries();
+
+        final List<Channel> channels = response.getChannels();
+        for (Channel channel : channels) {
+            if (channel.getType().equals(directChannelType)) {
+                updateDirectChannelData(channel, userProfiles, currentUserId);
+            }
+
+            final Membership membershipData = membership.get(channel.getId());
+            if (membershipData != null) {
+                channel.setLastViewedAt(membershipData.getLastViewedAt());
+            }
+        }
+
+        mDb.saveTransactionalWithRemoval(channels);
+    }
+
+    private void updateDirectChannelData(Channel channel,
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
+        final String channelId = channel.getName();
+        final String otherUserId = extractOtherUserId(channelId, currentUserId);
+
+        final User user = contacts.get(otherUserId);
+        if (user != null) {
+            channel.setDisplayName(User.getDisplayableName(user));
+            channel.setPreviewImagePath(user.getProfileImage());
+            channel.setStatus(user.getStatus());
+        }
+    }
+
+    private String extractOtherUserId(String channelId, String currentUserId) {
+        return channelId.replace(currentUserId, "").replace("__", "");
     }
 }

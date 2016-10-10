@@ -18,10 +18,7 @@ public class GroupListPresenter extends BaseChatListPresenter {
     public void getInitialData() {
         final ChatListView view = getViewState();
         mSubscription.add(
-                Observable.zip(
-                        mChannelStorage.listClosed(),
-                        mChannelStorage.listMembership(),
-                        this::transform)
+                mChannelStorage.listClosed()
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayInitialData, ErrorHandler::handleError));
     }

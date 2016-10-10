@@ -1,8 +1,10 @@
 package com.applikey.mattermost.models.user;
 
+import com.applikey.mattermost.R;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -35,12 +37,14 @@ public class User extends RealmObject {
     // Application-specific fields
     private String profileImage;
 
+    private int status;
+
     public User() {
     }
 
     public User(String id, String username, String email, String firstName,
                 String lastName, long lastActivityAt, long updateAt,
-                String profileImage) {
+                String profileImage, int status) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -49,6 +53,7 @@ public class User extends RealmObject {
         this.lastActivityAt = lastActivityAt;
         this.updateAt = updateAt;
         this.profileImage = profileImage;
+        this.status = status;
     }
 
     public String getId() {
@@ -115,6 +120,14 @@ public class User extends RealmObject {
         this.profileImage = profileImage;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public static String getDisplayableName(User user) {
         final StringBuilder builder = new StringBuilder();
 
@@ -134,5 +147,36 @@ public class User extends RealmObject {
         }
 
         return builder.toString();
+    }
+
+    public enum Status {
+        OFFLINE(R.drawable.indicator_status_offline),
+        ONLINE(R.drawable.indicator_status_online),
+        AWAY(R.drawable.indicator_status_idle);
+
+        private final int drawableId;
+
+        Status(int drawableId) {
+            this.drawableId = drawableId;
+        }
+
+        public int getDrawableId() {
+            return drawableId;
+        }
+
+        private static final Map<String, Status> representations =
+                new HashMap<String, Status>() {{
+            put("offline", OFFLINE);
+            put("online", ONLINE);
+            put("away", AWAY);
+        }};
+
+        public static Status from(String representation) {
+            return representations.get(representation);
+        }
+
+        public static Status from(int ordinal) {
+            return values()[ordinal];
+        }
     }
 }
