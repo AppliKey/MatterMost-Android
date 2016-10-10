@@ -36,4 +36,3 @@ captures/
 *.iml
 .idea/
 /app/gradle.properties
-app/gradle.properties
