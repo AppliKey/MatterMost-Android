@@ -161,7 +161,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         final Activity activity = getActivity();
         final Intent intent = ChatActivity.getIntent(activity, channel);
         activity.startActivity(intent);
-//        activity.runOnUiThread(() -> activity.startActivity(intent));
     };
 
     protected abstract ChatListPresenter getPresenter();
