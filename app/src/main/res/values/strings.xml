@@ -41,7 +41,6 @@
     <!--<string name="default_login_text">mikhail.mikhaylov@applikeysolutions.com</string>-->
     <!--<string name="default_login_text">tester</string>-->
     <string name="default_login_text" />
-    <!--<string name="default_password">zxD123</string>-->
     <string name="default_password" />
 
 </resources>
