@@ -12,9 +12,6 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
-import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
