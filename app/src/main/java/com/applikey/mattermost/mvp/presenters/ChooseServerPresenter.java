@@ -11,6 +11,7 @@ import com.arellomobile.mvp.InjectViewState;
 import javax.inject.Inject;
 
 import okhttp3.HttpUrl;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @InjectViewState
@@ -57,6 +58,7 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
         mSubscription.add(mApi.ping()
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pingResponse -> {
                     view.onValidServerChosen();
                 }, throwable -> {
