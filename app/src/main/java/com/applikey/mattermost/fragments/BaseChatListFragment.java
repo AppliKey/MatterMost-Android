@@ -152,7 +152,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         public abstract int getIcon();
 
         public static TabBehavior getItemBehavior(int pageIndex) {
-            // Offset should be introduces
+            // Offset should be introduced
             return TabBehavior.values()[pageIndex + 1];
         }
     }
