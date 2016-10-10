@@ -10,4 +10,6 @@ public interface ChooseServerView extends MvpView {
     void showValidationError();
 
     void onValidServerChosen();
+
+    void showPresetServer(String url);
 }

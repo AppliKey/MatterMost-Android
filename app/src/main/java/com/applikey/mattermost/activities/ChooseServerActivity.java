@@ -38,6 +38,14 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         ButterKnife.bind(this);
 
         mEtServerUrl.addTextChangedListener(mTextWatcher);
+        disableButton();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mPresenter.getInitialData();
     }
 
     @OnClick(R.id.b_proceed)
@@ -62,6 +70,11 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         startActivity(LogInActivity.getIntent(this));
     }
 
+    @Override
+    public void showPresetServer(String url) {
+        mEtServerUrl.setText(url);
+    }
+
     private void disableButton() {
         mBtnProceed.setClickable(false);
         mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient_disabled);
@@ -70,6 +83,14 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     private void enableButton() {
         mBtnProceed.setClickable(true);
         mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient);
+    }
+
+    private void handleButtonVisibility(String input) {
+        if (input.trim().isEmpty()) {
+            disableButton();
+        } else {
+            enableButton();
+        }
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -81,11 +102,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             final String value = s.toString();
 
-            if (value.trim().isEmpty()) {
-                disableButton();
-            } else {
-                enableButton();
-            }
+            handleButtonVisibility(value);
         }
 
         @Override

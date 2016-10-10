@@ -52,6 +52,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         super.onStart();
 
         Log.d(TAG, "onStart");
+        mPresenter.getInitialData();
     }
 
     @Override
@@ -99,6 +100,12 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     public void onUnsuccessfulAuth(String message) {
         hideLoading();
         etPassword.setError(message);
+    }
+
+    @Override
+    public void showPresetCredentials(String userName, String password) {
+        etLogin.setText(userName);
+        etPassword.setText(password);
     }
 
     @Override

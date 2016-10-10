@@ -16,7 +16,7 @@
     <dimen name="welcome_screen_headers_margin_top">72dp</dimen>
     <dimen name="welcome_screen_headers_margin_bottom">48dp</dimen>
 
-    <dimen name="login_screen_content_margin_top">180dp</dimen>
+    <dimen name="login_screen_content_margin_top">160dp</dimen>
 
     <dimen name="teams_screen_headers_margin_bottom">72dp</dimen>
 

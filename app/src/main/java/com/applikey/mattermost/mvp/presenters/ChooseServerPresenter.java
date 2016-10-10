@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.BuildConfig;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -34,6 +35,17 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
     public ChooseServerPresenter() {
         App.getComponent().inject(this);
+    }
+
+    public void getInitialData() {
+        final String presetServer = BuildConfig.PRESET_SERVER;
+        final boolean shouldReplaceCredentials = BuildConfig.SHOULD_REPLACE_CREDENTIALS;
+
+        // We assume that if username is set, we also set password
+        //noinspection ConstantConditions,PointlessBooleanExpression
+        if (shouldReplaceCredentials && presetServer != null && !presetServer.isEmpty()) {
+            getViewState().showPresetServer(presetServer);
+        }
     }
 
     public void chooseServer(String httpPrefix, String serverUrl) {

@@ -21,4 +21,6 @@ public interface LogInView extends MvpView {
     void onTeamsRetrieved(Map<String, Team> teams);
 
     void onTeamsReceiveFailed(Throwable cause);
+
+    void showPresetCredentials(String userName, String password);
 }
