@@ -8,6 +8,7 @@ import com.applikey.mattermost.fragments.BaseFragment;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
+import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
@@ -58,6 +59,8 @@ public interface ApplicationComponent {
     void inject(BaseChatListPresenter presenter);
 
     void inject(UnreadChatListPresenter presenter);
+
+    void inject(ChatPresenter presenter);
 
     // Storages
     void inject(TeamStorage storage);

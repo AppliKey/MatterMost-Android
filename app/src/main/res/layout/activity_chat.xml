@@ -11,9 +11,43 @@
         android:layout_height="?actionBarSize"
         app:navigationIcon="@drawable/ic_hamburger" />
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_messages"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
 
     <RelativeLayout
         android:id="@+id/l_message"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_attach"
+            style="@style/ImageButton"
+            android:layout_width="@dimen/image_button_dimen_large"
+            android:layout_height="@dimen/image_button_dimen_large"
+            android:layout_alignParentStart="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_attach" />
+
+        <ImageView
+            android:id="@+id/iv_send_message"
+            style="@style/ImageButton"
+            android:layout_width="@dimen/image_button_dimen_large"
+            android:layout_height="@dimen/image_button_dimen_large"
+            android:layout_alignParentEnd="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_send" />
+
+        <EditText
+            android:id="@+id/et_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/iv_attach"
+            android:layout_toStartOf="@id/iv_send_message"
+            android:hint="@string/message" />
+
+    </RelativeLayout>
 </LinearLayout>

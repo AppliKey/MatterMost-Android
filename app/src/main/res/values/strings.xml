@@ -42,5 +42,6 @@
     <!--<string name="default_login_text">tester</string>-->
     <string name="default_login_text" />
     <string name="default_password" />
+    <string name="message">Message…</string>
 
 </resources>
