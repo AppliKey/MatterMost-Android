@@ -2,7 +2,7 @@ package com.applikey.mattermost.activities;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.widget.Toolbar;
+import android.support.v7.widget.Toolbar;
 
 import com.applikey.mattermost.R;
 
@@ -21,5 +21,6 @@ public class ChatActivity extends BaseMvpActivity {
         setContentView(R.layout.activity_chat);
 
         ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
     }
 }
