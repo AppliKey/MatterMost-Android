@@ -4,6 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
+import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -127,5 +128,11 @@ public class GlobalModule {
     @PerApp
     ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory) {
         return new ImagePathHelper(serverUrlFactory);
+    }
+
+    @Provides
+    @PerApp
+    PostStorage providePostStorage() {
+        return new PostStorage();
     }
 }

@@ -3,6 +3,7 @@ package com.applikey.mattermost.web;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
@@ -114,5 +115,10 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<PingResponse> ping() {
         return getRealApi().ping();
+    }
+
+    @Override
+    public Observable<PostResponse> getPostsPage(@Path("teamId") String teamId, @Path("offset") int offset, @Path("limit") int limit) {
+        return getRealApi().getPostsPage(teamId, offset, limit);
     }
 }

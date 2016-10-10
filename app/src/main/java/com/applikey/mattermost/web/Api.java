@@ -3,6 +3,7 @@ package com.applikey.mattermost.web;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
@@ -56,4 +57,8 @@ public interface Api {
 
     @GET("/api/v3/general/ping")
     Observable<PingResponse> ping();
+
+    @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
+    Observable<PostResponse> getPostsPage(@Path("teamId") String teamId, @Path("offset") int offset,
+                                          @Path("limit") int limit);
 }

@@ -43,5 +43,6 @@
     <string name="default_login_text" />
     <string name="default_password" />
     <string name="message">Message…</string>
+    <string name="no_posts_to_display">No Posts to Display :(</string>
 
 </resources>

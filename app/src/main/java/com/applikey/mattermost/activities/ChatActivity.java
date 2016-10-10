@@ -3,16 +3,26 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class ChatActivity extends BaseMvpActivity implements ChatView {
 
@@ -25,6 +35,12 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Bind(R.id.tv_empty_state)
+    TextView mTvEmptyState;
+
+    @Bind(R.id.rv_messages)
+    RecyclerView mRvMessages;
 
     @InjectPresenter
     ChatPresenter mPresenter;
@@ -58,6 +74,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         initView();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mPresenter.getInitialData(mChannelId);
+    }
+
     private void initParameters() {
         final Bundle extras = getIntent().getExtras();
         mChannelId = extras.getString(CHANNEL_ID_KEY);
@@ -72,5 +95,30 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 ? CHANNEL_PREFIX : DIRECT_PREFIX;
 
         mToolbar.setTitle(prefix + mChannelName);
+    }
+
+    @Override
+    public void displayData(List<Post> posts) {
+        if (posts == null || posts.isEmpty()) {
+            displayEmptyState();
+            return;
+        }
+
+        hideEmptyState();
+    }
+
+    @Override
+    public void onFailure(Throwable cause) {
+        ErrorHandler.handleError(cause);
+    }
+
+    private void displayEmptyState() {
+        mRvMessages.setVisibility(GONE);
+        mTvEmptyState.setVisibility(VISIBLE);
+    }
+
+    private void hideEmptyState() {
+        mTvEmptyState.setVisibility(GONE);
+        mRvMessages.setVisibility(VISIBLE);
     }
 }
