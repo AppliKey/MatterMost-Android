@@ -81,6 +81,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mPresenter.getInitialData(mChannelId);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setToolbarText();
+    }
+
     private void initParameters() {
         final Bundle extras = getIntent().getExtras();
         mChannelId = extras.getString(CHANNEL_ID_KEY);
@@ -90,11 +97,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private void initView() {
         setSupportActionBar(mToolbar);
-
-        final String prefix = !mChannelType.equals(Channel.ChannelType.DIRECT.getRepresentation())
-                ? CHANNEL_PREFIX : DIRECT_PREFIX;
-
-        mToolbar.setTitle(prefix + mChannelName);
     }
 
     @Override
@@ -120,5 +122,12 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private void hideEmptyState() {
         mTvEmptyState.setVisibility(GONE);
         mRvMessages.setVisibility(VISIBLE);
+    }
+
+    private void setToolbarText() {
+        final String prefix = !mChannelType.equals(Channel.ChannelType.DIRECT.getRepresentation())
+                ? CHANNEL_PREFIX : DIRECT_PREFIX;
+
+        mToolbar.setTitle(prefix + mChannelName);
     }
 }
