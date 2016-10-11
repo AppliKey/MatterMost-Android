@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
@@ -38,6 +38,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     @Bind(R.id.tv_empty_state)
     TextView mTvEmptyState;
+
+    @Bind(R.id.l_loading)
+    LinearLayout mLayoutLoading;
 
     @Bind(R.id.rv_messages)
     RecyclerView mRvMessages;
@@ -79,6 +82,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         super.onStart();
 
         mPresenter.getInitialData(mChannelId);
+
     }
 
     @Override
@@ -101,12 +105,17 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     @Override
     public void displayData(List<Post> posts) {
-        if (posts == null || posts.isEmpty()) {
-            displayEmptyState();
-            return;
-        }
+        displayPosts(posts);
 
-        hideEmptyState();
+        hideLoadingBar();
+    }
+
+    @Override
+    public void displayDataFirstTime(List<Post> posts) {
+        displayPosts(posts);
+
+        showLoadingBar();
+        mPresenter.fetchData(0);
     }
 
     @Override
@@ -129,5 +138,22 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 ? CHANNEL_PREFIX : DIRECT_PREFIX;
 
         mToolbar.setTitle(prefix + mChannelName);
+    }
+
+    private void showLoadingBar() {
+        mLayoutLoading.setVisibility(VISIBLE);
+    }
+
+    private void hideLoadingBar() {
+        mLayoutLoading.setVisibility(GONE);
+    }
+
+    private void displayPosts(List<Post> posts) {
+        if (posts == null || posts.isEmpty()) {
+            displayEmptyState();
+            return;
+        }
+
+        hideEmptyState();
     }
 }

@@ -23,7 +23,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void getInitialData(String channelId) {
         final ChatView view = getViewState();
-        mPostStorage.listByChannel(channelId).subscribe(view::displayData, view::onFailure);
+        mPostStorage.listByChannel(channelId).subscribe(view::displayDataFirstTime,
+                view::onFailure);
     }
 
     public void fetchData(int offset) {
