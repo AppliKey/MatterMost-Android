@@ -59,6 +59,8 @@ public interface Api {
     Observable<PingResponse> ping();
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
-    Observable<PostResponse> getPostsPage(@Path("teamId") String teamId, @Path("offset") int offset,
+    Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
+                                          @Path("channelId") String channelId,
+                                          @Path("offset") int offset,
                                           @Path("limit") int limit);
 }

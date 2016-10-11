@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -81,8 +83,10 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     protected void onStart() {
         super.onStart();
 
-        mPresenter.getInitialData(mChannelId);
+        showLoadingBar();
 
+        mPresenter.getInitialData(mChannelId);
+        mPresenter.fetchData(mChannelId, 0);
     }
 
     @Override
@@ -104,18 +108,17 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     @Override
-    public void displayData(List<Post> posts) {
-        displayPosts(posts);
+    public void onDataFetched() {
+        Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
 
         hideLoadingBar();
     }
 
     @Override
-    public void displayDataFirstTime(List<Post> posts) {
-        displayPosts(posts);
+    public void displayData(List<Post> posts) {
+        Log.d(ChatActivity.class.getSimpleName(), "Data Displayed");
 
-        showLoadingBar();
-        mPresenter.fetchData(0);
+        displayPosts(posts);
     }
 
     @Override
@@ -154,6 +157,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             return;
         }
 
+        Collections.sort(posts, Post.COMPARATOR_BY_PRIORITY);
         hideEmptyState();
     }
 }

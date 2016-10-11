@@ -2,6 +2,8 @@ package com.applikey.mattermost.models.post;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Comparator;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -17,7 +19,7 @@ public class Post extends RealmObject {
     private String channelId;
 
     @SerializedName("crated_at")
-    private long createdAi;
+    private long createdAt;
 
     @SerializedName("user_id")
     private String userId;
@@ -44,12 +46,12 @@ public class Post extends RealmObject {
         this.channelId = channelId;
     }
 
-    public long getCreatedAi() {
-        return createdAi;
+    public long getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedAi(long createdAi) {
-        this.createdAi = createdAi;
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getUserId() {
@@ -75,4 +77,7 @@ public class Post extends RealmObject {
     public void setPriority(int priority) {
         this.priority = priority;
     }
+
+    public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
+            -> o1.getPriority() - o2.getPriority();
 }

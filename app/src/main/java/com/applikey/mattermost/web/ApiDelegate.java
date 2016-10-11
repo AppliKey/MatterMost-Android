@@ -118,7 +118,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PostResponse> getPostsPage(@Path("teamId") String teamId, @Path("offset") int offset, @Path("limit") int limit) {
-        return getRealApi().getPostsPage(teamId, offset, limit);
+    public Observable<PostResponse> getPostsPage(@Path("teamId") String teamId, @Path("channelId") String channelId, @Path("offset") int offset, @Path("limit") int limit) {
+        return getRealApi().getPostsPage(teamId, channelId, offset, limit);
     }
 }
