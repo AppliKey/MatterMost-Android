@@ -3,6 +3,7 @@ package com.applikey.mattermost.web;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
@@ -63,4 +64,8 @@ public interface Api {
                                           @Path("channelId") String channelId,
                                           @Path("offset") int offset,
                                           @Path("limit") int limit);
+
+    @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
+    Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
+                                          @Path("channelId") String channelId);
 }
