@@ -33,7 +33,15 @@
     <dimen name="list_item_margin">20dp</dimen>
     <dimen name="list_item_margin_double">40dp</dimen>
     <dimen name="list_item_image">60dp</dimen>
+    <dimen name="list_item_image_chat">40dp</dimen>
     <dimen name="list_item_heading_text">18sp</dimen>
     <dimen name="list_item_secondary_text">14sp</dimen>
     <dimen name="list_item_heading_bottom_margin">5dp</dimen>
+
+    <dimen name="list_item_min_height">72dp</dimen>
+    <dimen name="list_item_chat_padding">20dp</dimen>
+    <dimen name="list_item_chat_padding_start">76dp</dimen>
+    <dimen name="list_item_chat_padding_name">10dp</dimen>
+    <dimen name="list_item_chat_padding_timestamp">16dp</dimen>
+    <dimen name="list_item_chat_text_size">16sp</dimen>
 </resources>

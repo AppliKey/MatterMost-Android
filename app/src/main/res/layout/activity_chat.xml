@@ -5,12 +5,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        app:contentInsetStartWithNavigation="60dp"
-        app:navigationIcon="@drawable/ic_hamburger" />
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:contentInsetStartWithNavigation="60dp"
+            app:elevation="2dp"
+            app:navigationIcon="@drawable/ic_hamburger" />
+    </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -18,7 +18,7 @@ public class Post extends RealmObject {
     @SerializedName("channel_id")
     private String channelId;
 
-    @SerializedName("crated_at")
+    @SerializedName("create_at")
     private long createdAt;
 
     @SerializedName("user_id")

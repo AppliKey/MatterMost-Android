@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
-    android:background="@color/primaryEnd"
-    android:orientation="vertical" />
+    android:layout_height="wrap_content"
+    android:background="@color/background"
+    android:minHeight="@dimen/list_item_min_height"
+    android:paddingBottom="@dimen/list_item_chat_padding"
+    android:paddingEnd="@dimen/list_item_chat_padding"
+    android:paddingStart="@dimen/list_item_chat_padding_start">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="@dimen/list_item_chat_padding_name"
+        android:singleLine="true"
+        android:textColor="@color/textListPrimary"
+        android:textSize="@dimen/list_item_chat_text_size" />
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/tv_name"
+        android:layout_marginBottom="@dimen/list_item_chat_padding_timestamp"
+        android:background="@color/textListPrimary"
+        android:fontFamily="sans-serif-light"
+        android:paddingBottom="@dimen/list_item_chat_padding_timestamp"
+        android:paddingEnd="@dimen/list_item_chat_padding"
+        android:paddingStart="@dimen/list_item_chat_padding"
+        android:paddingTop="@dimen/list_item_chat_padding_timestamp"
+        android:singleLine="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/list_item_chat_text_size" />
+
+    <TextView
+        android:id="@+id/tv_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/tv_message"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/textListSecondary"
+        android:textSize="@dimen/list_item_chat_text_size" />
+
+</RelativeLayout>

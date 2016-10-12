@@ -1,16 +1,22 @@
 package com.applikey.mattermost.adapters;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
@@ -45,7 +51,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Post post = mData.get(position);
 
-        holder.bind(post);
+        if (isMy(post)) {
+            holder.bindOwn(post);
+        } else {
+            holder.bindOther(post);
+        }
     }
 
     @Override
@@ -61,18 +71,41 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
+        @Nullable
+        @Bind(R.id.iv_status)
+        ImageView mIvStatus;
+
+        @Nullable
+        @Bind(R.id.iv_preview_image)
+        ImageView mIvPreviewImage;
+
+        @Bind(R.id.tv_message)
+        TextView mTvMessage;
+
+        @Bind(R.id.tv_timestamp)
+        TextView mTvTimestamp;
+
+        @Bind(R.id.tv_name)
+        TextView mTvName;
+
         ViewHolder(View itemView) {
             super(itemView);
+
+            ButterKnife.bind(this, itemView);
         }
 
-        void bind(Post post) {
-            
+        void bindOwn(Post post) {
+            mTvTimestamp.setText(TimeUtil.formatTimeOrDate(post.getCreatedAt()));
+            mTvName.setText(post.getUserId());
+            mTvMessage.setText(post.getMessage());
+        }
+
+        void bindOther(Post post) {
+            bindOwn(post);
         }
     }
 
     private boolean isMy(Post post) {
-        Log.d(PostAdapter.class.getSimpleName(), post.getUserId());
-
         return post.getUserId().equals(mCurrentUserId);
     }
 }

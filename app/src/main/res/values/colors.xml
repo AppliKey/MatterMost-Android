@@ -7,6 +7,8 @@
     <color name="primaryStart">#00CD80</color>
     <color name="primaryEnd">#00AC9D</color>
 
+    <color name="background">#f1f2f5</color>
+
     <color name="primaryStartDisabled">#7F00CD80</color>
     <color name="primaryEndDisabled">#7F00AC9D</color>
 
