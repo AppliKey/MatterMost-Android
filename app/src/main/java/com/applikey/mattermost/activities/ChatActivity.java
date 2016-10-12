@@ -3,13 +3,16 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
@@ -19,6 +22,9 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -50,6 +56,12 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @InjectPresenter
     ChatPresenter mPresenter;
 
+    @Inject
+    @Named("currentUserId")
+    String mCurrentUserId;
+
+    private PostAdapter mAdapter;
+
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
@@ -73,8 +85,10 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
         setContentView(R.layout.activity_chat);
 
+        App.getComponent().inject(this);
         ButterKnife.bind(this);
 
+        mAdapter = new PostAdapter(mCurrentUserId);
         initParameters();
         initView();
     }
@@ -105,6 +119,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private void initView() {
         setSupportActionBar(mToolbar);
+        mRvMessages.setLayoutManager(new LinearLayoutManager(this));
+        mRvMessages.setAdapter(mAdapter);
     }
 
     @Override
@@ -158,6 +174,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         }
 
         Collections.sort(posts, Post.COMPARATOR_BY_PRIORITY);
+        mAdapter.updateDataSet(posts);
+        mRvMessages.scrollToPosition(posts.size() - 1);
         hideEmptyState();
     }
 }

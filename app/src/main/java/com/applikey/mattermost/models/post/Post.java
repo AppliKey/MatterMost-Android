@@ -79,5 +79,5 @@ public class Post extends RealmObject {
     }
 
     public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
-            -> o1.getPriority() - o2.getPriority();
+            -> o2.getPriority() - o1.getPriority();
 }

@@ -21,6 +21,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
@@ -134,5 +136,11 @@ public class GlobalModule {
     @PerApp
     PostStorage providePostStorage() {
         return new PostStorage();
+    }
+
+    @Provides
+    @Named("currentUserId")
+    String provideCurrentUserId(Prefs mPrefs) {
+        return mPrefs.getCurrentUserId();
     }
 }
