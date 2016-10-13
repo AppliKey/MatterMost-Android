@@ -40,7 +40,7 @@
 
     <dimen name="list_item_min_height">72dp</dimen>
     <dimen name="list_item_chat_padding">20dp</dimen>
-    <dimen name="list_item_chat_padding_start">76dp</dimen>
+    <dimen name="list_item_chat_padding_start">44dp</dimen>
     <dimen name="list_item_chat_padding_name">10dp</dimen>
     <dimen name="list_item_chat_padding_timestamp">16dp</dimen>
     <dimen name="list_item_chat_text_size">16sp</dimen>
