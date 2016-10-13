@@ -10,7 +10,10 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
+import com.applikey.mattermost.web.images.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +27,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private static final int OTHERS_POST_VIEW_TYPE = 1;
 
     private final String mCurrentUserId;
-    private List<Post> mData = new ArrayList<>();
+    private List<PostDto> mData = new ArrayList<>();
 
-    public PostAdapter(String currentUserId) {
+    private ImageLoader mImageLoader;
+
+    public PostAdapter(String currentUserId, ImageLoader imageLoader) {
         this.mCurrentUserId = currentUserId;
+        this.mImageLoader = imageLoader;
     }
 
-    public void updateDataSet(List<Post> data) {
+    public void updateDataSet(List<PostDto> data) {
         this.mData.clear();
         this.mData.addAll(data);
         notifyDataSetChanged();
@@ -49,12 +55,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Post post = mData.get(position);
+        final PostDto dto = mData.get(position);
 
-        if (isMy(post)) {
-            holder.bindOwn(post);
+        if (isMy(dto.getPost())) {
+            holder.bindOwn(dto);
         } else {
-            holder.bindOther(post);
+            holder.bindOther(dto, mImageLoader);
         }
     }
 
@@ -65,8 +71,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        final Post post = mData.get(position);
-        return isMy(post) ? MY_POST_VIEW_TYPE : OTHERS_POST_VIEW_TYPE;
+        final PostDto dto = mData.get(position);
+        return isMy(dto.getPost()) ? MY_POST_VIEW_TYPE : OTHERS_POST_VIEW_TYPE;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -94,14 +100,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        void bindOwn(Post post) {
-            mTvTimestamp.setText(TimeUtil.formatTimeOrDate(post.getCreatedAt()));
-            mTvName.setText(post.getUserId());
-            mTvMessage.setText(post.getMessage());
+        void bindOwn(PostDto dto) {
+            mTvTimestamp.setText(TimeUtil.formatTimeOrDate(dto.getPost().getCreatedAt()));
+            mTvName.setText(dto.getAuthorName());
+            mTvMessage.setText(dto.getPost().getMessage());
         }
 
-        void bindOther(Post post) {
-            bindOwn(post);
+        void bindOther(PostDto dto, ImageLoader imageLoader) {
+            bindOwn(dto);
+
+            final String previewImagePath = dto.getAuthorAvatar();
+            if (mIvPreviewImage != null && mIvStatus != null && previewImagePath != null
+                    && !previewImagePath.isEmpty()) {
+                imageLoader.displayCircularImage(previewImagePath, mIvPreviewImage);
+                mIvStatus.setImageResource(dto.getStatus().getDrawableId());
+            }
         }
     }
 

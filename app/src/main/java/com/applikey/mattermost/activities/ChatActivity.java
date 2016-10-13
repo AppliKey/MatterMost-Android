@@ -14,10 +14,11 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.Collections;
@@ -60,6 +61,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Named("currentUserId")
     String mCurrentUserId;
 
+    @Inject
+    ImageLoader mImageLoader;
+
     private PostAdapter mAdapter;
 
     private String mChannelId;
@@ -88,7 +92,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         App.getComponent().inject(this);
         ButterKnife.bind(this);
 
-        mAdapter = new PostAdapter(mCurrentUserId);
+        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader);
         initParameters();
         initView();
     }
@@ -131,7 +135,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     @Override
-    public void displayData(List<Post> posts) {
+    public void displayData(List<PostDto> posts) {
         Log.d(ChatActivity.class.getSimpleName(), "Data Displayed");
 
         displayPosts(posts);
@@ -167,13 +171,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mLayoutLoading.setVisibility(GONE);
     }
 
-    private void displayPosts(List<Post> posts) {
+    private void displayPosts(List<PostDto> posts) {
         if (posts == null || posts.isEmpty()) {
             displayEmptyState();
             return;
         }
 
-        Collections.sort(posts, Post.COMPARATOR_BY_PRIORITY);
+        Collections.sort(posts, PostDto.COMPARATOR_BY_POST_TIMESTAMP);
         mAdapter.updateDataSet(posts);
         mRvMessages.scrollToPosition(posts.size() - 1);
         hideEmptyState();
