@@ -13,7 +13,6 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
