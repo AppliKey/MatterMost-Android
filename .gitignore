@@ -36,3 +36,5 @@ captures/
 *.iml
 .idea/
 /app/gradle.properties
+
+**/rebel.xml
