@@ -10,7 +10,7 @@
     <string name="invalid_server_url">We could not connect to the Mattermost server or the server is running in an incompatible version</string>
     <string name="no_teams_received">Could not receive teams</string>
     <string name="please_enter_your_credentials">Please Enter Your Credentials</string>
-    <string name="email">Email</string>
+    <string name="email">Enter your email</string>
     <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
     <string name="unknown">UNKNOWN</string>
