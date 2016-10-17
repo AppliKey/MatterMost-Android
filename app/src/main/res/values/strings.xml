@@ -2,12 +2,12 @@
     <string name="app_name">Mattermost Native Client</string>
 
     <string name="please_wait">Please wait.</string>
-    <string name="example_server">54.244.239.254</string>
+    <string name="example_server">http://server.com/</string>
     <string name="proceed">Proceed</string>
     <string name="enter_mattermost_server_url">Enter Mattermost Server URL</string>
     <string name="next">Next</string>
     <string name="welcome_to_mattermost">Welcome to Mattermost</string>
-    <string name="invalid_server_url">Please enter valid server address</string>
+    <string name="invalid_server_url">We could not connect to the Mattermost server or the server is running in an incompatible version</string>
     <string name="no_teams_received">Could not receive teams</string>
     <string name="please_enter_your_credentials">Please Enter Your Credentials</string>
     <string name="email">Email</string>
