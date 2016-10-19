@@ -18,8 +18,12 @@ public class PostStorage {
         App.getComponent().inject(this);
     }
 
-    public void saveAll(List<Post> posts) {
+    public void saveAllWithRemoval(List<Post> posts) {
         mDb.saveTransactionalWithRemoval(posts);
+    }
+
+    public void saveAll(List<Post> posts) {
+        mDb.saveTransactional(posts);
     }
 
     public Observable<List<Post>> listByChannel(String channelId) {

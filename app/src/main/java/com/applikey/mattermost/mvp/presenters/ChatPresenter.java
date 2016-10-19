@@ -26,12 +26,13 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
 
     private static final String TAG = ChatPresenter.class.getSimpleName();
 
-    private static final int PAGE_SIZE = 60;
+    private static final int PAGE_SIZE = 10;
 
     @Inject
     PostStorage mPostStorage;
@@ -44,6 +45,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     @Inject
     Api mApi;
+
+    private int mCurrentPage;
 
     public ChatPresenter() {
         App.getComponent().inject(this);
@@ -59,18 +62,31 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         view::onFailure));
     }
 
-    public void fetchData(String channelId, int offset) {
+    public void fetchData(String channelId) {
+        getViewState().showProgress(true);
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team ->
-                        mApi.getPostsPage(team.getId(), channelId, offset, PAGE_SIZE)
+                        mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE, PAGE_SIZE)
                                 .subscribeOn(Schedulers.io())
-                                .doOnError(ErrorHandler::handleError))
-                .map(response -> transform(response, offset))
+                                .doOnError(ErrorHandler::handleError)
+                )
+                .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> {
-                    mPostStorage.saveAll(posts);
-                    getViewState().onDataFetched();
-                }, ErrorHandler::handleError));
+                .subscribe(
+                        posts -> {
+                            if (mCurrentPage == 0) {
+                                mPostStorage.saveAllWithRemoval(posts);
+                            } else {
+                                mPostStorage.saveAll(posts);
+                            }
+                            getViewState().showProgress(false);
+                            getViewState().onDataFetched();
+                            mCurrentPage++;
+                        },
+                        error -> {
+                            getViewState().showProgress(false);
+                            ErrorHandler.handleError(error);
+                        }));
     }
 
     private List<Post> transform(PostResponse response, int offset) {
@@ -107,4 +123,5 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         return result;
     }
+
 }

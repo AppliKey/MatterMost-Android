@@ -15,6 +15,7 @@ import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -85,6 +86,7 @@ public class GlobalModule {
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
         okClientBuilder.addInterceptor(httpLoggingInterceptor);
+        okClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         final File baseDir = mApp.getCacheDir();
         if (baseDir != null) {
             final File cacheDir = new File(baseDir, "HttpResponseCache");

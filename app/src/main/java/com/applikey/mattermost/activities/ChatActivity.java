@@ -28,6 +28,7 @@ import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -100,10 +101,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     protected void onStart() {
         super.onStart();
 
-        showLoadingBar();
-
         mPresenter.getInitialData(mChannelId);
-        mPresenter.fetchData(mChannelId, 0);
+        mPresenter.fetchData(mChannelId);
+        mRvMessages.scrollToPosition(0);
     }
 
     @Override
@@ -122,15 +122,48 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private void initView() {
         setSupportActionBar(mToolbar);
-        mRvMessages.setLayoutManager(new LinearLayoutManager(this));
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        mRvMessages.setLayoutManager(linearLayoutManager);
+        mRvMessages.addOnScrollListener(getPaginationScrollListener());
         mRvMessages.setAdapter(mAdapter);
+    }
+
+    private RecyclerView.OnScrollListener getPaginationScrollListener() {
+        return new RecyclerView.OnScrollListener() {
+            private int pastVisibleItems;
+            private int visibleItemCount;
+            private int totalItemCount;
+            private final int threshold = 5;
+            private int a;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (dy < 0) {
+                    Timber.d("");
+                    visibleItemCount = recyclerView.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
+                    a = visibleItemCount + threshold;
+                    Timber.d("visibleItems = %d, totalItems = %d, pastVisibleItems = %d", visibleItemCount, totalItemCount, pastVisibleItems);
+
+                    Timber.d("is loading bar showing: %b", isLoadingBarShowing());
+                    if ((a + pastVisibleItems) >= totalItemCount) {
+                        Timber.d("requesting %d items", totalItemCount);
+                        mPresenter.fetchData(mChannelId);
+                    }
+
+                }
+            }
+        };
     }
 
     @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
 
-        hideLoadingBar();
     }
 
     @Override
@@ -170,6 +203,10 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mLayoutLoading.setVisibility(GONE);
     }
 
+    private boolean isLoadingBarShowing() {
+        return mLayoutLoading.getVisibility() == VISIBLE;
+    }
+
     private void displayPosts(List<PostDto> posts) {
         if (posts == null || posts.isEmpty()) {
             displayEmptyState();
@@ -177,7 +214,16 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         }
 
         mAdapter.updateDataSet(posts);
-        mRvMessages.scrollToPosition(posts.size() - 1);
+//        mRvMessages.scrollToPosition(posts.size() - 1);
         hideEmptyState();
+    }
+
+    @Override
+    public void showProgress(boolean enabled) {
+        if (enabled && !isLoadingBarShowing()) {
+            showLoadingBar();
+        } else {
+            hideLoadingBar();
+        }
     }
 }

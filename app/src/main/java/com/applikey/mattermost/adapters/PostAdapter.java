@@ -31,13 +31,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private ImageLoader mImageLoader;
 
     public PostAdapter(String currentUserId, ImageLoader imageLoader) {
-        this.mCurrentUserId = currentUserId;
-        this.mImageLoader = imageLoader;
+        mCurrentUserId = currentUserId;
+        mImageLoader = imageLoader;
     }
 
     public void updateDataSet(List<PostDto> data) {
-        this.mData.clear();
-        this.mData.addAll(data);
+        mData.clear();
+        mData.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    public void addToDataSet(List<PostDto> data) {
+        this.mData.addAll(mData.size(), data);
         notifyDataSetChanged();
     }
 
