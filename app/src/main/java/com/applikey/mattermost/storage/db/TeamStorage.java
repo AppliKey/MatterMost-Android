@@ -8,7 +8,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.Subscription;
 
 // TODO RealmObjectStorage abstraction
 // TODO Review API
@@ -24,7 +23,7 @@ public class TeamStorage {
     }
 
     public void saveTeamsWithRemoval(Iterable<Team> teams) {
-        mDb.saveTransactionalWithRemovalAsync(teams);
+        mDb.saveTransactionalWithRemoval(teams);
     }
 
     public Observable<List<Team>> listAll() {

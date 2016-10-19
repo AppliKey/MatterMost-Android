@@ -31,19 +31,17 @@ public class Db {
 
     public void saveTransactional(RealmObject object) {
         final Realm realm = getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(object);
-        realm.commitTransaction();
-        realm.close();
+        realm.executeTransactionAsync(bgRealm -> {
+            bgRealm.copyToRealmOrUpdate(object);
+        }, realm::close);
     }
 
     public void saveTransactionalWithRemoval(RealmObject object) {
         final Realm realm = getRealm();
-        realm.beginTransaction();
-        realm.delete(object.getClass());
-        realm.copyToRealmOrUpdate(object);
-        realm.commitTransaction();
-        realm.close();
+        realm.executeTransactionAsync(bgRealm -> {
+            bgRealm.delete(object.getClass());
+            bgRealm.copyToRealmOrUpdate(object);
+        }, realm::close);
     }
 
     public void saveTransactionalWithRemoval(Iterable<? extends RealmObject> objects) {
@@ -52,14 +50,14 @@ public class Db {
             return;
         }
         final Realm realm = getRealm();
-        realm.beginTransaction();
-        final Class<? extends RealmObject> clazz = iterator.next().getClass();
-        realm.delete(clazz);
-        realm.copyToRealmOrUpdate(objects);
-        realm.commitTransaction();
-        realm.close();
+        realm.executeTransactionAsync(bgRealm -> {
+            final Class<? extends RealmObject> clazz = iterator.next().getClass();
+            bgRealm.delete(clazz);
+            bgRealm.copyToRealmOrUpdate(objects);
+        }, realm::close);
     }
 
+    @Deprecated
     public void saveTransactionalWithRemovalAsync(RealmObject object) {
         mWritesExecutor.execute(() -> {
             saveTransactionalWithRemoval(object);
@@ -68,12 +66,12 @@ public class Db {
 
     public void saveTransactional(Iterable<? extends RealmObject> objects) {
         final Realm realm = getRealm();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(objects);
-        realm.commitTransaction();
-        realm.close();
+        realm.executeTransaction(bgRealm -> {
+            bgRealm.copyToRealmOrUpdate(objects);
+        });
     }
 
+    @Deprecated
     public void saveTransactionalWithRemovalAsync(Iterable<? extends RealmObject> objects) {
         mWritesExecutor.execute(() -> {
             saveTransactionalWithRemoval(objects);
@@ -92,8 +90,8 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-                                                                                String fieldName,
-                                                                                String value) {
+            String fieldName,
+            String value) {
         final Realm realm = getRealm();
         return realm
                 .where(tClass)
@@ -106,8 +104,8 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-                                                                                String fieldName,
-                                                                                boolean value) {
+            String fieldName,
+            boolean value) {
         final Realm realm = getRealm();
         return realm
                 .where(tClass)

@@ -73,6 +73,7 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
                             .onErrorResumeNext(throwable -> {
                                 return mApi.getUserStatuses();
                             })
+                            .observeOn(AndroidSchedulers.mainThread())
                             .doOnNext(userStatusResponse -> {
                                 mUserStorage.saveUsers(response.getDirectProfiles(),
                                         userStatusResponse);
