@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -92,7 +93,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         App.getComponent().inject(this);
         ButterKnife.bind(this);
 
-        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader);
+        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, onPostLongClick);
+
         initParameters();
         initView();
     }
@@ -132,6 +134,11 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
 
         hideLoadingBar();
+    }
+
+    @Override
+    public void onPostDeleted(String postId) {
+        mAdapter.deletePost(postId);
     }
 
     @Override
@@ -182,4 +189,17 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mRvMessages.scrollToPosition(posts.size() - 1);
         hideEmptyState();
     }
+
+    private final PostAdapter.OnLongClickListener onPostLongClick = post -> {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
+            switch (which) {
+                case 0:
+                    mPresenter.deleteMessage(mChannelId, post);
+                    break;
+                default:
+                    throw new RuntimeException("Not implemented feature");
+            }
+        }).show();
+    };
 }

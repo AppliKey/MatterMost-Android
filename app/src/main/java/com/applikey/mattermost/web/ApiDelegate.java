@@ -109,6 +109,11 @@ public class ApiDelegate implements Api {
     }
 
     @Override
+    public Observable<Void> deletePost(@Path("teamId") String teamId, @Path("channelId") String channelId, @Path("channelId") String postId) {
+        return getRealApi().deletePost(teamId, channelId, postId);
+    }
+
+    @Override
     public Observable<ChannelResponse> listChannels(@Path("teamId") String teamId) {
         return getRealApi().listChannels(teamId);
     }

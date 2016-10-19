@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostDto;
@@ -26,19 +28,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private static final int OTHERS_POST_VIEW_TYPE = 1;
 
     private final String mCurrentUserId;
-    private List<PostDto> mData = new ArrayList<>();
+    private final List<PostDto> mData = new ArrayList<>();
+    private final ImageLoader mImageLoader;
+    private final OnLongClickListener mOnLongClickListener;
 
-    private ImageLoader mImageLoader;
-
-    public PostAdapter(String currentUserId, ImageLoader imageLoader) {
+    public PostAdapter(String currentUserId, ImageLoader imageLoader, OnLongClickListener onLongClickListener) {
         this.mCurrentUserId = currentUserId;
         this.mImageLoader = imageLoader;
+        this.mOnLongClickListener = onLongClickListener;
     }
 
     public void updateDataSet(List<PostDto> data) {
         this.mData.clear();
         this.mData.addAll(data);
         notifyDataSetChanged();
+    }
+
+    public void deletePost(String postId) {
+        Optional<PostDto> optionalPost = Stream.of(mData)
+                .filter(dto -> dto.getPost().getId().equals(postId))
+                .findFirst();
+
+        if (optionalPost.isPresent()) {
+            PostDto postDto = optionalPost.get();
+
+            int position = mData.indexOf(postDto);
+            notifyItemRemoved(position);
+            mData.remove(position);
+        }
     }
 
     @Override
@@ -57,7 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         final PostDto dto = mData.get(position);
 
         if (isMy(dto.getPost())) {
-            holder.bindOwn(dto);
+            holder.bindOwn(dto, mOnLongClickListener);
         } else {
             holder.bindOther(dto, mImageLoader);
         }
@@ -99,14 +116,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        void bindOwn(PostDto dto) {
+        private void bind(PostDto dto) {
             mTvTimestamp.setText(TimeUtil.formatTimeOrDate(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
         }
 
+        void bindOwn(PostDto dto, OnLongClickListener onLongClickListener) {
+            bind(dto);
+
+            itemView.setOnLongClickListener(v -> {
+                onLongClickListener.onLongClick(dto.getPost());
+                return true;
+            });
+        }
+
+
         void bindOther(PostDto dto, ImageLoader imageLoader) {
-            bindOwn(dto);
+            bind(dto);
 
             final String previewImagePath = dto.getAuthorAvatar();
             if (mIvPreviewImage != null && mIvStatus != null && previewImagePath != null
@@ -119,5 +146,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
+    }
+
+    @FunctionalInterface
+    public interface OnLongClickListener {
+        void onLongClick(Post post);
     }
 }

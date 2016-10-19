@@ -9,7 +9,6 @@ import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
 
-import java.util.List;
 import java.util.Map;
 
 import retrofit2.Response;
@@ -19,6 +18,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import rx.Completable;
 import rx.Observable;
 
 public interface Api {
@@ -51,6 +51,11 @@ public interface Api {
     @POST("/api/v3/users/send_password_reset")
     @FormUrlEncoded
     Observable<Response> sendPasswordReset(@Field("email") String email);
+
+    @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
+    Observable<Void> deletePost(@Path("teamId") String teamId,
+                           @Path("channelId") String channelId,
+                           @Path("postId") String postId);
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")

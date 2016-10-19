@@ -60,6 +60,14 @@ public class Db {
         realm.close();
     }
 
+    public void deleteTransactional(RealmObject realmObject) {
+        final Realm realm = getRealm();
+        realm.beginTransaction();
+        realm.delete(realmObject.getClass());
+        realm.commitTransaction();
+        realm.close();
+    }
+
     public void saveTransactionalWithRemovalAsync(RealmObject object) {
         mWritesExecutor.execute(() -> {
             saveTransactionalWithRemoval(object);

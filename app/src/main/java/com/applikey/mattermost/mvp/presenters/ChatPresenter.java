@@ -69,6 +69,17 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 }, ErrorHandler::handleError));
     }
 
+    public void deleteMessage(String channelId, Post post) {
+        mSubscription.add(mTeamStorage.getChosenTeam()
+                .flatMap(team -> mApi.deletePost(team.getId(), channelId, post.getId())
+                        .subscribeOn(Schedulers.io()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(posts -> {
+                    mPostStorage.delete(post);
+                    getViewState().onPostDeleted(post.getId());
+                }, ErrorHandler::handleError));
+    }
+
     private List<Post> transform(PostResponse response, int offset) {
         final List<String> order = response.getOrder();
 
