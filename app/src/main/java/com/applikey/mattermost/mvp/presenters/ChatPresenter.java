@@ -47,7 +47,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void getInitialData(String channelId) {
         final ChatView view = getViewState();
-        mSubscription.add(Observable.zip(
+        mSubscription.add(Observable.combineLatest(
                 mPostStorage.listByChannel(channelId),
                 mUserStorage.listDirectProfiles(),
                 this::transform)

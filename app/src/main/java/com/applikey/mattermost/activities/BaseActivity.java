@@ -1,5 +1,6 @@
 package com.applikey.mattermost.activities;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -13,7 +14,6 @@ import com.applikey.mattermost.injects.ApplicationComponent;
 import com.applikey.mattermost.utils.kissUtils.utils.CommonUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.ToastUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
-import com.tasomaniac.android.widget.DelayedProgressDialog;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.ActivityLifecycleProvider;
 import com.trello.rxlifecycle.RxLifecycle;
@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     @Inject
     ImageLoader mImageLoader;
 
-    private DelayedProgressDialog mDialog;
+    private ProgressDialog mProgressDialog;
 
     public void showToast(@NonNull String text) {
         ToastUtil.show(text);
@@ -71,25 +71,18 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     }
 
     public void showLoadingDialog() {
-        if (mDialog != null && mDialog.isShowing()) {
-            // do nothing
+        if (mProgressDialog != null) {
+            mProgressDialog.show();
             return;
         }
-        mDialog = DelayedProgressDialog.make(this, null, getString(R.string.please_wait));
-        mDialog.setCancelable(false);
-        mDialog.setMinShowTime(500);
-        mDialog.show();
+
+        mProgressDialog = ProgressDialog.show(this, null, getString(R.string.please_wait), true,
+                false);
     }
 
-    // TODO Make sure these changes do not break anything.
-    // They at least disable minimal showing time, as I see
     public void hideLoadingDialog() {
-        if (mDialog != null) {
-//            if (mDialog.isShowing()) {
-                mDialog.dismiss();
-//                return;
-//            }
-            mDialog = null;
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
         }
     }
 
