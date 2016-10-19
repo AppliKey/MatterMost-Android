@@ -103,6 +103,22 @@ public class Db {
                 .map(realm::copyFromRealm);
     }
 
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
+            tClass,
+            String fieldName,
+            String sortBy,
+            String value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSorted(sortBy)
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
+    }
+
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
             String fieldName,
             boolean value) {

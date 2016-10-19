@@ -10,6 +10,7 @@ import io.realm.annotations.PrimaryKey;
 public class Post extends RealmObject {
 
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
+    public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
 
     @PrimaryKey
     @SerializedName("id")

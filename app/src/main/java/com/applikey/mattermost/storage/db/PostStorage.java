@@ -23,6 +23,7 @@ public class PostStorage {
     }
 
     public Observable<List<Post>> listByChannel(String channelId) {
-        return mDb.listRealmObjectsFiltered(Post.class, Post.FIELD_NAME_CHANNEL_ID, channelId);
+        return mDb.listRealmObjectsFilteredSorted(Post.class, Post.FIELD_NAME_CHANNEL_ID,
+                Post.FIELD_NAME_CHANNEL_CREATE_AT, channelId);
     }
 }
