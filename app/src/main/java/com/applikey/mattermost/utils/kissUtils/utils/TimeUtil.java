@@ -8,12 +8,10 @@ package com.applikey.mattermost.utils.kissUtils.utils;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
-
-import com.applikey.mattermost.utils.DateUtils;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
@@ -93,7 +91,7 @@ public class TimeUtil {
     }
 
     public static String format(String timeStr, String srcFormat,
-                                String dstFormat) {
+            String dstFormat) {
         final long time = format(timeStr, srcFormat);
         //noinspection UnnecessaryLocalVariable
         final String result = format(time, dstFormat);
@@ -111,5 +109,13 @@ public class TimeUtil {
             e.printStackTrace();
         }
         return localTime;
+    }
+
+    //// TODO: 19.10.16
+    public static boolean sameTime(long timePrev, long timeCurrent) {
+        Log.d(TAG, "sameTime: " + timePrev + " =  " + timePrev / 1000 / 60 + ", "
+                + timeCurrent + " = " + timeCurrent / 1000 / 60);
+        Log.d(TAG, "sameTime: result = " + ((int) timePrev / 1000 / 60 == (int) timeCurrent / 1000 / 60));
+        return (timePrev / 1000 / 60) == (timeCurrent / 1000 / 60);
     }
 }

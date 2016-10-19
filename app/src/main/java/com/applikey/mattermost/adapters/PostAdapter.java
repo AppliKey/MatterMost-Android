@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
@@ -56,10 +57,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PostDto dto = mData.get(position);
 
+        boolean showAuthor = position == 0 ||
+                !hasSameAuthor(mData.get(position - 1).getPost(), dto.getPost());
+
+        boolean showTime = position == mData.size() - 1 ||
+                !oneTimePosts(dto.getPost(), mData.get(position + 1).getPost()) ||
+                !hasSameAuthor(dto.getPost(), mData.get(position + 1).getPost());
+
+        boolean showDate = true;
+
         if (isMy(dto.getPost())) {
-            holder.bindOwn(dto);
+            holder.bindOwn(dto, showAuthor, showTime, showDate);
         } else {
-            holder.bindOther(dto, mImageLoader);
+            holder.bindOther(dto, showAuthor, showTime, showDate, mImageLoader);
         }
     }
 
@@ -84,6 +94,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         @Bind(R.id.iv_preview_image)
         ImageView mIvPreviewImage;
 
+        @Nullable
+        @Bind(R.id.iv_preview_image_layout)
+        RelativeLayout mIvPreviewImageLayout;
+
         @Bind(R.id.tv_message)
         TextView mTvMessage;
 
@@ -99,25 +113,39 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        void bindOwn(PostDto dto) {
+        void bindOwn(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate) {
             mTvTimestamp.setText(TimeUtil.formatTimeOrDate(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
+
+            mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
+            mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
         }
 
-        void bindOther(PostDto dto, ImageLoader imageLoader) {
-            bindOwn(dto);
+        void bindOther(PostDto dto, boolean showAuthor, boolean showTime,
+                boolean showDate, ImageLoader imageLoader) {
+            bindOwn(dto, showAuthor, showTime, showDate);
 
             final String previewImagePath = dto.getAuthorAvatar();
-            if (mIvPreviewImage != null && mIvStatus != null && previewImagePath != null
+            if (mIvPreviewImageLayout != null && mIvPreviewImage != null
+                    && mIvStatus != null && previewImagePath != null
                     && !previewImagePath.isEmpty()) {
                 imageLoader.displayCircularImage(previewImagePath, mIvPreviewImage);
                 mIvStatus.setImageResource(dto.getStatus().getDrawableId());
+                mIvPreviewImageLayout.setVisibility(showAuthor ? View.VISIBLE : View.INVISIBLE);
             }
         }
     }
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
+    }
+
+    private boolean hasSameAuthor(Post post, Post nextPost) {
+        return post.getUserId().equals(nextPost.getUserId());
+    }
+
+    private boolean oneTimePosts(Post post, Post nextPost) {
+        return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 }

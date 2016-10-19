@@ -14,7 +14,10 @@ public class PostDto {
 
     private User.Status status;
 
-    public PostDto(Post post, String authorName, String authorAvatar, User.Status status) {
+    public PostDto(Post post,
+            String authorName,
+            String authorAvatar,
+            User.Status status) {
         this.post = post;
         this.authorName = authorName;
         this.authorAvatar = authorAvatar;
