@@ -1,6 +1,5 @@
 package com.applikey.mattermost.storage.db;
 
-import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
@@ -10,20 +9,16 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 
 public class ChannelStorage {
 
-    @Inject
-    Db mDb;
+    private final Db mDb;
+    private final Prefs mPrefs;
 
-    @Inject
-    Prefs mPrefs;
-
-    public ChannelStorage() {
-        App.getComponent().inject(this);
+    public ChannelStorage(final Db db, final Prefs prefs) {
+        mDb = db;
+        mPrefs = prefs;
     }
 
     public Observable<List<Channel>> list() {

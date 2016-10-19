@@ -1,6 +1,5 @@
 package com.applikey.mattermost.storage.db;
 
-import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.team.Team;
 
 import java.util.List;
@@ -15,11 +14,10 @@ public class TeamStorage {
 
     private static final String CHOSEN_TEAM_KEY = "chosen_team";
 
-    @Inject
-    Db mDb;
+    private final Db mDb;
 
-    public TeamStorage() {
-        App.getComponent().inject(this);
+    public TeamStorage(Db db) {
+        mDb = db;
     }
 
     public void saveTeamsWithRemoval(Iterable<Team> teams) {
