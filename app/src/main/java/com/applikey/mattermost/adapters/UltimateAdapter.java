@@ -64,15 +64,15 @@ public abstract class UltimateAdapter<T extends RecyclerView.ViewHolder>
     @Override
     public final void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0 && withHeader()) {
-            // bind header
+            // bindOwn header
             getThisHeader().bindHeaderVH(holder);
             ((HeaderVH) holder).hideHeader(!mHeaderVisibility);
         } else if (position == getFooterPosition() && withFooter()) {
-            // bind footer
+            // bindOwn footer
             getThisFooter().bindFooterVH(holder);
             ((FooterVH) holder).hideFooter(!mFooterVisibility);
         } else {
-            // bind data
+            // bindOwn data
             if (withHeader()) {
                 position -= 1;
             }

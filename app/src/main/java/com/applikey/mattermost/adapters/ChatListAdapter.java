@@ -24,6 +24,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     private List<Channel> mDataSet = null;
     private ImageLoader mImageLoader;
+    private ClickListener mClickListener = null;
 
     public ChatListAdapter(List<Channel> dataSet, ImageLoader imageLoader) {
         super();
@@ -38,7 +39,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     public ChatListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_chat, parent, false);
-        return new ViewHolder(v);
+
+        final ViewHolder vh = new ViewHolder(v);
+        vh.getRoot().setOnClickListener(mOnClickListener);
+
+        return vh;
     }
 
     @Override
@@ -56,11 +61,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         setChannelIconVisibility(vh, data);
         setStatusIcon(vh, data);
         setUnreadStatus(vh, data);
+
+        vh.getRoot().setTag(position);
     }
 
     @Override
     public int getItemCount() {
         return mDataSet != null ? mDataSet.size() : 0;
+    }
+
+    public void setOnClickListener(ClickListener listener) {
+        this.mClickListener = listener;
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
@@ -101,6 +112,20 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             vh.getNotificationIcon().setVisibility(View.GONE);
         }
     }
+
+    public interface ClickListener {
+        void onItemClicked(Channel channel);
+    }
+
+    private final View.OnClickListener mOnClickListener = v -> {
+        final int position = (Integer) v.getTag();
+
+        final Channel team = mDataSet.get(position);
+
+        if (mClickListener != null) {
+            mClickListener.onItemClicked(team);
+        }
+    };
 
     /* package */
     class ViewHolder extends RecyclerView.ViewHolder {

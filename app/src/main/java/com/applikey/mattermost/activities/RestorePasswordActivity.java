@@ -2,7 +2,6 @@ package com.applikey.mattermost.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
 
@@ -18,7 +17,7 @@ import butterknife.OnClick;
 public class RestorePasswordActivity extends BaseMvpActivity implements RestorePasswordView {
 
     @Bind(R.id.et_login)
-    EditText etLogin;
+    EditText mEtLogin;
 
     @InjectPresenter
     RestorePasswordPresenter mPresenter;
@@ -39,7 +38,7 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
     @OnClick(R.id.b_restore_password)
     public void onRestoreClicked() {
         showLoadingDialog();
-        mPresenter.sendRestorePasswordRequest(etLogin.getText().toString());
+        mPresenter.sendRestorePasswordRequest(mEtLogin.getText().toString());
     }
 
     @Override
@@ -51,7 +50,7 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
     @Override
     public void onFailure(String message) {
         hideLoadingDialog();
-        etLogin.setError(message);
+        mEtLogin.setError(message);
     }
 
     @Override

@@ -24,10 +24,10 @@ import butterknife.OnClick;
 public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamView {
 
     @Bind(R.id.content)
-    LinearLayout llContent;
+    LinearLayout mLlContent;
 
     @Bind(R.id.rv_teams)
-    RecyclerView rvTeams;
+    RecyclerView mRvTeams;
 
     @InjectPresenter
     ChooseTeamPresenter mPresenter;
@@ -52,8 +52,8 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
         final TeamListAdapter adapter = new TeamListAdapter(teams);
         adapter.setItemClickAdapter(mTeamClickListener);
 
-        rvTeams.setLayoutManager(new LinearLayoutManager(this));
-        rvTeams.setAdapter(adapter);
+        mRvTeams.setLayoutManager(new LinearLayoutManager(this));
+        mRvTeams.setAdapter(adapter);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     public void onFailure(String message) {
         final String resultMessage = getResources().getString(R.string.could_not_receive_teams)
                 + ": " + message;
-        Snackbar.make(llContent, resultMessage + message,
+        Snackbar.make(mLlContent, resultMessage + message,
                 Snackbar.LENGTH_INDEFINITE).show();
     }
 

@@ -26,14 +26,14 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     private static final String TAG = "LogInActivity";
 
     @Bind(R.id.et_login)
-    EditText etLogin;
+    EditText mEtLogin;
     @Bind(R.id.et_password)
-    EditText etPassword;
+    EditText mEtPassword;
     @Bind(R.id.b_authorize)
-    Button bAuthorize;
+    Button mBtnAuthorize;
 
     @Bind(R.id.back)
-    View vBack;
+    View mViewBack;
 
     @InjectPresenter
     LogInPresenter mPresenter;
@@ -52,6 +52,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         super.onStart();
 
         Log.d(TAG, "onStart");
+        mPresenter.getInitialData();
     }
 
     @Override
@@ -64,8 +65,8 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @OnClick(R.id.b_authorize)
     void onAuthorize() {
         showLoading();
-        final String login = etLogin.getText().toString();
-        final String password = etPassword.getText().toString();
+        final String login = mEtLogin.getText().toString();
+        final String password = mEtPassword.getText().toString();
 
         mPresenter.authorize(this, login, password);
     }
@@ -98,7 +99,13 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @Override
     public void onUnsuccessfulAuth(String message) {
         hideLoading();
-        etPassword.setError(message);
+        mEtPassword.setError(message);
+    }
+
+    @Override
+    public void showPresetCredentials(String userName, String password) {
+        mEtLogin.setText(userName);
+        mEtPassword.setText(password);
     }
 
     @Override
@@ -106,7 +113,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         hideLoading();
 
         if (teams.size() == 0) {
-            etPassword.setError(getResources().getString(R.string.no_teams_received));
+            mEtPassword.setError(getResources().getString(R.string.no_teams_received));
             return;
         }
 
@@ -116,7 +123,7 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @Override
     public void onTeamsReceiveFailed(Throwable cause) {
         hideLoading();
-        etLogin.setError(cause.getMessage());
+        mEtLogin.setError(cause.getMessage());
     }
 
     private void loadTeams() {

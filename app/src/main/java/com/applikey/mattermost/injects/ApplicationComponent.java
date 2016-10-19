@@ -2,12 +2,14 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
+import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.BaseFragment;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
+import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
@@ -16,6 +18,7 @@ import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.storage.db.ChannelStorage;
+import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 
@@ -35,6 +38,8 @@ public interface ApplicationComponent {
     void inject(BaseActivity baseActivity);
 
     void inject(ChooseServerActivity baseActivity);
+
+    void inject(ChatActivity activity);
 
     void inject(App app);
 
@@ -59,10 +64,14 @@ public interface ApplicationComponent {
 
     void inject(UnreadChatListPresenter presenter);
 
+    void inject(ChatPresenter presenter);
+
     // Storages
     void inject(TeamStorage storage);
 
     void inject(ChannelStorage storage);
 
     void inject(UserStorage storage);
+
+    void inject(PostStorage storage);
 }

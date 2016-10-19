@@ -1,10 +1,13 @@
 package com.applikey.mattermost.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,7 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.ChatListAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
 import com.applikey.mattermost.models.channel.Channel;
@@ -35,10 +39,10 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
 
     @Bind(R.id.rv_channels)
-    RecyclerView rvChannels;
+    RecyclerView mRvChannels;
 
     @Bind(R.id.tv_empty_state)
-    TextView tvEmptyState;
+    TextView mTvEmptyState;
 
     @Inject
     ImageLoader mImageLoader;
@@ -72,7 +76,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     public void onStart() {
         super.onStart();
 
-        tvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
+        mTvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
 
         getPresenter().getInitialData();
     }
@@ -86,17 +90,20 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
     @Override
     public void displayInitialData(List<Channel> channels) {
+        Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed");
+
         if (channels.isEmpty()) {
-            tvEmptyState.setVisibility(View.VISIBLE);
-            rvChannels.setVisibility(View.GONE);
+            mTvEmptyState.setVisibility(View.VISIBLE);
+            mRvChannels.setVisibility(View.GONE);
             return;
         }
 
-        rvChannels.setVisibility(View.VISIBLE);
-        tvEmptyState.setVisibility(View.GONE);
+        mRvChannels.setVisibility(View.VISIBLE);
+        mTvEmptyState.setVisibility(View.GONE);
         final ChatListAdapter adapter = new ChatListAdapter(channels, mImageLoader);
-        rvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rvChannels.setAdapter(adapter);
+        adapter.setOnClickListener(mChatClickListener);
+        mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRvChannels.setAdapter(adapter);
 
         displayUnreadIndicator(channels);
     }
@@ -147,10 +154,16 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         public abstract int getIcon();
 
         public static TabBehavior getItemBehavior(int pageIndex) {
-            // Offset should be introduces
+            // Offset should be introduced
             return TabBehavior.values()[pageIndex + 1];
         }
     }
+
+    private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
+        final Activity activity = getActivity();
+        final Intent intent = ChatActivity.getIntent(activity, channel);
+        activity.startActivity(intent);
+    };
 
     protected abstract ChatListPresenter getPresenter();
 

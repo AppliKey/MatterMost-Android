@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:contentInsetStartWithNavigation="60dp"
+            app:elevation="2dp"
+            app:navigationIcon="@drawable/ic_hamburger" />
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/l_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_default">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_default" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/loading" />
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tv_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/no_posts_to_display" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_messages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/l_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_attach"
+            style="@style/ImageButton"
+            android:layout_width="@dimen/image_button_dimen_large"
+            android:layout_height="@dimen/image_button_dimen_large"
+            android:layout_alignParentStart="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_attach" />
+
+        <ImageView
+            android:id="@+id/iv_send_message"
+            style="@style/ImageButton"
+            android:layout_width="@dimen/image_button_dimen_large"
+            android:layout_height="@dimen/image_button_dimen_large"
+            android:layout_alignParentEnd="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_send" />
+
+        <EditText
+            android:id="@+id/et_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/iv_attach"
+            android:layout_toStartOf="@id/iv_send_message"
+            android:hint="@string/message" />
+
+    </RelativeLayout>
+</LinearLayout>
