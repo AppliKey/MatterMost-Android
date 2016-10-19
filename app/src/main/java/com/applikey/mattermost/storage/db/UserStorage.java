@@ -1,26 +1,21 @@
 package com.applikey.mattermost.storage.db;
 
-import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 
 public class UserStorage {
 
-    @Inject
-    Db mDb;
+    private final Db mDb;
+    private final ImagePathHelper mImagePathHelper;
 
-    @Inject
-    ImagePathHelper mImagePathHelper;
-
-    public UserStorage() {
-        App.getComponent().inject(this);
+    public UserStorage(Db db, ImagePathHelper imagePathHelper) {
+        mDb = db;
+        mImagePathHelper = imagePathHelper;
     }
 
     public void saveUsers(Map<String, User> directProfiles, Map<String, String> userStatuses) {
