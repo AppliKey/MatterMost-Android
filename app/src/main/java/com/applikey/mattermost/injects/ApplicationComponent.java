@@ -66,12 +66,4 @@ public interface ApplicationComponent {
 
     void inject(ChatPresenter presenter);
 
-    // Storages
-    void inject(TeamStorage storage);
-
-    void inject(ChannelStorage storage);
-
-    void inject(UserStorage storage);
-
-    void inject(PostStorage storage);
 }
