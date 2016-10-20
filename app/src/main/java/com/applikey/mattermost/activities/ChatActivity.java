@@ -22,7 +22,6 @@ import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -184,7 +183,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             return;
         }
 
-        Collections.sort(posts, PostDto.COMPARATOR_BY_POST_TIMESTAMP);
         mAdapter.updateDataSet(posts);
         mRvMessages.scrollToPosition(posts.size() - 1);
         hideEmptyState();

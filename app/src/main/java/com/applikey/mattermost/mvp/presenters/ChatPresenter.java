@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.util.Log;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostDto;
@@ -27,6 +29,8 @@ import rx.schedulers.Schedulers;
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
 
+    private static final String TAG = ChatPresenter.class.getSimpleName();
+
     private static final int PAGE_SIZE = 60;
 
     @Inject
@@ -47,7 +51,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void getInitialData(String channelId) {
         final ChatView view = getViewState();
-        mSubscription.add(Observable.zip(
+        mSubscription.add(Observable.combineLatest(
                 mPostStorage.listByChannel(channelId),
                 mUserStorage.listDirectProfiles(),
                 this::transform)
@@ -93,6 +97,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     private List<PostDto> transform(List<Post> posts, List<User> profiles) {
+        Log.d(TAG,
+                "transform: posts count = " + posts.size() + " users count = " + profiles.size());
         final Map<String, User> userMap = new HashMap<>();
         for (User profile : profiles) {
             userMap.put(profile.getId(), profile);
