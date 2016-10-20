@@ -26,4 +26,3 @@ public class SplashActivity extends BaseMvpActivity implements SplashView {
         startActivity(intent);
     }
 }
-
