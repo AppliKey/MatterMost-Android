@@ -74,6 +74,7 @@ public class GlobalModule {
     @PerApp
     OkHttpClient provideOkHttpClient(BearerTokenFactory tokenFactory) {
         final OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder();
+        okClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         okClientBuilder.addInterceptor(chain -> {
             Request request = chain.request();
             final String authToken = tokenFactory.getBearerTokenString();
@@ -86,7 +87,6 @@ public class GlobalModule {
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okClientBuilder.addInterceptor(httpLoggingInterceptor);
-        okClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         final File baseDir = mApp.getCacheDir();
         if (baseDir != null) {
             final File cacheDir = new File(baseDir, "HttpResponseCache");

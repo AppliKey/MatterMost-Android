@@ -54,13 +54,13 @@ public interface Api {
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
     Observable<Void> deletePost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Path("postId") String postId);
+            @Path("channelId") String channelId,
+            @Path("postId") String postId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/update")
     Observable<Post> updatePost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Body Post post);
+            @Path("channelId") String channelId,
+            @Body Post post);
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")
@@ -71,11 +71,15 @@ public interface Api {
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
     Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
-                                          @Path("channelId") String channelId,
-                                          @Path("offset") int offset,
-                                          @Path("limit") int limit);
+            @Path("channelId") String channelId,
+            @Path("offset") int offset,
+            @Path("limit") int limit);
+
+    @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/0/1")
+    Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
+            @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
-                                          @Path("channelId") String channelId);
+            @Path("channelId") String channelId);
 }

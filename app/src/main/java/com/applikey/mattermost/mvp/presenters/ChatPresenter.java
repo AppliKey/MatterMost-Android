@@ -77,11 +77,12 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         posts -> {
-                            if (mCurrentPage == 0) {
+                    /*        if (mCurrentPage == 0) {
                                 mPostStorage.saveAllWithRemoval(posts);
                             } else {
                                 mPostStorage.saveAll(posts);
-                            }
+                            }*/
+                            mPostStorage.saveAll(posts);
                             getViewState().showProgress(false);
                             getViewState().onDataFetched();
                             mCurrentPage++;

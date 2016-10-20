@@ -1,6 +1,9 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChooseTeamView;
@@ -13,6 +16,7 @@ import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
+import java.util.Collection;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -66,10 +70,11 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
                 mApi.getTeamProfiles(team.getId()),
                 (StartupFetchResult::new))
                 .subscribeOn(Schedulers.io())
+                .flatMap(response -> fetchLastMessages(response, team.getId()))
                 .flatMap(response -> {
                     final Set<String> keys = response.getDirectProfiles().keySet();
 
-                    return mApi.getUserStatusesCompatible(keys.toArray(new String[]{}))
+                    return mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
                             .onErrorResumeNext(throwable -> {
                                 return mApi.getUserStatuses();
                             })
@@ -85,5 +90,18 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
                 .subscribe(response -> {
                     view.onTeamChosen();
                 }));
+    }
+
+    private Observable<StartupFetchResult> fetchLastMessages(StartupFetchResult response, String teamId) {
+        return Observable.from(response.getChannelResponse().getChannels())
+                .flatMap(channel -> mApi.getLastPost(teamId, channel.getId()), this::transform)
+                .toList()
+                .map(channels -> response);
+    }
+
+    private Channel transform(Channel channel, PostResponse postResponse) {
+        Collection<Post> posts = postResponse.getPosts().values();
+        channel.setPreviewMessage(posts.isEmpty() ? "" : posts.iterator().next().getMessage());
+        return channel;
     }
 }

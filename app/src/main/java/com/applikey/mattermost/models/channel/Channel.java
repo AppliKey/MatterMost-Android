@@ -50,6 +50,8 @@ public class Channel extends RealmObject {
     // Field, which represents the comparison of two fields. Please see https://github.com/realm/realm-java/issues/1615
     private boolean hasUnreadMessages;
 
+    private String previewMessage;
+
     public String getId() {
         return id;
     }
@@ -146,6 +148,14 @@ public class Channel extends RealmObject {
         return hasUnreadMessages;
     }
 
+    public String getPreviewMessage() {
+        return previewMessage;
+    }
+
+    public void setPreviewMessage(String previewMessage) {
+        this.previewMessage = previewMessage;
+    }
+
     private void rebuildHasUnreadMessages() {
         final long lastViewedAt = getLastViewedAt();
         final long lastPostAt = getLastPostAt();
@@ -187,6 +197,7 @@ public class Channel extends RealmObject {
     }
 
     private static class ComparatorByDate implements Comparator<Channel> {
+
         @Override
         public int compare(Channel o1, Channel o2) {
             final long o1time = o1.getLastPostAt() != 0 ? o1.getLastPostAt() : o1.getCreatedAt();

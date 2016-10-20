@@ -53,6 +53,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         final long lastPostAt = data.getLastPostAt();
 
         vh.getChannelName().setText(data.getDisplayName());
+        vh.getMessagePreview().setText(data.getPreviewMessage());
         vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
                         data.getCreatedAt()));
