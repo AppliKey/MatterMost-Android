@@ -12,6 +12,7 @@
     <dimen name="edit_text_push_right">4dp</dimen>
 
     <dimen name="margin_default">16dp</dimen>
+    <dimen name="padding_default">8dp</dimen>
 
     <dimen name="welcome_screen_headers_margin_top">72dp</dimen>
     <dimen name="welcome_screen_headers_margin_bottom">48dp</dimen>
@@ -44,4 +45,6 @@
     <dimen name="list_item_chat_padding_name">10dp</dimen>
     <dimen name="list_item_chat_padding_timestamp">16dp</dimen>
     <dimen name="list_item_chat_text_size">16sp</dimen>
+
+    <dimen name="post_message_corners">15dp</dimen>
 </resources>
