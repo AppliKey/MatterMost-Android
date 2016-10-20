@@ -16,7 +16,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     TeamStorage mTeamStorage;
 
     @Inject
-    Prefs prefs;
+    Prefs mPrefs;
 
     public ChatListScreenPresenter() {
         App.getComponent().inject(this);
@@ -29,7 +29,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public void logout() {
-        prefs.setKeyAuthToken(null);
+        mPrefs.setKeyAuthToken(null);
         getViewState().logout();
     }
 }
