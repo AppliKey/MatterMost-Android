@@ -22,6 +22,10 @@ public class PostStorage {
         mDb.deleteTransactional(post);
     }
 
+    public void update(Post post) {
+        mDb.saveTransactional(post);
+    }
+
     public Observable<List<Post>> listByChannel(String channelId) {
         return mDb.listRealmObjectsFilteredSorted(Post.class, Post.FIELD_NAME_CHANNEL_ID,
                 Post.FIELD_NAME_CHANNEL_CREATE_AT, channelId);

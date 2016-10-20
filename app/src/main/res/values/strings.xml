@@ -24,6 +24,10 @@
     <string name="forgot_password_capt">FORGOT PASSWORD</string>
     <string name="restore_password_capt">RESTORE PASSWORD</string>
 
+    <string name="edit_message">Edit Message</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
     <string name="could_not_receive_teams">Could not receive teams</string>
     <string name="example_message_preview">Message Preview will be displayed here</string>
 
@@ -44,6 +48,7 @@
 
     <array name="post_own_opinion_array">
         <item>Delete</item>
+        <item>Edit</item>
     </array>
 
 </resources>

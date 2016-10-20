@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
@@ -136,8 +138,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     @Override
-    public void onPostDeleted(String postId) {
-        mAdapter.deletePost(postId);
+    public void onPostDeleted(Post post) {
+        mAdapter.deletePost(post);
+    }
+
+    @Override
+    public void onPostUpdated(Post post) {
+        mAdapter.updatePost(post);
     }
 
     @Override
@@ -189,15 +196,41 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     private final PostAdapter.OnLongClickListener onPostLongClick = post -> {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
+        final AlertDialog.Builder opinionDialogBuilder = new AlertDialog.Builder(this);
+        opinionDialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
             switch (which) {
                 case 0:
-                    mPresenter.deleteMessage(mChannelId, post);
+                    deleteMessage(mChannelId, post);
+                    break;
+                case 1:
+                    editMessage(mChannelId, post);
                     break;
                 default:
                     throw new RuntimeException("Not implemented feature");
             }
         }).show();
     };
+
+    private void deleteMessage(String channelId, Post post) {
+        mPresenter.deleteMessage(channelId, post);
+    }
+
+    private void editMessage(String channelId, Post post) {
+        final EditText input = new EditText(this);
+        final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        input.setLayoutParams(layoutParams);
+        input.setText(post.getMessage());
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(input)
+                .setTitle(R.string.edit_message)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.save, (dialog, which) -> {
+                    post.setMessage(input.getText().toString());
+                    mPresenter.editMessage(mChannelId, post);
+                })
+                .show();
+    }
 }

@@ -80,7 +80,18 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(posts -> {
                     mPostStorage.delete(post);
-                    getViewState().onPostDeleted(post.getId());
+                    getViewState().onPostDeleted(post);
+                }, ErrorHandler::handleError));
+    }
+
+    public void editMessage(String channelId, Post post) {
+        mSubscription.add(mTeamStorage.getChosenTeam()
+                .flatMap(team -> mApi.updatePost(team.getId(), channelId, post)
+                        .subscribeOn(Schedulers.io()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(posts -> {
+                    mPostStorage.update(post);
+                    getViewState().onPostUpdated(post);
                 }, ErrorHandler::handleError));
     }
 

@@ -44,17 +44,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void deletePost(String postId) {
-        final Optional<PostDto> optionalPost = Stream.of(mData)
-                .filter(dto -> dto.getPost().getId().equals(postId))
-                .findFirst();
-
+    public void deletePost(Post post) {
+        final Optional<PostDto> optionalPost = getPostDto(post);
         if (optionalPost.isPresent()) {
             final PostDto postDto = optionalPost.get();
-
             final int position = mData.indexOf(postDto);
+
             notifyItemRemoved(position);
             mData.remove(position);
+        }
+    }
+
+    public void updatePost(Post post) {
+        final Optional<PostDto> optionalPost = getPostDto(post);
+        if (optionalPost.isPresent()) {
+            final PostDto postDto = optionalPost.get();
+            final int position = mData.indexOf(postDto);
+
+            notifyItemChanged(position);
+            postDto.setPost(post);
         }
     }
 
@@ -146,6 +154,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
+    }
+
+    private Optional<PostDto> getPostDto(Post post) {
+        return Stream.of(mData)
+                .filter(dto -> dto.getPost().getId().equals(post.getId()))
+                .findFirst();
     }
 
     @FunctionalInterface
