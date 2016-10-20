@@ -3,6 +3,7 @@ package com.applikey.mattermost.mvp.presenters;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
@@ -14,6 +15,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     @Inject
     TeamStorage mTeamStorage;
 
+    @Inject
+    Prefs prefs;
+
     public ChatListScreenPresenter() {
         App.getComponent().inject(this);
     }
@@ -22,5 +26,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team -> {
             getViewState().setToolbarTitle(team.getDisplayName());
         }, ErrorHandler::handleError));
+    }
+
+    public void logout() {
+        prefs.setKeyAuthToken(null);
+        getViewState().logout();
     }
 }

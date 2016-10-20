@@ -45,7 +45,7 @@ public class Prefs {
         return mSharedPreferences.getString(KEY_AUTH_TOKEN, null);
     }
 
-    public void setKeyAuthToken(String authToken) {
+    public void setKeyAuthToken(@Nullable String authToken) {
         mSharedPreferences.edit().putString(KEY_AUTH_TOKEN, authToken).apply();
     }
 

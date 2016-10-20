@@ -1,32 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_chat_list"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.applikey.mattermost.activities.ChatListActivity">
+    tools:openDrawer="start">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
+        android:id="@+id/activity_chat_list"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        app:contentInsetStartWithNavigation="60dp"
-        app:navigationIcon="@drawable/ic_hamburger" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs"
-        style="@style/ChatListTabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:tabIndicatorHeight="0px"
-        app:tabMode="fixed" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:contentInsetStartWithNavigation="60dp"
+            app:navigationIcon="@drawable/ic_hamburger"/>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vpChatList"
-        android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1" />
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            style="@style/ChatListTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorHeight="0px"
+            app:tabMode="fixed"/>
 
-</LinearLayout>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vpChatList"
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:menu="@menu/menu_drawer"/>
+
+</android.support.v4.widget.DrawerLayout>
