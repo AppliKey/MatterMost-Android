@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:contentInsetStartWithNavigation="60dp"
-            app:elevation="2dp"/>
+            app:elevation="2dp" />
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
@@ -36,16 +36,14 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_messages"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="visible" />
+                    android:layout_height="match_parent" />
 
                 <TextView
                     android:id="@+id/tv_empty_state"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="@string/no_posts_to_display"
-                    android:visibility="visible"/>
+                    android:text="@string/no_posts_to_display" />
 
 
             </FrameLayout>
