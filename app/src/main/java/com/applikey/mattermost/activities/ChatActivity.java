@@ -152,7 +152,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             private int visibleItemCount;
             private int totalItemCount;
             private int previousTotal;
-            private final int threshold = 5;
+            private final int threshold = 3;
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
