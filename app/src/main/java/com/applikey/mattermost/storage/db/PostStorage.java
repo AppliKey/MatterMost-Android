@@ -1,21 +1,17 @@
 package com.applikey.mattermost.storage.db;
 
-import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.post.Post;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import rx.Observable;
 
 public class PostStorage {
 
-    @Inject
-    Db mDb;
+    private final Db mDb;
 
-    public PostStorage() {
-        App.getComponent().inject(this);
+    public PostStorage(Db db) {
+        mDb = db;
     }
 
     public void saveAllWithRemoval(List<Post> posts) {

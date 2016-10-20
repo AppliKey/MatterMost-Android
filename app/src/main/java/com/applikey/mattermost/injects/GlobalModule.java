@@ -112,20 +112,20 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    TeamStorage provideTeamStorage() {
-        return new TeamStorage();
+    TeamStorage provideTeamStorage(Db db) {
+        return new TeamStorage(db);
     }
 
     @Provides
     @PerApp
-    ChannelStorage provideChannelStorage() {
-        return new ChannelStorage();
+    ChannelStorage provideChannelStorage(Db db, Prefs prefs) {
+        return new ChannelStorage(db, prefs);
     }
 
     @Provides
     @PerApp
-    UserStorage provideUserStorage() {
-        return new UserStorage();
+    UserStorage provideUserStorage(Db db, ImagePathHelper imagePathHelper) {
+        return new UserStorage(db, imagePathHelper);
     }
 
     @Provides
@@ -136,8 +136,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    PostStorage providePostStorage() {
-        return new PostStorage();
+    PostStorage providePostStorage(Db db) {
+        return new PostStorage(db);
     }
 
     @Provides
