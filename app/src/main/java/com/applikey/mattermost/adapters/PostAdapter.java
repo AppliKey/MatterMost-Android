@@ -45,14 +45,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public void deletePost(String postId) {
-        Optional<PostDto> optionalPost = Stream.of(mData)
+        final Optional<PostDto> optionalPost = Stream.of(mData)
                 .filter(dto -> dto.getPost().getId().equals(postId))
                 .findFirst();
 
         if (optionalPost.isPresent()) {
-            PostDto postDto = optionalPost.get();
+            final PostDto postDto = optionalPost.get();
 
-            int position = mData.indexOf(postDto);
+            final int position = mData.indexOf(postDto);
             notifyItemRemoved(position);
             mData.remove(position);
         }

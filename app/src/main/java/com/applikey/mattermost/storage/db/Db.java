@@ -37,6 +37,15 @@ public class Db {
         realm.close();
     }
 
+    public void deleteTransactional(RealmObject realmObject) {
+        final Realm realm = getRealm();
+        realm.beginTransaction();
+        realmObject = realm.copyToRealmOrUpdate(realmObject);
+        realmObject.deleteFromRealm();
+        realm.commitTransaction();
+        realm.close();
+    }
+
     public void saveTransactionalWithRemoval(RealmObject object) {
         final Realm realm = getRealm();
         realm.beginTransaction();
@@ -56,14 +65,6 @@ public class Db {
         final Class<? extends RealmObject> clazz = iterator.next().getClass();
         realm.delete(clazz);
         realm.copyToRealmOrUpdate(objects);
-        realm.commitTransaction();
-        realm.close();
-    }
-
-    public void deleteTransactional(RealmObject realmObject) {
-        final Realm realm = getRealm();
-        realm.beginTransaction();
-        realm.delete(realmObject.getClass());
         realm.commitTransaction();
         realm.close();
     }

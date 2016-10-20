@@ -191,7 +191,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     private final PostAdapter.OnLongClickListener onPostLongClick = post -> {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
             switch (which) {
                 case 0:
