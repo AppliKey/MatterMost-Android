@@ -10,6 +10,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
@@ -52,6 +55,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     @Bind(R.id.rv_messages)
     RecyclerView mRvMessages;
+
+    @Bind(R.id.tv_empty_state)
+    TextView mTvEmptyState;
 
     @InjectPresenter
     ChatPresenter mPresenter;
@@ -135,7 +141,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         }
 
-        mRvMessages.setLayoutManager(new LinearLayoutManager(this));
         mRvMessages.setAdapter(mAdapter);
     }
 
@@ -200,10 +205,12 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private void displayEmptyState() {
         mRvMessages.setVisibility(GONE);
+        mTvEmptyState.setVisibility(VISIBLE);
     }
 
     private void hideEmptyState() {
         mRvMessages.setVisibility(VISIBLE);
+        mTvEmptyState.setVisibility(GONE);
     }
 
     private void setToolbarText() {

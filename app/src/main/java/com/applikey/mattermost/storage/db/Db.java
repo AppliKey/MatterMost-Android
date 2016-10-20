@@ -122,7 +122,7 @@ public class Db {
         return realm
                 .where(tClass)
                 .equalTo(fieldName, value)
-                .findAllSorted(sortBy, Sort.DESCENDING)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
