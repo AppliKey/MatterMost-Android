@@ -3,12 +3,11 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
@@ -45,11 +44,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.tv_empty_state)
-    TextView mTvEmptyState;
-
-    @Bind(R.id.l_loading)
-    LinearLayout mLayoutLoading;
+    @Bind(R.id.srl_chat)
+    SwipeRefreshLayout mSrlChat;
 
     @Bind(R.id.rv_messages)
     RecyclerView mRvMessages;
@@ -69,6 +65,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
+    private boolean mLoading;
+    private boolean mIsNeedToScrollToStart = true;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -103,7 +101,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
         mPresenter.getInitialData(mChannelId);
         mPresenter.fetchData(mChannelId);
-        mRvMessages.scrollToPosition(0);
     }
 
     @Override
@@ -136,7 +133,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             private int visibleItemCount;
             private int totalItemCount;
             private final int threshold = 5;
-            private int a;
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -146,13 +142,14 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                     visibleItemCount = recyclerView.getChildCount();
                     totalItemCount = layoutManager.getItemCount();
                     pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-                    a = visibleItemCount + threshold;
                     Timber.d("visibleItems = %d, totalItems = %d, pastVisibleItems = %d", visibleItemCount, totalItemCount, pastVisibleItems);
 
-                    Timber.d("is loading bar showing: %b", isLoadingBarShowing());
-                    if ((a + pastVisibleItems) >= totalItemCount) {
-                        Timber.d("requesting %d items", totalItemCount);
-                        mPresenter.fetchData(mChannelId);
+                    if (!mLoading) {
+                        if ((visibleItemCount + threshold + pastVisibleItems) >= totalItemCount) {
+                            Timber.d("requesting %d items", totalItemCount);
+                            mLoading = true;
+                            mPresenter.fetchData(mChannelId);
+                        }
                     }
 
                 }
@@ -163,6 +160,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
+        mLoading = false;
 
     }
 
@@ -180,11 +178,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private void displayEmptyState() {
         mRvMessages.setVisibility(GONE);
-        mTvEmptyState.setVisibility(VISIBLE);
     }
 
     private void hideEmptyState() {
-        mTvEmptyState.setVisibility(GONE);
         mRvMessages.setVisibility(VISIBLE);
     }
 
@@ -195,35 +191,21 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mToolbar.setTitle(prefix + mChannelName);
     }
 
-    private void showLoadingBar() {
-        mLayoutLoading.setVisibility(VISIBLE);
-    }
-
-    private void hideLoadingBar() {
-        mLayoutLoading.setVisibility(GONE);
-    }
-
-    private boolean isLoadingBarShowing() {
-        return mLayoutLoading.getVisibility() == VISIBLE;
-    }
-
     private void displayPosts(List<PostDto> posts) {
         if (posts == null || posts.isEmpty()) {
             displayEmptyState();
             return;
         }
-
         mAdapter.updateDataSet(posts);
-//        mRvMessages.scrollToPosition(posts.size() - 1);
+        if (mIsNeedToScrollToStart) {
+            mRvMessages.scrollToPosition(0);
+            mIsNeedToScrollToStart = false;
+        }
         hideEmptyState();
     }
 
     @Override
     public void showProgress(boolean enabled) {
-        if (enabled && !isLoadingBarShowing()) {
-            showLoadingBar();
-        } else {
-            hideLoadingBar();
-        }
+        mSrlChat.setRefreshing(enabled);
     }
 }

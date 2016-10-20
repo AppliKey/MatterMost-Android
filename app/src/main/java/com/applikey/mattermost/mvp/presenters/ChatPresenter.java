@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 
 @InjectViewState
@@ -32,7 +33,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     private static final String TAG = ChatPresenter.class.getSimpleName();
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 60;
 
     @Inject
     PostStorage mPostStorage;
@@ -64,12 +65,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void fetchData(String channelId) {
         getViewState().showProgress(true);
+        Timber.d("fetching data");
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team ->
                         mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE, PAGE_SIZE)
                                 .subscribeOn(Schedulers.io())
                                 .doOnError(ErrorHandler::handleError)
                 )
+                .filter(postResponse -> !postResponse.getPosts().isEmpty())
                 .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -104,6 +107,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private List<PostDto> transform(List<Post> posts, List<User> profiles) {
         Log.d(TAG,
                 "transform: posts count = " + posts.size() + " users count = " + profiles.size());
+        Timber.d("transform data");
+
         final Map<String, User> userMap = new HashMap<>();
         for (User profile : profiles) {
             userMap.put(profile.getId(), profile);

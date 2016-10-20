@@ -145,5 +145,6 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+
+    compile 'com.annimon:stream:1.1.2'
 }
