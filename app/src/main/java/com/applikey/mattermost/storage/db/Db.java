@@ -37,6 +37,15 @@ public class Db {
         }, realm::close);
     }
 
+    public void deleteTransactional(RealmObject realmObject) {
+        final Realm realm = getRealm();
+        realm.beginTransaction();
+        realmObject = realm.copyToRealmOrUpdate(realmObject);
+        realmObject.deleteFromRealm();
+        realm.commitTransaction();
+        realm.close();
+    }
+
     public void saveTransactionalWithRemoval(RealmObject object) {
         final Realm realm = getRealm();
         realm.executeTransactionAsync(bgRealm -> {

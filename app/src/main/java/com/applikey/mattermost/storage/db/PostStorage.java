@@ -18,6 +18,14 @@ public class PostStorage {
         mDb.saveTransactionalWithRemoval(posts);
     }
 
+    public void delete(Post post) {
+        mDb.deleteTransactional(post);
+    }
+
+    public void update(Post post) {
+        mDb.saveTransactional(post);
+    }
+
     public void saveAll(List<Post> posts) {
         mDb.saveTransactional(posts);
     }

@@ -84,7 +84,7 @@ public class GlobalModule {
             return chain.proceed(request);
         });
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okClientBuilder.addInterceptor(httpLoggingInterceptor);
         okClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         final File baseDir = mApp.getCacheDir();
