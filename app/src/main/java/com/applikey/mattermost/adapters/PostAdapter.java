@@ -81,16 +81,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PostDto dto = mData.get(position);
 
-        boolean showDate = position == 0 ||
-                !oneDatePosts(dto.getPost(), mData.get(position - 1).getPost());
+        boolean showDate = position == mData.size() - 1 ||
+                !oneDatePosts(dto.getPost(), mData.get(position + 1).getPost());
 
-        boolean showAuthor = position == 0 ||
-                !hasSameAuthor(mData.get(position - 1).getPost(), dto.getPost()) ||
+        boolean showAuthor = position == mData.size() - 1 ||
+                !hasSameAuthor(mData.get(position + 1).getPost(), dto.getPost()) ||
                 showDate;
 
-        boolean showTime = position == mData.size() - 1 ||
-                !oneTimePosts(dto.getPost(), mData.get(position + 1).getPost()) ||
-                !hasSameAuthor(dto.getPost(), mData.get(position + 1).getPost());
+        boolean showTime = position == 0 ||
+                !oneTimePosts(dto.getPost(), mData.get(position - 1).getPost()) ||
+                !hasSameAuthor(dto.getPost(), mData.get(position - 1).getPost());
 
         if (isMy(dto.getPost())) {
             holder.bindOwn(dto, showAuthor, showTime, showDate, mOnLongClickListener);
