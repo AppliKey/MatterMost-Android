@@ -22,6 +22,7 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
+import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -33,7 +34,6 @@ import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -74,9 +74,15 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
-    private boolean mLoading;
     private boolean mIsNeedToScrollToStart = true;
-    private final RecyclerView.OnScrollListener mPaginationListener = getPaginationScrollListener();
+
+
+    private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
+        @Override
+        public void onLoad() {
+            mPresenter.fetchData(mChannelId);
+        }
+    };
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -129,14 +135,18 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
     }
 
-    private void initView() {
-        setSupportActionBar(mToolbar);
+    private LinearLayoutManager getLayoutManager() {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
-        mRvMessages.setLayoutManager(linearLayoutManager);
+        return linearLayoutManager;
+    }
+
+    private void initView() {
+        setSupportActionBar(mToolbar);
         mRvMessages.addOnScrollListener(mPaginationListener);
         final ActionBar actionBar = getSupportActionBar();
+        mRvMessages.setLayoutManager(getLayoutManager());
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
@@ -146,45 +156,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mRvMessages.setAdapter(mAdapter);
     }
 
-    private RecyclerView.OnScrollListener getPaginationScrollListener() {
-        return new RecyclerView.OnScrollListener() {
-            private int pastVisibleItems;
-            private int visibleItemCount;
-            private int totalItemCount;
-            private int previousTotal;
-            private final int threshold = 5;
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (dy < 0) {
-                    Timber.d("");
-                    visibleItemCount = recyclerView.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-                    Timber.d("visibleItems = %d, totalItems = %d, pastVisibleItems = %d", visibleItemCount, totalItemCount, pastVisibleItems);
-                    if (mLoading) {
-                        if (totalItemCount != previousTotal) {
-                            mLoading = false;
-                            previousTotal = totalItemCount;
-                        }
-                    }
-                    if (!mLoading && (totalItemCount - visibleItemCount)
-                            <= (visibleItemCount + threshold)) {
-                        Timber.d("requesting %d items", totalItemCount);
-                        mLoading = true;
-                        mPresenter.fetchData(mChannelId);
-                    }
-                }
-
-            }
-        };
-    }
-
     @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
-        mLoading = false;
 
     }
 
