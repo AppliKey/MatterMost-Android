@@ -1,5 +1,6 @@
 package com.applikey.mattermost.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,11 +50,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
         final Channel data = mDataSet.get(position);
+        Context context = vh.itemView.getContext();
 
         final long lastPostAt = data.getLastPostAt();
 
         vh.getChannelName().setText(data.getDisplayName());
-        vh.getMessagePreview().setText(data.getPreviewMessage());
+        vh.getMessagePreview().setText(data.getPreviewMessage() == null ?
+                context.getString(R.string.channel_preview_message_placeholder) :
+                data.getPreviewMessage());
         vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
                         data.getCreatedAt()));

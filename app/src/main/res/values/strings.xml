@@ -45,6 +45,7 @@
     <string name="message">Message…</string>
     <string name="loading">Loading…</string>
     <string name="no_posts_to_display">No Posts to Display :(</string>
+    <string name="channel_preview_message_placeholder">No messages yet</string>
 
     <array name="post_own_opinion_array">
         <item>Delete</item>

@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.content.res.Resources;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
@@ -16,7 +18,7 @@ import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -45,6 +47,9 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
 
     @Inject
     ImagePathHelper mImagePathHelper;
+
+    @Inject
+    Resources mResources;
 
     public ChooseTeamPresenter() {
         App.getComponent().inject(this);
@@ -100,8 +105,9 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
     }
 
     private Channel transform(Channel channel, PostResponse postResponse) {
-        Collection<Post> posts = postResponse.getPosts().values();
-        channel.setPreviewMessage(posts.isEmpty() ? "" : posts.iterator().next().getMessage());
+        Iterator<Post> posts = postResponse.getPosts().values().iterator();
+        String lastMessage = posts.hasNext() ? posts.next().getMessage() : null;
+        channel.setPreviewMessage(lastMessage);
         return channel;
     }
 }

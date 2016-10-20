@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.channel;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
@@ -148,11 +150,12 @@ public class Channel extends RealmObject {
         return hasUnreadMessages;
     }
 
+    @Nullable
     public String getPreviewMessage() {
         return previewMessage;
     }
 
-    public void setPreviewMessage(String previewMessage) {
+    public void setPreviewMessage(@Nullable String previewMessage) {
         this.previewMessage = previewMessage;
     }
 
