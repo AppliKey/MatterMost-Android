@@ -21,7 +21,8 @@ public class SplashActivity extends BaseMvpActivity implements SplashView {
 
     @Override
     public void isSessionExist(boolean exist) {
-        Intent intent = new Intent(this, exist ? ChatListActivity.class : ChooseServerActivity.class);
+        final Intent intent = new Intent(this, exist
+                ? ChatListActivity.class : ChooseServerActivity.class);
         startActivity(intent);
     }
 }
