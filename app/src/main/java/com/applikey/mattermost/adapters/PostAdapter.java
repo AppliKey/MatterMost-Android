@@ -114,7 +114,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         void bindOwn(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate) {
-            mTvTimestamp.setText(TimeUtil.formatTimeOrDate(dto.getPost().getCreatedAt()));
+            mTvTimestamp.setText(TimeUtil.formatTimeOrDateTime(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
 

@@ -23,6 +23,7 @@ public class TimeUtil {
 
     public static final String DEFAULT_FORMAT_TIME_ONLY = "HH:mm";
     public static final String DEFAULT_FORMAT_DATE_ONLY = "yyyy-MM-dd";
+    public static final String DEFAULT_FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
     public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String FILE_FORMAT = "yyyy_MM_dd_HH_mm_ss_SSS";
@@ -63,7 +64,26 @@ public class TimeUtil {
         return sdf.format(date);
     }
 
-    public static String formatTimeOrDate(long time) {
+    public static String formatDateTime(long time) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_FORMAT_DATE_TIME);
+        final Date date = new Date(time);
+        return sdf.format(date);
+    }
+
+    public static String formatTimeOrDateTime(long time) {
+        final Date now = new Date();
+
+        final boolean sameDay = time / MILLISECONDS_IN_DAY ==
+                now.getTime() / MILLISECONDS_IN_DAY;
+
+        if (sameDay) {
+            return formatTimeOnly(time);
+        } else {
+            return formatDateTime(time);
+        }
+    }
+
+    public static String formatTimeOrDateOnly(long time) {
         final Date now = new Date();
 
         final boolean sameDay = time / MILLISECONDS_IN_DAY ==
@@ -111,11 +131,10 @@ public class TimeUtil {
         return localTime;
     }
 
-    //// TODO: 19.10.16
     public static boolean sameTime(long timePrev, long timeCurrent) {
         Log.d(TAG, "sameTime: " + timePrev + " =  " + timePrev / 1000 / 60 + ", "
                 + timeCurrent + " = " + timeCurrent / 1000 / 60);
-        Log.d(TAG, "sameTime: result = " + ((int) timePrev / 1000 / 60 == (int) timeCurrent / 1000 / 60));
+        Log.d(TAG, "sameTime: result = " + ((timePrev / 1000 / 60) == (timeCurrent / 1000 / 60)));
         return (timePrev / 1000 / 60) == (timeCurrent / 1000 / 60);
     }
 }
