@@ -29,6 +29,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -49,6 +50,10 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
     @Inject
     EventBus mEventBus;
+
+    @Inject
+    @Named("currentUserId")
+    String mCurrentUserId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,7 +105,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
-        final ChatListAdapter adapter = new ChatListAdapter(channels, mImageLoader);
+        final ChatListAdapter adapter = new ChatListAdapter(channels, mImageLoader, mCurrentUserId);
         adapter.setOnClickListener(mChatClickListener);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
@@ -123,27 +128,32 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
             public int getIcon() {
                 return R.drawable.no_resource;
             }
-        }, UNREAD {
+        },
+        UNREAD {
             @Override
             public int getIcon() {
                 return R.drawable.ic_unread;
             }
-        }, FAVOURITES {
+        },
+        FAVOURITES {
             @Override
             public int getIcon() {
                 return R.drawable.ic_favourites_tab;
             }
-        }, CHANNELS {
+        },
+        CHANNELS {
             @Override
             public int getIcon() {
                 return R.drawable.ic_public_channels_tab;
             }
-        }, GROUPS {
+        },
+        GROUPS {
             @Override
             public int getIcon() {
                 return R.drawable.ic_private_channels_tab;
             }
-        }, DIRECT {
+        },
+        DIRECT {
             @Override
             public int getIcon() {
                 return R.drawable.ic_direct_tab;

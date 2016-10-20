@@ -1,10 +1,11 @@
 package com.applikey.mattermost.models.channel;
 
-import android.support.annotation.Nullable;
-
+import com.applikey.mattermost.models.post.Post;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
+
+import javax.annotation.Nullable;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -52,7 +53,9 @@ public class Channel extends RealmObject {
     // Field, which represents the comparison of two fields. Please see https://github.com/realm/realm-java/issues/1615
     private boolean hasUnreadMessages;
 
-    private String previewMessage;
+    private Post lastPost;
+
+    private String lastPostAuthorDisplayName;
 
     public String getId() {
         return id;
@@ -151,12 +154,21 @@ public class Channel extends RealmObject {
     }
 
     @Nullable
-    public String getPreviewMessage() {
-        return previewMessage;
+    public Post getLastPost() {
+        return lastPost;
     }
 
-    public void setPreviewMessage(@Nullable String previewMessage) {
-        this.previewMessage = previewMessage;
+    public void setLastPost(@Nullable Post lastPost) {
+        this.lastPost = lastPost;
+    }
+
+    @Nullable
+    public String getLastPostAuthorDisplayName() {
+        return lastPostAuthorDisplayName;
+    }
+
+    public void setLastPostAuthorDisplayName(@Nullable String lastPostAuthorDisplayName) {
+        this.lastPostAuthorDisplayName = lastPostAuthorDisplayName;
     }
 
     private void rebuildHasUnreadMessages() {

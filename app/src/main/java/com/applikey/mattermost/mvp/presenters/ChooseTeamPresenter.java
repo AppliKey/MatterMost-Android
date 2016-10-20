@@ -105,9 +105,8 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
     }
 
     private Channel transform(Channel channel, PostResponse postResponse) {
-        Iterator<Post> posts = postResponse.getPosts().values().iterator();
-        String lastMessage = posts.hasNext() ? posts.next().getMessage() : null;
-        channel.setPreviewMessage(lastMessage);
+        final Iterator<Post> posts = postResponse.getPosts().values().iterator();
+        channel.setLastPost(posts.hasNext() ? posts.next() : null);
         return channel;
     }
 }

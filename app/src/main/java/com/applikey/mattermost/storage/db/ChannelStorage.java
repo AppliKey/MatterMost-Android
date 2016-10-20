@@ -3,6 +3,7 @@ package com.applikey.mattermost.storage.db;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
 
@@ -62,6 +63,8 @@ public class ChannelStorage {
 
         final List<Channel> channels = response.getChannels();
         for (Channel channel : channels) {
+            updateBaseChannelData(channel, userProfiles);
+
             if (channel.getType().equals(directChannelType)) {
                 updateDirectChannelData(channel, userProfiles, currentUserId);
             }
@@ -75,9 +78,18 @@ public class ChannelStorage {
         mDb.saveTransactionalWithRemoval(channels);
     }
 
+    private void updateBaseChannelData(Channel channel,
+            Map<String, User> contacts) {
+        if (channel.getLastPost() != null) {
+            final Post lastPost = channel.getLastPost();
+            channel.setLastPostAuthorDisplayName(User.getDisplayableName(
+                    contacts.get(lastPost.getUserId())));
+        }
+    }
+
     private void updateDirectChannelData(Channel channel,
-                                         Map<String, User> contacts,
-                                         String currentUserId) {
+            Map<String, User> contacts,
+            String currentUserId) {
         final String channelId = channel.getName();
         final String otherUserId = extractOtherUserId(channelId, currentUserId);
 

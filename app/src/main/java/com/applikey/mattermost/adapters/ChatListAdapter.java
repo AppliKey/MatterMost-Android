@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -24,14 +25,17 @@ import butterknife.ButterKnife;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
     private List<Channel> mDataSet = null;
-    private ImageLoader mImageLoader;
+    private final ImageLoader mImageLoader;
+    private final String mCurrentUserId;
+
     private ClickListener mClickListener = null;
 
-    public ChatListAdapter(List<Channel> dataSet, ImageLoader imageLoader) {
+    public ChatListAdapter(List<Channel> dataSet, ImageLoader imageLoader, String currentUserId) {
         super();
 
         mImageLoader = imageLoader;
         mDataSet = new ArrayList<>(dataSet.size());
+        mCurrentUserId = currentUserId;
         mDataSet.addAll(dataSet);
         Collections.sort(mDataSet, Channel.COMPARATOR_BY_DATE);
     }
@@ -50,14 +54,15 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
         final Channel data = mDataSet.get(position);
-        Context context = vh.itemView.getContext();
+        final Context context = vh.itemView.getContext();
 
         final long lastPostAt = data.getLastPostAt();
 
         vh.getChannelName().setText(data.getDisplayName());
-        vh.getMessagePreview().setText(data.getPreviewMessage() == null ?
-                context.getString(R.string.channel_preview_message_placeholder) :
-                data.getPreviewMessage());
+
+        final String messagePreview = getMessagePreview(data, context);
+
+        vh.getMessagePreview().setText(messagePreview);
         vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
                         data.getCreatedAt()));
@@ -68,6 +73,24 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         setUnreadStatus(vh, data);
 
         vh.getRoot().setTag(position);
+    }
+
+    private String getMessagePreview(Channel channel, Context context) {
+        final Post lastPost = channel.getLastPost();
+        final String messagePreview;
+        if (channel.getLastPost() == null) {
+            messagePreview = context.getString(R.string.channel_preview_message_placeholder);
+        } else if (isMy(lastPost)) {
+            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
+                    channel.getLastPost().getMessage();
+        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
+            messagePreview = context.getString(R.string.channel_post_author_name_format,
+                    channel.getLastPostAuthorDisplayName()) +
+                    channel.getLastPost().getMessage();
+        } else {
+            messagePreview = channel.getLastPost().getMessage();
+        }
+        return messagePreview;
     }
 
     @Override
@@ -116,6 +139,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         } else {
             vh.getNotificationIcon().setVisibility(View.GONE);
         }
+    }
+
+    private boolean isMy(Post post) {
+        return post.getUserId().equals(mCurrentUserId);
     }
 
     public interface ClickListener {
