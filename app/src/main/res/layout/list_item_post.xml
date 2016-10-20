@@ -62,7 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/list_item_chat_padding_name"
-            android:singleLine="true"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/textListPrimary"
             android:textSize="@dimen/list_item_chat_text_size" />
 
@@ -77,7 +78,6 @@
             android:paddingEnd="@dimen/list_item_chat_padding"
             android:paddingStart="@dimen/list_item_chat_padding"
             android:paddingTop="@dimen/list_item_chat_padding_timestamp"
-            android:singleLine="false"
             android:textColor="@color/textListPrimary"
             android:textSize="@dimen/list_item_chat_text_size" />
 
