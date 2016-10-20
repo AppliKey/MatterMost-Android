@@ -8,7 +8,6 @@ package com.applikey.mattermost.utils.kissUtils.utils;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -132,9 +131,10 @@ public class TimeUtil {
     }
 
     public static boolean sameTime(long timePrev, long timeCurrent) {
-        Log.d(TAG, "sameTime: " + timePrev + " =  " + timePrev / 1000 / 60 + ", "
-                + timeCurrent + " = " + timeCurrent / 1000 / 60);
-        Log.d(TAG, "sameTime: result = " + ((timePrev / 1000 / 60) == (timeCurrent / 1000 / 60)));
         return (timePrev / 1000 / 60) == (timeCurrent / 1000 / 60);
+    }
+
+    public static boolean sameDate(long timePrev, long timeCurrent) {
+        return (timePrev / 1000 / 60 / 60 / 24) == (timeCurrent / 1000 / 60 / 60 / 24);
     }
 }

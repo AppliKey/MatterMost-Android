@@ -57,14 +57,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PostDto dto = mData.get(position);
 
+        boolean showDate = position == 0 ||
+                !oneDatePosts(dto.getPost(), mData.get(position - 1).getPost());
+
         boolean showAuthor = position == 0 ||
-                !hasSameAuthor(mData.get(position - 1).getPost(), dto.getPost());
+                !hasSameAuthor(mData.get(position - 1).getPost(), dto.getPost()) ||
+                showDate;
 
         boolean showTime = position == mData.size() - 1 ||
                 !oneTimePosts(dto.getPost(), mData.get(position + 1).getPost()) ||
                 !hasSameAuthor(dto.getPost(), mData.get(position + 1).getPost());
-
-        boolean showDate = true;
 
         if (isMy(dto.getPost())) {
             holder.bindOwn(dto, showAuthor, showTime, showDate);
@@ -98,6 +100,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         @Bind(R.id.iv_preview_image_layout)
         RelativeLayout mIvPreviewImageLayout;
 
+        @Bind(R.id.tv_date)
+        TextView mTvDate;
+
         @Bind(R.id.tv_message)
         TextView mTvMessage;
 
@@ -114,10 +119,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         void bindOwn(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate) {
-            mTvTimestamp.setText(TimeUtil.formatTimeOrDateTime(dto.getPost().getCreatedAt()));
+            mTvDate.setText(TimeUtil.formatDateOnly(dto.getPost().getCreatedAt()));
+            mTvTimestamp.setText(TimeUtil.formatTimeOnly(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
 
+            mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
         }
@@ -148,4 +155,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private boolean oneTimePosts(Post post, Post nextPost) {
         return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
     }
+
+    private boolean oneDatePosts(Post post, Post nextPost) {
+        return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
+    }
+
 }
