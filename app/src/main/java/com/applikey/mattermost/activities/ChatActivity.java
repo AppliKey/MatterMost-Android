@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +33,7 @@ import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -48,14 +50,14 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.tv_empty_state)
-    TextView mTvEmptyState;
-
-    @Bind(R.id.l_loading)
-    LinearLayout mLayoutLoading;
+    @Bind(R.id.srl_chat)
+    SwipeRefreshLayout mSrlChat;
 
     @Bind(R.id.rv_messages)
     RecyclerView mRvMessages;
+
+    @Bind(R.id.tv_empty_state)
+    TextView mTvEmptyState;
 
     @InjectPresenter
     ChatPresenter mPresenter;
@@ -72,6 +74,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
+    private boolean mLoading;
+    private boolean mIsNeedToScrollToStart = true;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -105,10 +109,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     protected void onStart() {
         super.onStart();
 
-        showLoadingBar();
-
         mPresenter.getInitialData(mChannelId);
-        mPresenter.fetchData(mChannelId, 0);
+        mPresenter.fetchData(mChannelId);
     }
 
     @Override
@@ -127,6 +129,11 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private void initView() {
         setSupportActionBar(mToolbar);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        mRvMessages.setLayoutManager(linearLayoutManager);
+        mRvMessages.addOnScrollListener(getPaginationScrollListener());
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -134,15 +141,44 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         }
 
-        mRvMessages.setLayoutManager(new LinearLayoutManager(this));
         mRvMessages.setAdapter(mAdapter);
+    }
+
+    private RecyclerView.OnScrollListener getPaginationScrollListener() {
+        return new RecyclerView.OnScrollListener() {
+            private int pastVisibleItems;
+            private int visibleItemCount;
+            private int totalItemCount;
+            private final int threshold = 5;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (dy < 0) {
+                    Timber.d("");
+                    visibleItemCount = recyclerView.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
+                    Timber.d("visibleItems = %d, totalItems = %d, pastVisibleItems = %d", visibleItemCount, totalItemCount, pastVisibleItems);
+
+                    if (!mLoading) {
+                        if ((visibleItemCount + threshold + pastVisibleItems) >= totalItemCount) {
+                            Timber.d("requesting %d items", totalItemCount);
+                            mLoading = true;
+                            mPresenter.fetchData(mChannelId);
+                        }
+                    }
+
+                }
+            }
+        };
     }
 
     @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
+        mLoading = false;
 
-        hideLoadingBar();
     }
 
     @Override
@@ -173,8 +209,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     private void hideEmptyState() {
-        mTvEmptyState.setVisibility(GONE);
         mRvMessages.setVisibility(VISIBLE);
+        mTvEmptyState.setVisibility(GONE);
     }
 
     private void setToolbarText() {
@@ -184,23 +220,22 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mToolbar.setTitle(prefix + mChannelName);
     }
 
-    private void showLoadingBar() {
-        mLayoutLoading.setVisibility(VISIBLE);
-    }
-
-    private void hideLoadingBar() {
-        mLayoutLoading.setVisibility(GONE);
-    }
-
     private void displayPosts(List<PostDto> posts) {
         if (posts == null || posts.isEmpty()) {
             displayEmptyState();
             return;
         }
-
         mAdapter.updateDataSet(posts);
-        mRvMessages.scrollToPosition(posts.size() - 1);
+        if (mIsNeedToScrollToStart) {
+            mRvMessages.scrollToPosition(0);
+            mIsNeedToScrollToStart = false;
+        }
         hideEmptyState();
+    }
+
+    @Override
+    public void showProgress(boolean enabled) {
+        mSrlChat.setRefreshing(enabled);
     }
 
     private final PostAdapter.OnLongClickListener onPostLongClick = post -> {

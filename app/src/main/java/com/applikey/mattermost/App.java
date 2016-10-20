@@ -7,12 +7,14 @@ import com.applikey.mattermost.injects.DaggerApplicationComponent;
 import com.applikey.mattermost.injects.GlobalModule;
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
 import javax.inject.Inject;
+
+import io.fabric.sdk.android.Fabric;
+import timber.log.Timber;
 
 public class App extends Application {
 
@@ -30,6 +32,8 @@ public class App extends Application {
                 .globalModule(new GlobalModule(this))
                 .build();
         mComponent.inject(this);
+
+        Timber.plant(new Timber.DebugTree());
 
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)

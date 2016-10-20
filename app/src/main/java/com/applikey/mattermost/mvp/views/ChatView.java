@@ -19,5 +19,7 @@ public interface ChatView extends MvpView {
 
     void onPostUpdated(Post post);
 
+    void showProgress(boolean enabled);
+
     void onFailure(Throwable cause);
 }

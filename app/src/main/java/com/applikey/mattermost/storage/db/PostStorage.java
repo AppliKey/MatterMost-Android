@@ -14,7 +14,7 @@ public class PostStorage {
         mDb = db;
     }
 
-    public void saveAll(List<Post> posts) {
+    public void saveAllWithRemoval(List<Post> posts) {
         mDb.saveTransactionalWithRemoval(posts);
     }
 
@@ -24,6 +24,10 @@ public class PostStorage {
 
     public void update(Post post) {
         mDb.saveTransactional(post);
+    }
+
+    public void saveAll(List<Post> posts) {
+        mDb.saveTransactional(posts);
     }
 
     public Observable<List<Post>> listByChannel(String channelId) {

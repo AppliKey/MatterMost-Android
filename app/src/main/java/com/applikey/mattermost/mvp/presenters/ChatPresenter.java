@@ -25,6 +25,8 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
+
 
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
@@ -45,6 +47,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     @Inject
     Api mApi;
 
+    private int mCurrentPage;
+
     public ChatPresenter() {
         App.getComponent().inject(this);
     }
@@ -59,18 +63,33 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         view::onFailure));
     }
 
-    public void fetchData(String channelId, int offset) {
+    public void fetchData(String channelId) {
+        getViewState().showProgress(true);
+        Timber.d("fetching data");
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team ->
-                        mApi.getPostsPage(team.getId(), channelId, offset, PAGE_SIZE)
+                        mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE, PAGE_SIZE)
                                 .subscribeOn(Schedulers.io())
-                                .doOnError(ErrorHandler::handleError))
-                .map(response -> transform(response, offset))
+                                .doOnError(ErrorHandler::handleError)
+                )
+                .filter(postResponse -> !postResponse.getPosts().isEmpty())
+                .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> {
-                    mPostStorage.saveAll(posts);
-                    getViewState().onDataFetched();
-                }, ErrorHandler::handleError));
+                .subscribe(
+                        posts -> {
+                            if (mCurrentPage == 0) {
+                                mPostStorage.saveAllWithRemoval(posts);
+                            } else {
+                                mPostStorage.saveAll(posts);
+                            }
+                            getViewState().showProgress(false);
+                            getViewState().onDataFetched();
+                            mCurrentPage++;
+                        },
+                        error -> {
+                            getViewState().showProgress(false);
+                            ErrorHandler.handleError(error);
+                        }));
     }
 
     public void deleteMessage(String channelId, Post post) {
@@ -110,6 +129,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private List<PostDto> transform(List<Post> posts, List<User> profiles) {
         Log.d(TAG,
                 "transform: posts count = " + posts.size() + " users count = " + profiles.size());
+        Timber.d("transform data");
+
         final Map<String, User> userMap = new HashMap<>();
         for (User profile : profiles) {
             userMap.put(profile.getId(), profile);
@@ -129,4 +150,5 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         return result;
     }
+
 }

@@ -29,7 +29,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private static final int OTHERS_POST_VIEW_TYPE = 1;
 
     private final String mCurrentUserId;
-    private final List<PostDto> mData = new ArrayList<>();
+    private List<PostDto> mData = new ArrayList<>();
     private final ImageLoader mImageLoader;
     private final OnLongClickListener mOnLongClickListener;
 
@@ -40,8 +40,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public void updateDataSet(List<PostDto> data) {
-        this.mData.clear();
-        this.mData.addAll(data);
+        mData = data;
         notifyDataSetChanged();
     }
 

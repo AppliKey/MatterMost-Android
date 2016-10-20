@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
+import io.realm.Sort;
 import rx.Observable;
 
 public class Db {
@@ -121,7 +122,7 @@ public class Db {
         return realm
                 .where(tClass)
                 .equalTo(fieldName, value)
-                .findAllSortedAsync(sortBy)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
