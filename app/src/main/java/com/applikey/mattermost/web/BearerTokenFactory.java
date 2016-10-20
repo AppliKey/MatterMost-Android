@@ -7,7 +7,6 @@ import com.applikey.mattermost.storage.preferences.Prefs;
  */
 public class BearerTokenFactory {
 
-    private static final String BEARER_TOKEN_KEY = "bearer_token";
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final Prefs mPrefs;
@@ -17,12 +16,12 @@ public class BearerTokenFactory {
     }
 
     public void setBearerToken(String value) {
-        mPrefs.setValue(BEARER_TOKEN_KEY, value);
+        mPrefs.setKeyAuthToken(value);
     }
 
     public String getBearerTokenString() {
         // TODO Add Caching
-        final String value = mPrefs.getValue(BEARER_TOKEN_KEY);
+        final String value = mPrefs.getAuthToken();
         if (value == null) {
             return null;
         }
