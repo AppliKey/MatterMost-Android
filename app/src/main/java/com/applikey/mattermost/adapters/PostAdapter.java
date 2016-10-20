@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostDto;
@@ -27,19 +29,42 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private static final int OTHERS_POST_VIEW_TYPE = 1;
 
     private final String mCurrentUserId;
-    private List<PostDto> mData = new ArrayList<>();
+    private final List<PostDto> mData = new ArrayList<>();
+    private final ImageLoader mImageLoader;
+    private final OnLongClickListener mOnLongClickListener;
 
-    private ImageLoader mImageLoader;
-
-    public PostAdapter(String currentUserId, ImageLoader imageLoader) {
+    public PostAdapter(String currentUserId, ImageLoader imageLoader, OnLongClickListener onLongClickListener) {
         this.mCurrentUserId = currentUserId;
         this.mImageLoader = imageLoader;
+        this.mOnLongClickListener = onLongClickListener;
     }
 
     public void updateDataSet(List<PostDto> data) {
         this.mData.clear();
         this.mData.addAll(data);
         notifyDataSetChanged();
+    }
+
+    public void deletePost(Post post) {
+        final Optional<PostDto> optionalPost = getPostDto(post);
+        if (optionalPost.isPresent()) {
+            final PostDto postDto = optionalPost.get();
+            final int position = mData.indexOf(postDto);
+
+            notifyItemRemoved(position);
+            mData.remove(position);
+        }
+    }
+
+    public void updatePost(Post post) {
+        final Optional<PostDto> optionalPost = getPostDto(post);
+        if (optionalPost.isPresent()) {
+            final PostDto postDto = optionalPost.get();
+            final int position = mData.indexOf(postDto);
+
+            notifyItemChanged(position);
+            postDto.setPost(post);
+        }
     }
 
     @Override
@@ -69,7 +94,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 !hasSameAuthor(dto.getPost(), mData.get(position + 1).getPost());
 
         if (isMy(dto.getPost())) {
-            holder.bindOwn(dto, showAuthor, showTime, showDate);
+            holder.bindOwn(dto, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
             holder.bindOther(dto, showAuthor, showTime, showDate, mImageLoader);
         }
@@ -118,9 +143,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        void bindOwn(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate) {
+        private void bind(PostDto dto, , boolean showAuthor, boolean showTime, boolean showDate) {
             mTvDate.setText(TimeUtil.formatDateOnly(dto.getPost().getCreatedAt()));
-            mTvTimestamp.setText(TimeUtil.formatTimeOnly(dto.getPost().getCreatedAt()));
+            mTvTimestamp.setText(TimeUtil.formatTimeOrDate(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
 
@@ -129,9 +154,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
         }
 
+        void bindOwn(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate,
+                OnLongClickListener onLongClickListener) {
+            bind(dto, showAuthor, showTime, showDate);
+
+            itemView.setOnLongClickListener(v -> {
+                onLongClickListener.onLongClick(dto.getPost());
+                return true;
+            });
+        }
+
         void bindOther(PostDto dto, boolean showAuthor, boolean showTime,
                 boolean showDate, ImageLoader imageLoader) {
-            bindOwn(dto, showAuthor, showTime, showDate);
+            bind(dto, showAuthor, showTime, showDate);
 
             final String previewImagePath = dto.getAuthorAvatar();
             if (mIvPreviewImageLayout != null && mIvPreviewImage != null
@@ -146,6 +181,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
+    }
+
+    private Optional<PostDto> getPostDto(Post post) {
+        return Stream.of(mData)
+                .filter(dto -> dto.getPost().getId().equals(post.getId()))
+                .findFirst();
+    }
+
+    @FunctionalInterface
+    public interface OnLongClickListener {
+        void onLongClick(Post post);
     }
 
     private boolean hasSameAuthor(Post post, Post nextPost) {
