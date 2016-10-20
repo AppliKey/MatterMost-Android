@@ -4,12 +4,12 @@ import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
 
-import java.util.List;
 import java.util.Map;
 
 import retrofit2.Response;
@@ -51,6 +51,16 @@ public interface Api {
     @POST("/api/v3/users/send_password_reset")
     @FormUrlEncoded
     Observable<Response> sendPasswordReset(@Field("email") String email);
+
+    @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
+    Observable<Void> deletePost(@Path("teamId") String teamId,
+                                @Path("channelId") String channelId,
+                                @Path("postId") String postId);
+
+    @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/update")
+    Observable<Post> updatePost(@Path("teamId") String teamId,
+                                @Path("channelId") String channelId,
+                                @Body Post post);
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")

@@ -15,5 +15,9 @@ public interface ChatView extends MvpView {
 
     void onDataFetched();
 
+    void onPostDeleted(Post post);
+
+    void onPostUpdated(Post post);
+
     void onFailure(Throwable cause);
 }
