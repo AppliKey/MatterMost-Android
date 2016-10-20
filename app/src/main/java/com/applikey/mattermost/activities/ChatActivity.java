@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -126,6 +127,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private void initView() {
         setSupportActionBar(mToolbar);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        }
+
         mRvMessages.setLayoutManager(new LinearLayoutManager(this));
         mRvMessages.setAdapter(mAdapter);
     }
