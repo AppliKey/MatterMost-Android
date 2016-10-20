@@ -73,11 +73,12 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                                 .doOnError(ErrorHandler::handleError)
                 )
                 .filter(postResponse -> !postResponse.getPosts().isEmpty())
+                .switchIfEmpty(Observable.empty())
                 .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         posts -> {
-                    /*        if (mCurrentPage == 0) {
+                            /*if (mCurrentPage == 0) {
                                 mPostStorage.saveAllWithRemoval(posts);
                             } else {
                                 mPostStorage.saveAll(posts);
@@ -85,12 +86,16 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                             mPostStorage.saveAll(posts);
                             getViewState().showProgress(false);
                             getViewState().onDataFetched();
-                            mCurrentPage++;
+                            getViewState().showProgress(false);
+                            if (!posts.isEmpty()) {
+                                mCurrentPage++;
+                            }
                         },
                         error -> {
                             getViewState().showProgress(false);
                             ErrorHandler.handleError(error);
-                        }));
+                        },
+                        () -> getViewState().showProgress(false)));
     }
 
     public void deleteMessage(String channelId, Post post) {

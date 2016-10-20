@@ -76,6 +76,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelType;
     private boolean mLoading;
     private boolean mIsNeedToScrollToStart = true;
+    private final RecyclerView.OnScrollListener mPaginationListener = getPaginationScrollListener();
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -100,6 +101,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         ButterKnife.bind(this);
 
         mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, onPostLongClick);
+        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
         initParameters();
         initView();
@@ -133,7 +135,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         mRvMessages.setLayoutManager(linearLayoutManager);
-        mRvMessages.addOnScrollListener(getPaginationScrollListener());
+        mRvMessages.addOnScrollListener(mPaginationListener);
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -149,6 +151,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             private int pastVisibleItems;
             private int visibleItemCount;
             private int totalItemCount;
+            private int previousTotal;
             private final int threshold = 5;
 
             @Override
@@ -160,16 +163,20 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                     totalItemCount = layoutManager.getItemCount();
                     pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
                     Timber.d("visibleItems = %d, totalItems = %d, pastVisibleItems = %d", visibleItemCount, totalItemCount, pastVisibleItems);
-
-                    if (!mLoading) {
-                        if ((visibleItemCount + threshold + pastVisibleItems) >= totalItemCount) {
-                            Timber.d("requesting %d items", totalItemCount);
-                            mLoading = true;
-                            mPresenter.fetchData(mChannelId);
+                    if (mLoading) {
+                        if (totalItemCount != previousTotal) {
+                            mLoading = false;
+                            previousTotal = totalItemCount;
                         }
                     }
-
+                    if (!mLoading && (totalItemCount - visibleItemCount)
+                            <= (visibleItemCount + threshold)) {
+                        Timber.d("requesting %d items", totalItemCount);
+                        mLoading = true;
+                        mPresenter.fetchData(mChannelId);
+                    }
                 }
+
             }
         };
     }

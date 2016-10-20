@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
@@ -45,6 +48,12 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
 
     @Bind(R.id.vpChatList)
     ViewPager mViewPager;
+
+    @Bind(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+
+    @Bind(R.id.navigation_view)
+    NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +95,35 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         mViewPager.setOffscreenPageLimit(tabCount - 1);
 
         setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
+
+        mNavigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.start_new_chat:
+                    return true; //TODO replace with start new chat logic
+                case R.id.create_channel:
+                    return true; //TODO replace with create channel logic
+                case R.id.settings:
+                    return true; //TODO replace with settings logic
+                case R.id.logout:
+                    mPresenter.logout();
+                    return true;
+            }
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+        });
     }
 
     @Override
     public void setToolbarTitle(String title) {
         mToolbar.setTitle(title);
+    }
+
+    @Override
+    public void logout() {
+        final Intent intent = new Intent(this, ChooseServerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override

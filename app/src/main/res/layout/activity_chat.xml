@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:contentInsetStartWithNavigation="60dp"
-            app:elevation="2dp"/>
+            app:elevation="2dp" />
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
@@ -37,6 +37,7 @@
                     android:id="@+id/rv_messages"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:scrollbars="vertical"
                     android:visibility="visible" />
 
                 <TextView
@@ -44,8 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="@string/no_posts_to_display"
-                    android:visibility="visible"/>
+                    android:text="@string/no_posts_to_display" />
 
 
             </FrameLayout>
