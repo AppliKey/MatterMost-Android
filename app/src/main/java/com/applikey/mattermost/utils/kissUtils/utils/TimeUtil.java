@@ -9,11 +9,8 @@ package com.applikey.mattermost.utils.kissUtils.utils;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
-import com.applikey.mattermost.utils.DateUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
@@ -25,6 +22,7 @@ public class TimeUtil {
 
     public static final String DEFAULT_FORMAT_TIME_ONLY = "HH:mm";
     public static final String DEFAULT_FORMAT_DATE_ONLY = "yyyy-MM-dd";
+    public static final String DEFAULT_FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
     public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String FILE_FORMAT = "yyyy_MM_dd_HH_mm_ss_SSS";
@@ -65,7 +63,26 @@ public class TimeUtil {
         return sdf.format(date);
     }
 
-    public static String formatTimeOrDate(long time) {
+    public static String formatDateTime(long time) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_FORMAT_DATE_TIME);
+        final Date date = new Date(time);
+        return sdf.format(date);
+    }
+
+    public static String formatTimeOrDateTime(long time) {
+        final Date now = new Date();
+
+        final boolean sameDay = time / MILLISECONDS_IN_DAY ==
+                now.getTime() / MILLISECONDS_IN_DAY;
+
+        if (sameDay) {
+            return formatTimeOnly(time);
+        } else {
+            return formatDateTime(time);
+        }
+    }
+
+    public static String formatTimeOrDateOnly(long time) {
         final Date now = new Date();
 
         final boolean sameDay = time / MILLISECONDS_IN_DAY ==
@@ -93,7 +110,7 @@ public class TimeUtil {
     }
 
     public static String format(String timeStr, String srcFormat,
-                                String dstFormat) {
+            String dstFormat) {
         final long time = format(timeStr, srcFormat);
         //noinspection UnnecessaryLocalVariable
         final String result = format(time, dstFormat);
@@ -111,5 +128,13 @@ public class TimeUtil {
             e.printStackTrace();
         }
         return localTime;
+    }
+
+    public static boolean sameTime(long timePrev, long timeCurrent) {
+        return (timePrev / 1000 / 60) == (timeCurrent / 1000 / 60);
+    }
+
+    public static boolean sameDate(long timePrev, long timeCurrent) {
+        return (timePrev / 1000 / 60 / 60 / 24) == (timeCurrent / 1000 / 60 / 60 / 24);
     }
 }

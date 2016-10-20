@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Optional;
@@ -80,10 +81,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PostDto dto = mData.get(position);
 
+        boolean showDate = position == 0 ||
+                !oneDatePosts(dto.getPost(), mData.get(position - 1).getPost());
+
+        boolean showAuthor = position == 0 ||
+                !hasSameAuthor(mData.get(position - 1).getPost(), dto.getPost()) ||
+                showDate;
+
+        boolean showTime = position == mData.size() - 1 ||
+                !oneTimePosts(dto.getPost(), mData.get(position + 1).getPost()) ||
+                !hasSameAuthor(dto.getPost(), mData.get(position + 1).getPost());
+
         if (isMy(dto.getPost())) {
-            holder.bindOwn(dto, mOnLongClickListener);
+            holder.bindOwn(dto, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOther(dto, mImageLoader);
+            holder.bindOther(dto, showAuthor, showTime, showDate, mImageLoader);
         }
     }
 
@@ -108,6 +120,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         @Bind(R.id.iv_preview_image)
         ImageView mIvPreviewImage;
 
+        @Nullable
+        @Bind(R.id.iv_preview_image_layout)
+        RelativeLayout mIvPreviewImageLayout;
+
+        @Bind(R.id.tv_date)
+        TextView mTvDate;
+
         @Bind(R.id.tv_message)
         TextView mTvMessage;
 
@@ -123,14 +142,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        private void bind(PostDto dto) {
-            mTvTimestamp.setText(TimeUtil.formatTimeOrDate(dto.getPost().getCreatedAt()));
+        private void bind(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate) {
+            mTvDate.setText(TimeUtil.formatDateOnly(dto.getPost().getCreatedAt()));
+            mTvTimestamp.setText(TimeUtil.formatTimeOnly(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
+
+            mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
+            mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
+            mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
         }
 
-        void bindOwn(PostDto dto, OnLongClickListener onLongClickListener) {
-            bind(dto);
+        void bindOwn(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate,
+                OnLongClickListener onLongClickListener) {
+            bind(dto, showAuthor, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
                 onLongClickListener.onLongClick(dto.getPost());
@@ -138,15 +163,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             });
         }
 
-
-        void bindOther(PostDto dto, ImageLoader imageLoader) {
-            bind(dto);
+        void bindOther(PostDto dto, boolean showAuthor, boolean showTime,
+                boolean showDate, ImageLoader imageLoader) {
+            bind(dto, showAuthor, showTime, showDate);
 
             final String previewImagePath = dto.getAuthorAvatar();
-            if (mIvPreviewImage != null && mIvStatus != null && previewImagePath != null
+            if (mIvPreviewImageLayout != null && mIvPreviewImage != null
+                    && mIvStatus != null && previewImagePath != null
                     && !previewImagePath.isEmpty()) {
                 imageLoader.displayCircularImage(previewImagePath, mIvPreviewImage);
                 mIvStatus.setImageResource(dto.getStatus().getDrawableId());
+                mIvPreviewImageLayout.setVisibility(showAuthor ? View.VISIBLE : View.INVISIBLE);
             }
         }
     }
@@ -161,8 +188,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 .findFirst();
     }
 
+    private boolean hasSameAuthor(Post post, Post nextPost) {
+        return post.getUserId().equals(nextPost.getUserId());
+    }
+
+    private boolean oneTimePosts(Post post, Post nextPost) {
+        return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
+    }
+
+    private boolean oneDatePosts(Post post, Post nextPost) {
+        return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
+    }
+
     @FunctionalInterface
     public interface OnLongClickListener {
+
         void onLongClick(Post post);
+
     }
+
 }

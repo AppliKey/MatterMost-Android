@@ -54,7 +54,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         vh.getChannelName().setText(data.getDisplayName());
         vh.getLastMessageTime().setText(
-                TimeUtil.formatTimeOrDate(lastPostAt != 0 ? lastPostAt :
+                TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
                         data.getCreatedAt()));
 
         setChannelIcon(vh, data);
@@ -114,6 +114,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     public interface ClickListener {
+
         void onItemClicked(Channel channel);
     }
 
