@@ -143,9 +143,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        private void bind(PostDto dto, , boolean showAuthor, boolean showTime, boolean showDate) {
+        private void bind(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate) {
             mTvDate.setText(TimeUtil.formatDateOnly(dto.getPost().getCreatedAt()));
-            mTvTimestamp.setText(TimeUtil.formatTimeOrDate(dto.getPost().getCreatedAt()));
+            mTvTimestamp.setText(TimeUtil.formatTimeOnly(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
 
@@ -189,11 +189,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 .findFirst();
     }
 
-    @FunctionalInterface
-    public interface OnLongClickListener {
-        void onLongClick(Post post);
-    }
-
     private boolean hasSameAuthor(Post post, Post nextPost) {
         return post.getUserId().equals(nextPost.getUserId());
     }
@@ -204,6 +199,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     private boolean oneDatePosts(Post post, Post nextPost) {
         return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
+    }
+
+    @FunctionalInterface
+    public interface OnLongClickListener {
+
+        void onLongClick(Post post);
+
     }
 
 }
