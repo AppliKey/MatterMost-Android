@@ -5,9 +5,9 @@ import android.support.v7.widget.RecyclerView;
 
 public abstract class PaginationScrollListener extends RecyclerView.OnScrollListener {
 
-    private int previousTotal;
+    private int mPreviousTotal;
     private static final int THRESHOLD = 3;
-    private boolean loading;
+    private boolean mLoading;
 
     private LinearLayoutManager mLayoutManager;
 
@@ -21,16 +21,16 @@ public abstract class PaginationScrollListener extends RecyclerView.OnScrollList
         final int totalItemCount = mLayoutManager.getItemCount();
         final int firstVisibleItem = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         final int lastVisibleItem = firstVisibleItem + visibleItemCount;
-        if (loading) {
-            if (totalItemCount != previousTotal) {
-                loading = false;
-                previousTotal = totalItemCount;
+        if (mLoading) {
+            if (totalItemCount != mPreviousTotal) {
+                mLoading = false;
+                mPreviousTotal = totalItemCount;
             }
         }
 
-        if (!loading && (lastVisibleItem + THRESHOLD) > totalItemCount) {
+        if (!mLoading && (lastVisibleItem + THRESHOLD) > totalItemCount) {
             onLoad();
-            loading = true;
+            mLoading = true;
         }
 
     }
