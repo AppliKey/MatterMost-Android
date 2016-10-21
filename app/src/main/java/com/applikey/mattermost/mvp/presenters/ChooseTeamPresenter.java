@@ -1,7 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.content.res.Resources;
-
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
@@ -47,9 +45,6 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
 
     @Inject
     ImagePathHelper mImagePathHelper;
-
-    @Inject
-    Resources mResources;
 
     public ChooseTeamPresenter() {
         App.getComponent().inject(this);

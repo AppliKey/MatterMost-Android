@@ -1,7 +1,5 @@
 package com.applikey.mattermost.injects;
 
-import android.content.res.Resources;
-
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -53,12 +51,6 @@ public class GlobalModule {
     @PerApp
     ImageLoader provideImageLoader(OkHttpClient client) {
         return new PicassoImageLoader(mApp, client);
-    }
-
-    @Provides
-    @PerApp
-    Resources provideResources() {
-        return mApp.getResources();
     }
 
     @Provides
