@@ -11,6 +11,8 @@
     <dimen name="edit_text_bottom_padding">20dp</dimen>
     <dimen name="edit_text_push_right">4dp</dimen>
 
+    <dimen name="margin_3x">48dp</dimen>
+    <dimen name="margin_4x">64dp</dimen>
     <dimen name="margin_default">16dp</dimen>
     <dimen name="padding_default">8dp</dimen>
 

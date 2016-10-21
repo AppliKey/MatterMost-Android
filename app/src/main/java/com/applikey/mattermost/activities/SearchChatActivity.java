@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.SearchChatPresenter;
+import com.applikey.mattermost.mvp.views.SearchChatView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.Bind;
@@ -17,7 +18,7 @@ import butterknife.ButterKnife;
  * @author Anatoliy Chub
  */
 
-public class SearchChatActivity extends BaseMvpActivity {
+public class SearchChatActivity extends BaseMvpActivity implements SearchChatView{
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
