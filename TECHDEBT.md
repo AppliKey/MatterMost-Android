@@ -3,3 +3,5 @@
 - Save needed channel metadata info into Channel entity on retrieval
 - Eliminate Metadata entities
 - Same for users
+
+- Server url validation on the ChooseServerActivity. It allows only host url without any subdirectories

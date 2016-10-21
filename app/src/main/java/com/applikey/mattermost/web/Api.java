@@ -66,7 +66,15 @@ public interface Api {
     @GET("/api/v3/teams/{teamId}/channels/")
     Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
 
-    @GET("/api/v3/general/ping")
+    //This url is not containing "/" symbol at the at the start
+    //In this case it build full url in the next way :
+    //"www.mattermost.com/v3/" + "applikeyteam" = "www.mattermost.com/v3/applikeyteam"
+    //In another case, if we add "/" symbol at the start,
+    //it works in the some another way:
+    //"www.mattermost.com/v3/" + "applikeyteam" = "www.mattermost.com/applikeyteam"
+    //(It cuts all subdirectories from base url)
+    //It resolve validation problem(in the case if user input (<server_url> + <team>), instead (<server_url>))
+    @GET("api/v3/general/ping")
     Observable<PingResponse> ping();
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
