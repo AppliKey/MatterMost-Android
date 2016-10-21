@@ -42,10 +42,13 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .flatMap(team -> mApi.createChannel(team.getId(), request));
     }
 
-    public void getTeamMembersByFilter() {
-        Subscription subscription = mUserStorage.listDirectProfiles()
+
+    @Override
+    public void onFirstViewAttach() {
+        final Subscription subscription = mUserStorage.listDirectProfiles()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+                .subscribe(results -> getViewState().onRealmAttached(results));
+        mSubscription.add(subscription);
     }
 
 

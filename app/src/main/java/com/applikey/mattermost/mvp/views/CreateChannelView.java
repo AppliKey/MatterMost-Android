@@ -5,9 +5,9 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-import java.util.List;
+import io.realm.RealmResults;
 
 @StateStrategyType(AddToEndStrategy.class)
 public interface CreateChannelView extends MvpView {
-    void showMembers(List<User> members);
+    void onRealmAttached(RealmResults<User> members);
 }

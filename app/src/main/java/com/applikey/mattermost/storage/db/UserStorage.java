@@ -3,9 +3,9 @@ package com.applikey.mattermost.storage.db;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 
-import java.util.List;
 import java.util.Map;
 
+import io.realm.RealmResults;
 import rx.Observable;
 
 public class UserStorage {
@@ -24,8 +24,8 @@ public class UserStorage {
         mDb.saveTransactionalWithRemoval(directProfiles.values());
     }
 
-    public Observable<List<User>> listDirectProfiles() {
-        return mDb.listRealmObjects(User.class);
+    public Observable<RealmResults<User>> listDirectProfiles() {
+        return mDb.listRealmResults(User.class);
     }
 
     private void addImagePathInfo(Map<String, User> users) {

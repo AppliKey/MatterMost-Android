@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 
@@ -97,6 +98,16 @@ public class Db {
                 .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> listRealmResults(Class<T> tClass) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close);
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,

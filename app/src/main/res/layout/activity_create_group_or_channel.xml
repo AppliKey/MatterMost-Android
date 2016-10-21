@@ -76,12 +76,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Add members"/>
-            <LinearLayout
+            <com.applikey.mattermost.views.AddedPeopleLayout
+                android:id="@+id/added_people_layout"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="#2AF">
+                android:layout_height="wrap_content">
+
+            </com.applikey.mattermost.views.AddedPeopleLayout>
                 <!--TODO add user list-->
-            </LinearLayout>
 
             <EditText
                 android:id="@+id/et_search_people"
@@ -109,7 +110,7 @@
                 android:layout_height="300dp">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_added_peoples"
+                    android:id="@+id/rv_peoples"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 

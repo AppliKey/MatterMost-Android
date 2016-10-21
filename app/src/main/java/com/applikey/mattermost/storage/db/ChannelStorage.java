@@ -9,6 +9,7 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.Realm;
 import rx.Observable;
 
 public class ChannelStorage {
