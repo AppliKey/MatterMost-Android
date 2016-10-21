@@ -66,7 +66,7 @@ public interface Api {
     @GET("/api/v3/teams/{teamId}/channels/")
     Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
 
-    //This url is not containing "/" symbol at the at the start
+    //This url is not containing "/" symbol at the start
     //In this case it build full url in the next way :
     //"www.mattermost.com/v3/" + "applikeyteam" = "www.mattermost.com/v3/applikeyteam"
     //In another case, if we add "/" symbol at the start,
