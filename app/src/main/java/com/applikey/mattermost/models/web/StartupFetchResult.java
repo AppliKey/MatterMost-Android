@@ -9,10 +9,12 @@ public class StartupFetchResult {
 
     private ChannelResponse channelResponse;
     private Map<String, User> directProfiles;
+    private String teamId;
 
-    public StartupFetchResult(ChannelResponse channelResponse, Map<String, User> directProfiles) {
+    public StartupFetchResult(ChannelResponse channelResponse, Map<String, User> directProfiles, String teamId) {
         this.channelResponse = channelResponse;
         this.directProfiles = directProfiles;
+        this.teamId = teamId;
     }
 
     public ChannelResponse getChannelResponse() {
@@ -21,5 +23,9 @@ public class StartupFetchResult {
 
     public Map<String, User> getDirectProfiles() {
         return directProfiles;
+    }
+
+    public String getTeamId() {
+        return teamId;
     }
 }

@@ -60,6 +60,17 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Membership.class);
     }
 
+    //// TODO: 21.10.16 Changing Realm data can only be done from inside a transaction
+    public void updateChannelLastPost(Channel channel) {
+        mDb.getObject(Channel.class, channel.getId())
+                .map(realmChannel -> {
+                    realmChannel.setLastPost(channel.getLastPost());
+                    return realmChannel;
+                })
+                .doOnNext(mDb::saveTransactional)
+                .subscribe();
+    }
+
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
         // Transform direct channels
 

@@ -27,6 +27,15 @@ public class Db {
         });
     }
 
+    public <T extends RealmObject> Observable<T> getObject(Class<T> tClass, String id) {
+        return mRealm.where(tClass)
+                .equalTo("id", id)
+                .findFirstAsync()
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
+                .map(realmObject -> (T)realmObject);
+    }
+
     public void deleteTransactional(final RealmObject realmObject) {
         mRealm.executeTransactionAsync(realm -> {
             realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
