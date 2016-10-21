@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 
@@ -100,29 +101,13 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-            String fieldName,
-            String value) {
+                                                                                String fieldName,
+                                                                                boolean value) {
         final Realm realm = getRealm();
         return realm
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .findAllAsync()
-                .asObservable()
-                .filter(response -> !response.isEmpty())
-                .doOnUnsubscribe(realm::close)
-                .map(realm::copyFromRealm);
-    }
-
-    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
-            tClass,
-            String fieldName,
-            String sortBy,
-            String value) {
-        final Realm realm = getRealm();
-        return realm
-                .where(tClass)
-                .equalTo(fieldName, value)
-                .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
@@ -130,13 +115,30 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-            String fieldName,
-            boolean value) {
+                                                                                String fieldName,
+                                                                                String value) {
         final Realm realm = getRealm();
         return realm
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
+    }
+
+
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
+                                                                                              tClass,
+                                                                                      String fieldName,
+                                                                                      String sortBy,
+                                                                                      String value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
@@ -168,6 +170,62 @@ public class Db {
                 .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
 
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> listRealmObjectsFilteredAsync(Class<T> tClass,
+                                                                                             String fieldName,
+                                                                                             boolean value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close);
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> listRealmObjectsFilteredAsync(Class<T> tClass,
+                                                                                             String fieldName,
+                                                                                             String value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close);
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> listRealmObjectsFilteredSortedAsync(Class<T>
+                                                                                                           tClass,
+                                                                                                   String fieldName,
+                                                                                                   String sortBy,
+                                                                                                   String value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close);
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> listRealmObjectsFilteredSortedAsync(Class<T>
+                                                                                                           tClass,
+                                                                                                   String fieldName,
+                                                                                                   String sortBy,
+                                                                                                   boolean value) {
+        final Realm realm = getRealm();
+        return realm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .doOnUnsubscribe(realm::close);
     }
 
     private Realm getRealm() {

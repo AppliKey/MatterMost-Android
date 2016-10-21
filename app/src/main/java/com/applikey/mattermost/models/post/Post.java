@@ -1,5 +1,6 @@
 package com.applikey.mattermost.models.post;
 
+import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
@@ -24,6 +25,7 @@ public class Post extends RealmObject {
 
     @SerializedName("user_id")
     private String userId;
+    private User user;
 
     @SerializedName("message")
     private String message;
@@ -61,6 +63,14 @@ public class Post extends RealmObject {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getMessage() {

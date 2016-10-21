@@ -3,22 +3,20 @@ package com.applikey.mattermost.mvp.presenters;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.models.post.PostResponse;
-import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -47,6 +45,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     @Inject
     Api mApi;
 
+    @Inject
+    Prefs mPrefs;
+
     private int mCurrentPage;
 
     public ChatPresenter() {
@@ -55,12 +56,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void getInitialData(String channelId) {
         final ChatView view = getViewState();
-        mSubscription.add(Observable.combineLatest(
-                mPostStorage.listByChannel(channelId),
-                mUserStorage.listDirectProfiles(),
-                this::transform)
-                .subscribe(view::displayData,
-                        view::onFailure));
+
+        mPostStorage.listByChannel(channelId).subscribe(view::onRealmAttached, view::onFailure);
     }
 
     public void fetchData(String channelId) {
@@ -73,6 +70,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                                 .doOnError(ErrorHandler::handleError)
                 )
                 .switchIfEmpty(Observable.empty())
+                .doOnNext(v -> Log.d("offset", String.valueOf(mCurrentPage * PAGE_SIZE)))
                 .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -82,7 +80,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                             } else {
                                 mPostStorage.saveAll(posts);
                             }
-                            getViewState().onDataFetched();
                             getViewState().showProgress(false);
                             if (!posts.isEmpty()) {
                                 mCurrentPage++;
@@ -100,10 +97,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .flatMap(team -> mApi.deletePost(team.getId(), channelId, post.getId())
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> {
-                    mPostStorage.delete(post);
-                    getViewState().onPostDeleted(post);
-                }, ErrorHandler::handleError));
+                .subscribe(posts -> mPostStorage.delete(post), ErrorHandler::handleError));
     }
 
     public void editMessage(String channelId, Post post) {
@@ -111,11 +105,29 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .flatMap(team -> mApi.updatePost(team.getId(), channelId, post)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> {
-                    mPostStorage.update(post);
-                    getViewState().onPostUpdated(post);
-                }, ErrorHandler::handleError));
+                .subscribe(posts -> mPostStorage.update(post), ErrorHandler::handleError));
     }
+
+    public void sendMessage(String channelId, String message) {
+        final PendingPost pendingPost = new PendingPost();
+        final long createdAt = System.currentTimeMillis();
+
+        final String currentUserId = mPrefs.getCurrentUserId();
+        pendingPost.setUserId(currentUserId);
+        pendingPost.setMessage(message);
+        pendingPost.setCreatedAt(createdAt);
+        pendingPost.setChannelId(channelId);
+        pendingPost.setPendingPostId(currentUserId + ":" + createdAt);
+        pendingPost.setType("");
+
+        mSubscription.add(mTeamStorage.getChosenTeam()
+                .flatMap(team ->
+                        mApi.createPost(team.getId(), channelId, pendingPost))
+                                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(result -> mPostStorage.update(result), ErrorHandler::handleError)); //TODO
+    }
+
 
     private List<Post> transform(PostResponse response, int offset) {
         final List<String> order = response.getOrder();
@@ -128,30 +140,4 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         return new ArrayList<>(response.getPosts().values());
     }
-
-    private List<PostDto> transform(List<Post> posts, List<User> profiles) {
-        Log.d(TAG,
-                "transform: posts count = " + posts.size() + " users count = " + profiles.size());
-        Timber.d("transform data");
-
-        final Map<String, User> userMap = new HashMap<>();
-        for (User profile : profiles) {
-            userMap.put(profile.getId(), profile);
-        }
-
-        final List<PostDto> result = new ArrayList<>(posts.size());
-
-        for (Post post : posts) {
-            final User profile = userMap.get(post.getUserId());
-            final String userName = User.getDisplayableName(profile);
-            final String userAvatar = profile.getProfileImage();
-            final User.Status userStatus = User.Status.from(profile.getStatus());
-
-            final PostDto dto = new PostDto(post, userName, userAvatar, userStatus);
-            result.add(dto);
-        }
-
-        return result;
-    }
-
 }
