@@ -5,8 +5,9 @@ import android.support.v7.widget.RecyclerView;
 
 public abstract class PaginationScrollListener extends RecyclerView.OnScrollListener {
 
-    private int mPreviousTotal;
     private static final int THRESHOLD = 3;
+
+    private int mPreviousTotal;
     private boolean mLoading;
 
     private LinearLayoutManager mLayoutManager;

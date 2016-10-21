@@ -128,34 +128,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         setToolbarText();
     }
 
-    private void initParameters() {
-        final Bundle extras = getIntent().getExtras();
-        mChannelId = extras.getString(CHANNEL_ID_KEY);
-        mChannelName = extras.getString(CHANNEL_NAME_KEY);
-        mChannelType = extras.getString(CHANNEL_TYPE_KEY);
-    }
-
-    private LinearLayoutManager getLayoutManager() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        return linearLayoutManager;
-    }
-
-    private void initView() {
-        setSupportActionBar(mToolbar);
-        mRvMessages.addOnScrollListener(mPaginationListener);
-        final ActionBar actionBar = getSupportActionBar();
-        mRvMessages.setLayoutManager(getLayoutManager());
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowHomeEnabled(true);
-            mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        }
-
-        mRvMessages.setAdapter(mAdapter);
-    }
-
     @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
@@ -256,5 +228,33 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                     mPresenter.editMessage(mChannelId, post);
                 })
                 .show();
+    }
+
+    private void initParameters() {
+        final Bundle extras = getIntent().getExtras();
+        mChannelId = extras.getString(CHANNEL_ID_KEY);
+        mChannelName = extras.getString(CHANNEL_NAME_KEY);
+        mChannelType = extras.getString(CHANNEL_TYPE_KEY);
+    }
+
+    private LinearLayoutManager getLayoutManager() {
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        return linearLayoutManager;
+    }
+
+    private void initView() {
+        setSupportActionBar(mToolbar);
+        mRvMessages.addOnScrollListener(mPaginationListener);
+        final ActionBar actionBar = getSupportActionBar();
+        mRvMessages.setLayoutManager(getLayoutManager());
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        }
+
+        mRvMessages.setAdapter(mAdapter);
     }
 }
