@@ -128,65 +128,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         setToolbarText();
     }
 
-    private void initParameters() {
-        final Bundle extras = getIntent().getExtras();
-        mChannelId = extras.getString(CHANNEL_ID_KEY);
-        mChannelName = extras.getString(CHANNEL_NAME_KEY);
-        mChannelType = extras.getString(CHANNEL_TYPE_KEY);
-    }
-
-    private void initView() {
-        setSupportActionBar(mToolbar);
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        mRvMessages.setLayoutManager(linearLayoutManager);
-        mRvMessages.addOnScrollListener(mPaginationListener);
-        final ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowHomeEnabled(true);
-            mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        }
-
-        mRvMessages.setAdapter(mAdapter);
-    }
-
-    private RecyclerView.OnScrollListener getPaginationScrollListener() {
-        return new RecyclerView.OnScrollListener() {
-            private int pastVisibleItems;
-            private int visibleItemCount;
-            private int totalItemCount;
-            private int previousTotal;
-            private final int threshold = 3;
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (dy < 0) {
-                    Timber.d("");
-                    visibleItemCount = recyclerView.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
-                    Timber.d("visibleItems = %d, totalItems = %d, pastVisibleItems = %d", visibleItemCount, totalItemCount, pastVisibleItems);
-                    if (mLoading) {
-                        if (totalItemCount != previousTotal) {
-                            mLoading = false;
-                            previousTotal = totalItemCount;
-                        }
-                    }
-                    if (!mLoading && (totalItemCount - visibleItemCount)
-                            <= (visibleItemCount + threshold)) {
-                        Timber.d("requesting %d items", totalItemCount);
-                        mLoading = true;
-                        mPresenter.fetchData(mChannelId);
-                    }
-                }
-
-            }
-        };
-    }
-
     @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
