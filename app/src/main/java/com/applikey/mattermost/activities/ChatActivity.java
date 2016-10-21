@@ -22,6 +22,7 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
+import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -33,7 +34,6 @@ import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -74,9 +74,15 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
-    private boolean mLoading;
     private boolean mIsNeedToScrollToStart = true;
-    private final RecyclerView.OnScrollListener mPaginationListener = getPaginationScrollListener();
+
+
+    private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
+        @Override
+        public void onLoad() {
+            mPresenter.fetchData(mChannelId);
+        }
+    };
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -184,7 +190,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
-        mLoading = false;
 
     }
 
@@ -282,5 +287,33 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                     mPresenter.editMessage(mChannelId, post);
                 })
                 .show();
+    }
+
+    private void initParameters() {
+        final Bundle extras = getIntent().getExtras();
+        mChannelId = extras.getString(CHANNEL_ID_KEY);
+        mChannelName = extras.getString(CHANNEL_NAME_KEY);
+        mChannelType = extras.getString(CHANNEL_TYPE_KEY);
+    }
+
+    private LinearLayoutManager getLayoutManager() {
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        return linearLayoutManager;
+    }
+
+    private void initView() {
+        setSupportActionBar(mToolbar);
+        mRvMessages.addOnScrollListener(mPaginationListener);
+        final ActionBar actionBar = getSupportActionBar();
+        mRvMessages.setLayoutManager(getLayoutManager());
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        }
+
+        mRvMessages.setAdapter(mAdapter);
     }
 }
