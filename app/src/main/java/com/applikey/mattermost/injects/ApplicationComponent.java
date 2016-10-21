@@ -12,16 +12,13 @@ import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
+import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.presenters.SplashPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
-import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.PostStorage;
-import com.applikey.mattermost.storage.db.TeamStorage;
-import com.applikey.mattermost.storage.db.UserStorage;
 
 import dagger.Component;
 
@@ -69,4 +66,5 @@ public interface ApplicationComponent {
 
     void inject(ChatPresenter presenter);
 
+    void inject(CreateChannelPresenter createChannelPresenter);
 }

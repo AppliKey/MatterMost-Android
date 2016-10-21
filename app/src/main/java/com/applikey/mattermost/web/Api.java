@@ -2,6 +2,8 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.post.Post;
@@ -78,4 +80,7 @@ public interface Api {
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
                                           @Path("channelId") String channelId);
+
+    @POST("api/v3/teams/{team_id}/channels/create")
+    Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
 }
