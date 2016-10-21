@@ -1,6 +1,8 @@
 package com.applikey.mattermost.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,29 +17,24 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmRecyclerViewAdapter;
 
-public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
+public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListAdapter.ViewHolder> {
 
-    private List<Channel> mDataSet = null;
     private final ImageLoader mImageLoader;
     private final String mCurrentUserId;
 
     private ClickListener mClickListener = null;
 
-    public ChatListAdapter(List<Channel> dataSet, ImageLoader imageLoader, String currentUserId) {
-        super();
+    public ChatListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Channel> data,
+            ImageLoader imageLoader, String currentUserId) {
+        super(context, data, true);
 
         mImageLoader = imageLoader;
-        mDataSet = new ArrayList<>(dataSet.size());
         mCurrentUserId = currentUserId;
-        mDataSet.addAll(dataSet);
-        Collections.sort(mDataSet, Channel.COMPARATOR_BY_DATE);
     }
 
     @Override
@@ -53,7 +50,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
-        final Channel data = mDataSet.get(position);
+        if (getData() == null) {
+            return;
+        }
+        final Channel data = getData().get(position);
         final Context context = vh.itemView.getContext();
 
         final long lastPostAt = data.getLastPostAt();
@@ -91,11 +91,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             messagePreview = channel.getLastPost().getMessage();
         }
         return messagePreview;
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDataSet != null ? mDataSet.size() : 0;
     }
 
     public void setOnClickListener(ClickListener listener) {
@@ -151,9 +146,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     private final View.OnClickListener mOnClickListener = v -> {
+        if (getData() == null) {
+            return;
+        }
         final int position = (Integer) v.getTag();
 
-        final Channel team = mDataSet.get(position);
+        final Channel team = getData().get(position);
 
         if (mClickListener != null) {
             mClickListener.onItemClicked(team);

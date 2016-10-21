@@ -26,6 +26,8 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import okhttp3.Cache;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -35,7 +37,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 @Module
 public class GlobalModule {
 
-    private App mApp;
+    private final App mApp;
 
     public GlobalModule(App app) {
         mApp = app;
@@ -45,6 +47,18 @@ public class GlobalModule {
     @PerApp
     EventBus provideEventBus() {
         return EventBus.getDefault();
+    }
+
+    @Provides
+    @PerApp
+    Realm provideRealm() {
+        final RealmConfiguration config = new RealmConfiguration.Builder(mApp)
+                .name(Constants.REALM_NAME)
+                .schemaVersion(0)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
+        return Realm.getInstance(config);
     }
 
     @Provides
@@ -106,8 +120,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    Db provideDb() {
-        return new Db(mApp);
+    Db provideDb(Realm realm) {
+        return new Db(realm);
     }
 
     @Provides

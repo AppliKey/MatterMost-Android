@@ -23,5 +23,13 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     /* package */ BaseChatListPresenter() {
         App.getComponent().inject(this);
     }
+
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        getInitData();
+    }
+
+    abstract protected void getInitData();
 }
 

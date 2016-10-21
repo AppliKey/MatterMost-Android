@@ -1,11 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.mvp.views.ChatListView;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
-
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 
 @InjectViewState
 public class ChannelListPresenter extends BaseChatListPresenter {
@@ -15,11 +11,12 @@ public class ChannelListPresenter extends BaseChatListPresenter {
     }
 
     @Override
-    public void getInitialData() {
+    protected void getInitData() {
         final ChatListView view = getViewState();
-        mSubscription.add(
-                mChannelStorage.listOpen()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayInitialData, ErrorHandler::handleError));
+        if (view == null) {
+            return;
+        }
+        mSubscription.add(mChannelStorage.listOpen()
+                .subscribe(view::displayInitialData));
     }
 }

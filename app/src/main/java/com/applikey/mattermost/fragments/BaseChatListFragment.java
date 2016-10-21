@@ -33,6 +33,7 @@ import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.OrderedRealmCollection;
 
 public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
 
@@ -63,7 +64,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
-
         App.getComponent().inject(this);
     }
 
@@ -80,22 +80,18 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     @Override
     public void onStart() {
         super.onStart();
-
         mTvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
-
-        getPresenter().getInitialData();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         getPresenter().unSubscribe();
     }
 
     @Override
-    public void displayInitialData(List<Channel> channels) {
-        Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed");
+    public void displayInitialData(OrderedRealmCollection<Channel> channels) {
+        Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed " + channels.size());
 
         if (channels.isEmpty()) {
             mTvEmptyState.setVisibility(View.VISIBLE);
@@ -105,7 +101,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
-        final ChatListAdapter adapter = new ChatListAdapter(channels, mImageLoader, mCurrentUserId);
+        final ChatListAdapter adapter = new ChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
         adapter.setOnClickListener(mChatClickListener);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);

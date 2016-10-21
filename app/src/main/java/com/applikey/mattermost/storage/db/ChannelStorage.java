@@ -10,6 +10,7 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.RealmResults;
 import rx.Observable;
 
 public class ChannelStorage {
@@ -26,27 +27,33 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Channel.class);
     }
 
-    public Observable<List<Channel>> listOpen() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PUBLIC.getRepresentation());
+    public Observable<RealmResults<Channel>> listOpen() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.PUBLIC.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
-    public Observable<List<Channel>> listClosed() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PRIVATE.getRepresentation());
+    public Observable<RealmResults<Channel>> listClosed() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.PRIVATE.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
-    public Observable<List<Channel>> listDirect() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.DIRECT.getRepresentation());
+    public Observable<RealmResults<Channel>> listDirect() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.DIRECT.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<List<Channel>> listAll() {
         return mDb.listRealmObjects(Channel.class);
     }
 
-    public Observable<List<Channel>> listUnread() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_UNREAD_TYPE, true);
+    public Observable<RealmResults<Channel>> listUnread() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
+                true,
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+
     }
 
     public Observable<List<Membership>> listMembership() {
@@ -80,8 +87,10 @@ public class ChannelStorage {
 
     private void updateBaseChannelData(Channel channel,
             Map<String, User> contacts) {
-        if (channel.getLastPost() != null) {
-            final Post lastPost = channel.getLastPost();
+        final Post lastPost = channel.getLastPost();
+        channel.setLastActivityTime(Math.max(channel.getCreatedAt(),
+                lastPost != null ? lastPost.getCreatedAt() : 0));
+        if (lastPost != null) {
             channel.setLastPostAuthorDisplayName(User.getDisplayableName(
                     contacts.get(lastPost.getUserId())));
         }
