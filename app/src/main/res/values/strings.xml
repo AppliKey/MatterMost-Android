@@ -55,7 +55,7 @@
     <string name="public_channel">Public</string>
     <string name="channel_description_channel_hint">Description</string>
     <string name="search_people_for_channel_hint">Search</string>
-    <string name="added_people_count">Add People (%1$d added)</string>
+    <string name="added_people_count">+%1$d</string>
     <string name="button_add_all">Add all</string>
 
     <array name="post_own_opinion_array">

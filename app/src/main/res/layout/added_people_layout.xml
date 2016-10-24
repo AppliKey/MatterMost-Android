@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    tools:parentTag="LinearLayout">
+
+    <ImageView
+        android:id="@+id/first_added"
+        android:layout_width="40dp"
+        android:layout_weight="1"
+        android:layout_marginRight="12dp"
+        android:visibility="invisible"
+        android:layout_height="40dp"/>
+
+    <ImageView
+        android:id="@+id/second_added"
+        android:layout_width="40dp"
+        android:layout_weight="1"
+        android:visibility="invisible"
+        android:layout_marginRight="12dp"
+        android:layout_height="40dp"/>
+
+    <ImageView
+        android:id="@+id/third_added"
+        android:layout_width="40dp"
+        android:layout_weight="1"
+        android:visibility="invisible"
+        android:layout_marginRight="12dp"
+        android:layout_height="40dp"/>
+
+    <ImageView
+        android:id="@+id/fourth_added"
+        android:layout_width="40dp"
+        android:layout_weight="1"
+        android:visibility="invisible"
+        android:layout_marginRight="12dp"
+        android:layout_height="40dp"/>
+
+    <ImageView
+        android:id="@+id/fifth_added"
+        android:layout_width="40dp"
+        android:layout_weight="1"
+        android:visibility="invisible"
+        android:layout_marginRight="12dp"
+        android:layout_height="40dp"/>
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/sixth_added"
+            android:layout_width="40dp"
+            android:layout_weight="1"
+            android:visibility="invisible"
+            android:layout_marginRight="12dp"
+            android:layout_height="40dp">
+        </ImageView>
+
+        <TextView
+            android:id="@+id/added_people_excess_count"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:background="@drawable/background_added_people_count"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            />
+    </FrameLayout>
+
+
+
+</merge>

@@ -76,6 +76,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Add members"/>
+<!--            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_added_people"
+                android:paddingLeft="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>-->
             <com.applikey.mattermost.views.AddedPeopleLayout
                 android:id="@+id/added_people_layout"
                 android:layout_width="match_parent"
@@ -104,6 +111,7 @@
                 android:textSize="12sp"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center"
+                android:visibility="gone"
                 android:text="@string/button_add_all" />
             <FrameLayout
                 android:layout_width="match_parent"

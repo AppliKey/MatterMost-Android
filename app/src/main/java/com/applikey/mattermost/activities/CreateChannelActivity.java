@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
+import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
@@ -16,9 +17,10 @@ import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.applikey.mattermost.views.ChannelTypeView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.RealmResults;
 import timber.log.Timber;
 
 public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
@@ -36,7 +38,6 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @Bind(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
-
 
     @Bind(R.id.channel_type_view)
     ChannelTypeView mChannelTypeView;
@@ -56,6 +57,10 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group_or_channel);
         ButterKnife.bind(this);
+        mAddedPeopleLayout.setImageLoader(mImageLoader);
+        mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
+        mRvPeoples.setLayoutManager(new LinearLayoutManager(this));
+        mRvPeoples.setAdapter(mAdapter);
         //mSwitchChannelType.setOnCheckedChangeListener();
 
     }
@@ -67,18 +72,27 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     }
 
+
+
     @Override
-    public void onRealmAttached(RealmResults<User> members) {
-        for (User user : members) {
-            Timber.d("Name: %s %s, avatar: %s", user.getFirstName(), user.getLastName(), user.getProfileImage());
+    public void onChosen(User user, boolean isInvited) {
+        if (isInvited) {
+            mPresenter.addUser(user);
+        } else {
+            mPresenter.removeUser(user);
         }
-        mAdapter = new PeopleToNewChannelAdapter(this, members, this, mImageLoader, true);
-        mRvPeoples.setLayoutManager(new LinearLayoutManager(this));
-        mRvPeoples.setAdapter(mAdapter);
     }
 
     @Override
-    public void onChosen(User user) {
-        mAddedPeopleLayout.addUser(user, mImageLoader);
+    public void showUsers(List<UserPendingInvitation> results) {
+        for (UserPendingInvitation user: results) {
+            Timber.d("Name: %s %s, avatar: %s", user.getUser().getFirstName(), user.getUser().getLastName(), user.getUser().getProfileImage());
+        }
+        mAdapter.addUsers(results);
+    }
+
+    @Override
+    public void showAddedUsers(List<User> users) {
+        mAddedPeopleLayout.showUsers(users);
     }
 }
