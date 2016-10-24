@@ -1,5 +1,7 @@
 package com.applikey.mattermost.injects;
 
+import android.content.res.Resources;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -144,5 +146,11 @@ public class GlobalModule {
     @Named("currentUserId")
     String provideCurrentUserId(Prefs mPrefs) {
         return mPrefs.getCurrentUserId();
+    }
+
+    @Provides
+    @PerApp
+    Resources provideResources() {
+        return mApp.getResources();
     }
 }

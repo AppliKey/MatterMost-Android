@@ -1,6 +1,10 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.content.res.Resources;
+import android.text.TextUtils;
+
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.UserPendingInvitation;
@@ -17,9 +21,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 @InjectViewState
 public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
@@ -37,6 +42,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     @Inject
     UserStorage mUserStorage;
 
+    @Inject
+    Resources mResources;
+
     private List<User> mInvitedUsers = new ArrayList<>(0);
 
 
@@ -44,9 +52,17 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         App.getComponent().inject(this);
     }
 
-    private Observable<Channel> createChannel(ChannelRequest request) {
-        return  mTeamStorage.getChosenTeam()
-                .flatMap(team -> mApi.createChannel(team.getId(), request));
+    private void createChannelWithRequest(ChannelRequest request) {
+        final Subscription subscription = mTeamStorage.getChosenTeam()
+                .flatMap(team -> mApi.createChannel(team.getId(), request).subscribeOn(Schedulers.io()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        channel -> {
+                            Timber.d("successfully created channel with name: %s", channel.getName());
+                        },
+                        Timber::e
+                );
+        mSubscription.add(subscription);
     }
 
 
@@ -77,5 +93,19 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     }
 
 
+    public void createChannel(String channelName, String channelDescription, boolean isPublicChannel) {
+        if (TextUtils.isEmpty(channelName)) {
+            getViewState().showError(mResources.getString(R.string.error_channel_name_empty));
+            return;
+        }
+        final String channelType;
+        if (isPublicChannel) {
+            channelType = Channel.ChannelType.PUBLIC.getRepresentation();
+        } else {
+            channelType = Channel.ChannelType.PRIVATE.getRepresentation();
+        }
+        final ChannelRequest channelRequest = new ChannelRequest(channelName, channelDescription, channelType);
+        createChannelWithRequest(channelRequest);
+    }
 }
 

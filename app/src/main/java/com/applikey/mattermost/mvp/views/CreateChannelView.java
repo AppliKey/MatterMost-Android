@@ -12,4 +12,6 @@ import java.util.List;
 public interface CreateChannelView extends MvpView {
     void showUsers(List<UserPendingInvitation> results);
     void showAddedUsers(List<User> users);
+
+    void showError(String string);
 }

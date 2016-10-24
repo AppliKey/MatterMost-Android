@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.applikey.mattermost.R;
@@ -84,7 +86,34 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_create_channel, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                onBackPressed();
+                return true;
+            }
+            case R.id.action_create_channel: {
+                createChannel();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void createChannel() {
+        final String channelName = mEtChannelName.getText().toString().trim();
+        final String channelDescription = mEtChannelDescription.getText().toString().trim();
+        final boolean isPublicChannel = !mChannelTypeView.isChecked();
+        mPresenter.createChannel(channelName, channelDescription, isPublicChannel);
+    }
 
     @Override
     public void onChosen(User user, boolean isInvited) {
@@ -97,7 +126,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @Override
     public void showUsers(List<UserPendingInvitation> results) {
-        for (UserPendingInvitation user: results) {
+        for (UserPendingInvitation user : results) {
             Timber.d("Name: %s %s, avatar: %s", user.getUser().getFirstName(), user.getUser().getLastName(), user.getUser().getProfileImage());
         }
         mAdapter.addUsers(results);
@@ -106,5 +135,10 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @Override
     public void showAddedUsers(List<User> users) {
         mAddedPeopleLayout.showUsers(users);
+    }
+
+    @Override
+    public void showError(String message) {
+        showToast(message);
     }
 }

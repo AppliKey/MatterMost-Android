@@ -5,9 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class ChannelRequest {
 
-    @SerializedName("team_id")
-    @Expose
-    private String teamId;
     @SerializedName("name")
     @Expose
     private String name;
@@ -17,19 +14,14 @@ public class ChannelRequest {
     @SerializedName("purpose")
     @Expose
     private String purpose;
-    @SerializedName("header")
-    @Expose
-    private String header;
     @SerializedName("type")
     @Expose
     private String type;
 
-    public ChannelRequest(String teamId, String name, String displayName, String purpose, String header, String type) {
-        this.teamId = teamId;
+    public ChannelRequest(String name, String purpose, String type) {
         this.name = name;
-        this.displayName = displayName;
+        this.displayName = name;
         this.purpose = purpose;
-        this.header = header;
         this.type = type;
     }
 }
