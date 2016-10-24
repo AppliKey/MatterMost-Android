@@ -56,15 +56,15 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     private void createChannelWithRequest(ChannelRequest request) {
         final Subscription subscription = mTeamStorage.getChosenTeam()
-                .flatMap(team ->
-                        mApi.createChannel(team.getId(), request)
+                .flatMap(team -> mApi.createChannel(team.getId(), request)
                                 .flatMap(channel -> Observable.from(mInvitedUsers)
-                                        .flatMap(user -> mApi.addUserToChannel(team.getId(), channel.getId(), new RequestUserId(user.getId()))))
-                                        .subscribeOn(Schedulers.io()))
+                                .flatMap(user -> mApi.addUserToChannel(team.getId(), channel.getId(), new RequestUserId(user.getId()))))
+                                .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         membership -> {
                             Timber.d("membership on channel id: %s with user id: %s", membership.getChannelId(), membership.getUserId());
+                            getViewState().successfulClose();
                         },
                         Timber::e
                 );

@@ -14,4 +14,6 @@ public interface CreateChannelView extends MvpView {
     void showAddedUsers(List<User> users);
 
     void showError(String string);
+
+    void successfulClose();
 }

@@ -148,4 +148,9 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     public void onSearchFilterChanged(Editable editableString) {
         mPresenter.getUsersWithFilter(editableString.toString());
     }
+
+    @Override
+    public void successfulClose() {
+        finish();
+    }
 }
