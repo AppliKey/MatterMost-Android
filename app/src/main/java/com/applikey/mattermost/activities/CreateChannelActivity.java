@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 
 import com.applikey.mattermost.R;
@@ -42,6 +43,9 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @Bind(R.id.channel_type_view)
     ChannelTypeView mChannelTypeView;
 
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+
     @InjectPresenter
     CreateChannelPresenter mPresenter;
 
@@ -57,11 +61,19 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group_or_channel);
         ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
         mAddedPeopleLayout.setImageLoader(mImageLoader);
         mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
         mRvPeoples.setLayoutManager(new LinearLayoutManager(this));
         mRvPeoples.setAdapter(mAdapter);
-        //mSwitchChannelType.setOnCheckedChangeListener();
+        setTitle(getString(R.string.new_public_channel));
+        mChannelTypeView.setOnCheckedChangedListener((view, checked) -> {
+            if (checked) {
+                CreateChannelActivity.this.setTitle(getResources().getString(R.string.new_private_group));
+            } else {
+                CreateChannelActivity.this.setTitle(getResources().getString(R.string.new_public_channel));
+            }
+        });
 
     }
 

@@ -24,6 +24,8 @@ public class ChannelTypeView extends LinearLayout {
     @Bind(R.id.tvTypePrivate)
     TextView mTvTypePrivate;
 
+    private CompoundButton.OnCheckedChangeListener mExternalCheckedChangeListener;
+
     private CompoundButton.OnCheckedChangeListener mOnCheckedListener = (view, checked) -> {
         if (checked) {
             mTvTypePublic.setEnabled(false);
@@ -36,6 +38,9 @@ public class ChannelTypeView extends LinearLayout {
             mTvTypePublic.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_public_channel_selected, 0, 0, 0);
             mTvTypePrivate.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_private_channel_unselected, 0);
 
+        }
+        if (mExternalCheckedChangeListener != null) {
+            mExternalCheckedChangeListener.onCheckedChanged(view, checked);
         }
     };
 
@@ -53,6 +58,10 @@ public class ChannelTypeView extends LinearLayout {
 
     public void setChecked(boolean checked) {
         mSwitchChannelType.setChecked(checked);
+    }
+
+    public void setOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener checkedChangedListener) {
+        mExternalCheckedChangeListener = checkedChangedListener;
     }
 
 }
