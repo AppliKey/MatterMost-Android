@@ -40,6 +40,10 @@
             android:name=".activities.ChatActivity"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".activities.SearchChatActivity"
+            android:screenOrientation="portrait"/>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0c7675012470bd5f6ee23c7d90806bb92d1c4bd8"/>

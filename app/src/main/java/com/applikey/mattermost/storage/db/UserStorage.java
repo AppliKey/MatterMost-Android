@@ -28,6 +28,10 @@ public class UserStorage {
         return mDb.listRealmObjects(User.class);
     }
 
+    public Observable<List<User>> searchUsers(String text){
+        return mDb.listRealmObjectsFiltered(User.class, text, new String[]{User.FIRST_NAME, User.LAST_NAME, User.USER_NAME});
+    }
+
     private void addImagePathInfo(Map<String, User> users) {
         for (User user : users.values()) {
             user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));

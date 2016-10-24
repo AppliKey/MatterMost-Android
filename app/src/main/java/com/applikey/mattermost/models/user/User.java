@@ -11,6 +11,10 @@ import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject {
 
+    public static final String USER_NAME = "username";
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+
     @PrimaryKey
     @SerializedName("id")
     private String id;
@@ -178,5 +182,20 @@ public class User extends RealmObject {
         public static Status from(int ordinal) {
             return values()[ordinal];
         }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", lastActivityAt=" + lastActivityAt +
+                ", updateAt=" + updateAt +
+                ", profileImage='" + profileImage + '\'' +
+                ", status=" + status +
+                '}';
     }
 }

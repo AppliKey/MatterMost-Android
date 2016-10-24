@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import io.realm.Sort;
 import rx.Observable;
 
@@ -17,6 +18,7 @@ public class Db {
 
     // TODO Use server as realm identifier
     private static final String REALM_NAME = "Test1.realm";
+    private static final String TAG = Db.class.getSimpleName();
 
     private final Executor mWritesExecutor;
 
@@ -165,6 +167,31 @@ public class Db {
                 .findFirstAsync()
                 .<DictionaryEntry>asObservable()
                 .filter(o -> o.isLoaded() && o.isValid())
+                .doOnUnsubscribe(realm::close)
+                .map(realm::copyFromRealm);
+
+    }
+
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
+            String text,
+            String[] fields) {
+        final Realm realm = getRealm();
+
+        RealmQuery<T> query = realm
+                .where(tClass);
+
+        query.beginGroup();
+        for (int i = 0; i < fields.length; i++) {
+            query.contains(fields[i], text);
+            if(i + 1 < fields.length){
+                query = query.or();
+            }
+        }
+        query.endGroup();
+
+        return query.findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
 
