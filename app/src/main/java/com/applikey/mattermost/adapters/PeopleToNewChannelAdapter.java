@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -56,19 +55,19 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     public void onBindViewHolder(VH holder, int position) {
         final UserPendingInvitation user = mUsers.get(position);
         holder.mAddedPeopleName.setText(User.getDisplayableName(user.getUser()));
-        if (user.isInvited() == false) {
-            holder.mAddPeopleButton.setBackgroundResource(R.drawable.ic_add);
+        if (!user.isInvited()) {
+            holder.mAddPeopleImage.setBackgroundResource(R.drawable.ic_add);
         } else {
-            holder.mAddPeopleButton.setBackgroundResource(R.drawable.ic_check);
+            holder.mAddPeopleImage.setBackgroundResource(R.drawable.ic_check);
         }
         mImageLoader.displayCircularImage(user.getUser().getProfileImage(), holder.mAddedPeopleAvatar);
-        holder.mAddPeopleButton.setOnClickListener(button -> {
-            if (user.isInvited() == false) {
+        holder.rootView.setOnClickListener(button -> {
+            if (!user.isInvited()) {
                 user.setInvited(true);
-                holder.mAddPeopleButton.setBackgroundResource(R.drawable.ic_check);
+                holder.mAddPeopleImage.setBackgroundResource(R.drawable.ic_check);
             } else {
                 user.setInvited(false);
-                holder.mAddPeopleButton.setBackgroundResource(R.drawable.ic_add);
+                holder.mAddPeopleImage.setBackgroundResource(R.drawable.ic_add);
             }
             mChosenListener.onChosen(user.getUser(), user.isInvited());
         });
@@ -82,13 +81,14 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         @Bind(R.id.added_people_name)
         TextView mAddedPeopleName;
 
-        @Bind(R.id.add_people_button)
-        Button mAddPeopleButton;
+        @Bind(R.id.add_people_image)
+        View mAddPeopleImage;
 
-
+        View rootView;
 
         public VH(View itemView) {
             super(itemView);
+            rootView = itemView;
             ButterKnife.bind(this, itemView);
         }
     }

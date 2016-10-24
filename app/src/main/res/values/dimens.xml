@@ -47,7 +47,7 @@
     <dimen name="list_item_chat_text_size">16sp</dimen>
 
     <dimen name="post_message_corners">15dp</dimen>
-    <dimen name="dialog_create_channel_content_padding">30dp</dimen>
+    <dimen name="dialog_create_channel_content_padding">15dp</dimen>
     <dimen name="dialog_add_people_to_new_channel_fab_margin">16dp</dimen>
     <dimen name="switch_channel_type_icon_margin">3dp</dimen>
     <dimen name="channel_type_margin">10dp</dimen>

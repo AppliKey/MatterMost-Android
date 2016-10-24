@@ -70,7 +70,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
         mRvPeoples.setLayoutManager(new LinearLayoutManager(this));
         mRvPeoples.setAdapter(mAdapter);
-        setTitle(getString(R.string.new_public_channel));
+        setTitle(getString(R.string.new_private_group));
         mChannelTypeView.setOnCheckedChangedListener((view, checked) -> {
             if (checked) {
                 CreateChannelActivity.this.setTitle(getResources().getString(R.string.new_private_group));

@@ -21,8 +21,8 @@
         android:textSize="18sp"
         tools:text="Lenora Flores" />
 
-    <Button
-        android:id="@+id/add_people_button"
+    <View
+        android:id="@+id/add_people_image"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="right|center_vertical"
