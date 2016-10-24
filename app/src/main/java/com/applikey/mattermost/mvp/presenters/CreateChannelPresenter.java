@@ -7,6 +7,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
+import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -54,11 +56,15 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     private void createChannelWithRequest(ChannelRequest request) {
         final Subscription subscription = mTeamStorage.getChosenTeam()
-                .flatMap(team -> mApi.createChannel(team.getId(), request).subscribeOn(Schedulers.io()))
+                .flatMap(team ->
+                        mApi.createChannel(team.getId(), request)
+                                .flatMap(channel -> Observable.from(mInvitedUsers)
+                                        .flatMap(user -> mApi.addUserToChannel(team.getId(), channel.getId(), new RequestUserId(user.getId()))))
+                                        .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        channel -> {
-                            Timber.d("successfully created channel with name: %s", channel.getName());
+                        membership -> {
+                            Timber.d("membership on channel id: %s with user id: %s", membership.getChannelId(), membership.getUserId());
                         },
                         Timber::e
                 );
@@ -70,6 +76,15 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     public void onFirstViewAttach() {
         final Subscription subscription = mUserStorage.listDirectProfiles()
                 .map(this::convertToPendingUsers)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(results -> getViewState().showUsers(results));
+        mSubscription.add(subscription);
+    }
+
+    public void getUsersWithFilter(String filterString) {
+        final Subscription subscription = mUserStorage.listDirectProfiles()
+                .map(this::convertToPendingUsers)
+                .map(users -> filter(users, filterString))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(results -> getViewState().showUsers(results));
         mSubscription.add(subscription);
@@ -107,5 +122,29 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         final ChannelRequest channelRequest = new ChannelRequest(channelName, channelDescription, channelType);
         createChannelWithRequest(channelRequest);
     }
+
+    private boolean isUserPassesFilter(User user, String filterString) {
+        boolean result = false;
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String userEmail = user.getEmail();
+        if (firstName.contains(filterString) || lastName.contains(filterString) || userEmail.contains(filterString)) {
+            result = true;
+        }
+        return result;
+
+    }
+
+    private List<UserPendingInvitation> filter(List<UserPendingInvitation> source, String filter) {
+        final List<UserPendingInvitation> pending = new ArrayList<>(source.size());
+        for (int i = 0; i < source.size(); i ++) {
+            final User user = source.get(i).getUser();
+            if (isUserPassesFilter(user, filter)) {
+                pending.add(new UserPendingInvitation(user, source.get(i).isInvited()));
+            }
+        }
+        return pending;
+    }
+
 }
 

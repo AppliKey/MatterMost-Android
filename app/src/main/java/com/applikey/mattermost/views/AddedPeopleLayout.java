@@ -28,6 +28,7 @@ public class AddedPeopleLayout extends LinearLayout {
     TextView mAddedPeopleExcessCount;
 
     private ImageLoader mImageLoader;
+    private boolean isActive;
 
 
     public AddedPeopleLayout(Context context, AttributeSet attrs) {
@@ -73,5 +74,9 @@ public class AddedPeopleLayout extends LinearLayout {
 
     public ImageView getLastUserAvatar() {
         return mAddedUserAvatars[mAddedUserAvatars.length - 1];
+    }
+
+    private void setVisible(boolean isActive) {
+        this.setVisibility(isActive ? VISIBLE : GONE);
     }
 }

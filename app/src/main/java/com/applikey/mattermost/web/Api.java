@@ -6,6 +6,8 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
+import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
@@ -89,6 +91,15 @@ public interface Api {
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
                                           @Path("channelId") String channelId);
 
-    @POST("api/v3/teams/{team_id}/channels/create")
+    @POST("/api/v3/teams/{team_id}/channels/create")
     Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
+
+    //http://54.234.249.244/api/v3/teams/mkb4gagurjfhj8ap7psw97tspa/channels/p66rayboai85ucfmuiiqm4i9eh/add
+
+    //p66rayboai85ucfmuiiqm4i9eh - channel id
+    //mkb4gagurjfhj8ap7psw97tspa - team id
+    //user_id : "aayjmkun6igu7rrg4dgzgwfeha" - request payload
+
+    @POST("/api/v3/teams/{team_id}/channels/{channel_id}/add")
+    Observable<Membership> addUserToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId, @Body RequestUserId userId);
 }

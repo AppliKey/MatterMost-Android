@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
 import timber.log.Timber;
 
 public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
@@ -140,5 +142,10 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @Override
     public void showError(String message) {
         showToast(message);
+    }
+
+    @OnTextChanged(R.id.et_search_people)
+    public void onSearchFilterChanged(Editable editableString) {
+        mPresenter.getUsersWithFilter(editableString.toString());
     }
 }

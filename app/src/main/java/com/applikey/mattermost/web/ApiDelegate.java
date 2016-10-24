@@ -6,6 +6,8 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
+import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
@@ -144,5 +146,10 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
+    }
+
+    @Override
+    public Observable<Membership> addUserToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId, @Body RequestUserId userId) {
+        return getRealApi().addUserToChannel(teamId, channelId, userId);
     }
 }
