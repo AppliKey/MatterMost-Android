@@ -1,12 +1,16 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 
 import javax.inject.Inject;
+
+import io.realm.RealmResults;
+import rx.Observable;
 
 public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         implements ChatListPresenter {
@@ -27,9 +31,15 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        getInitData();
+        final ChatListView view = getViewState();
+        if (view == null) {
+            return;
+        }
+        mSubscription.add(getInitData()
+                .distinctUntilChanged()
+                .subscribe(view::displayInitialData));
     }
 
-    abstract protected void getInitData();
+    abstract protected Observable<RealmResults<Channel>> getInitData();
 }
 

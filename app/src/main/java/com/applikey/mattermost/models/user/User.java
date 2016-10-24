@@ -43,8 +43,8 @@ public class User extends RealmObject {
     }
 
     public User(String id, String username, String email, String firstName,
-                String lastName, long lastActivityAt, long updateAt,
-                String profileImage, int status) {
+            String lastName, long lastActivityAt, long updateAt,
+            String profileImage, int status) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -166,10 +166,10 @@ public class User extends RealmObject {
 
         private static final Map<String, Status> representations =
                 new HashMap<String, Status>() {{
-            put("offline", OFFLINE);
-            put("online", ONLINE);
-            put("away", AWAY);
-        }};
+                    put("offline", OFFLINE);
+                    put("online", ONLINE);
+                    put("away", AWAY);
+                }};
 
         public static Status from(String representation) {
             return representations.get(representation);
@@ -178,5 +178,48 @@ public class User extends RealmObject {
         public static Status from(int ordinal) {
             return values()[ordinal];
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        final User user = (User) o;
+
+        if (getLastActivityAt() != user.getLastActivityAt())
+            return false;
+        if (getUpdateAt() != user.getUpdateAt())
+            return false;
+        if (getStatus() != user.getStatus())
+            return false;
+        if (!getId().equals(user.getId()))
+            return false;
+        if (!getUsername().equals(user.getUsername()))
+            return false;
+        if (!getEmail().equals(user.getEmail()))
+            return false;
+        if (!getFirstName().equals(user.getFirstName()))
+            return false;
+        if (!getLastName().equals(user.getLastName()))
+            return false;
+        return getProfileImage().equals(user.getProfileImage());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getUsername().hashCode();
+        result = 31 * result + getEmail().hashCode();
+        result = 31 * result + getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + (int) (getLastActivityAt() ^ (getLastActivityAt() >>> 32));
+        result = 31 * result + (int) (getUpdateAt() ^ (getUpdateAt() >>> 32));
+        result = 31 * result + getProfileImage().hashCode();
+        result = 31 * result + getStatus();
+        return result;
     }
 }

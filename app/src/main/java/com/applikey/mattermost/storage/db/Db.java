@@ -10,6 +10,8 @@ import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 public class Db {
 
@@ -31,9 +33,19 @@ public class Db {
         return mRealm.where(tClass)
                 .equalTo("id", id)
                 .findFirstAsync()
-                .asObservable()
-                .filter(o -> o.isLoaded() && o.isValid())
-                .map(realmObject -> (T)realmObject);
+                .<T>asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends RealmObject> void updateTransactional(Class<T> tClass,
+            String id, Func2<T, Realm, Boolean> update) {
+        mRealm.executeTransactionAsync(realm -> {
+            final T realmObject = realm.where(tClass).equalTo("id", id).findFirst();
+            if (realmObject.isLoaded()) {
+                update.call(realmObject, realm);
+            }
+        });
     }
 
     public void deleteTransactional(final RealmObject realmObject) {
@@ -126,7 +138,8 @@ public class Db {
                 .equalTo(fieldName, value)
                 .beginGroup()
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
-                .asObservable();
+                .asObservable()
+                .skip(1);//skip first empty result
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
@@ -137,7 +150,8 @@ public class Db {
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
-                .asObservable();
+                .asObservable()
+                .skip(1);//skip first empty result
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
@@ -173,5 +187,29 @@ public class Db {
                 .filter(o -> o.isLoaded() && o.isValid())
                 .map(mRealm::copyFromRealm);
 
+    }
+
+    public <T extends RealmObject> List<T> restoreIfExist(List<T> objects,
+            Class<T> tClass, Func1<T, String> getId, Func2<T, T, Boolean> update) {
+        if (objects == null || objects.isEmpty()) {
+            return objects;
+        }
+        for (T object : objects) {
+            restore(object, tClass, getId, update);
+        }
+        return objects;
+    }
+
+    private <T extends RealmObject> void restore(T object, Class<T> tClass,
+            Func1<T, String> getId, Func2<T, T, Boolean> update) {
+        if (object == null) {
+            return;
+        }
+
+        final T realmObject = mRealm.where(tClass).equalTo("id", getId.call(object)).findFirst();
+        if (realmObject == null) {
+            return;
+        }
+        update.call(object, realmObject);
     }
 }

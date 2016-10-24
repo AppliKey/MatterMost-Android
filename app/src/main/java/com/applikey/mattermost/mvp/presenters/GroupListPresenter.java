@@ -1,7 +1,10 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import com.applikey.mattermost.mvp.views.ChatListView;
+import com.applikey.mattermost.models.channel.Channel;
 import com.arellomobile.mvp.InjectViewState;
+
+import io.realm.RealmResults;
+import rx.Observable;
 
 @InjectViewState
 public class GroupListPresenter extends BaseChatListPresenter {
@@ -11,12 +14,7 @@ public class GroupListPresenter extends BaseChatListPresenter {
     }
 
     @Override
-    protected void getInitData() {
-        final ChatListView view = getViewState();
-        if(view == null){
-            return;
-        }
-        mSubscription.add(mChannelStorage.listClosed()
-                .subscribe(view::displayInitialData));
+    protected Observable<RealmResults<Channel>> getInitData() {
+        return mChannelStorage.listClosed();
     }
 }

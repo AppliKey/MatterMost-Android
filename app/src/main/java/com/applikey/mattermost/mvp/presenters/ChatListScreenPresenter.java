@@ -70,19 +70,22 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(response -> {
-                    mChannelStorage.saveChannelResponse(response.getChannelResponse(),
-                            response.getDirectProfiles());
-                });
+                .doOnNext(response -> mUserStorage.saveUsers(response.getDirectProfiles()))
+                .doOnNext(response -> mChannelStorage.saveChannelResponse(response.getChannelResponse(),
+                        response.getDirectProfiles()));
 
     }
 
     private void fetchLastMessages(StartupFetchResult response) {
         Observable.from(response.getChannelResponse().getChannels())
-                .flatMap(channel -> mApi.getLastPost(response.getTeamId(), channel.getId()), this::transform)
+                .flatMap(channel -> mApi.getLastPost(response.getTeamId(), channel.getId())
+                        .onErrorResumeNext(throwable -> null), this::transform)
                 .subscribeOn(Schedulers.io())
+                .filter(channel -> channel.getLastPost() != null)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.updateChannelLastPost(channel))
+                .flatMap(channel -> mUserStorage.getDirectProfiles(channel.getLastPost().getUserId())
+                        .distinctUntilChanged(), this::transform)
+                .doOnNext(channel -> mChannelStorage.updateChannelData(channel))
                 .subscribe();
     }
 
@@ -96,7 +99,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(userStatusResponse -> {
-                    mUserStorage.saveUsers(response.getDirectProfiles(), userStatusResponse);
+                    mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse);
                 })
                 .subscribe();
     }
@@ -104,6 +107,11 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     private Channel transform(Channel channel, PostResponse postResponse) {
         final Iterator<Post> posts = postResponse.getPosts().values().iterator();
         channel.setLastPost(posts.hasNext() ? posts.next() : null);
+        return channel;
+    }
+
+    private Channel transform(Channel channel, User user) {
+        channel.setLastPostAuthorDisplayName(user != null ? User.getDisplayableName(user) : null);
         return channel;
     }
 

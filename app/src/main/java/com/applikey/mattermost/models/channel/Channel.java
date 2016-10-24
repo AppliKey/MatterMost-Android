@@ -1,6 +1,7 @@
 package com.applikey.mattermost.models.channel;
 
 import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
@@ -44,11 +45,8 @@ public class Channel extends RealmObject {
     @SerializedName("create_at")
     private long createdAt;
 
-    // Application-specific fields
-    private String previewImagePath;
-
     // Only available for direct channels
-    private int status;
+    private User member;
 
     // Migrated from channel membership
     private long lastViewedAt;
@@ -68,6 +66,18 @@ public class Channel extends RealmObject {
 
     public void setLastActivityTime(long lastActivityTime) {
         this.lastActivityTime = lastActivityTime;
+    }
+
+    public void updateLastActivityTime() {
+        this.lastActivityTime = Math.max(createdAt, lastPost != null ? lastPost.getCreatedAt() : 0);
+    }
+
+    public User getMember() {
+        return member;
+    }
+
+    public void setMember(User member) {
+        this.member = member;
     }
 
     public String getId() {
@@ -136,18 +146,6 @@ public class Channel extends RealmObject {
         this.createdAt = createdAt;
     }
 
-    public String getPreviewImagePath() {
-        return previewImagePath;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     public long getLastViewedAt() {
         return lastViewedAt;
     }
@@ -158,12 +156,16 @@ public class Channel extends RealmObject {
         rebuildHasUnreadMessages();
     }
 
-    public void setPreviewImagePath(String previewImagePath) {
-        this.previewImagePath = previewImagePath;
-    }
-
     public boolean isUnread() {
         return hasUnreadMessages;
+    }
+
+    public boolean isHasUnreadMessages() {
+        return hasUnreadMessages;
+    }
+
+    public void setHasUnreadMessages(boolean hasUnreadMessages) {
+        this.hasUnreadMessages = hasUnreadMessages;
     }
 
     @Nullable
@@ -239,5 +241,86 @@ public class Channel extends RealmObject {
             }
             return 1;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        final Channel channel = (Channel) o;
+
+        if (getLastPostAt() != channel.getLastPostAt())
+            return false;
+        if (getCreatedAt() != channel.getCreatedAt())
+            return false;
+        if (getLastViewedAt() != channel.getLastViewedAt())
+            return false;
+        if (isHasUnreadMessages() != channel.isHasUnreadMessages())
+            return false;
+        if (getLastActivityTime() != channel.getLastActivityTime())
+            return false;
+        if (!getId().equals(channel.getId()))
+            return false;
+        if (!getType().equals(channel.getType()))
+            return false;
+        if (getDisplayName() != null ? !getDisplayName().equals(channel.getDisplayName()) : channel.getDisplayName() != null)
+            return false;
+        if (!getName().equals(channel.getName()))
+            return false;
+        if (!getHeader().equals(channel.getHeader()))
+            return false;
+        if (!getPurpose().equals(channel.getPurpose()))
+            return false;
+        if (getMember() != null ? !getMember().equals(channel.getMember()) : channel.getMember() != null)
+            return false;
+        if (getLastPost() != null ? !getLastPost().equals(channel.getLastPost()) : channel.getLastPost() != null)
+            return false;
+        return getLastPostAuthorDisplayName() != null
+                ? getLastPostAuthorDisplayName().equals(channel.getLastPostAuthorDisplayName())
+                : channel.getLastPostAuthorDisplayName() == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getType().hashCode();
+        result = 31 * result + (getDisplayName() != null ? getDisplayName().hashCode() : 0);
+        result = 31 * result + getName().hashCode();
+        result = 31 * result + getHeader().hashCode();
+        result = 31 * result + getPurpose().hashCode();
+        result = 31 * result + (int) (getLastPostAt() ^ (getLastPostAt() >>> 32));
+        result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
+        result = 31 * result + (getMember() != null ? getMember().hashCode() : 0);
+        result = 31 * result + (int) (getLastViewedAt() ^ (getLastViewedAt() >>> 32));
+        result = 31 * result + (isHasUnreadMessages() ? 1 : 0);
+        result = 31 * result + (getLastPost() != null ? getLastPost().hashCode() : 0);
+        result = 31 * result + (getLastPostAuthorDisplayName() != null ? getLastPostAuthorDisplayName().hashCode() : 0);
+        result = 31 * result + (int) (getLastActivityTime() ^ (getLastActivityTime() >>> 32));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Channel{" +
+                "id='" + getId() + '\'' +
+                ", type='" + getType() + '\'' +
+                ", displayName='" + getDisplayName() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", header='" + getHeader() + '\'' +
+                ", purpose='" + getPurpose() + '\'' +
+                ", lastPostAt=" + getLastPostAt() +
+                ", createdAt=" + getCreatedAt() +
+                ", member=" + getMember() +
+                ", lastViewedAt=" + getLastViewedAt() +
+                ", hasUnreadMessages=" + isHasUnreadMessages() +
+                ", lastPost=" + getLastPost() +
+                ", lastPostAuthorDisplayName='" + getLastPostAuthorDisplayName() + '\'' +
+                ", lastActivityTime=" + getLastActivityTime() +
+                ", unread=" + isUnread() +
+                '}';
     }
 }

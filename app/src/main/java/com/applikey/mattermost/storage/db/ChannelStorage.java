@@ -15,6 +15,8 @@ import rx.Observable;
 
 public class ChannelStorage {
 
+    private static final String TAG = "ChannelStorage";
+
     private final Db mDb;
     private final Prefs mPrefs;
 
@@ -60,15 +62,14 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Membership.class);
     }
 
-    //// TODO: 21.10.16 Changing Realm data can only be done from inside a transaction
-    public void updateChannelLastPost(Channel channel) {
-        mDb.getObject(Channel.class, channel.getId())
-                .map(realmChannel -> {
-                    realmChannel.setLastPost(channel.getLastPost());
-                    return realmChannel;
-                })
-                .doOnNext(mDb::saveTransactional)
-                .subscribe();
+    public void updateChannelData(Channel channel) {
+        mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
+            final Post realmPost = realm.copyToRealmOrUpdate(channel.getLastPost());
+            realmChannel.setLastPost(realmPost);
+            realmChannel.updateLastActivityTime();
+            realmChannel.setLastPostAuthorDisplayName(channel.getLastPostAuthorDisplayName());
+            return true;
+        });
     }
 
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
@@ -81,7 +82,6 @@ public class ChannelStorage {
 
         final List<Channel> channels = response.getChannels();
         for (Channel channel : channels) {
-            updateBaseChannelData(channel, userProfiles);
 
             if (channel.getType().equals(directChannelType)) {
                 updateDirectChannelData(channel, userProfiles, currentUserId);
@@ -93,35 +93,31 @@ public class ChannelStorage {
             }
         }
 
-        mDb.saveTransactionalWithRemoval(channels);
+        mDb.saveTransactional(restoreChannels(channels));
     }
 
-    private void updateBaseChannelData(Channel channel,
-            Map<String, User> contacts) {
-        final Post lastPost = channel.getLastPost();
-        channel.setLastActivityTime(Math.max(channel.getCreatedAt(),
-                lastPost != null ? lastPost.getCreatedAt() : 0));
-        if (lastPost != null) {
-            channel.setLastPostAuthorDisplayName(User.getDisplayableName(
-                    contacts.get(lastPost.getUserId())));
-        }
+    private List<Channel> restoreChannels(List<Channel> channels) {
+        return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
+            channel.setLastPost(storedChannel.getLastPost());
+            channel.updateLastActivityTime();
+            return true;
+        });
     }
 
     private void updateDirectChannelData(Channel channel,
             Map<String, User> contacts,
             String currentUserId) {
-        final String channelId = channel.getName();
-        final String otherUserId = extractOtherUserId(channelId, currentUserId);
+        final String channelName = channel.getName();
+        final String otherUserId = extractOtherUserId(channelName, currentUserId);
 
         final User user = contacts.get(otherUserId);
         if (user != null) {
+            channel.setMember(user);
             channel.setDisplayName(User.getDisplayableName(user));
-            channel.setPreviewImagePath(user.getProfileImage());
-            channel.setStatus(user.getStatus());
         }
     }
 
-    private String extractOtherUserId(String channelId, String currentUserId) {
-        return channelId.replace(currentUserId, "").replace("__", "");
+    private String extractOtherUserId(String channelName, String currentUserId) {
+        return channelName.replace(currentUserId, "").replace("__", "");
     }
 }
