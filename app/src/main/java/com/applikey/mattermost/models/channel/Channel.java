@@ -156,10 +156,6 @@ public class Channel extends RealmObject {
         rebuildHasUnreadMessages();
     }
 
-    public boolean isUnread() {
-        return hasUnreadMessages;
-    }
-
     public boolean isHasUnreadMessages() {
         return hasUnreadMessages;
     }
@@ -320,7 +316,6 @@ public class Channel extends RealmObject {
                 ", lastPost=" + getLastPost() +
                 ", lastPostAuthorDisplayName='" + getLastPostAuthorDisplayName() + '\'' +
                 ", lastActivityTime=" + getLastActivityTime() +
-                ", unread=" + isUnread() +
                 '}';
     }
 }

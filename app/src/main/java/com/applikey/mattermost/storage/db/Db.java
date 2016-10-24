@@ -139,6 +139,7 @@ public class Db {
                 .beginGroup()
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
                 .skip(1);//skip first empty result
     }
 
@@ -151,6 +152,7 @@ public class Db {
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
                 .skip(1);//skip first empty result
     }
 

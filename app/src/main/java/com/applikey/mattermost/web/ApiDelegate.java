@@ -146,4 +146,10 @@ public class ApiDelegate implements Api {
     public Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId, @Path("channelId") String channelId) {
         return getRealApi().getChannelExtra(teamId, channelId);
     }
+
+    @Override
+    public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+            @Path("channelId") String channelId) {
+        return getRealApi().updateLastViewedAt(teamId, channelId);
+    }
 }
