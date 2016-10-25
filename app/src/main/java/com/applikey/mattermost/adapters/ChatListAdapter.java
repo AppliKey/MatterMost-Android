@@ -107,10 +107,12 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         final User member = element.getDirectCollocutor();
         final String previewImagePath = member != null ?
                 member.getProfileImage() : null;
+        final ImageView previewImage = viewHolder.getPreviewImage();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
+            previewImage.setVisibility(View.VISIBLE);
+            mImageLoader.displayCircularImage(previewImagePath, previewImage);
         } else {
-            viewHolder.getPreviewImage().setImageResource(R.drawable.no_resource);
+            previewImage.setVisibility(View.GONE);
         }
     }
 
