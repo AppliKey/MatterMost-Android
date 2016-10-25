@@ -1,5 +1,6 @@
 package com.applikey.mattermost.injects;
 
+import android.content.Context;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -22,8 +23,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Named;
-
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
@@ -37,7 +36,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 @Module
 public class GlobalModule {
 
-    private final App mApp;
+    private final Context mApp;
 
     public GlobalModule(App app) {
         mApp = app;
@@ -152,11 +151,5 @@ public class GlobalModule {
     @PerApp
     PostStorage providePostStorage(Db db) {
         return new PostStorage(db);
-    }
-
-    @Provides
-    @Named(Constants.CURRENT_USER_QUALIFIER)
-    String provideCurrentUserId(Prefs mPrefs) {
-        return mPrefs.getCurrentUserId();
     }
 }

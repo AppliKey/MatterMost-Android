@@ -104,7 +104,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
         setContentView(R.layout.activity_chat);
 
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
         ButterKnife.bind(this);
 
         mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, onPostLongClick);

@@ -18,7 +18,7 @@ public class UnreadChatListPresenter extends BaseChatListPresenter {
 
     public UnreadChatListPresenter() {
         super();
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     @Override

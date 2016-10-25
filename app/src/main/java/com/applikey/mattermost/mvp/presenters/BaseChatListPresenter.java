@@ -25,7 +25,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     ChannelStorage mChannelStorage;
 
     /* package */ BaseChatListPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     @Override

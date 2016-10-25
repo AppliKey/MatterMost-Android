@@ -5,6 +5,7 @@ import android.app.Application;
 import com.applikey.mattermost.injects.ApplicationComponent;
 import com.applikey.mattermost.injects.DaggerApplicationComponent;
 import com.applikey.mattermost.injects.GlobalModule;
+import com.applikey.mattermost.injects.UserComponent;
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.crashlytics.android.Crashlytics;
@@ -22,6 +23,8 @@ public class App extends Application {
     ImageLoader imageLoader;
 
     private static ApplicationComponent mComponent;
+
+    private static UserComponent mUserComponent;
 
     @Override
     public void onCreate() {
@@ -44,6 +47,17 @@ public class App extends Application {
 
     public static ApplicationComponent getComponent() {
         return mComponent;
+    }
+
+    public static UserComponent getUserComponent() {
+        if (mUserComponent == null) {
+            mUserComponent = getComponent().userComponentBuilder().build();
+        }
+        return mUserComponent;
+    }
+
+    public static void releaseUserComponent() {
+        mUserComponent = null;
     }
 
     @Override

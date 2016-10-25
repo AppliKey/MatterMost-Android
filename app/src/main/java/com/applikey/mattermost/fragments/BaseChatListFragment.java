@@ -65,7 +65,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     @Nullable
