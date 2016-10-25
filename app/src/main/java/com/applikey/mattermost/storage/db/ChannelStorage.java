@@ -65,7 +65,12 @@ public class ChannelStorage {
 
     public void updateChannelData(Channel channel) {
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            final Post realmPost = realm.copyToRealmOrUpdate(channel.getLastPost());
+            final Post lastPost = channel.getLastPost();
+            if (lastPost == null) {
+                return false;
+            }
+
+            final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
             realmChannel.setLastPostAuthorDisplayName(channel.getLastPostAuthorDisplayName());
