@@ -14,8 +14,8 @@
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:background">@drawable/round_button_gradient</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
-        <item name="android:padding">16dp</item>
     </style>
+
 
     <style name="CircularCounter">
         <item name="android:textColor">@android:color/white</item>
@@ -34,11 +34,14 @@
     <style name="TextHeadingSecondary">
         <item name="android:textColor">@color/textSecondary</item>
         <item name="android:textSize">@dimen/text_heading_size</item>
-        <item name="android:padding">@dimen/text_heading_padding</item>
     </style>
 
     <style name="TextHeadingSecondary.Small">
         <item name="android:textSize">@dimen/text_heading_small_size</item>
+    </style>
+
+    <style name="TextHeadingSecondary.Small.Capitalize" parent="TextHeadingSecondary.Small">
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="EditTextPrimary">

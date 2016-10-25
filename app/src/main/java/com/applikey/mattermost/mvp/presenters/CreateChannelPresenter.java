@@ -50,7 +50,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     @Inject
     Resources mResources;
 
-    private final List<User> mInvitedUsers = new ArrayList<>();
+    private List<User> mInvitedUsers = new ArrayList<>();
 
 
     public CreateChannelPresenter() {
@@ -74,36 +74,53 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     @Override
     public void onFirstViewAttach() {
         final Subscription subscription = mUserStorage.listDirectProfiles()
-                .map(this::convertToPendingUsers)
+                .map(users->convertToPendingUsers(users, false))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(results -> getViewState().showUsers(results));
         mSubscription.add(subscription);
     }
 
-    public void getUsersWithFilter(String filterString) {
+    public void getUsersWithFilter(String filterString, List<User> alreadyAddedUsers) {
         final Subscription subscription = mUserStorage.listDirectProfiles()
-                .map(this::convertToPendingUsers)
+                .map(users -> convertToPendingUsers(users, alreadyAddedUsers))
                 .map(users -> filter(users, filterString))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(results -> getViewState().showUsers(results));
         mSubscription.add(subscription);
     }
 
-    private List<UserPendingInvitation> convertToPendingUsers(List<User> users) {
+    private List<UserPendingInvitation> convertToPendingUsers(List<User> users, boolean invited) {
         final List<UserPendingInvitation> pendingInvitations = new ArrayList<>(users.size());
         for (User user : users) {
-            pendingInvitations.add(new UserPendingInvitation(user, false));
+            pendingInvitations.add(new UserPendingInvitation(user, invited));
+        }
+        return pendingInvitations;
+    }
+
+    private List<UserPendingInvitation> convertToPendingUsers(List<User> users, List<User> alreadyAddedUsers) {
+        final List<UserPendingInvitation> pendingInvitations = new ArrayList<>(users.size());
+        for (int i = 0; i < users.size(); i++) {
+            boolean alreadyInvited = false;
+            User user = users.get(i);
+            for (int j = 0; j < alreadyAddedUsers.size(); j ++) {
+                if (user.equals(alreadyAddedUsers.get(j))) {
+                    alreadyInvited = true;
+                }
+            }
+            pendingInvitations.add(new UserPendingInvitation(user, alreadyInvited));
         }
         return pendingInvitations;
     }
 
     public void addUser(User user) {
         mInvitedUsers.add(user);
+        setAddAllButtonState();
         getViewState().showAddedUsers(mInvitedUsers);
     }
 
     public void removeUser(User user) {
         mInvitedUsers.remove(user);
+        setAddAllButtonState();
         getViewState().showAddedUsers(mInvitedUsers);
     }
 
@@ -146,8 +163,23 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         return pending;
     }
 
-    private CreatedChannel transform(String teamId, String channelId) {
-        return new CreatedChannel(teamId, channelId);
+    private void setAddAllButtonState() {
+        if (mInvitedUsers.size() == 0) {
+            getViewState().setAddAllButtonEnabled(true);
+        } else {
+            getViewState().setAddAllButtonEnabled(false);
+        }
+    }
+
+    public void addAllUsers() {
+        final Subscription subscription = mUserStorage.listDirectProfiles()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(results -> {
+                    mInvitedUsers = results;
+                    getViewState().addAllUsers(results);
+                    setAddAllButtonState();
+                });
+        mSubscription.add(subscription);
     }
 }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -30,16 +31,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="@dimen/dialog_create_channel_content_padding"
-            android:paddingRight="@dimen/dialog_create_channel_content_padding">
+            android:paddingRight="@dimen/dialog_create_channel_content_padding"
+            android:paddingTop="40dp">
 
             <com.applikey.mattermost.views.ChannelTypeView
                 android:id="@+id/channel_type_view"
                 android:layout_width="match_parent"
-                android:gravity="center"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:gravity="center" />
 
             <TextView
-                style="@style/TextHeadingSecondary.Small"
+                style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="13dp"
@@ -50,14 +52,14 @@
                 style="@style/EditTextPrimary.PushRight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/create_channel_hint_name"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                tools:text="leads_chat" />
 
 
             <TextView
-                style="@style/TextHeadingSecondary.Small"
+                style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/channel_description_channel_hint" />
@@ -67,16 +69,16 @@
                 style="@style/EditTextPrimary.PushRight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/channel_description_channel_hint"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                tools:text="For a discussion of important issues" />
 
             <TextView
-                style="@style/TextHeadingSecondary.Small"
+                style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add members"/>
+                android:text="Add members" />
 
             <com.applikey.mattermost.views.AddedPeopleLayout
                 android:id="@+id/added_people_layout"
@@ -84,30 +86,31 @@
                 android:layout_height="wrap_content">
 
             </com.applikey.mattermost.views.AddedPeopleLayout>
-                <!--TODO add user list-->
+            <!--TODO add user list-->
 
             <EditText
                 android:id="@+id/et_search_people"
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:drawableRight="@drawable/ic_search_2"
                 android:hint="@string/search_people_for_channel_hint" />
 
 
-
             <com.applikey.mattermost.views.SafeButton
-                android:id="@+id/b_authorize"
+                android:id="@+id/btn_add_all"
                 style="@style/Button"
                 android:layout_width="180dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="13dp"
-                android:layout_marginBottom="13dp"
-                android:textSize="12sp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="13dp"
+                android:layout_marginTop="13dp"
                 android:gravity="center"
-                android:visibility="gone"
-                android:text="@string/button_add_all" />
+                android:text="@string/button_add_all"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:visibility="visible" />
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

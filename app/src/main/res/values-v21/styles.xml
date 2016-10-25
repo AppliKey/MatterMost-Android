@@ -6,13 +6,16 @@
         <item name="android:textSize">@dimen/text_heading_small_size</item>
     </style>
 
+    <style name="TextHeadingSecondary.Small.Capitalize" parent="TextHeadingSecondary.Small">
+        <item name="android:textAllCaps">true</item>
+    </style>
+
     <style name="Button" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:clickable">true</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:background">@drawable/round_button_gradient</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
-        <item name="android:padding">16dp</item>
         <item name="android:letterSpacing">0.3</item>
     </style>
 

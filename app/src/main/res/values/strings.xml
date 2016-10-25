@@ -53,7 +53,7 @@
     <string name="create_channel_hint_name">Name</string>
     <string name="private_channel">Private</string>
     <string name="public_channel">Public</string>
-    <string name="channel_description_channel_hint">Description</string>
+    <string name="channel_description_channel_hint">Purpose</string>
     <string name="search_people_for_channel_hint">Search</string>
     <string name="added_people_count">+%1$d</string>
     <string name="button_add_all">Add all</string>

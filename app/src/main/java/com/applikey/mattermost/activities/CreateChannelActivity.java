@@ -9,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.applikey.mattermost.R;
@@ -25,6 +27,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import timber.log.Timber;
 
@@ -46,6 +49,9 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @Bind(R.id.channel_type_view)
     ChannelTypeView mChannelTypeView;
+
+    @Bind(R.id.btn_add_all)
+    Button mBtnAddAll;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -134,6 +140,11 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         mAdapter.addUsers(results);
     }
 
+    @OnClick(R.id.btn_add_all)
+    public void onBtnAddAllClick() {
+        mPresenter.addAllUsers();
+    }
+
     @Override
     public void showAddedUsers(List<User> users) {
         mAddedPeopleLayout.showUsers(users);
@@ -146,11 +157,23 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @OnTextChanged(R.id.et_search_people)
     public void onSearchFilterChanged(Editable editableString) {
-        mPresenter.getUsersWithFilter(editableString.toString());
+        final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
+        mPresenter.getUsersWithFilter(editableString.toString(), alreadyAddedUsers);
+    }
+
+    @Override
+    public void addAllUsers(List<User> results) {
+        showAddedUsers(results);
+        mAdapter.setAllChecked(true);
     }
 
     @Override
     public void successfulClose() {
         finish();
+    }
+
+    @Override
+    public void setAddAllButtonEnabled(boolean enabled) {
+        mBtnAddAll.setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
 }

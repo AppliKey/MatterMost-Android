@@ -179,4 +179,41 @@ public class User extends RealmObject {
             return values()[ordinal];
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (getLastActivityAt() != user.getLastActivityAt()) return false;
+        if (getUpdateAt() != user.getUpdateAt()) return false;
+        if (getStatus() != user.getStatus()) return false;
+        if (!getId().equals(user.getId())) return false;
+        if (getUsername() != null ? !getUsername().equals(user.getUsername()) : user.getUsername() != null)
+            return false;
+        if (getEmail() != null ? !getEmail().equals(user.getEmail()) : user.getEmail() != null)
+            return false;
+        if (getFirstName() != null ? !getFirstName().equals(user.getFirstName()) : user.getFirstName() != null)
+            return false;
+        if (getLastName() != null ? !getLastName().equals(user.getLastName()) : user.getLastName() != null)
+            return false;
+        return getProfileImage() != null ? getProfileImage().equals(user.getProfileImage()) : user.getProfileImage() == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
+        result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
+        result = 31 * result + (getFirstName() != null ? getFirstName().hashCode() : 0);
+        result = 31 * result + (getLastName() != null ? getLastName().hashCode() : 0);
+        result = 31 * result + (int) (getLastActivityAt() ^ (getLastActivityAt() >>> 32));
+        result = 31 * result + (int) (getUpdateAt() ^ (getUpdateAt() >>> 32));
+        result = 31 * result + (getProfileImage() != null ? getProfileImage().hashCode() : 0);
+        result = 31 * result + getStatus();
+        return result;
+    }
 }

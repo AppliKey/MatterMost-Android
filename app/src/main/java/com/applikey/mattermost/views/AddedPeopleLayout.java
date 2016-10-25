@@ -10,6 +10,7 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -29,6 +30,7 @@ public class AddedPeopleLayout extends LinearLayout {
 
     private ImageLoader mImageLoader;
     private boolean isActive;
+    private List<User> mUsers = new ArrayList<>();
 
 
     public AddedPeopleLayout(Context context, AttributeSet attrs) {
@@ -43,6 +45,7 @@ public class AddedPeopleLayout extends LinearLayout {
     }
 
     public void showUsers(List<User> users) {
+        mUsers = users;
         setVisible(isNeedToBeShown(users.size()));
         showCounterIfNeeded(isCounterVisible(users.size()), users.size());
         final int activatedViewsCount = getCountOfActivatedViews(users.size());
@@ -104,5 +107,9 @@ public class AddedPeopleLayout extends LinearLayout {
 
     private boolean isNeedToBeShown(int dataSize) {
         return dataSize != 0;
+    }
+
+    public List<User> getUsers() {
+        return mUsers;
     }
 }

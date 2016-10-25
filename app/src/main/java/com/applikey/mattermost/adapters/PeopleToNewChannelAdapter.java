@@ -21,8 +21,9 @@ import butterknife.ButterKnife;
 public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewChannelAdapter.VH> {
 
     private final ImageLoader mImageLoader;
-    private List<UserPendingInvitation> mUsers = new ArrayList<>(0);
+    private List<UserPendingInvitation> mUsers = new ArrayList<>();
     private final OnUserChosenListener mChosenListener;
+
 
     public interface OnUserChosenListener {
         void onChosen(User user, boolean isInvited);
@@ -34,7 +35,26 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     }
 
     public void addUsers(List<UserPendingInvitation> users) {
+        for (int i = 0; i < users.size(); i ++) {
+            for (int j = 0; j < mUsers.size(); j ++) {
+                if (users.get(i).equals(mUsers)) {
+                    mUsers.get(j).setInvited(users.get(i).isInvited());
+                }
+            }
+        }
         mUsers = users;
+        notifyDataSetChanged();
+    }
+
+    public void setAllChecked(boolean checked) {
+        for (UserPendingInvitation user : mUsers) {
+            user.setInvited(checked);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        mUsers.clear();
         notifyDataSetChanged();
     }
 
