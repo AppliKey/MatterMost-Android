@@ -16,8 +16,6 @@ import rx.Observable;
 
 public class ChannelStorage {
 
-    private static final String TAG = "ChannelStorage";
-
     private final Db mDb;
     private final Prefs mPrefs;
 
