@@ -142,7 +142,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     }
 
     private void setUnreadStatus(ViewHolder vh, Channel data) {
-        if (data.isHasUnreadMessages()) {
+        if (data.hasUnreadMessages()) {
             vh.getNotificationIcon().setVisibility(View.VISIBLE);
             vh.getContainer().setBackgroundResource(R.color.unread_background);
         } else {

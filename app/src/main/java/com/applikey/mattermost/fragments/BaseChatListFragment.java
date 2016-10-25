@@ -113,7 +113,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     // FIXME: 24.10.16 Not update when all chats are viewed
     private void displayUnreadIndicator(List<Channel> channels) {
         for (Channel channel : channels) {
-            if (channel.isHasUnreadMessages()) {
+            if (channel.hasUnreadMessages()) {
                 mEventBus.post(new TabIndicatorRequested(mTabBehavior, true));
                 return;
             }

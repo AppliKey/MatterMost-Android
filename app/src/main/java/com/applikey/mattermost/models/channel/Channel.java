@@ -158,7 +158,7 @@ public class Channel extends RealmObject {
         rebuildHasUnreadMessages();
     }
 
-    public boolean isHasUnreadMessages() {
+    public boolean hasUnreadMessages() {
         return hasUnreadMessages;
     }
 
@@ -256,7 +256,7 @@ public class Channel extends RealmObject {
             return false;
         if (getLastViewedAt() != channel.getLastViewedAt())
             return false;
-        if (isHasUnreadMessages() != channel.isHasUnreadMessages())
+        if (hasUnreadMessages() != channel.hasUnreadMessages())
             return false;
         if (getLastActivityTime() != channel.getLastActivityTime())
             return false;
@@ -294,7 +294,7 @@ public class Channel extends RealmObject {
         result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
         result = 31 * result + (getDirectCollocutor() != null ? getDirectCollocutor().hashCode() : 0);
         result = 31 * result + (int) (getLastViewedAt() ^ (getLastViewedAt() >>> 32));
-        result = 31 * result + (isHasUnreadMessages() ? 1 : 0);
+        result = 31 * result + (hasUnreadMessages() ? 1 : 0);
         result = 31 * result + (getLastPost() != null ? getLastPost().hashCode() : 0);
         result = 31 * result + (getLastPostAuthorDisplayName() != null ? getLastPostAuthorDisplayName().hashCode() : 0);
         result = 31 * result + (int) (getLastActivityTime() ^ (getLastActivityTime() >>> 32));
@@ -314,7 +314,7 @@ public class Channel extends RealmObject {
                 ", createdAt=" + getCreatedAt() +
                 ", directCollocutor=" + getDirectCollocutor() +
                 ", lastViewedAt=" + getLastViewedAt() +
-                ", hasUnreadMessages=" + isHasUnreadMessages() +
+                ", hasUnreadMessages=" + hasUnreadMessages() +
                 ", lastPost=" + getLastPost() +
                 ", lastPostAuthorDisplayName='" + getLastPostAuthorDisplayName() + '\'' +
                 ", lastActivityTime=" + getLastActivityTime() +
