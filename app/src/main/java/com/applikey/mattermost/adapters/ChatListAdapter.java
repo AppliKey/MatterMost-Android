@@ -251,7 +251,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
             return mNotificationIcon;
         }
 
-        public LinearLayout getContainer() {
+        LinearLayout getContainer() {
             return mContainer;
         }
     }
