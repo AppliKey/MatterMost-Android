@@ -37,6 +37,8 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
             ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
 
+        mContext = context;
+
         mImageLoader = imageLoader;
         mCurrentUserId = currentUserId;
     }
