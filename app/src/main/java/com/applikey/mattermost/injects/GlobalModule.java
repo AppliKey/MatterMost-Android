@@ -7,7 +7,6 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.PostStorage;
-import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
@@ -112,11 +111,7 @@ public class GlobalModule {
         return new Db(mApp);
     }
 
-    @Provides
-    @PerApp
-    TeamStorage provideTeamStorage(Db db) {
-        return new TeamStorage(db);
-    }
+
 
     @Provides
     @PerApp

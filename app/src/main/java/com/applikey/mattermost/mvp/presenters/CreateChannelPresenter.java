@@ -5,10 +5,13 @@ import android.text.TextUtils;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.channel.AddedUser;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
+import com.applikey.mattermost.models.channel.CreatedChannel;
 import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.channel.UserPendingInvitation;
+import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -47,7 +50,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     @Inject
     Resources mResources;
 
-    private List<User> mInvitedUsers = new ArrayList<>(0);
+    private final List<User> mInvitedUsers = new ArrayList<>();
 
 
     public CreateChannelPresenter() {
@@ -56,18 +59,14 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     private void createChannelWithRequest(ChannelRequest request) {
         final Subscription subscription = mTeamStorage.getChosenTeam()
-                .flatMap(team -> mApi.createChannel(team.getId(), request)
-                                .flatMap(channel -> Observable.from(mInvitedUsers)
-                                .flatMap(user -> mApi.addUserToChannel(team.getId(), channel.getId(), new RequestUserId(user.getId()))))
-                                .subscribeOn(Schedulers.io()))
+                .observeOn(Schedulers.io())
+                .map(Team::getId)
+                .first()
+                .flatMap(teamId -> mApi.createChannel(teamId, request), (teamId, channel) -> new CreatedChannel(teamId, channel.getId()))
+                .flatMap(createdChannel -> Observable.from(mInvitedUsers), AddedUser::new)
+                .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(), user.getCreatedChannel().getChannelId(), new RequestUserId(user.getUser().getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        membership -> {
-                            Timber.d("membership on channel id: %s with user id: %s", membership.getChannelId(), membership.getUserId());
-                            getViewState().successfulClose();
-                        },
-                        Timber::e
-                );
+                .subscribe(v -> {}, error -> Timber.d("empty sequence"), () -> getViewState().successfulClose());
         mSubscription.add(subscription);
     }
 
@@ -102,6 +101,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         mInvitedUsers.add(user);
         getViewState().showAddedUsers(mInvitedUsers);
     }
+
     public void removeUser(User user) {
         mInvitedUsers.remove(user);
         getViewState().showAddedUsers(mInvitedUsers);
@@ -137,7 +137,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     private List<UserPendingInvitation> filter(List<UserPendingInvitation> source, String filter) {
         final List<UserPendingInvitation> pending = new ArrayList<>(source.size());
-        for (int i = 0; i < source.size(); i ++) {
+        for (int i = 0; i < source.size(); i++) {
             final User user = source.get(i).getUser();
             if (isUserPassesFilter(user, filter)) {
                 pending.add(new UserPendingInvitation(user, source.get(i).isInvited()));
@@ -146,5 +146,8 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         return pending;
     }
 
+    private CreatedChannel transform(String teamId, String channelId) {
+        return new CreatedChannel(teamId, channelId);
+    }
 }
 

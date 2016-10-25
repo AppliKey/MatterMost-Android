@@ -164,6 +164,7 @@ public class Db {
                 .findFirstAsync()
                 .<T>asObservable()
                 .filter(o -> o.isLoaded() && o.isValid())
+                .first()
                 .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
     }
