@@ -58,6 +58,7 @@ public class Channel extends RealmObject {
 
     private String lastPostAuthorDisplayName;
 
+    // Index field, which contains the time of the last message or creation time. Used by Realm, as it can not compare multiple fields
     private long lastActivityTime;
 
     public long getLastActivityTime() {
