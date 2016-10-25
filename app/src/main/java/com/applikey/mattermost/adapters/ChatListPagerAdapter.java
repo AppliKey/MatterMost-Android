@@ -4,17 +4,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.EmptyChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.DirectChatListFragment;
 import com.applikey.mattermost.fragments.UnreadChatListFragment;
+import com.applikey.mattermost.views.TabBehavior;
 
 public class ChatListPagerAdapter extends FragmentPagerAdapter {
 
     // We skip undefined page. This should be changed later on after we introduce disabling unread page
-    private final int pageCount = BaseChatListFragment.TabBehavior.values().length - 1;
+    private final int pageCount = TabBehavior.values().length - 1;
 
     public ChatListPagerAdapter(FragmentManager fm) {
         super(fm);

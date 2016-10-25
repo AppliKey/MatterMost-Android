@@ -7,6 +7,8 @@ import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import static com.applikey.mattermost.views.TabBehavior.DIRECT;
+
 public class DirectChatListFragment extends BaseChatListFragment {
 
     @InjectPresenter
@@ -16,7 +18,7 @@ public class DirectChatListFragment extends BaseChatListFragment {
         final DirectChatListFragment fragment = new DirectChatListFragment();
 
         final Bundle bundle = new Bundle();
-        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, TabBehavior.DIRECT.ordinal());
+        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, DIRECT.ordinal());
 
         fragment.setArguments(bundle);
 
