@@ -29,6 +29,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     private ClickListener mClickListener = null;
 
+    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
+    private Context mContext;
+
     public ChatListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Channel> data,
             ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
@@ -55,13 +58,12 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
             return;
         }
         final Channel channel = data.get(position);
-        final Context context = vh.itemView.getContext();
 
         final long lastPostAt = channel.getLastPostAt();
 
         vh.getChannelName().setText(channel.getDisplayName());
 
-        final String messagePreview = getMessagePreview(channel, context);
+        final String messagePreview = getMessagePreview(channel, mContext);
 
         vh.getMessagePreview().setText(messagePreview);
         vh.getLastMessageTime().setText(
