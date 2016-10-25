@@ -50,27 +50,28 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
-        if (getData() == null) {
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
             return;
         }
-        final Channel data = getData().get(position);
+        final Channel channel = data.get(position);
         final Context context = vh.itemView.getContext();
 
-        final long lastPostAt = data.getLastPostAt();
+        final long lastPostAt = channel.getLastPostAt();
 
-        vh.getChannelName().setText(data.getDisplayName());
+        vh.getChannelName().setText(channel.getDisplayName());
 
-        final String messagePreview = getMessagePreview(data, context);
+        final String messagePreview = getMessagePreview(channel, context);
 
         vh.getMessagePreview().setText(messagePreview);
         vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
-                        data.getCreatedAt()));
+                        channel.getCreatedAt()));
 
-        setChannelIcon(vh, data);
-        setChannelIconVisibility(vh, data);
-        setStatusIcon(vh, data);
-        setUnreadStatus(vh, data);
+        setChannelIcon(vh, channel);
+        setChannelIconVisibility(vh, channel);
+        setStatusIcon(vh, channel);
+        setUnreadStatus(vh, channel);
 
         vh.getRoot().setTag(position);
     }
@@ -149,12 +150,13 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     }
 
     private final View.OnClickListener mOnClickListener = v -> {
-        if (getData() == null) {
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
             return;
         }
         final int position = (Integer) v.getTag();
 
-        final Channel team = getData().get(position);
+        final Channel team = data.get(position);
 
         if (mClickListener != null) {
             mClickListener.onItemClicked(team);
