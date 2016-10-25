@@ -1,6 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.Sort;
 import rx.Observable;
+import rx.Single;
 
 public class Db {
 
@@ -183,7 +185,7 @@ public class Db {
         query.beginGroup();
         for (int i = 0; i < fields.length; i++) {
             query.contains(fields[i], text);
-            if(i + 1 < fields.length){
+            if (i + 1 < fields.length) {
                 query = query.or();
             }
         }
@@ -195,6 +197,28 @@ public class Db {
                 .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
 
+    }
+
+    public <T extends RealmObject> Single<T> getObject(Class<T> tClass, String field, String id) {
+        final Realm realm = getRealm();
+        T object = realm.where(tClass)
+                .contains(field, id)
+                .findFirst();
+        final Observable<T> map;
+        if (object == null) {
+            map = Observable.error(new ObjectNotFoundException());
+        } else {
+            map = object
+                    .<T>asObservable()
+                    .first()
+                    .doOnUnsubscribe(realm::close)
+                    .map(realmResult -> {
+                        Log.d(TAG, "getObject: " + realmResult);
+                        return realmResult;
+                    })
+                    .map(realm::copyFromRealm);
+        }
+        return map.toSingle();
     }
 
     private Realm getRealm() {

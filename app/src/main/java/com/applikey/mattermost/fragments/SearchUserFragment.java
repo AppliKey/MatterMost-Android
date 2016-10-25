@@ -13,7 +13,10 @@ import android.widget.ImageButton;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.activities.BaseActivity;
+import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.UserAdapter;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.views.SearchUserView;
@@ -131,6 +134,18 @@ public class SearchUserFragment extends BaseMvpFragment implements SearchUserVie
             throw new RuntimeException("Presenter is null");
         }
         return mPresenter;
+    }
+
+    public void startChatActivity(Channel channel) {
+        getActivity().startActivity(ChatActivity.getIntent(getContext(), channel));
+    }
+
+    public void showLoading(boolean show) {
+        if (show) {
+            ((BaseActivity) getActivity()).showLoadingDialog();
+        } else {
+            ((BaseActivity) getActivity()).hideLoadingDialog();
+        }
     }
 
 }

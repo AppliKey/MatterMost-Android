@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Single;
 
 public class ChannelStorage {
 
@@ -73,6 +74,14 @@ public class ChannelStorage {
         }
 
         mDb.saveTransactionalWithRemoval(channels);
+    }
+
+    public Single<Channel> getChannel(String id){
+        return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
+    }
+
+    public void saveChannel(Channel channel){
+        mDb.saveTransactional(channel);
     }
 
     private void updateDirectChannelData(Channel channel,

@@ -2,7 +2,9 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -137,5 +139,11 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId, @Path("channelId") String channelId) {
         return getRealApi().getChannelExtra(teamId, channelId);
+    }
+
+    @Override
+    public Observable<Channel> createChannel(@Path("team_id") String teamId,
+            @Body DirectChannelRequest request) {
+        return getRealApi().createChannel(teamId, request);
     }
 }

@@ -6,12 +6,15 @@ import java.util.Comparator;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
-public class Channel extends RealmObject {
+@RealmClass
+public class Channel extends RealmObject{
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
+    public static final String FIELD_NAME = "name";
 
     @PrimaryKey
     @SerializedName("id")
@@ -200,5 +203,23 @@ public class Channel extends RealmObject {
             }
             return 1;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Channel{" +
+                "id='" + id + '\'' +
+                ", type='" + type + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", name='" + name + '\'' +
+                ", header='" + header + '\'' +
+                ", purpose='" + purpose + '\'' +
+                ", lastPostAt=" + lastPostAt +
+                ", createdAt=" + createdAt +
+                ", previewImagePath='" + previewImagePath + '\'' +
+                ", status=" + status +
+                ", lastViewedAt=" + lastViewedAt +
+                ", hasUnreadMessages=" + hasUnreadMessages +
+                '}';
     }
 }

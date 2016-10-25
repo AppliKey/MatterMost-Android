@@ -33,6 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_search_2"
             android:tint="@color/colorPrimary"
             android:padding="@dimen/padding_default"
