@@ -81,14 +81,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PostDto dto = mData.get(position);
 
-        boolean showDate = position == mData.size() - 1 ||
+        final boolean showDate = position == mData.size() - 1 ||
                 !oneDatePosts(dto.getPost(), mData.get(position + 1).getPost());
 
-        boolean showAuthor = position == mData.size() - 1 ||
+        final boolean showAuthor = position == mData.size() - 1 ||
                 !hasSameAuthor(mData.get(position + 1).getPost(), dto.getPost()) ||
                 showDate;
 
-        boolean showTime = position == 0 ||
+        final boolean showTime = position == 0 ||
                 !oneTimePosts(dto.getPost(), mData.get(position - 1).getPost()) ||
                 !hasSameAuthor(dto.getPost(), mData.get(position - 1).getPost());
 
@@ -202,9 +202,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @FunctionalInterface
     public interface OnLongClickListener {
-
         void onLongClick(Post post);
-
     }
-
 }
