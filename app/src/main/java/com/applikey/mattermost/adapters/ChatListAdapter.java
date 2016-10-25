@@ -98,8 +98,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
-        final String previewImagePath = element.getMember() != null ?
-                element.getMember().getProfileImage() : null;
+        final User member = element.getMember();
+        final String previewImagePath = member != null ?
+                member.getProfileImage() : null;
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
             mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
         }
@@ -116,8 +117,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     private void setStatusIcon(ViewHolder vh, Channel data) {
         if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getType())) {
-            final User.Status status = data.getMember() != null ?
-                    User.Status.from(data.getMember().getStatus()) : null;
+            final User member = data.getMember();
+            final User.Status status = member != null ?
+                    User.Status.from(member.getStatus()) : null;
             if (status != null) {
                 vh.getStatus().setImageResource(status.getDrawableId());
             }
