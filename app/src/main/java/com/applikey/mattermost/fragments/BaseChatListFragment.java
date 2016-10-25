@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.ChatListAdapter;
@@ -53,7 +54,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     EventBus mEventBus;
 
     @Inject
-    @Named("currentUserId")
+    @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
     @Override

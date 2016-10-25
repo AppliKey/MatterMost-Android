@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
@@ -63,7 +64,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     ChatPresenter mPresenter;
 
     @Inject
-    @Named("currentUserId")
+    @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
     @Inject

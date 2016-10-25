@@ -155,7 +155,7 @@ public class GlobalModule {
     }
 
     @Provides
-    @Named("currentUserId")
+    @Named(Constants.CURRENT_USER_QUALIFIER)
     String provideCurrentUserId(Prefs mPrefs) {
         return mPrefs.getCurrentUserId();
     }

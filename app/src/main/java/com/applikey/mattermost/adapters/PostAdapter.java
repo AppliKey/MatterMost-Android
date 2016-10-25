@@ -80,22 +80,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PostDto dto = mData.get(position);
+        final Post post = dto.getPost();
 
-        final boolean showDate = position == mData.size() - 1 ||
-                !oneDatePosts(dto.getPost(), mData.get(position + 1).getPost());
+        final int nextPostPosition = position + 1;
+        final int previousPostPosition = position - 1;
+        final boolean isLastPost = position == mData.size() - 1;
+        final boolean isFirstPost = position == 0;
+        final Post previousPost = mData.get(previousPostPosition).getPost();
+        final Post nextPost = mData.get(nextPostPosition).getPost();
 
-        final boolean showAuthor = position == mData.size() - 1 ||
-                !hasSameAuthor(mData.get(position + 1).getPost(), dto.getPost()) ||
-                showDate;
+        final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
+        final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
+        final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
 
-        final boolean showTime = position == 0 ||
-                !oneTimePosts(dto.getPost(), mData.get(position - 1).getPost()) ||
-                !hasSameAuthor(dto.getPost(), mData.get(position - 1).getPost());
-
-        if (isMy(dto.getPost())) {
-            holder.bindOwn(dto, showAuthor, showTime, showDate, mOnLongClickListener);
+        if (isMy(post)) {
+            holder.bindOwnPost(dto, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOther(dto, showAuthor, showTime, showDate, mImageLoader);
+            holder.bindOtherPost(dto, showAuthor, showTime, showDate, mImageLoader);
         }
     }
 
@@ -153,8 +154,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
         }
 
-        void bindOwn(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate,
-                OnLongClickListener onLongClickListener) {
+        void bindOwnPost(PostDto dto, boolean showAuthor, boolean showTime, boolean showDate,
+                         OnLongClickListener onLongClickListener) {
             bind(dto, showAuthor, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
@@ -163,8 +164,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             });
         }
 
-        void bindOther(PostDto dto, boolean showAuthor, boolean showTime,
-                boolean showDate, ImageLoader imageLoader) {
+        void bindOtherPost(PostDto dto, boolean showAuthor, boolean showTime,
+                           boolean showDate, ImageLoader imageLoader) {
             bind(dto, showAuthor, showTime, showDate);
 
             final String previewImagePath = dto.getAuthorAvatar();
@@ -188,15 +189,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 .findFirst();
     }
 
-    private boolean hasSameAuthor(Post post, Post nextPost) {
+    private boolean isPostsSameAuthor(Post post, Post nextPost) {
         return post.getUserId().equals(nextPost.getUserId());
     }
 
-    private boolean oneTimePosts(Post post, Post nextPost) {
+    private boolean isPostsSameSecond(Post post, Post nextPost) {
         return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 
-    private boolean oneDatePosts(Post post, Post nextPost) {
+    private boolean isPostsSameDate(Post post, Post nextPost) {
         return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 

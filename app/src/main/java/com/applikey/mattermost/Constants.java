@@ -10,4 +10,6 @@ public class Constants {
 
     // TODO Use server as realm identifier
     public static final String REALM_NAME = "Test1.realm";
+
+    public static final String CURRENT_USER_QUALIFIER = "currentUserId";
 }
