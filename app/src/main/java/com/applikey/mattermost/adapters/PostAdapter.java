@@ -82,12 +82,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         final PostDto dto = mData.get(position);
         final Post post = dto.getPost();
 
-        final int nextPostPosition = position + 1;
-        final int previousPostPosition = position - 1;
         final boolean isLastPost = position == mData.size() - 1;
         final boolean isFirstPost = position == 0;
-        final Post previousPost = mData.get(previousPostPosition).getPost();
-        final Post nextPost = mData.get(nextPostPosition).getPost();
+
+        Post previousPost = null;
+        Post nextPost = null;
+
+        if (!isLastPost) {
+            final int nextPostPosition = position + 1;
+            final PostDto nextPostDto = mData.get(nextPostPosition);
+            nextPost = nextPostDto != null ? nextPostDto.getPost() : null;
+        }
+
+        if (!isFirstPost) {
+            final int previousPostPosition = position - 1;
+            final PostDto previousPostDto = mData.get(previousPostPosition);
+            previousPost = previousPostDto != null ? previousPostDto.getPost() : null;
+        }
 
         final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
         final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
@@ -190,14 +201,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     private boolean isPostsSameAuthor(Post post, Post nextPost) {
+        if (post == null || nextPost == null) {
+            return false;
+        }
         return post.getUserId().equals(nextPost.getUserId());
     }
 
     private boolean isPostsSameSecond(Post post, Post nextPost) {
+        if (post == null || nextPost == null) {
+            return false;
+        }
         return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 
     private boolean isPostsSameDate(Post post, Post nextPost) {
+        if (post == null || nextPost == null) {
+            return false;
+        }
         return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 

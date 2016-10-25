@@ -34,7 +34,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     private Context mContext;
 
     public ChatListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Channel> data,
-            ImageLoader imageLoader, String currentUserId) {
+                           ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
 
         mContext = context;
@@ -109,10 +109,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
                 member.getProfileImage() : null;
         final ImageView previewImage = viewHolder.getPreviewImage();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            previewImage.setVisibility(View.VISIBLE);
             mImageLoader.displayCircularImage(previewImagePath, previewImage);
         } else {
-            previewImage.setVisibility(View.GONE);
+            previewImage.setImageResource(R.drawable.no_resource);
         }
     }
 
