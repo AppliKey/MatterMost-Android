@@ -46,7 +46,8 @@ public class Channel extends RealmObject {
     private long createdAt;
 
     // Only available for direct channels
-    private User member;
+    // Another collocutor of a direct chat. This field is used for determining another person in direct chat (except current user)
+    private User directCollocutor;
 
     // Migrated from channel membership
     private long lastViewedAt;
@@ -73,12 +74,12 @@ public class Channel extends RealmObject {
         this.lastActivityTime = Math.max(createdAt, lastPost != null ? lastPost.getCreatedAt() : 0);
     }
 
-    public User getMember() {
-        return member;
+    public User getDirectCollocutor() {
+        return directCollocutor;
     }
 
-    public void setMember(User member) {
-        this.member = member;
+    public void setDirectCollocutor(User directCollocutor) {
+        this.directCollocutor = directCollocutor;
     }
 
     public String getId() {
@@ -275,7 +276,7 @@ public class Channel extends RealmObject {
             return false;
         if (!getPurpose().equals(channel.getPurpose()))
             return false;
-        if (getMember() != null ? !getMember().equals(channel.getMember()) : channel.getMember() != null)
+        if (getDirectCollocutor() != null ? !getDirectCollocutor().equals(channel.getDirectCollocutor()) : channel.getDirectCollocutor() != null)
             return false;
         if (getLastPost() != null ? !getLastPost().equals(channel.getLastPost()) : channel.getLastPost() != null)
             return false;
@@ -295,7 +296,7 @@ public class Channel extends RealmObject {
         result = 31 * result + getPurpose().hashCode();
         result = 31 * result + (int) (getLastPostAt() ^ (getLastPostAt() >>> 32));
         result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
-        result = 31 * result + (getMember() != null ? getMember().hashCode() : 0);
+        result = 31 * result + (getDirectCollocutor() != null ? getDirectCollocutor().hashCode() : 0);
         result = 31 * result + (int) (getLastViewedAt() ^ (getLastViewedAt() >>> 32));
         result = 31 * result + (isHasUnreadMessages() ? 1 : 0);
         result = 31 * result + (getLastPost() != null ? getLastPost().hashCode() : 0);
@@ -315,7 +316,7 @@ public class Channel extends RealmObject {
                 ", purpose='" + getPurpose() + '\'' +
                 ", lastPostAt=" + getLastPostAt() +
                 ", createdAt=" + getCreatedAt() +
-                ", member=" + getMember() +
+                ", directCollocutor=" + getDirectCollocutor() +
                 ", lastViewedAt=" + getLastViewedAt() +
                 ", hasUnreadMessages=" + isHasUnreadMessages() +
                 ", lastPost=" + getLastPost() +

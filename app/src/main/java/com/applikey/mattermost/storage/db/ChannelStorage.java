@@ -112,7 +112,7 @@ public class ChannelStorage {
 
         final User user = contacts.get(otherUserId);
         if (user != null) {
-            channel.setMember(user);
+            channel.setDirectCollocutor(user);
             channel.setDisplayName(User.getDisplayableName(user));
         }
     }
