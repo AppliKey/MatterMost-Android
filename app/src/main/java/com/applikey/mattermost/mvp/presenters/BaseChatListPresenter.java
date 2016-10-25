@@ -40,6 +40,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .subscribe(view::displayInitialData));
     }
 
-    abstract protected Observable<RealmResults<Channel>> getInitData();
+    protected abstract Observable<RealmResults<Channel>> getInitData();
 }
 
