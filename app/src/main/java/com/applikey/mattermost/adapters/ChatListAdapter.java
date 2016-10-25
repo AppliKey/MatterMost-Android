@@ -30,6 +30,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     private ClickListener mClickListener = null;
 
+    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
+    private Context mContext;
+
     public ChatListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Channel> data,
             ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
@@ -51,27 +54,27 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
-        if (getData() == null) {
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
             return;
         }
-        final Channel data = getData().get(position);
-        final Context context = vh.itemView.getContext();
+        final Channel channel = data.get(position);
 
-        final long lastPostAt = data.getLastPostAt();
+        final long lastPostAt = channel.getLastPostAt();
 
-        vh.getChannelName().setText(data.getDisplayName());
+        vh.getChannelName().setText(channel.getDisplayName());
 
-        final String messagePreview = getMessagePreview(data, context);
+        final String messagePreview = getMessagePreview(channel, mContext);
 
         vh.getMessagePreview().setText(messagePreview);
         vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
-                        data.getCreatedAt()));
+                        channel.getCreatedAt()));
 
-        setChannelIcon(vh, data);
-        setChannelIconVisibility(vh, data);
-        setStatusIcon(vh, data);
-        setUnreadStatus(vh, data);
+        setChannelIcon(vh, channel);
+        setChannelIconVisibility(vh, channel);
+        setStatusIcon(vh, channel);
+        setUnreadStatus(vh, channel);
 
         vh.getRoot().setTag(position);
     }
@@ -99,8 +102,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
-        final String previewImagePath = element.getMember() != null ?
-                element.getMember().getProfileImage() : null;
+        final User member = element.getDirectCollocutor();
+        final String previewImagePath = member != null ?
+                member.getProfileImage() : null;
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
             mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
         } else {
@@ -119,8 +123,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     private void setStatusIcon(ViewHolder vh, Channel data) {
         if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getType())) {
-            final User.Status status = data.getMember() != null ?
-                    User.Status.from(data.getMember().getStatus()) : null;
+            final User member = data.getDirectCollocutor();
+            final User.Status status = member != null ?
+                    User.Status.from(member.getStatus()) : null;
             if (status != null) {
                 vh.getStatus().setImageResource(status.getDrawableId());
             }
@@ -153,12 +158,13 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     }
 
     private final View.OnClickListener mOnClickListener = v -> {
-        if (getData() == null) {
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
             return;
         }
         final int position = (Integer) v.getTag();
 
-        final Channel team = getData().get(position);
+        final Channel team = data.get(position);
 
         if (mClickListener != null) {
             mClickListener.onItemClicked(team);

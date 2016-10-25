@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -53,16 +54,16 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         final ChatListScreenView view = getViewState();
-        mSubscription.add(
-                // TODO: Remove v3.3 API support
-                mTeamStorage.getChosenTeam()
-                        .doOnNext(team -> view.setToolbarTitle(team.getDisplayName()))
-                        .map(Team::getId)
-                        .flatMap(this::fetchStartup)
-                        .doOnNext(this::fetchLastMessages)
-                        .doOnNext(this::fetchUserStatus)
-                        .doOnError(ErrorHandler::handleError)
-                        .subscribe());
+
+        final Subscription subscription = mTeamStorage.getChosenTeam()
+                .doOnNext(team -> view.setToolbarTitle(team.getDisplayName()))
+                .map(Team::getId)
+                .flatMap(this::fetchStartup)
+                .doOnNext(this::fetchLastMessages)
+                .doOnNext(this::fetchUserStatus)
+                .subscribe(v -> {
+                }, ErrorHandler::handleError);
+        mSubscription.add(subscription);
     }
 
     private Observable<StartupFetchResult> fetchStartup(String teamId) {
@@ -92,16 +93,16 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     private void fetchUserStatus(StartupFetchResult response) {
         final Set<String> keys = response.getDirectProfiles().keySet();
 
-        mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
-                .onErrorResumeNext(throwable -> {
-                    return mApi.getUserStatuses();
-                })
+        // TODO: Remove v3.3 API support
+        mApi.getUserStatusesCompatible(keys.toArray(new String[]{}))
+                .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(userStatusResponse -> {
                     mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse);
                 })
-                .subscribe();
+                .subscribe(v -> {
+                }, ErrorHandler::handleError);
     }
 
     private Channel transform(Channel channel, PostResponse postResponse) {
@@ -116,7 +117,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,
-            Map<String, User> contacts, String teamId) {
+                                         Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 
@@ -128,6 +129,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     public void logout() {
         mPrefs.setKeyAuthToken(null);
+        App.releaseUserComponent();
         getViewState().logout();
     }
 }

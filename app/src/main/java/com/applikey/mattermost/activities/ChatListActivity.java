@@ -19,9 +19,9 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
-import com.applikey.mattermost.fragments.BaseChatListFragment.TabBehavior;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
+import com.applikey.mattermost.views.TabBehavior;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -203,7 +203,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
             return unSelectedTabColor;
         }
     }
-
 
     private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
 

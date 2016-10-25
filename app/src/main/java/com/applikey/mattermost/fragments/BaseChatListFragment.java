@@ -3,7 +3,6 @@ package com.applikey.mattermost.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.ChatListAdapter;
@@ -22,6 +22,7 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.utils.kissUtils.utils.BundleUtil;
+import com.applikey.mattermost.views.TabBehavior;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import org.greenrobot.eventbus.EventBus;
@@ -53,7 +54,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     EventBus mEventBus;
 
     @Inject
-    @Named("currentUserId")
+    @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
     @Override
@@ -64,7 +65,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     @Nullable
@@ -118,53 +119,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
             }
         }
         mEventBus.post(new TabIndicatorRequested(mTabBehavior, false));
-    }
-
-    public enum TabBehavior {
-        UNDEFINED {
-            @Override
-            public int getIcon() {
-                return R.drawable.no_resource;
-            }
-        },
-        UNREAD {
-            @Override
-            public int getIcon() {
-                return R.drawable.ic_unread;
-            }
-        },
-        FAVOURITES {
-            @Override
-            public int getIcon() {
-                return R.drawable.ic_favourites_tab;
-            }
-        },
-        CHANNELS {
-            @Override
-            public int getIcon() {
-                return R.drawable.ic_public_channels_tab;
-            }
-        },
-        GROUPS {
-            @Override
-            public int getIcon() {
-                return R.drawable.ic_private_channels_tab;
-            }
-        },
-        DIRECT {
-            @Override
-            public int getIcon() {
-                return R.drawable.ic_direct_tab;
-            }
-        };
-
-        @DrawableRes
-        public abstract int getIcon();
-
-        public static TabBehavior getItemBehavior(int pageIndex) {
-            // Offset should be introduced
-            return TabBehavior.values()[pageIndex + 1];
-        }
     }
 
     private final ChatListAdapter.ClickListener mChatClickListener = channel -> {

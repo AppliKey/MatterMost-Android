@@ -18,7 +18,7 @@ public class DirectChatListPresenter extends BaseChatListPresenter {
 
     public DirectChatListPresenter() {
         super();
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     @Override

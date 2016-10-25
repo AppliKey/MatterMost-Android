@@ -1,5 +1,6 @@
 package com.applikey.mattermost.storage.db;
 
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
@@ -14,8 +15,6 @@ import io.realm.RealmResults;
 import rx.Observable;
 
 public class ChannelStorage {
-
-    private static final String TAG = "ChannelStorage";
 
     private final Db mDb;
     private final Prefs mPrefs;
@@ -64,7 +63,12 @@ public class ChannelStorage {
 
     public void updateChannelData(Channel channel) {
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            final Post realmPost = realm.copyToRealmOrUpdate(channel.getLastPost());
+            final Post lastPost = channel.getLastPost();
+            if (lastPost == null) {
+                return false;
+            }
+
+            final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
             realmChannel.setLastPostAuthorDisplayName(channel.getLastPostAuthorDisplayName());
@@ -88,8 +92,8 @@ public class ChannelStorage {
         final Map<String, Membership> membership = response.getMembershipEntries();
 
         final List<Channel> channels = response.getChannels();
-        for (Channel channel : channels) {
 
+        Stream.of(channels).forEach(channel -> {
             if (channel.getType().equals(directChannelType)) {
                 updateDirectChannelData(channel, userProfiles, currentUserId);
             }
@@ -98,7 +102,7 @@ public class ChannelStorage {
             if (membershipData != null) {
                 channel.setLastViewedAt(membershipData.getLastViewedAt());
             }
-        }
+        });
 
         mDb.saveTransactional(restoreChannels(channels));
     }
@@ -113,14 +117,14 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 
         final User user = contacts.get(otherUserId);
         if (user != null) {
-            channel.setMember(user);
+            channel.setDirectCollocutor(user);
             channel.setDisplayName(User.getDisplayableName(user));
         }
     }

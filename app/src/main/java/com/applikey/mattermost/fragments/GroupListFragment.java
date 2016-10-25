@@ -7,6 +7,8 @@ import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import static com.applikey.mattermost.views.TabBehavior.GROUPS;
+
 public class GroupListFragment extends BaseChatListFragment {
 
     @InjectPresenter
@@ -16,7 +18,7 @@ public class GroupListFragment extends BaseChatListFragment {
         final BaseChatListFragment fragment = new GroupListFragment();
 
         final Bundle bundle = new Bundle();
-        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, TabBehavior.GROUPS.ordinal());
+        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, GROUPS.ordinal());
 
         fragment.setArguments(bundle);
 

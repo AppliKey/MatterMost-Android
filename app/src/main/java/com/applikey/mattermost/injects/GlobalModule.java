@@ -1,5 +1,6 @@
 package com.applikey.mattermost.injects;
 
+import android.content.Context;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -22,8 +23,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Named;
-
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
@@ -37,10 +36,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 @Module
 public class GlobalModule {
 
-    private final App mApp;
+    private final Context mApplicationContext;
 
     public GlobalModule(App app) {
-        mApp = app;
+        mApplicationContext = app;
     }
 
     @Provides
@@ -52,7 +51,7 @@ public class GlobalModule {
     @Provides
     @PerApp
     Realm provideRealm() {
-        final RealmConfiguration config = new RealmConfiguration.Builder(mApp)
+        final RealmConfiguration config = new RealmConfiguration.Builder(mApplicationContext)
                 .name(Constants.REALM_NAME)
                 .schemaVersion(0)
                 .deleteRealmIfMigrationNeeded()
@@ -64,13 +63,13 @@ public class GlobalModule {
     @Provides
     @PerApp
     ImageLoader provideImageLoader(OkHttpClient client) {
-        return new PicassoImageLoader(mApp, client);
+        return new PicassoImageLoader(mApplicationContext, client);
     }
 
     @Provides
     @PerApp
     Prefs providePrefs() {
-        return new Prefs(mApp);
+        return new Prefs(mApplicationContext);
     }
 
     @Provides
@@ -101,7 +100,7 @@ public class GlobalModule {
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okClientBuilder.addInterceptor(httpLoggingInterceptor);
-        final File baseDir = mApp.getCacheDir();
+        final File baseDir = mApplicationContext.getCacheDir();
         if (baseDir != null) {
             final File cacheDir = new File(baseDir, "HttpResponseCache");
             okClientBuilder.cache(new Cache(cacheDir, 1024 * 1024 * 50));
@@ -152,11 +151,5 @@ public class GlobalModule {
     @PerApp
     PostStorage providePostStorage(Db db) {
         return new PostStorage(db);
-    }
-
-    @Provides
-    @Named("currentUserId")
-    String provideCurrentUserId(Prefs mPrefs) {
-        return mPrefs.getCurrentUserId();
     }
 }

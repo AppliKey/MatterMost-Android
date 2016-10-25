@@ -25,7 +25,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     ChannelStorage mChannelStorage;
 
     /* package */ BaseChatListPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     @Override
@@ -33,13 +33,13 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         super.onFirstViewAttach();
         final ChatListView view = getViewState();
         if (view == null) {
-            return;
+            throw new NullPointerException("Attached view is null");
         }
         mSubscription.add(getInitData()
                 .distinctUntilChanged()
                 .subscribe(view::displayInitialData));
     }
 
-    abstract protected Observable<RealmResults<Channel>> getInitData();
+    protected abstract Observable<RealmResults<Channel>> getInitData();
 }
 
