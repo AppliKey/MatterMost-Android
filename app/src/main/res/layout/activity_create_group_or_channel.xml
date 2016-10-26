@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:contentInsetStartWithNavigation="60dp"
-            app:elevation="2dp"
             app:navigationIcon="@drawable/ic_back" />
     </android.support.design.widget.AppBarLayout>
 
@@ -32,44 +31,49 @@
             android:orientation="vertical"
             android:paddingLeft="@dimen/dialog_create_channel_content_padding"
             android:paddingRight="@dimen/dialog_create_channel_content_padding"
-            android:paddingTop="40dp">
+            android:paddingTop="@dimen/dialog_create_channel_top_padding">
 
             <com.applikey.mattermost.views.ChannelTypeView
                 android:id="@+id/channel_type_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/create_channel_type_bottom_margin"
                 android:gravity="center" />
 
-            <TextView
+           <TextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="13dp"
                 android:text="@string/create_channel_hint_name" />
 
-            <EditText
-                android:id="@+id/et_channel_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:singleLine="true"
-                tools:text="leads_chat" />
+
+                <EditText
+                    android:id="@+id/et_channel_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="@string/create_channel_hint_name"
+                    android:maxLines="1"
+                    android:paddingBottom="@dimen/edit_text_bottom_padding"
+                    android:singleLine="true"
+                    tools:text="leads_chat" />
 
 
             <TextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
-                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/create_channel_label_top_margin"
                 android:text="@string/channel_description_channel_hint" />
 
             <EditText
                 android:id="@+id/et_channel_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/channel_description_channel_hint"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
+                android:paddingBottom="@dimen/edit_text_bottom_padding"
                 android:singleLine="true"
                 tools:text="For a discussion of important issues" />
 
@@ -77,15 +81,15 @@
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/create_channel_label_top_margin"
                 android:text="Add members" />
 
             <com.applikey.mattermost.views.AddedPeopleLayout
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:id="@+id/added_people_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/added_people_margin"
+                android:layout_marginTop="@dimen/added_people_margin">
 
             </com.applikey.mattermost.views.AddedPeopleLayout>
             <!--TODO add user list-->
@@ -96,7 +100,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:drawableRight="@drawable/ic_search_2"
-                android:hint="@string/search_people_for_channel_hint" />
+                android:hint="@string/search_people_for_channel_hint"
+                android:paddingBottom="@dimen/edit_text_bottom_padding" />
 
 
             <com.applikey.mattermost.views.SafeButton
@@ -123,7 +128,6 @@
                     android:layout_height="wrap_content">
 
                 </android.support.v7.widget.RecyclerView>
-
 
             </FrameLayout>
 

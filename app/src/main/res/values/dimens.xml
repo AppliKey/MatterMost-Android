@@ -51,4 +51,8 @@
     <dimen name="dialog_add_people_to_new_channel_fab_margin">16dp</dimen>
     <dimen name="switch_channel_type_icon_margin">10dp</dimen>
     <dimen name="channel_type_margin">40dp</dimen>
+    <dimen name="dialog_create_channel_top_padding">40dp</dimen>
+    <dimen name="create_channel_label_top_margin">16dp</dimen>
+    <dimen name="create_channel_type_bottom_margin">40dp</dimen>
+    <dimen name="added_people_margin">8dp</dimen>
 </resources>

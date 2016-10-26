@@ -2,11 +2,11 @@ package com.applikey.mattermost.views;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.applikey.mattermost.R;
 
@@ -17,14 +17,14 @@ import butterknife.OnClick;
 
 public class ChannelTypeView extends LinearLayout {
 
-    @Bind(R.id.switch_channel_type)
-    SwitchCompat mSwitchChannelType;
-
     @Bind(R.id.tvTypePublic)
     TextView mTvTypePublic;
 
     @Bind(R.id.tvTypePrivate)
     TextView mTvTypePrivate;
+
+    @Bind(R.id.toggle_channel_type)
+    ToggleButton mToggleButton;
 
     private CompoundButton.OnCheckedChangeListener mExternalCheckedChangeListener;
 
@@ -51,16 +51,17 @@ public class ChannelTypeView extends LinearLayout {
         super(context, attributeSet);
         inflate(context, R.layout.channel_type_view, this);
         ButterKnife.bind(this);
-        mSwitchChannelType.setOnCheckedChangeListener(mOnCheckedListener);
-        mSwitchChannelType.setChecked(true);
+        mToggleButton.setOnCheckedChangeListener(mOnCheckedListener);
+        mToggleButton.setChecked(true);
     }
 
+
     public boolean isChecked() {
-        return mSwitchChannelType.isChecked();
+        return mToggleButton.isChecked();
     }
 
     public void setChecked(boolean checked) {
-        mSwitchChannelType.setChecked(checked);
+        mToggleButton.setChecked(checked);
     }
 
     public void setOnCheckedChangedListener(CompoundButton.OnCheckedChangeListener checkedChangedListener) {
@@ -69,12 +70,12 @@ public class ChannelTypeView extends LinearLayout {
 
     @OnClick(R.id.tvTypePublic)
     public void choosePublicType() {
-        mSwitchChannelType.setChecked(false);
+        mToggleButton.setChecked(false);
     }
 
     @OnClick(R.id.tvTypePrivate)
     public void choosePrivateType() {
-        mSwitchChannelType.setChecked(true);
+        mToggleButton.setChecked(true);
     }
 
 }
