@@ -160,4 +160,10 @@ public class ApiDelegate implements Api {
     public Observable<Membership> addUserToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId, @Body RequestUserId userId) {
         return getRealApi().addUserToChannel(teamId, channelId, userId);
     }
+
+    @Override
+    public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+            @Path("channelId") String channelId) {
+        return getRealApi().updateLastViewedAt(teamId, channelId);
+    }
 }

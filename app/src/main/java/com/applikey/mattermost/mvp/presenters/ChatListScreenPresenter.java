@@ -84,7 +84,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribeOn(Schedulers.io())
                 .filter(channel -> channel.getLastPost() != null)
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(channel -> mUserStorage.getDirectProfiles(channel.getLastPost().getUserId())
+                .flatMap(channel -> mUserStorage.getDirectProfile(channel.getLastPost().getUserId())
                         .distinctUntilChanged(), this::transform)
                 .doOnNext(channel -> mChannelStorage.updateChannelData(channel))
                 .subscribe();
@@ -112,7 +112,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private Channel transform(Channel channel, User user) {
-        channel.setLastPostAuthorDisplayName(user != null ? User.getDisplayableName(user) : null);
+        channel.setLastPostAuthorDisplayName(User.getDisplayableName(user));
         return channel;
     }
 

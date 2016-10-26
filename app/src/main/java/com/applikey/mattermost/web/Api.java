@@ -106,4 +106,8 @@ public interface Api {
 
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/add")
     Observable<Membership> addUserToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId, @Body RequestUserId userId);
+
+    @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
+    Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+            @Path("channelId") String channelId);
 }

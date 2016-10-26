@@ -22,7 +22,7 @@ public class UnreadChatListPresenter extends BaseChatListPresenter {
     }
 
     @Override
-    protected Observable<RealmResults<Channel>> getInitData() {
+    public Observable<RealmResults<Channel>> getInitData() {
         return mChannelStorage.listUnread();
     }
 }

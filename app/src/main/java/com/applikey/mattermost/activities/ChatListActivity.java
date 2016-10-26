@@ -12,6 +12,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
@@ -216,6 +217,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         void handleEvent(TabIndicatorRequested event) {
             synchronized (mutex) {
                 final TabBehavior tab = event.getBehavior();
+                Log.d("cc", "handleEvent: " + event.getBehavior());
                 mIndicatorVisibilities.put(tab, event.isVisible());
                 updateVisibility(tab, event.isVisible());
             }
