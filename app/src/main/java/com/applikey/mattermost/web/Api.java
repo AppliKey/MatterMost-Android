@@ -55,30 +55,42 @@ public interface Api {
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
     Observable<Void> deletePost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Path("postId") String postId);
+            @Path("channelId") String channelId,
+            @Path("postId") String postId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/update")
     Observable<Post> updatePost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Body Post post);
+            @Path("channelId") String channelId,
+            @Body Post post);
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")
     Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
 
-    @GET("/api/v3/general/ping")
+    //This url is not containing "/" symbol at the start
+    //In this case it build full url in the next way :
+    //"www.mattermost.com/v3/" + "applikeyteam" = "www.mattermost.com/v3/applikeyteam"
+    //In another case, if we add "/" symbol at the start,
+    //it works in the some another way:
+    //"www.mattermost.com/v3/" + "applikeyteam" = "www.mattermost.com/applikeyteam"
+    //(It cuts all subdirectories from base url)
+    //It resolve validation problem(in the case if user input (<server_url> + <team>), instead (<server_url>))
+    @GET("api/v3/general/ping")
     Observable<PingResponse> ping();
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
     Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
-                                          @Path("channelId") String channelId,
-                                          @Path("offset") int offset,
-                                          @Path("limit") int limit);
+            @Path("channelId") String channelId,
+            @Path("offset") int offset,
+            @Path("limit") int limit);
+
+    @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/0/1")
+    Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
+            @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
-                                          @Path("channelId") String channelId);
+                              @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")
     Observable<Post> createPost(@Path("teamId") String teamId,

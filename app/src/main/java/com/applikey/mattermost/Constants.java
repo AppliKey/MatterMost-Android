@@ -7,4 +7,9 @@ public class Constants {
     public static final String PACKAGE_NAME = "com.applikey.mattermost";
 
     public static final int TIMEOUT_DURATION_SEC = 20;
+
+    // TODO Use server as realm identifier
+    public static final String REALM_NAME = "Test1.realm";
+
+    public static final String CURRENT_USER_QUALIFIER = "currentUserId";
 }

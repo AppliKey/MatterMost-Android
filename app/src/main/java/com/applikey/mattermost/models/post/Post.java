@@ -91,4 +91,38 @@ public class Post extends RealmObject {
 
     public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
             -> o2.getPriority() - o1.getPriority();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Post post = (Post) o;
+
+        if (getCreatedAt() != post.getCreatedAt())
+            return false;
+        if (getPriority() != post.getPriority())
+            return false;
+        if (!getId().equals(post.getId()))
+            return false;
+        if (!getChannelId().equals(post.getChannelId()))
+            return false;
+        if (!getUserId().equals(post.getUserId()))
+            return false;
+        return getMessage().equals(post.getMessage());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getChannelId().hashCode();
+        result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
+        result = 31 * result + getUserId().hashCode();
+        result = 31 * result + getMessage().hashCode();
+        result = 31 * result + getPriority();
+        return result;
+    }
 }

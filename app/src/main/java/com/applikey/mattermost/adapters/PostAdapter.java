@@ -54,24 +54,23 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Post post = getItem(position);
-        final User user = post.getUser();
+        final Post post = dto.getPost();
 
-        boolean showDate = position == 0 ||
-                !oneDatePosts(post, getItem(position - 1));
+        final int nextPostPosition = position + 1;
+        final int previousPostPosition = position - 1;
+        final boolean isLastPost = position == mData.size() - 1;
+        final boolean isFirstPost = position == 0;
+        final Post previousPost = mData.get(previousPostPosition).getPost();
+        final Post nextPost = mData.get(nextPostPosition).getPost();
 
-        boolean showAuthor = position == 0 ||
-                !hasSameAuthor(getItem(position - 1), post) ||
-                showDate;
-
-        boolean showTime = position == getItemCount() - 1 ||
-                !oneTimePosts(post, getItem(position + 1)) ||
-                !hasSameAuthor(post, getItem(position + 1));
+        final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
+        final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
+        final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
 
         if (isMy(post)) {
-            holder.bindOwn(post, user, showAuthor, showTime, showDate, mOnLongClickListener);
+            holder.bindOwnPost(dto, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOther(post, user, showAuthor, showTime, showDate, mImageLoader);
+            holder.bindOtherPost(dto, showAuthor, showTime, showDate, mImageLoader);
         }
     }
 
@@ -134,9 +133,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             });
         }
 
-        void bindOther(Post post, User user, boolean showAuthor, boolean showTime,
-                       boolean showDate, ImageLoader imageLoader) {
-            bind(post, user, showAuthor, showTime, showDate);
+        void bindOtherPost(PostDto dto, boolean showAuthor, boolean showTime,
+                           boolean showDate, ImageLoader imageLoader) {
+            bind(dto, showAuthor, showTime, showDate);
 
             final String previewImagePath = user.getProfileImage();
             if (mIvPreviewImageLayout != null && mIvPreviewImage != null
@@ -153,22 +152,20 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         return post.getUserId().equals(mCurrentUserId);
     }
 
-    private boolean hasSameAuthor(Post post, Post nextPost) {
+    private boolean isPostsSameAuthor(Post post, Post nextPost) {
         return post.getUserId().equals(nextPost.getUserId());
     }
 
-    private boolean oneTimePosts(Post post, Post nextPost) {
+    private boolean isPostsSameSecond(Post post, Post nextPost) {
         return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 
-    private boolean oneDatePosts(Post post, Post nextPost) {
+    private boolean isPostsSameDate(Post post, Post nextPost) {
         return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 
     @FunctionalInterface
     public interface OnLongClickListener {
-
         void onLongClick(Post post);
-
     }
 }
