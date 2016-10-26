@@ -15,10 +15,6 @@ public class PostStorage {
         mDb = db;
     }
 
-    public void saveAllWithRemoval(List<Post> posts) {
-        mDb.saveTransactionalWithRemoval(posts);
-    }
-
     public void delete(Post post) {
         mDb.saveTransactionalSync(post);
     }

@@ -71,8 +71,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .first()
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
-                .doOnError(ErrorHandler::handleError)
-                .subscribe());
+                .toCompletable()
+                .subscribe(ErrorHandler::handleError, ()->{}));
 
         mChannelStorage.updateLastViewedAt(channelId);
     }
@@ -92,11 +92,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         posts -> {
-                            if (mCurrentPage == 0) {
-                                mPostStorage.saveAllWithRemoval(posts);
-                            } else {
-                                mPostStorage.saveAll(posts);
-                            }
+                            mPostStorage.saveAll(posts);
                             getViewState().showProgress(false);
                             if (!posts.isEmpty()) {
                                 mCurrentPage++;

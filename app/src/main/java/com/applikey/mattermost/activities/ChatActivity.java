@@ -75,7 +75,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
-    private boolean mIsNeedToScrollToStart = true;
 
     private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override

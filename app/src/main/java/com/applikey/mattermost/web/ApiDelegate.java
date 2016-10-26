@@ -153,8 +153,9 @@ public class ApiDelegate implements Api {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
-    @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")
-    Observable<Post> createPost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Body PendingPost request);
+    @Override
+    public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+                                                           @Path("channelId") String channelId) {
+        return getRealApi().updateLastViewedAt(teamId, channelId);
+    }
 }

@@ -64,24 +64,24 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             final boolean isLastPost = position == getData().size() - 1;
             final boolean isFirstPost = position == 0;
 
-        Post previousPost = null;
-        Post nextPost = null;
+            Post previousPost = null;
+            Post nextPost = null;
 
-        if (!isLastPost) {
-            final int nextPostPosition = position + 1;
-            final PostDto nextPostDto = mData.get(nextPostPosition);
-            nextPost = nextPostDto != null ? nextPostDto.getPost() : null;
-        }
+            if (!isLastPost) {
+                final int nextPostPosition = position + 1;
+                final Post nextPostTemp = getData().get(nextPostPosition);
+                nextPost = nextPostTemp != null ? nextPostTemp : null;
+            }
 
-        if (!isFirstPost) {
-            final int previousPostPosition = position - 1;
-            final PostDto previousPostDto = mData.get(previousPostPosition);
-            previousPost = previousPostDto != null ? previousPostDto.getPost() : null;
-        }
+            if (!isFirstPost) {
+                final int previousPostPosition = position - 1;
+                final Post previousPostTemp = getData().get(previousPostPosition);
+                previousPost = previousPostTemp != null ? previousPostTemp : null;
+            }
 
-        final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
-        final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
-        final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
+            final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
+            final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
+            final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
 
             if (isMy(post)) {
                 holder.bindOwn(post, user, showAuthor, showTime, showDate, mOnLongClickListener);
