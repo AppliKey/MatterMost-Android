@@ -104,20 +104,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         adapter.setOnClickListener(mChatClickListener);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
-
-        //displayUnreadIndicator(channels);
     }
-
-    // FIXME: 24.10.16 Not update when all chats are viewed
-/*    private void displayUnreadIndicator(List<Channel> channels) {
-        for (Channel channel : channels) {
-            if (channel.hasUnreadMessages()) {
-                mEventBus.post(new TabIndicatorRequested(mTabBehavior, true));
-                return;
-            }
-        }
-        mEventBus.post(new TabIndicatorRequested(mTabBehavior, false));
-    }*/
 
     private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
         final Activity activity = getActivity();
