@@ -59,7 +59,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             final Post post = getData().get(position);
 
             Realm realm = Realm.getDefaultInstance();
-            final User user = realm.where(User.class).equalTo("id", post.getUserId()).findFirst();
+            final User user = realm.where(User.class).equalTo("id", post.getUserId()).findFirst(); //TODO when scroll issue fixed, replace to presenter
 
             final boolean isLastPost = position == getData().size() - 1;
             final boolean isFirstPost = position == 0;
