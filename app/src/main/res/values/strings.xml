@@ -51,10 +51,10 @@
     <string name="create_channel">Create Channel</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
-    <string name="create_channel_hint_name">Name</string>
+    <string name="create_channel_title_name">Name</string>
     <string name="private_channel">Private</string>
     <string name="public_channel">Public</string>
-    <string name="channel_description_channel_hint">Purpose</string>
+    <string name="create_channel_description_title">Purpose</string>
     <string name="search_people_for_channel_hint">Search</string>
     <string name="added_people_count">+%1$d</string>
     <string name="button_add_all">Add all</string>
@@ -64,6 +64,8 @@
     <string name="error_channel_name_empty">Channel name cannot be empty</string>
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
+    <string name="create_chat_hint_name">Example: Project Name, Bugs, Sales</string>
+    <string name="create_channel_description_hint">What are you going to discuss\n in this group</string>
 
     <array name="post_own_opinion_array">
         <item>Delete</item>

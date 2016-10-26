@@ -44,7 +44,7 @@
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/create_channel_hint_name" />
+                android:text="@string/create_channel_title_name" />
 
 
                 <EditText
@@ -52,11 +52,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:hint="@string/create_channel_hint_name"
+                    android:hint="@string/create_chat_hint_name"
                     android:maxLines="1"
                     android:paddingBottom="@dimen/edit_text_bottom_padding"
-                    android:singleLine="true"
-                    tools:text="leads_chat" />
+                    android:singleLine="true" />
 
 
             <TextView
@@ -64,18 +63,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
-                android:text="@string/channel_description_channel_hint" />
+                android:text="@string/create_channel_description_title" />
 
             <EditText
                 android:id="@+id/et_channel_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/channel_description_channel_hint"
+                android:hint="@string/create_channel_description_hint"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:paddingBottom="@dimen/edit_text_bottom_padding"
-                android:singleLine="true"
-                tools:text="For a discussion of important issues" />
+                android:singleLine="true" />
 
             <TextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
