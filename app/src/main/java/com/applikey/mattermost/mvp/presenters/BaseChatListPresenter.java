@@ -36,7 +36,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
             throw new NullPointerException("Attached view is null");
         }
         mSubscription.add(getInitData()
-                .distinctUntilChanged()
                 .subscribe(view::displayInitialData));
     }
 
