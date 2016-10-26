@@ -1,11 +1,10 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import com.applikey.mattermost.mvp.views.ChatListView;
-import com.applikey.mattermost.web.ErrorHandler;
+import com.applikey.mattermost.models.channel.Channel;
 import com.arellomobile.mvp.InjectViewState;
 
+import io.realm.RealmResults;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 
 @InjectViewState
 public class ChannelListPresenter extends BaseChatListPresenter {
@@ -15,11 +14,7 @@ public class ChannelListPresenter extends BaseChatListPresenter {
     }
 
     @Override
-    public void getInitialData() {
-        final ChatListView view = getViewState();
-        mSubscription.add(
-                mChannelStorage.listOpen()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayInitialData, ErrorHandler::handleError));
+    protected Observable<RealmResults<Channel>> getInitData() {
+        return mChannelStorage.listOpen();
     }
 }

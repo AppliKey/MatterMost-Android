@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
+import com.applikey.mattermost.views.TabBehavior;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 public class ChannelListFragment extends BaseChatListFragment {

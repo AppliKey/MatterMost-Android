@@ -1,5 +1,6 @@
 package com.applikey.mattermost.injects;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import com.applikey.mattermost.App;
@@ -23,10 +24,10 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Named;
-
 import dagger.Module;
 import dagger.Provides;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import okhttp3.Cache;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -36,10 +37,10 @@ import okhttp3.logging.HttpLoggingInterceptor;
 @Module
 public class GlobalModule {
 
-    private App mApp;
+    private final Context mApplicationContext;
 
     public GlobalModule(App app) {
-        mApp = app;
+        mApplicationContext = app;
     }
 
     @Provides
@@ -50,14 +51,26 @@ public class GlobalModule {
 
     @Provides
     @PerApp
+    Realm provideRealm() {
+        final RealmConfiguration config = new RealmConfiguration.Builder(mApplicationContext)
+                .name(Constants.REALM_NAME)
+                .schemaVersion(0)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
+        return Realm.getInstance(config);
+    }
+
+    @Provides
+    @PerApp
     ImageLoader provideImageLoader(OkHttpClient client) {
-        return new PicassoImageLoader(mApp, client);
+        return new PicassoImageLoader(mApplicationContext, client);
     }
 
     @Provides
     @PerApp
     Prefs providePrefs() {
-        return new Prefs(mApp);
+        return new Prefs(mApplicationContext);
     }
 
     @Provides
@@ -75,6 +88,7 @@ public class GlobalModule {
     @PerApp
     OkHttpClient provideOkHttpClient(BearerTokenFactory tokenFactory) {
         final OkHttpClient.Builder okClientBuilder = new OkHttpClient.Builder();
+        okClientBuilder.addNetworkInterceptor(new StethoInterceptor());
         okClientBuilder.addInterceptor(chain -> {
             Request request = chain.request();
             final String authToken = tokenFactory.getBearerTokenString();
@@ -87,8 +101,7 @@ public class GlobalModule {
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okClientBuilder.addInterceptor(httpLoggingInterceptor);
-        okClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-        final File baseDir = mApp.getCacheDir();
+        final File baseDir = mApplicationContext.getCacheDir();
         if (baseDir != null) {
             final File cacheDir = new File(baseDir, "HttpResponseCache");
             okClientBuilder.cache(new Cache(cacheDir, 1024 * 1024 * 50));
@@ -107,11 +120,15 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    Db provideDb() {
-        return new Db(mApp);
+    Db provideDb(Realm realm) {
+        return new Db(realm);
     }
 
-
+    @Provides
+    @PerApp
+    TeamStorage provideTeamStorage(Db db) {
+        return new TeamStorage(db);
+    }
 
     @Provides
     @PerApp
@@ -135,12 +152,6 @@ public class GlobalModule {
     @PerApp
     PostStorage providePostStorage(Db db) {
         return new PostStorage(db);
-    }
-
-    @Provides
-    @Named("currentUserId")
-    String provideCurrentUserId(Prefs mPrefs) {
-        return mPrefs.getCurrentUserId();
     }
 
     @Provides

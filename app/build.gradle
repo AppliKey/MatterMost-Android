@@ -128,6 +128,7 @@ dependencies {
     // views
     compile 'com.tasomaniac:delayed-progress:0.3'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
+    compile 'io.realm:android-adapters:1.3.0'
 
     // mvp
     compile 'com.arello-mobile:moxy:0.5.4'
