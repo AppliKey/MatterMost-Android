@@ -75,6 +75,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         mAddedPeopleLayout.setImageLoader(mImageLoader);
         mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
         mRvPeoples.setLayoutManager(new LinearLayoutManager(this));
+        mRvPeoples.setNestedScrollingEnabled(false);
         mRvPeoples.setAdapter(mAdapter);
         setTitle(getString(R.string.new_private_group));
         mChannelTypeView.setOnCheckedChangedListener((view, checked) -> {

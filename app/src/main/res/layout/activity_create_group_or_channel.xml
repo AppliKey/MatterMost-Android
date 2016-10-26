@@ -21,7 +21,7 @@
     </android.support.design.widget.AppBarLayout>
 
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -49,7 +49,6 @@
 
             <EditText
                 android:id="@+id/et_channel_name"
-                style="@style/EditTextPrimary.PushRight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -60,13 +59,13 @@
 
             <TextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/channel_description_channel_hint" />
 
             <EditText
                 android:id="@+id/et_channel_description"
-                style="@style/EditTextPrimary.PushRight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -78,9 +77,12 @@
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:text="Add members" />
 
             <com.applikey.mattermost.views.AddedPeopleLayout
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:id="@+id/added_people_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -113,12 +115,12 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_peoples"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                 </android.support.v7.widget.RecyclerView>
 
@@ -128,6 +130,6 @@
         </LinearLayout>
 
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

@@ -30,4 +30,7 @@
     <color name="status_online">#2bce7c</color>
     <color name="status_idle">#f6c41d</color>
     <color name="status_offline">#c9cdd4</color>
+
+    <color name="textlink_enabled">#242933</color>
+    <color name="textlink_disabled">#919499</color>
 </resources>
