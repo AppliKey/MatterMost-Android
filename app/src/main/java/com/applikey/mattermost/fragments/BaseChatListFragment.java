@@ -27,8 +27,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -107,11 +105,11 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
 
-        displayUnreadIndicator(channels);
+        //displayUnreadIndicator(channels);
     }
 
     // FIXME: 24.10.16 Not update when all chats are viewed
-    private void displayUnreadIndicator(List<Channel> channels) {
+/*    private void displayUnreadIndicator(List<Channel> channels) {
         for (Channel channel : channels) {
             if (channel.hasUnreadMessages()) {
                 mEventBus.post(new TabIndicatorRequested(mTabBehavior, true));
@@ -119,7 +117,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
             }
         }
         mEventBus.post(new TabIndicatorRequested(mTabBehavior, false));
-    }
+    }*/
 
     private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
         final Activity activity = getActivity();
@@ -130,4 +128,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     protected abstract ChatListPresenter getPresenter();
 
     protected abstract int getEmptyStateTextId();
+
+    @Override
+    public void showUnreadIndicator(boolean showIndicator) {
+        mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
+    }
 }

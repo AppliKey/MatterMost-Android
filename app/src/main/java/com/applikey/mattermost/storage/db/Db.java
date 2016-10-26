@@ -139,8 +139,7 @@ public class Db {
                 .beginGroup()
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
-                .filter(o -> o.isLoaded() && o.isValid())
-                .skip(1);//skip first empty result
+                .filter(o -> o.isLoaded() && o.isValid());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
@@ -152,8 +151,7 @@ public class Db {
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
-                .filter(o -> o.isLoaded() && o.isValid())
-                .skip(1);//skip first empty result
+                .filter(o -> o.isLoaded() && o.isValid());
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,

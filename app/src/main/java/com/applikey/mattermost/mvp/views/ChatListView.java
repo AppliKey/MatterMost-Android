@@ -11,4 +11,5 @@ import io.realm.OrderedRealmCollection;
 public interface ChatListView extends MvpView {
 
     void displayInitialData(OrderedRealmCollection<Channel> channels);
+    void showUnreadIndicator(boolean showIndicator);
 }
