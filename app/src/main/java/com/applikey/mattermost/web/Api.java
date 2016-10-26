@@ -90,4 +90,8 @@ public interface Api {
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
             @Path("channelId") String channelId);
+
+    @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
+    Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+            @Path("channelId") String channelId);
 }

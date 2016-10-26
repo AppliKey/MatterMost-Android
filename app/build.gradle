@@ -151,4 +151,5 @@ dependencies {
     }
 
     compile 'com.annimon:stream:1.1.2'
+    compile 'nl.littlerobots.rxlint:rxlint:1.0'
 }

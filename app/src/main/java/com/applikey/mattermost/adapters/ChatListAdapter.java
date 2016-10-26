@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
@@ -33,8 +34,10 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     private Context mContext;
 
     public ChatListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Channel> data,
-            ImageLoader imageLoader, String currentUserId) {
+                           ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
+
+        mContext = context;
 
         mImageLoader = imageLoader;
         mCurrentUserId = currentUserId;
@@ -104,8 +107,11 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         final User member = element.getDirectCollocutor();
         final String previewImagePath = member != null ?
                 member.getProfileImage() : null;
+        final ImageView previewImage = viewHolder.getPreviewImage();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
+            mImageLoader.displayCircularImage(previewImagePath, previewImage);
+        } else {
+            previewImage.setImageResource(R.drawable.no_resource);
         }
     }
 
@@ -135,10 +141,13 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     }
 
     private void setUnreadStatus(ViewHolder vh, Channel data) {
-        if (data.isUnread()) {
+        if (data.hasUnreadMessages()) {
             vh.getNotificationIcon().setVisibility(View.VISIBLE);
+            vh.getContainer().setBackgroundResource(R.color.unread_background);
         } else {
             vh.getNotificationIcon().setVisibility(View.GONE);
+            vh.getContainer().setBackgroundResource(android.R.color.white);
+
         }
     }
 
@@ -194,6 +203,9 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         @Bind(R.id.tv_message_preview)
         TextView mMessagePreview;
 
+        @Bind(R.id.container)
+        LinearLayout mContainer;
+
         ViewHolder(View itemView) {
             super(itemView);
 
@@ -236,6 +248,10 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
         ImageView getNotificationIcon() {
             return mNotificationIcon;
+        }
+
+        LinearLayout getContainer() {
+            return mContainer;
         }
     }
 }
