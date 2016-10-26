@@ -8,6 +8,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.PostStorage;
+import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
@@ -157,6 +158,6 @@ public class GlobalModule {
     @Provides
     @PerApp
     Resources provideResources() {
-        return mApp.getResources();
+        return mApplicationContext.getResources();
     }
 }

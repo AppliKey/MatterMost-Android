@@ -94,7 +94,6 @@ public interface Api {
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
             @Path("channelId") String channelId);
-                                          @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{team_id}/channels/create")
     Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
