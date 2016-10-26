@@ -27,8 +27,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -106,17 +104,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         adapter.setOnClickListener(mChatClickListener);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
-
-        displayUnreadIndicator(channels);
-    }
-
-    private void displayUnreadIndicator(List<Channel> channels) {
-        for (Channel channel : channels) {
-            if (channel.isUnread()) {
-                mEventBus.post(new TabIndicatorRequested(mTabBehavior, true));
-                break;
-            }
-        }
     }
 
     private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
@@ -128,4 +115,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     protected abstract ChatListPresenter getPresenter();
 
     protected abstract int getEmptyStateTextId();
+
+    @Override
+    public void showUnreadIndicator(boolean showIndicator) {
+        mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
+    }
 }

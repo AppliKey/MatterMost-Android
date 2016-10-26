@@ -64,15 +64,24 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             final boolean isLastPost = position == getData().size() - 1;
             final boolean isFirstPost = position == 0;
 
+        Post previousPost = null;
+        Post nextPost = null;
+
+        if (!isLastPost) {
             final int nextPostPosition = position + 1;
+            final PostDto nextPostDto = mData.get(nextPostPosition);
+            nextPost = nextPostDto != null ? nextPostDto.getPost() : null;
+        }
+
+        if (!isFirstPost) {
             final int previousPostPosition = position - 1;
+            final PostDto previousPostDto = mData.get(previousPostPosition);
+            previousPost = previousPostDto != null ? previousPostDto.getPost() : null;
+        }
 
-            final Post previousPost = !isFirstPost ? getData().get(previousPostPosition) : null;
-            final Post nextPost = !isLastPost ? getData().get(nextPostPosition) : null;
-
-            final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
-            final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
-            final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
+        final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
+        final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
+        final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
 
             if (isMy(post)) {
                 holder.bindOwn(post, user, showAuthor, showTime, showDate, mOnLongClickListener);
@@ -161,14 +170,23 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     }
 
     private boolean isPostsSameAuthor(Post post, Post nextPost) {
+        if (post == null || nextPost == null) {
+            return false;
+        }
         return post.getUserId().equals(nextPost.getUserId());
     }
 
     private boolean isPostsSameSecond(Post post, Post nextPost) {
+        if (post == null || nextPost == null) {
+            return false;
+        }
         return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 
     private boolean isPostsSameDate(Post post, Post nextPost) {
+        if (post == null || nextPost == null) {
+            return false;
+        }
         return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
     }
 

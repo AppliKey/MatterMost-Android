@@ -7,6 +7,7 @@ import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.mvp.views.ChatView;
+import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -43,6 +44,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     UserStorage mUserStorage;
 
     @Inject
+    ChannelStorage mChannelStorage;
+
+    @Inject
     Api mApi;
 
     @Inject
@@ -57,7 +61,20 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     public void getInitialData(String channelId) {
         final ChatView view = getViewState();
 
+        updateLastViewedAt(channelId);
+
         mPostStorage.listByChannel(channelId).subscribe(view::onRealmAttached, view::onFailure);
+    }
+
+    private void updateLastViewedAt(String channelId) {
+        mSubscription.add(mTeamStorage.getChosenTeam()
+                .first()
+                .observeOn(Schedulers.io())
+                .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
+                .doOnError(ErrorHandler::handleError)
+                .subscribe());
+
+        mChannelStorage.updateLastViewedAt(channelId);
     }
 
     public void fetchData(String channelId) {

@@ -32,7 +32,7 @@ public class UserStorage {
         return mDb.listRealmObjects(User.class);
     }
 
-    public Observable<User> getDirectProfiles(String id) {
+    public Observable<User> getDirectProfile(String id) {
         return mDb.getObject(User.class, id);
     }
 

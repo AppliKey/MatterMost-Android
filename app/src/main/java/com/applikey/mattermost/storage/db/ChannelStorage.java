@@ -76,6 +76,13 @@ public class ChannelStorage {
         });
     }
 
+    public void updateLastViewedAt(String id) {
+        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+            realmChannel.setHasUnreadMessages(false);
+            return true;
+        });
+    }
+
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
         // Transform direct channels
 
@@ -103,6 +110,7 @@ public class ChannelStorage {
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
             channel.setLastPost(storedChannel.getLastPost());
+            channel.setLastPostAuthorDisplayName(storedChannel.getLastPostAuthorDisplayName());
             channel.updateLastActivityTime();
             return true;
         });
