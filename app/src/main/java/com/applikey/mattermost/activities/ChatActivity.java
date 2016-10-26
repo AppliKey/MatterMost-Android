@@ -228,7 +228,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private LinearLayoutManager getLayoutManager() {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
-        // linearLayoutManager.setStackFromEnd(true); //TODO remove when Denis explain more
         return linearLayoutManager;
     }
 

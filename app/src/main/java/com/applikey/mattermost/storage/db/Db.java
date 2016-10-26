@@ -29,6 +29,12 @@ public class Db {
         });
     }
 
+    public void saveTransactionalSync(RealmObject object) {
+        mRealm.executeTransaction(realm -> {
+            realm.copyToRealmOrUpdate(object);
+        });
+    }
+
     public <T extends RealmObject> Observable<T> getObject(Class<T> tClass, String id) {
         return mRealm.where(tClass)
                 .equalTo("id", id)
@@ -50,6 +56,12 @@ public class Db {
 
     public void deleteTransactional(final RealmObject realmObject) {
         mRealm.executeTransactionAsync(realm -> {
+            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
+        });
+    }
+
+    public void deleteTransactionalSync(final RealmObject realmObject) {
+        mRealm.executeTransaction(realm -> {
             realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
         });
     }

@@ -121,11 +121,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         pendingPost.setType("");
 
         mSubscription.add(mTeamStorage.getChosenTeam()
-                .flatMap(team ->
-                        mApi.createPost(team.getId(), channelId, pendingPost))
-                                .subscribeOn(Schedulers.io())
+                .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
+                        .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(result -> mPostStorage.update(result), ErrorHandler::handleError)); //TODO
+                .subscribe(result -> mPostStorage.update(result), ErrorHandler::handleError));
     }
 
 

@@ -35,6 +35,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     public ChatListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Channel> data,
             ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
+        mContext = context;
 
         mImageLoader = imageLoader;
         mCurrentUserId = currentUserId;
@@ -42,7 +43,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     @Override
     public ChatListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View v = LayoutInflater.from(parent.getContext())
+        final View v = LayoutInflater.from(mContext)
                 .inflate(R.layout.list_item_chat, parent, false);
 
         final ViewHolder vh = new ViewHolder(v);

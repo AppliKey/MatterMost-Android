@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -25,7 +26,6 @@ public class Post extends RealmObject {
 
     @SerializedName("user_id")
     private String userId;
-    private User user;
 
     @SerializedName("message")
     private String message;
@@ -63,14 +63,6 @@ public class Post extends RealmObject {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getMessage() {
