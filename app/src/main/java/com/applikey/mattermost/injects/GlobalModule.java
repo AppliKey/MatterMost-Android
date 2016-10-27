@@ -154,4 +154,9 @@ public class GlobalModule {
         return new PostStorage(db);
     }
 
+    @Provides
+    @PerApp
+    Context provideApplicationContext() {
+        return mApplicationContext;
+    }
 }

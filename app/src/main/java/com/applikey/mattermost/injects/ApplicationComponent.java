@@ -47,5 +47,6 @@ public interface ApplicationComponent {
     void inject(ChatPresenter presenter);
 
     UserComponent.Builder userComponentBuilder();
+
     void inject(CreateChannelPresenter createChannelPresenter);
 }

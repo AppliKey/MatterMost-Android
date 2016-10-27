@@ -163,9 +163,4 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     public void setAddAllButtonEnabled(boolean enabled) {
         mBtnAddAll.setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
-
-    @Override
-    public Context getContext() {
-        return getContext();
-    }
 }

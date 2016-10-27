@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.App;
@@ -48,6 +49,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     @Inject
     UserStorage mUserStorage;
+
+    @Inject
+    Context mApplicationContext;
 
 
     private List<User> mInvitedUsers = new ArrayList<>();
@@ -144,7 +148,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     public void createChannel(String channelName, String channelDescription, boolean isPublicChannel) {
         if (TextUtils.isEmpty(channelName)) {
-            getViewState().showError(getViewState().getContext().getString(R.string.error_channel_name_empty));
+            getViewState().showError(mApplicationContext.getString(R.string.error_channel_name_empty));
             return;
         }
         final String channelType;
