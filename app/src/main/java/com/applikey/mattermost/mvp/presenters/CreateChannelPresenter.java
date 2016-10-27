@@ -90,11 +90,11 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .toSortedList(sortFunction);
     }
 
-    public void getUsersWithFilter(String filterString, List<User> alreadyAddedUsers) {
+    public void getUsersAndFilterByFullName(String filterString, List<User> alreadyAddedUsers) {
         final Subscription subscription = mUserStorage.listDirectProfiles(false)
                 .compose(this.sortList(User::compareTo))
                 .map(users -> convertToPendingUsers(users, alreadyAddedUsers))
-                .map(users -> filter(users, filterString))
+                .map(users -> filterUserListByFullName(users, filterString))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         results -> getViewState().showUsers(results),
@@ -165,7 +165,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     }
 
-    private List<UserPendingInvitation> filter(List<UserPendingInvitation> source, String filter) {
+    private List<UserPendingInvitation> filterUserListByFullName(List<UserPendingInvitation> source, String filter) {
         final List<UserPendingInvitation> pending = new ArrayList<>(source.size());
         for (int i = 0; i < source.size(); i++) {
             final User user = source.get(i).getUser();

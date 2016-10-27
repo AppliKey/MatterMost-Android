@@ -140,7 +140,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @OnTextChanged(R.id.et_search_people)
     public void onSearchFilterChanged(Editable editableString) {
         final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
-        mPresenter.getUsersWithFilter(editableString.toString(), alreadyAddedUsers);
+        mPresenter.getUsersAndFilterByFullName(editableString.toString(), alreadyAddedUsers);
     }
 
     @Override
