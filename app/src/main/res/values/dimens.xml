@@ -56,4 +56,21 @@
     <dimen name="create_channel_label_top_margin">16dp</dimen>
     <dimen name="create_channel_type_bottom_margin">40dp</dimen>
     <dimen name="added_people_margin">8dp</dimen>
+    <dimen name="activity_choose_server_button_padding">16dp</dimen>
+    <dimen name="activity_choose_server_et_url_padding_start">4dp</dimen>
+    <dimen name="added_people_layout_item_width">40dp</dimen>
+    <dimen name="added_people_layout_item_height">40dp</dimen>
+    <dimen name="added_people_layout_item_right_margin">12dp</dimen>
+    <dimen name="added_people_count_textsize">16sp</dimen>
+    <dimen name="channel_type_textsize">18sp</dimen>
+    <dimen name="channel_type_toggle_width">37dp</dimen>
+    <dimen name="channel_type_toggle_height">20dp</dimen>
+    <dimen name="pending_people_avatar_width">40dp</dimen>
+    <dimen name="pending_people_avatar_height">40dp</dimen>
+    <dimen name="pending_people_name_left_margin">60dp</dimen>
+    <dimen name="pending_people_name_textsize">18sp</dimen>
+    <dimen name="pending_people_button_width">20dp</dimen>
+    <dimen name="pending_people_button_height">20dp</dimen>
+    <dimen name="pending_people_item_top_margin">10dp</dimen>
+    <dimen name="pending_people_item_bottom_margin">10dp</dimen>
 </resources>

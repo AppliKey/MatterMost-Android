@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -29,19 +30,22 @@ public class AddedPeopleLayout extends LinearLayout {
     TextView mAddedPeopleExcessCount;
 
     private ImageLoader mImageLoader;
-    private boolean isActive;
     private List<User> mUsers = new ArrayList<>();
 
-
     public AddedPeopleLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        inflate(context, R.layout.added_people_layout, this);
-        ButterKnife.bind(this);
-        initializeContent();
+        this(context, attrs, 0);
+
     }
 
-    private void initializeContent() {
-        this.setVisibility(GONE);
+    public AddedPeopleLayout(Context context) {
+        this(context, null, 0);
+    }
+
+    public AddedPeopleLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        inflate(context, R.layout.added_people_layout, this);
+        ButterKnife.bind(this);
+        setVisibility(GONE);
     }
 
     public void showUsers(List<User> users) {
@@ -53,15 +57,15 @@ public class AddedPeopleLayout extends LinearLayout {
         removeUnnecessaryViews(activatedViewsCount);
     }
 
-    private int displayUserAvatarsInActivatedViews(List<User> users, int activatedViewsCount) {
-        int visibleAvatarCounter = 0;
-        for (int i = 0; i < activatedViewsCount; i++) {
-            final ImageView ivUserAvatar = mAddedUserAvatars[i];
-            ivUserAvatar.setVisibility(VISIBLE);
-            mImageLoader.displayCircularImage(users.get(i).getProfileImage(), ivUserAvatar);
-            visibleAvatarCounter++;
-        }
-        return visibleAvatarCounter;
+    private void displayUserAvatarsInActivatedViews(List<User> users, int activatedViewsCount) {
+
+        Stream.range(0, activatedViewsCount)
+                .forEach(index -> {
+                    final ImageView imageView = mAddedUserAvatars[index];
+                    imageView.setVisibility(VISIBLE);
+                    mImageLoader.displayCircularImage(users.get(index).getProfileImage(), imageView);
+                });
+
     }
 
     private int getCountOfActivatedViews(int dataSize) {

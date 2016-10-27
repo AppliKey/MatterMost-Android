@@ -17,7 +17,7 @@ import butterknife.OnClick;
 
 public class ChannelTypeView extends LinearLayout {
 
-    @Bind(R.id.tvTypePublic)
+    @Bind(R.id.tv_type_public)
     TextView mTvTypePublic;
 
     @Bind(R.id.tvTypePrivate)
@@ -48,13 +48,21 @@ public class ChannelTypeView extends LinearLayout {
     };
 
     public ChannelTypeView(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
+        this(context, attributeSet, 0);
+
+    }
+
+    public ChannelTypeView(Context context) {
+        this(context, null, 0);
+    }
+
+    public ChannelTypeView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         inflate(context, R.layout.channel_type_view, this);
         ButterKnife.bind(this);
         mToggleButton.setOnCheckedChangeListener(mOnCheckedListener);
         mToggleButton.setChecked(true);
     }
-
 
     public boolean isChecked() {
         return mToggleButton.isChecked();
@@ -68,7 +76,7 @@ public class ChannelTypeView extends LinearLayout {
         mExternalCheckedChangeListener = checkedChangedListener;
     }
 
-    @OnClick(R.id.tvTypePublic)
+    @OnClick(R.id.tv_type_public)
     public void choosePublicType() {
         mToggleButton.setChecked(false);
     }

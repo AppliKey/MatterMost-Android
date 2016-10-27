@@ -81,10 +81,10 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.pending_people_avatar)
+        @Bind(R.id.iv_pending_people_avatar)
         ImageView mAddedPeopleAvatar;
 
-        @Bind(R.id.added_people_name)
+        @Bind(R.id.tv_added_people_name)
         TextView mAddedPeopleName;
 
         @Bind(R.id.add_people_image)

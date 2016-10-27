@@ -16,6 +16,11 @@
         <item name="android:textSize">@dimen/text_primary_button</item>
     </style>
 
+    <style name="AppToolbar" parent="Base.Widget.AppCompat.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="contentInsetStartWithNavigation">60dp</item>
+    </style>
 
     <style name="CircularCounter">
         <item name="android:textColor">@android:color/white</item>
@@ -69,19 +74,4 @@
     <style name="ChatListTabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
     </style>
-
-    <style name="SwitchChannelType" parent="Theme.AppCompat.Light">
-        <!-- active thumb & track color (30% transparency) -->
-        <item name="colorControlActivated">@color/tabSelected</item>
-
-        <!--<item name="colorControlNormal">@color/tabSelected</item>-->
-
-        <!-- inactive thumb color -->
-        <item name="colorSwitchThumbNormal">@color/tabSelected</item>
-        <item name="android:colorBackground">@color/separator_list</item>
-
-        <!-- inactive track color (30% transparency) -->
-        <item name="android:colorForeground">@color/separator_list</item>
-    </style>
-
 </resources>

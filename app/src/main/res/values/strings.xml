@@ -56,7 +56,7 @@
     <string name="public_channel">Public</string>
     <string name="create_channel_description_title">Purpose</string>
     <string name="search_people_for_channel_hint">Search</string>
-    <string name="added_people_count">+%1$d</string>
+    <string name="added_people_count" translatable="false">+%1$d</string>
     <string name="button_add_all">Add all</string>
     <string name="action_create_channel">Create channel</string>
     <string name="new_public_channel">New public channel</string>

@@ -8,71 +8,66 @@
 
     <ImageView
         android:id="@+id/first_added"
-        android:layout_width="40dp"
+        android:layout_width="@dimen/added_people_layout_item_width"
+        android:layout_height="@dimen/added_people_layout_item_height"
+        android:layout_marginRight="@dimen/added_people_layout_item_right_margin"
         android:layout_weight="1"
-        android:layout_marginRight="12dp"
-        android:visibility="invisible"
-        android:layout_height="40dp"/>
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/second_added"
-        android:layout_width="40dp"
+        android:layout_width="@dimen/added_people_layout_item_width"
+        android:layout_height="@dimen/added_people_layout_item_height"
+        android:layout_marginRight="@dimen/added_people_layout_item_right_margin"
         android:layout_weight="1"
-        android:visibility="invisible"
-        android:layout_marginRight="12dp"
-        android:layout_height="40dp"/>
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/third_added"
-        android:layout_width="40dp"
+        android:layout_width="@dimen/added_people_layout_item_width"
+        android:layout_height="@dimen/added_people_layout_item_height"
+        android:layout_marginRight="@dimen/added_people_layout_item_right_margin"
         android:layout_weight="1"
-        android:visibility="invisible"
-        android:layout_marginRight="12dp"
-        android:layout_height="40dp"/>
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/fourth_added"
-        android:layout_width="40dp"
+        android:layout_width="@dimen/added_people_layout_item_width"
+        android:layout_height="@dimen/added_people_layout_item_height"
+        android:layout_marginRight="@dimen/added_people_layout_item_right_margin"
         android:layout_weight="1"
-        android:visibility="invisible"
-        android:layout_marginRight="12dp"
-        android:layout_height="40dp"/>
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/fifth_added"
-        android:layout_width="40dp"
+        android:layout_width="@dimen/added_people_layout_item_width"
+        android:layout_height="@dimen/added_people_layout_item_height"
+        android:layout_marginRight="@dimen/added_people_layout_item_right_margin"
         android:layout_weight="1"
-        android:visibility="invisible"
-        android:layout_marginRight="12dp"
-        android:layout_height="40dp"/>
+        android:visibility="invisible" />
 
     <FrameLayout
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/added_people_layout_item_width"
+        android:layout_height="@dimen/added_people_layout_item_height"
         android:layout_weight="1">
 
         <ImageView
             android:id="@+id/sixth_added"
-            android:layout_width="40dp"
-            android:layout_weight="1"
-            android:visibility="invisible"
-            android:layout_marginRight="12dp"
-            android:layout_height="40dp">
-        </ImageView>
+            android:layout_width="@dimen/added_people_layout_item_width"
+            android:layout_height="@dimen/added_people_layout_item_height"
+            android:layout_marginRight="@dimen/added_people_layout_item_right_margin"
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/added_people_excess_count"
+            android:layout_width="@dimen/added_people_layout_item_width"
+            android:layout_height="@dimen/added_people_layout_item_height"
+            android:background="@drawable/bg_added_people_count"
             android:gravity="center"
-            android:textSize="16sp"
             android:textColor="@android:color/white"
-            android:layout_weight="1"
-            android:visibility="gone"
-            android:background="@drawable/background_added_people_count"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            />
+            android:textSize="@dimen/added_people_count_textsize"
+            android:visibility="gone" />
     </FrameLayout>
-
 
 
 </merge>

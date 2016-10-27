@@ -34,6 +34,7 @@
 
     <color name="textlink_enabled">#242933</color>
     <color name="textlink_disabled">#919499</color>
+    <color name="counter_background">#c9cdd4</color>
 
     <color name="switch_track_color">#edeff2</color>
 </resources>
