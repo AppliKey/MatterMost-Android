@@ -2,6 +2,8 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.AddedUser;
 import com.applikey.mattermost.models.channel.Channel;
@@ -63,7 +65,8 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(), user.getCreatedChannel().getChannelId(), new RequestUserId(user.getUser().getId())))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        v -> { },
+                        v -> {
+                        },
                         error -> Timber.d("empty sequence"),
                         () -> getViewState().successfulClose());
         mSubscription.add(subscription);
@@ -103,26 +106,32 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     }
 
     private List<UserPendingInvitation> convertToPendingUsers(List<User> users, boolean invited) {
-        final List<UserPendingInvitation> pendingInvitations = new ArrayList<>(users.size());
-        for (User user : users) {
-            pendingInvitations.add(new UserPendingInvitation(user, invited));
-        }
-        return pendingInvitations;
+        return Stream.of(users)
+                .map(user -> new UserPendingInvitation(user, invited))
+                .collect(Collectors.toList());
     }
 
     private List<UserPendingInvitation> convertToPendingUsers(List<User> users, List<User> alreadyAddedUsers) {
-        final List<UserPendingInvitation> pendingInvitations = new ArrayList<>(users.size());
+        final List<UserPendingInvitation> pp = new ArrayList<>(users.size());
+        Stream.of(users).forEach(user -> {
+            final boolean isAlreadyAdded =
+                Stream.of(alreadyAddedUsers).map(user::equals).filter(isAdded -> isAdded).findFirst().orElse(false);
+            pp.add(new UserPendingInvitation(user, isAlreadyAdded));
+        });
+        return pp;
+/*        final List<UserPendingInvitation> pendingInvitations = new ArrayList<>(users.size());
         for (int i = 0; i < users.size(); i++) {
             boolean alreadyInvited = false;
             User user = users.get(i);
             for (int j = 0; j < alreadyAddedUsers.size(); j++) {
                 if (user.equals(alreadyAddedUsers.get(j))) {
                     alreadyInvited = true;
+                    break;
                 }
             }
             pendingInvitations.add(new UserPendingInvitation(user, alreadyInvited));
         }
-        return pendingInvitations;
+        return pendingInvitations;*/
     }
 
     public void addUser(User user) {
@@ -143,12 +152,11 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
             getViewState().showEmptyChannelNameError();
             return;
         }
-        final String channelType;
-        if (isPublicChannel) {
-            channelType = Channel.ChannelType.PUBLIC.getRepresentation();
-        } else {
-            channelType = Channel.ChannelType.PRIVATE.getRepresentation();
-        }
+
+        final String channelType = isPublicChannel
+                ? Channel.ChannelType.PUBLIC.getRepresentation()
+                : Channel.ChannelType.PRIVATE.getRepresentation();
+
         final ChannelRequest channelRequest = new ChannelRequest(channelName, channelDescription, channelType);
         createChannelWithRequest(channelRequest);
     }
@@ -166,22 +174,13 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     }
 
     private List<UserPendingInvitation> filterUserListByFullName(List<UserPendingInvitation> source, String filter) {
-        final List<UserPendingInvitation> pending = new ArrayList<>(source.size());
-        for (int i = 0; i < source.size(); i++) {
-            final User user = source.get(i).getUser();
-            if (isUserPassesFilter(user, filter)) {
-                pending.add(new UserPendingInvitation(user, source.get(i).isInvited()));
-            }
-        }
-        return pending;
+        return Stream.of(source)
+                .filter(user -> isUserPassesFilter(user.getUser(), filter))
+                .collect(Collectors.toList());
     }
 
     private void setAddAllButtonState() {
-        if (mInvitedUsers.size() == 0) {
-            getViewState().setAddAllButtonEnabled(true);
-        } else {
-            getViewState().setAddAllButtonEnabled(false);
-        }
+        getViewState().setAddAllButtonEnabled(mInvitedUsers.size() == 0);
     }
 
     public void addAllUsers() {

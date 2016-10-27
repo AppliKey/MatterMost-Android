@@ -189,12 +189,12 @@ public class User extends RealmObject implements Comparable<User>{
 
         final User user = (User) o;
 
-        if (getLastActivityAt() != user.getLastActivityAt())
+/*        if (getLastActivityAt() != user.getLastActivityAt())
             return false;
         if (getUpdateAt() != user.getUpdateAt())
             return false;
         if (getStatus() != user.getStatus())
-            return false;
+            return false;*/
         if (!getId().equals(user.getId()))
             return false;
         if (!getUsername().equals(user.getUsername()))
@@ -229,5 +229,10 @@ public class User extends RealmObject implements Comparable<User>{
         final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();
         final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
         return thisUserDisplayableNameIgnoreCase.compareTo(otherUserDisplayableNameIgnoreCase);
+    }
+
+    @Override
+    public String toString() {
+        return User.getDisplayableName(this);
     }
 }
