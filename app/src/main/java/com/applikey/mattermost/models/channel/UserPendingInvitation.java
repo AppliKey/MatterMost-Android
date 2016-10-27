@@ -5,6 +5,7 @@ import com.applikey.mattermost.models.user.User;
 import timber.log.Timber;
 
 public class UserPendingInvitation implements Comparable<UserPendingInvitation> {
+
     private User user;
     private boolean isInvited;
 

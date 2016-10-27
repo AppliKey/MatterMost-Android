@@ -2,21 +2,17 @@ package com.applikey.mattermost.models.web;
 
 import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class RequestError {
 
     @SerializedName("id")
-    @Expose
     private String id;
 
     @SerializedName("message")
-    @Expose
     private String message;
 
     @SerializedName("status_code")
-    @Expose
     private int statusCode;
 
     public String getId() {

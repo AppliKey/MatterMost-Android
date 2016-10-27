@@ -1,6 +1,7 @@
 package com.applikey.mattermost.models.channel;
 
 public class CreatedChannel {
+
     private String teamId;
     private String channelId;
 
