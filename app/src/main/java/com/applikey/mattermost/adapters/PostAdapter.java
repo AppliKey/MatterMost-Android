@@ -34,7 +34,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private final ImageLoader mImageLoader;
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
-    private long mLastViewed;
+    private final long mLastViewed;
     private int mNewMessageIndicatorPosition = -1;
 
     public PostAdapter(String currentUserId,
