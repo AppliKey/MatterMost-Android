@@ -71,7 +71,7 @@
             android:id="@+id/tv_timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/list_item_chat_padding"
+            android:layout_marginBottom="@dimen/normal"
             android:fontFamily="sans-serif-light"
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_chat_date_size"
