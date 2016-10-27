@@ -1,7 +1,6 @@
 package com.applikey.mattermost.injects;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -155,9 +154,4 @@ public class GlobalModule {
         return new PostStorage(db);
     }
 
-    @Provides
-    @PerApp
-    Resources provideResources() {
-        return mApplicationContext.getResources();
-    }
 }

@@ -1,6 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.content.res.Resources;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.App;
@@ -50,8 +49,6 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     @Inject
     UserStorage mUserStorage;
 
-    @Inject
-    Resources mResources;
 
     private List<User> mInvitedUsers = new ArrayList<>();
 
@@ -147,7 +144,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     public void createChannel(String channelName, String channelDescription, boolean isPublicChannel) {
         if (TextUtils.isEmpty(channelName)) {
-            getViewState().showError(mResources.getString(R.string.error_channel_name_empty));
+            getViewState().showError(getViewState().getContext().getString(R.string.error_channel_name_empty));
             return;
         }
         final String channelType;
@@ -162,9 +159,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     private boolean isUserPassesFilter(User user, String filterString) {
         boolean result = false;
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
-        String userEmail = user.getEmail();
+        final String firstName = user.getFirstName();
+        final String lastName = user.getLastName();
+        final String userEmail = user.getEmail();
         if (firstName.contains(filterString) || lastName.contains(filterString) || userEmail.contains(filterString)) {
             result = true;
         }
