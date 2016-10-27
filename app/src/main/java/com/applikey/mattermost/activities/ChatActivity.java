@@ -107,10 +107,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
 
-        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, onPostLongClick);
-        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
         initParameters();
+
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
+        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, channelType, onPostLongClick);
+        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
+
         initView();
     }
 
@@ -253,6 +256,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         }
 

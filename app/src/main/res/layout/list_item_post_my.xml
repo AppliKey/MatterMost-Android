@@ -14,12 +14,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/list_item_chat_padding"
+        android:layout_marginBottom="@dimen/normal"
         android:background="@drawable/bg_date"
         android:fontFamily="sans-serif-light"
-        android:padding="@dimen/padding_default"
-        android:textColor="@color/textListPrimary"
-        android:textSize="@dimen/list_item_chat_text_size"
+        android:paddingBottom="@dimen/small"
+        android:paddingEnd="@dimen/large"
+        android:paddingLeft="@dimen/large"
+        android:paddingRight="@dimen/large"
+        android:paddingStart="@dimen/large"
+        android:paddingTop="@dimen/small"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/list_item_chat_date_size"
         tools:text="2016-12-23" />
 
     <TextView
@@ -28,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/list_item_chat_padding_name"
         android:singleLine="true"
+        android:fontFamily="sans-serif-regular"
         android:textColor="@color/textListPrimary"
         android:textSize="@dimen/list_item_chat_text_size" />
 
@@ -53,6 +59,6 @@
         android:layout_marginBottom="@dimen/list_item_chat_padding"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/textListSecondary"
-        android:textSize="@dimen/list_item_chat_text_size" />
+        android:textSize="@dimen/list_item_chat_date_size" />
 
 </LinearLayout>
