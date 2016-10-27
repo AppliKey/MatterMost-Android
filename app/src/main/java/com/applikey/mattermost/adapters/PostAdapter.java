@@ -113,7 +113,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
         final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
         final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
-        final boolean showNewMessageIndicator = (mNewMessageIndicatorPosition == -1 &&
+
+        final boolean mNewMessageIndicatorShowed = mNewMessageIndicatorPosition != -1;
+        final boolean showNewMessageIndicator = (!mNewMessageIndicatorShowed &&
                 mLastViewed < post.getCreatedAt() &&
                 !isLastPost && nextPost.getCreatedAt() < mLastViewed) ||
                 mNewMessageIndicatorPosition == holder.getAdapterPosition();
@@ -122,10 +124,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             mNewMessageIndicatorPosition = holder.getAdapterPosition();
         }
 
+        holder.bindHeader(showNewMessageIndicator, showDate);
+
         if (isMy(post)) {
-            holder.bindOwnPost(mChannelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate, mOnLongClickListener);
+            holder.bindOwnPost(mChannelType, dto, showAuthor, showTime, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate, mImageLoader);
+            holder.bindOtherPost(mChannelType, dto, showAuthor, showTime, mImageLoader);
         }
     }
 
@@ -175,16 +179,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ButterKnife.bind(this, itemView);
         }
 
+        private void bindHeader(boolean showNewMessageIndicator, boolean showDate) {
+            mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
+            mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
+        }
+
         private void bind(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showNewMessageIndicator, boolean showTime, boolean showDate) {
+                boolean showTime) {
             mTvDate.setText(TimeUtil.formatDateOnly(dto.getPost().getCreatedAt()));
             mTvTimestamp.setText(TimeUtil.formatTimeOrDateTime(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
             mTvMessage.setText(dto.getPost().getMessage());
 
-            mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
-            mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
 
             if (channelType == Channel.ChannelType.DIRECT) {
@@ -192,10 +199,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
         }
 
-        void bindOwnPost(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showNewMessageIndicator, boolean showTime, boolean showDate,
+        void bindOwnPost(Channel.ChannelType channelType, PostDto dto, boolean showAuthor, boolean showTime,
                 OnLongClickListener onLongClickListener) {
-            bind(channelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate);
+            bind(channelType, dto, showAuthor, showTime);
 
             itemView.setOnLongClickListener(v -> {
                 onLongClickListener.onLongClick(dto.getPost());
@@ -206,8 +212,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         void bindOtherPost(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showNewMessageIndicator, boolean showTime, boolean showDate, ImageLoader imageLoader) {
-            bind(channelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate);
+                boolean showTime, ImageLoader imageLoader) {
+            bind(channelType, dto, showAuthor, showTime);
 
             final String previewImagePath = dto.getAuthorAvatar();
             if (mIvPreviewImageLayout != null && mIvPreviewImage != null
