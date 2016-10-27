@@ -226,6 +226,8 @@ public class User extends RealmObject implements Comparable<User>{
     @Override
     public int compareTo(User o) {
         if (this == o) return 0;
-        return User.getDisplayableName(this).compareTo(User.getDisplayableName(o));
+        final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();
+        final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
+        return thisUserDisplayableNameIgnoreCase.compareTo(otherUserDisplayableNameIgnoreCase);
     }
 }

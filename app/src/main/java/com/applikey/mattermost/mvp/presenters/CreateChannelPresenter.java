@@ -79,7 +79,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     @Override
     public void onFirstViewAttach() {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
+        final Subscription subscription = mUserStorage.listDirectProfiles(true)
                 .compose(this.sortList(User::compareTo))
                 .map(users -> convertToPendingUsers(users, false))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -98,7 +98,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     }
 
     public void getUsersWithFilter(String filterString, List<User> alreadyAddedUsers) {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
+        final Subscription subscription = mUserStorage.listDirectProfiles(false)
                 .compose(this.sortList(User::compareTo))
                 .map(users -> convertToPendingUsers(users, alreadyAddedUsers))
                 .map(users -> filter(users, filterString))
@@ -192,7 +192,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     }
 
     public void addAllUsers() {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
+        final Subscription subscription = mUserStorage.listDirectProfiles(false)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(results -> {
                     mInvitedUsers = results;

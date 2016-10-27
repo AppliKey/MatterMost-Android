@@ -64,7 +64,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         mSubscription.add(Observable.combineLatest(
                 mPostStorage.listByChannel(channelId),
-                mUserStorage.listDirectProfiles(),
+                mUserStorage.listDirectProfiles(false),
                 this::transform)
                 .subscribe(view::displayData,
                         view::onFailure));
