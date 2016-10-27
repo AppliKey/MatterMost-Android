@@ -63,4 +63,17 @@
         <item name="textAllCaps">false</item>
     </style>
 
+    <style name="PostHeaderStyle">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
+        <item name="android:paddingBottom">@dimen/small</item>
+        <item name="android:paddingEnd">@dimen/large</item>
+        <item name="android:paddingLeft">@dimen/large</item>
+        <item name="android:paddingRight">@dimen/large</item>
+        <item name="android:paddingStart">@dimen/large</item>
+        <item name="android:paddingTop">@dimen/small</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/list_item_chat_date_size</item>
+    </style>
+
 </resources>

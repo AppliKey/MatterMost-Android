@@ -54,6 +54,7 @@
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
+    <string name="new_message">New Message</string>
 
     <array name="post_own_opinion_array">
         <item>Delete</item>

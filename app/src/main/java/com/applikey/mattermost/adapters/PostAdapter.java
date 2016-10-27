@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Optional;
@@ -33,15 +33,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private List<PostDto> mData = new ArrayList<>();
     private final ImageLoader mImageLoader;
     private final OnLongClickListener mOnLongClickListener;
-    private Channel.ChannelType mChannelType;
+    private final Channel.ChannelType mChannelType;
+    private long mLastViewed;
+    private int mNewMessageIndicatorPosition = -1;
 
-    public PostAdapter(String currentUserId, ImageLoader imageLoader,
+    public PostAdapter(String currentUserId,
+            ImageLoader imageLoader,
             Channel.ChannelType channelType,
+            long lastViewed,
             OnLongClickListener onLongClickListener) {
-        this.mCurrentUserId = currentUserId;
-        this.mImageLoader = imageLoader;
-        this.mChannelType = channelType;
-        this.mOnLongClickListener = onLongClickListener;
+        mCurrentUserId = currentUserId;
+        mImageLoader = imageLoader;
+        mChannelType = channelType;
+        mLastViewed = lastViewed;
+        mOnLongClickListener = onLongClickListener;
     }
 
     public void updateDataSet(List<PostDto> data) {
@@ -76,7 +81,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         final int layoutId = viewType == MY_POST_VIEW_TYPE
-                ? R.layout.list_item_post_my : R.layout.list_item_post;
+                ? R.layout.list_item_post_my : R.layout.list_item_post_other;
 
         final View v = inflater.inflate(layoutId, parent, false);
         return new ViewHolder(v);
@@ -108,11 +113,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
         final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
         final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
+        final boolean showNewMessageIndicator = (mNewMessageIndicatorPosition == -1 &&
+                mLastViewed < post.getCreatedAt() &&
+                !isLastPost && nextPost.getCreatedAt() < mLastViewed) ||
+                mNewMessageIndicatorPosition == holder.getAdapterPosition();
+
+        if (showNewMessageIndicator) {
+            mNewMessageIndicatorPosition = holder.getAdapterPosition();
+        }
 
         if (isMy(post)) {
-            holder.bindOwnPost(mChannelType, dto, showAuthor, showTime, showDate, mOnLongClickListener);
+            holder.bindOwnPost(mChannelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, dto, showAuthor, showTime, showDate, mImageLoader);
+            holder.bindOtherPost(mChannelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate, mImageLoader);
         }
     }
 
@@ -139,7 +152,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         @Nullable
         @Bind(R.id.iv_preview_image_layout)
-        RelativeLayout mIvPreviewImageLayout;
+        FrameLayout mIvPreviewImageLayout;
 
         @Bind(R.id.tv_date)
         TextView mTvDate;
@@ -149,6 +162,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         @Bind(R.id.tv_timestamp)
         TextView mTvTimestamp;
+
+        @Bind(R.id.tv_new_message)
+        TextView mTvNewMessage;
 
         @Bind(R.id.tv_name)
         TextView mTvName;
@@ -160,7 +176,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         private void bind(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showTime, boolean showDate) {
+                boolean showNewMessageIndicator, boolean showTime, boolean showDate) {
             mTvDate.setText(TimeUtil.formatDateOnly(dto.getPost().getCreatedAt()));
             mTvTimestamp.setText(TimeUtil.formatTimeOrDateTime(dto.getPost().getCreatedAt()));
             mTvName.setText(dto.getAuthorName());
@@ -168,6 +184,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
             mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
+            mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
 
             if (channelType == Channel.ChannelType.DIRECT) {
@@ -176,9 +193,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         void bindOwnPost(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showTime, boolean showDate,
+                boolean showNewMessageIndicator, boolean showTime, boolean showDate,
                 OnLongClickListener onLongClickListener) {
-            bind(channelType, dto, showAuthor, showTime, showDate);
+            bind(channelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
                 onLongClickListener.onLongClick(dto.getPost());
@@ -189,8 +206,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         }
 
         void bindOtherPost(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showTime, boolean showDate, ImageLoader imageLoader) {
-            bind(channelType, dto, showAuthor, showTime, showDate);
+                boolean showNewMessageIndicator, boolean showTime, boolean showDate, ImageLoader imageLoader) {
+            bind(channelType, dto, showAuthor, showNewMessageIndicator, showTime, showDate);
 
             final String previewImagePath = dto.getAuthorAvatar();
             if (mIvPreviewImageLayout != null && mIvPreviewImage != null

@@ -44,6 +44,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private static final String CHANNEL_ID_KEY = "channel-id";
     private static final String CHANNEL_NAME_KEY = "channel-name";
     private static final String CHANNEL_TYPE_KEY = "channel-type";
+    private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
 
     private static final String CHANNEL_PREFIX = "#";
     private static final String DIRECT_PREFIX = "";
@@ -75,6 +76,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
+    private long mChannelLastViewed;
+
     private boolean mIsNeedToScrollToStart = true;
 
 
@@ -92,7 +95,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         bundle.putString(CHANNEL_ID_KEY, channel.getId());
         bundle.putString(CHANNEL_NAME_KEY, channel.getDisplayName());
         bundle.putString(CHANNEL_TYPE_KEY, channel.getType());
-
+        bundle.putLong(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         intent.putExtras(bundle);
 
         return intent;
@@ -107,11 +110,10 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
 
-
         initParameters();
 
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
-        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, channelType, onPostLongClick);
+        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, channelType, mChannelLastViewed, onPostLongClick);
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
         initView();
@@ -239,6 +241,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mChannelId = extras.getString(CHANNEL_ID_KEY);
         mChannelName = extras.getString(CHANNEL_NAME_KEY);
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
+        mChannelLastViewed = extras.getLong(CHANNEL_LAST_VIEWED_KEY);
     }
 
     private LinearLayoutManager getLayoutManager() {
