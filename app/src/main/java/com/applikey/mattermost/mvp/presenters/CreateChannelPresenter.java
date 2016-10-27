@@ -1,10 +1,8 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.AddedUser;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
@@ -37,7 +35,6 @@ import static rx.Observable.from;
 @InjectViewState
 public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
-
     @Inject
     Api mApi;
 
@@ -50,12 +47,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     @Inject
     UserStorage mUserStorage;
 
-    @Inject
-    Context mApplicationContext;
-
-
     private List<User> mInvitedUsers = new ArrayList<>();
-
 
     public CreateChannelPresenter() {
         App.getComponent().inject(this);
@@ -148,7 +140,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     public void createChannel(String channelName, String channelDescription, boolean isPublicChannel) {
         if (TextUtils.isEmpty(channelName)) {
-            getViewState().showError(mApplicationContext.getString(R.string.error_channel_name_empty));
+            getViewState().showEmptyChannelNameError();
             return;
         }
         final String channelType;

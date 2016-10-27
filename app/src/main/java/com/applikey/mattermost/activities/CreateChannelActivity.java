@@ -137,11 +137,6 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         mAddedPeopleLayout.showUsers(users);
     }
 
-    @Override
-    public void showError(String message) {
-        showToast(message);
-    }
-
     @OnTextChanged(R.id.et_search_people)
     public void onSearchFilterChanged(Editable editableString) {
         final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
@@ -162,5 +157,10 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @Override
     public void setAddAllButtonEnabled(boolean enabled) {
         mBtnAddAll.setVisibility(enabled ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showEmptyChannelNameError() {
+        showToast(getString(R.string.error_channel_name_empty));
     }
 }
