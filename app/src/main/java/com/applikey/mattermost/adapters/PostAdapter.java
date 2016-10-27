@@ -35,7 +35,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
     private final long mLastViewed;
-    private int mNewMessageIndicatorPosition = -1;
+    private int mNewMessageIndicatorPosition;
 
     public PostAdapter(String currentUserId,
             ImageLoader imageLoader,
@@ -51,6 +51,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public void updateDataSet(List<PostDto> data) {
         mData = data;
+        mNewMessageIndicatorPosition = -1;
         notifyDataSetChanged();
     }
 

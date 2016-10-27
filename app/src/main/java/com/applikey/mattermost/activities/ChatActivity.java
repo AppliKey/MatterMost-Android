@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,6 +50,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     private static final String CHANNEL_PREFIX = "#";
     private static final String DIRECT_PREFIX = "";
+
+    private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -135,9 +139,27 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE, MENU_ITEM_SEARCH, Menu.NONE, R.string.search)
+                .setIcon(R.drawable.ic_search)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case MENU_ITEM_SEARCH:
+                //presenter.search()
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
-
     }
 
     @Override
