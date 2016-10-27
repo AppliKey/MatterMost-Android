@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,9 +30,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
-import timber.log.Timber;
 
 public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
+
     @Bind(R.id.et_channel_name)
     EditText mEtChannelName;
 
@@ -65,7 +66,6 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         return new Intent(context, CreateChannelActivity.class);
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,20 +79,9 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         mRvPeoples.setAdapter(mAdapter);
         setTitle(getString(R.string.new_private_group));
         mChannelTypeView.setOnCheckedChangedListener((view, checked) -> {
-            if (checked) {
-                CreateChannelActivity.this.setTitle(getResources().getString(R.string.new_private_group));
-            } else {
-                CreateChannelActivity.this.setTitle(getResources().getString(R.string.new_public_channel));
-            }
+            @StringRes final int title = checked ? R.string.new_private_group : R.string.new_public_channel;
+            CreateChannelActivity.this.setTitle(getResources().getString(title));
         });
-
-    }
-
-    @Override
-    public void onDestroy() {
-        ButterKnife.unbind(this);
-        super.onDestroy();
-
     }
 
     @Override
@@ -135,9 +124,6 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @Override
     public void showUsers(List<UserPendingInvitation> results) {
-        for (UserPendingInvitation user : results) {
-            Timber.d("Name: %s %s, avatar: %s", user.getUser().getFirstName(), user.getUser().getLastName(), user.getUser().getProfileImage());
-        }
         mAdapter.addUsers(results);
     }
 

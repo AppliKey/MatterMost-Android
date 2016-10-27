@@ -28,8 +28,11 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static rx.Observable.from;
 
 @InjectViewState
 public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
@@ -63,10 +66,13 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .map(Team::getId)
                 .first()
                 .flatMap(teamId -> mApi.createChannel(teamId, request), (teamId, channel) -> new CreatedChannel(teamId, channel.getId()))
-                .flatMap(createdChannel -> Observable.from(mInvitedUsers), AddedUser::new)
+                .flatMap(createdChannel -> from(mInvitedUsers), AddedUser::new)
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(), user.getCreatedChannel().getChannelId(), new RequestUserId(user.getUser().getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> {}, error -> Timber.d("empty sequence"), () -> getViewState().successfulClose());
+                .subscribe(
+                        v -> { },
+                        error -> Timber.d("empty sequence"),
+                        () -> getViewState().successfulClose());
         mSubscription.add(subscription);
     }
 
@@ -74,18 +80,32 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     @Override
     public void onFirstViewAttach() {
         final Subscription subscription = mUserStorage.listDirectProfiles()
-                .map(users->convertToPendingUsers(users, false))
+                .compose(this.sortList(User::compareTo))
+                .map(users -> convertToPendingUsers(users, false))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(results -> getViewState().showUsers(results));
+                .subscribe(
+                        results -> getViewState().showUsers(results),
+                        error -> Timber.e("", error)
+                );
         mSubscription.add(subscription);
+    }
+
+    private <V> Observable.Transformer<List<V>, List<V>> sortList(Func2<V, V, Integer> sortFunction) {
+        return tObservable -> tObservable
+                .first()
+                .flatMap(Observable::from)
+                .toSortedList(sortFunction);
     }
 
     public void getUsersWithFilter(String filterString, List<User> alreadyAddedUsers) {
         final Subscription subscription = mUserStorage.listDirectProfiles()
+                .compose(this.sortList(User::compareTo))
                 .map(users -> convertToPendingUsers(users, alreadyAddedUsers))
                 .map(users -> filter(users, filterString))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(results -> getViewState().showUsers(results));
+                .subscribe(
+                        results -> getViewState().showUsers(results),
+                        Timber::e);
         mSubscription.add(subscription);
     }
 
@@ -102,7 +122,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         for (int i = 0; i < users.size(); i++) {
             boolean alreadyInvited = false;
             User user = users.get(i);
-            for (int j = 0; j < alreadyAddedUsers.size(); j ++) {
+            for (int j = 0; j < alreadyAddedUsers.size(); j++) {
                 if (user.equals(alreadyAddedUsers.get(j))) {
                     alreadyInvited = true;
                 }
@@ -178,7 +198,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                     mInvitedUsers = results;
                     getViewState().addAllUsers(results);
                     setAddAllButtonState();
-                });
+                }, Timber::e);
         mSubscription.add(subscription);
     }
 }

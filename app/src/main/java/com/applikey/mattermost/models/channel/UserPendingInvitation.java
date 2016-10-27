@@ -2,7 +2,9 @@ package com.applikey.mattermost.models.channel;
 
 import com.applikey.mattermost.models.user.User;
 
-public class UserPendingInvitation {
+import timber.log.Timber;
+
+public class UserPendingInvitation implements Comparable<UserPendingInvitation> {
     private User user;
     private boolean isInvited;
 
@@ -25,5 +27,20 @@ public class UserPendingInvitation {
 
     public void setInvited(boolean invited) {
         isInvited = invited;
+    }
+
+    @Override
+    public int compareTo(UserPendingInvitation o) {
+        if (this == o) return 0;
+        final User thisUser = this.getUser();
+        final User otherUser = o.getUser();
+        if (thisUser == otherUser) return 0;
+        final String thisUserName = User.getDisplayableName(thisUser);
+        final String otherUserName = User.getDisplayableName(otherUser);
+
+//        Timber.d(thisUserName + " : " + otherUserName + " : " + thisUserName.compareTo(otherUserName));
+        Timber.d("%s : %s : %d", thisUserName, otherUserName, thisUserName.compareTo(otherUserName));
+
+        return thisUserName.compareTo(otherUserName);
     }
 }

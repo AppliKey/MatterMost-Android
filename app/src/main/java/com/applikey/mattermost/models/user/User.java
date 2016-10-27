@@ -9,7 +9,7 @@ import java.util.Map;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject {
+public class User extends RealmObject implements Comparable<User>{
 
     @PrimaryKey
     @SerializedName("id")
@@ -221,5 +221,11 @@ public class User extends RealmObject {
         result = 31 * result + getProfileImage().hashCode();
         result = 31 * result + getStatus();
         return result;
+    }
+
+    @Override
+    public int compareTo(User o) {
+        if (this == o) return 0;
+        return User.getDisplayableName(this).compareTo(User.getDisplayableName(o));
     }
 }
