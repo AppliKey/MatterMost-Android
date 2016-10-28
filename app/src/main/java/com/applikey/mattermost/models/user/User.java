@@ -131,6 +131,7 @@ public class User extends RealmObject implements Comparable<User>{
     public static String getDisplayableName(User user) {
         final StringBuilder builder = new StringBuilder();
 
+
         if (!user.getFirstName().isEmpty()) {
             builder.append(user.getFirstName());
         }

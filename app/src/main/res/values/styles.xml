@@ -73,4 +73,17 @@
     <style name="ChatListTabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
     </style>
+
+    <style name="PostHeaderStyle">
+        <item name="android:fontFamily">sans-serif-regular</item>
+        <item name="android:paddingEnd">@dimen/large</item>
+        <item name="android:paddingLeft">@dimen/large</item>
+        <item name="android:paddingRight">@dimen/large</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/large</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/list_item_chat_date_size</item>
+        <item name="android:height">24dp</item>
+    </style>
+
 </resources>

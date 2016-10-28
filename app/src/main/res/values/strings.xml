@@ -64,6 +64,9 @@
     <string name="error_channel_name_empty">Channel name cannot be empty</string>
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
+    <string name="you">You</string>
+    <string name="new_message">New Message</string>
+    <string name="search">Search</string>
     <string name="create_chat_hint_name">Example: Project Name, Bugs, Sales</string>
     <string name="create_channel_description_hint">What are you going to discuss\n in this group</string>
 
