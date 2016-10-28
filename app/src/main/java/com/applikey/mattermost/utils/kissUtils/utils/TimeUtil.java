@@ -20,9 +20,9 @@ public class TimeUtil {
 
     public static final String TAG = TimeUtil.class.getSimpleName();
 
-    public static final String DEFAULT_FORMAT_TIME_ONLY = "HH:mm";
-    public static final String DEFAULT_FORMAT_DATE_ONLY = "yyyy-MM-dd";
-    public static final String DEFAULT_FORMAT_DATE_TIME = "yyyy-MM-dd HH:mm";
+    public static final String DEFAULT_FORMAT_TIME_ONLY = "hh:mm aa";
+    public static final String DEFAULT_FORMAT_DATE_ONLY = "dd, MMMM yyyy";
+    public static final String DEFAULT_FORMAT_DATE_TIME = "hh:mm aa, dd, MMMM yyyy";
     public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String FILE_FORMAT = "yyyy_MM_dd_HH_mm_ss_SSS";

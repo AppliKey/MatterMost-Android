@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/list_item_post_my">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/list_item_chat_padding_name"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-regular"
+        android:maxLines="1"
+        android:textColor="@color/textListPrimary"
+        android:textSize="@dimen/list_item_chat_text_size" />
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/list_item_chat_time_margin"
+        android:background="@drawable/bg_post_my"
+        android:fontFamily="sans-serif-light"
+        android:paddingBottom="@dimen/list_item_chat_padding_timestamp"
+        android:paddingEnd="@dimen/list_item_chat_padding"
+        android:paddingStart="@dimen/list_item_chat_padding"
+        android:paddingTop="@dimen/list_item_chat_padding_timestamp"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/list_item_chat_text_size"
+        tools:text="Some message" />
+
+    <TextView
+        android:id="@+id/tv_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/normal"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/textListSecondary"
+        android:textSize="@dimen/list_item_chat_date_size"
+        tools:text="11:12 AM" />
+
+</merge>

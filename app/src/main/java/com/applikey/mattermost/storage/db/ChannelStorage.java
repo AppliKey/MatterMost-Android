@@ -79,6 +79,7 @@ public class ChannelStorage {
     public void updateLastViewedAt(String id) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
             realmChannel.setHasUnreadMessages(false);
+            realmChannel.setLastViewedAt(System.currentTimeMillis());
             return true;
         });
     }
@@ -117,8 +118,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-                                         Map<String, User> contacts,
-                                         String currentUserId) {
+            Map<String, User> contacts,
+            String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

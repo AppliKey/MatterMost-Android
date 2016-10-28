@@ -4,6 +4,6 @@
 
     <corners android:radius="@dimen/post_message_corners" />
 
-    <solid android:color="@color/tabUnSelected" />
+    <solid android:color="@color/primaryStart" />
 
 </shape>
