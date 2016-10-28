@@ -64,7 +64,6 @@
     </style>
 
     <style name="PostHeaderStyle">
-        <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:paddingEnd">@dimen/large</item>
         <item name="android:paddingLeft">@dimen/large</item>

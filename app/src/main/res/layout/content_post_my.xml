@@ -8,11 +8,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/list_item_chat_padding_name"
+        android:ellipsize="end"
         android:fontFamily="sans-serif-regular"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textColor="@color/textListPrimary"
-        android:textSize="@dimen/list_item_chat_text_size"
-        tools:text="Name" />
+        android:textSize="@dimen/list_item_chat_text_size" />
 
     <TextView
         android:id="@+id/tv_message"

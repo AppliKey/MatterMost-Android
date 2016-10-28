@@ -8,6 +8,7 @@
         style="@style/PostHeaderStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="@dimen/normal"
         android:background="@drawable/bg_new_message"
         android:text="@string/new_message"
@@ -19,6 +20,7 @@
         style="@style/PostHeaderStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginBottom="@dimen/normal"
         android:background="@drawable/bg_date"
         tools:text="2016-12-23" />
