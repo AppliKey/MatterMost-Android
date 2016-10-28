@@ -1,5 +1,6 @@
 package com.applikey.mattermost.adapters;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,72 +10,46 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.annimon.stream.Optional;
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.post.PostDto;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
+public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.ViewHolder> {
 
     private static final int MY_POST_VIEW_TYPE = 0;
     private static final int OTHERS_POST_VIEW_TYPE = 1;
 
     private final String mCurrentUserId;
-    private List<PostDto> mData = new ArrayList<>();
     private final ImageLoader mImageLoader;
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
     private final long mLastViewed;
-    private int mNewMessageIndicatorPosition;
+    private int mNewMessageIndicatorPosition = -1;
 
-    public PostAdapter(String currentUserId,
-            ImageLoader imageLoader,
-            Channel.ChannelType channelType,
-            long lastViewed,
-            OnLongClickListener onLongClickListener) {
+
+    //FIXME fix new message logic
+    public PostAdapter(Context context,
+                       RealmResults<Post> posts,
+                       String currentUserId,
+                       ImageLoader imageLoader,
+                       Channel.ChannelType channelType,
+                       long lastViewed,
+                       OnLongClickListener onLongClickListener) {
+        super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
         mChannelType = channelType;
         mLastViewed = lastViewed;
         mOnLongClickListener = onLongClickListener;
-    }
-
-    public void updateDataSet(List<PostDto> data) {
-        mData = data;
-        mNewMessageIndicatorPosition = -1;
-        notifyDataSetChanged();
-    }
-
-    public void deletePost(Post post) {
-        final Optional<PostDto> optionalPost = getPostDto(post);
-        if (optionalPost.isPresent()) {
-            final PostDto postDto = optionalPost.get();
-            final int position = mData.indexOf(postDto);
-
-            notifyItemRemoved(position);
-            mData.remove(position);
-        }
-    }
-
-    public void updatePost(Post post) {
-        final Optional<PostDto> optionalPost = getPostDto(post);
-        if (optionalPost.isPresent()) {
-            final PostDto postDto = optionalPost.get();
-            final int position = mData.indexOf(postDto);
-
-            notifyItemChanged(position);
-            postDto.setPost(post);
-        }
     }
 
     @Override
@@ -90,10 +65,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final PostDto dto = mData.get(position);
-        final Post post = dto.getPost();
+        final Post post = getData().get(position);
 
-        final boolean isLastPost = position == mData.size() - 1;
+        final Realm realm = Realm.getDefaultInstance();
+        final User user = realm.where(User.class).equalTo("id", post.getUserId()).findFirst();
+        //TODO Discuss with team how we can avoid this
+        //TODO when scroll issue fixed, replace to presenter
+
+        final boolean isLastPost = position == getData().size() - 1;
         final boolean isFirstPost = position == 0;
 
         Post previousPost = null;
@@ -101,14 +80,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         if (!isLastPost) {
             final int nextPostPosition = position + 1;
-            final PostDto nextPostDto = mData.get(nextPostPosition);
-            nextPost = nextPostDto != null ? nextPostDto.getPost() : null;
+            final Post nextPostTemp = getData().get(nextPostPosition);
+            nextPost = nextPostTemp != null ? nextPostTemp : null;
         }
 
         if (!isFirstPost) {
             final int previousPostPosition = position - 1;
-            final PostDto previousPostDto = mData.get(previousPostPosition);
-            previousPost = previousPostDto != null ? previousPostDto.getPost() : null;
+            final Post previousPostTemp = getData().get(previousPostPosition);
+            previousPost = previousPostTemp != null ? previousPostTemp : null;
         }
 
         final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
@@ -128,21 +107,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.bindHeader(showNewMessageIndicator, showDate);
 
         if (isMy(post)) {
-            holder.bindOwnPost(mChannelType, dto, showAuthor, showTime, mOnLongClickListener);
+            holder.bindOwnPost(mChannelType, post, user, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, dto, showAuthor, showTime, mImageLoader);
+            holder.bindOtherPost(mChannelType, post, user, showAuthor, showTime, showDate, mImageLoader);
         }
     }
 
     @Override
-    public int getItemCount() {
-        return mData.size();
-    }
-
-    @Override
     public int getItemViewType(int position) {
-        final PostDto dto = mData.get(position);
-        return isMy(dto.getPost()) ? MY_POST_VIEW_TYPE : OTHERS_POST_VIEW_TYPE;
+        final Post post = getItem(position);
+        return isMy(post) ? MY_POST_VIEW_TYPE : OTHERS_POST_VIEW_TYPE;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -185,12 +159,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
 
-        private void bind(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showTime) {
-            mTvDate.setText(TimeUtil.formatDateOnly(dto.getPost().getCreatedAt()));
-            mTvTimestamp.setText(TimeUtil.formatTimeOrDateTime(dto.getPost().getCreatedAt()));
-            mTvName.setText(dto.getAuthorName());
-            mTvMessage.setText(dto.getPost().getMessage());
+        private void bind(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate) {
+            mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
+            mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
+            mTvName.setText(User.getDisplayableName(user));
+            mTvMessage.setText(post.getMessage());
 
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
@@ -200,45 +173,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             }
         }
 
-        void bindOwnPost(Channel.ChannelType channelType, PostDto dto, boolean showAuthor, boolean showTime,
-                OnLongClickListener onLongClickListener) {
-            bind(channelType, dto, showAuthor, showTime);
+        void bindOwnPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate,
+                         OnLongClickListener onLongClickListener) {
+            bind(channelType, post, user, showAuthor, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
-                onLongClickListener.onLongClick(dto.getPost());
+                onLongClickListener.onLongClick(post);
                 return true;
             });
-
             mTvName.setText(R.string.you);
         }
 
-        void bindOtherPost(Channel.ChannelType channelType, PostDto dto, boolean showAuthor,
-                boolean showTime, ImageLoader imageLoader) {
-            bind(channelType, dto, showAuthor, showTime);
+        void bindOtherPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime,
+                           boolean showDate, ImageLoader imageLoader) {
+            bind(channelType, post, user, showAuthor, showTime, showDate);
 
-            final String previewImagePath = dto.getAuthorAvatar();
+            final String previewImagePath = user.getProfileImage();
             if (mIvPreviewImageLayout != null && mIvPreviewImage != null
                     && mIvStatus != null && previewImagePath != null
                     && !previewImagePath.isEmpty()) {
                 imageLoader.displayCircularImage(previewImagePath, mIvPreviewImage);
-                mIvStatus.setImageResource(dto.getStatus().getDrawableId());
+                mIvStatus.setImageResource(User.Status.from(user.getStatus()).getDrawableId());
                 mIvPreviewImageLayout.setVisibility(showAuthor ? View.VISIBLE : View.INVISIBLE);
+            }
 
-                if (channelType == Channel.ChannelType.DIRECT) {
-                    mIvPreviewImageLayout.setVisibility(View.GONE);
-                }
+            if (channelType == Channel.ChannelType.DIRECT) {
+                mIvPreviewImageLayout.setVisibility(View.GONE);
             }
         }
     }
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
-    }
-
-    private Optional<PostDto> getPostDto(Post post) {
-        return Stream.of(mData)
-                .filter(dto -> dto.getPost().getId().equals(post.getId()))
-                .findFirst();
     }
 
     private boolean isPostsSameAuthor(Post post, Post nextPost) {

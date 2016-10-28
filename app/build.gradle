@@ -128,7 +128,6 @@ dependencies {
     // views
     compile 'com.tasomaniac:delayed-progress:0.3'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
-    compile 'io.realm:android-adapters:1.3.0'
 
     // mvp
     compile 'com.arello-mobile:moxy:0.5.4'
@@ -145,11 +144,13 @@ dependencies {
     //Stream API
     compile 'com.annimon:stream:1.1.2'
 
+    //Realm Adapter
+    compile 'com.github.ReginFell:realm-android-adapters:175990bf26'
+
     // crashlytics
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
 
-    compile 'com.annimon:stream:1.1.2'
     compile 'nl.littlerobots.rxlint:rxlint:1.0'
 }

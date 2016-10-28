@@ -33,6 +33,7 @@ import javax.inject.Named;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.OrderedRealmCollection;
+import io.realm.RealmResults;
 
 public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
 
@@ -89,7 +90,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     }
 
     @Override
-    public void displayInitialData(OrderedRealmCollection<Channel> channels) {
+    public void displayInitialData(RealmResults<Channel> channels) {
         Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed " + channels.size());
 
         if (channels.isEmpty()) {

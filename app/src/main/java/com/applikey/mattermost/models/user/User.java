@@ -131,6 +131,7 @@ public class User extends RealmObject {
     public static String getDisplayableName(User user) {
         final StringBuilder builder = new StringBuilder();
 
+
         if (!user.getFirstName().isEmpty()) {
             builder.append(user.getFirstName());
         }

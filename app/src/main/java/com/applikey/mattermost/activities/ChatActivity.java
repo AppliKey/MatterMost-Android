@@ -22,7 +22,6 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
@@ -30,13 +29,13 @@ import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.realm.RealmResults;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -65,6 +64,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Bind(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
+    @Bind(R.id.et_message)
+    EditText mEtMessage;
+
     @InjectPresenter
     ChatPresenter mPresenter;
 
@@ -74,8 +76,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     @Inject
     ImageLoader mImageLoader;
-
-    private PostAdapter mAdapter;
 
     private String mChannelId;
     private String mChannelName;
@@ -115,11 +115,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         ButterKnife.bind(this);
 
         initParameters();
-
-        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
-        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, channelType, mChannelLastViewed, onPostLongClick);
-        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
-
         initView();
     }
 
@@ -128,7 +123,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         super.onStart();
 
         mPresenter.getInitialData(mChannelId);
-        mPresenter.fetchData(mChannelId);
     }
 
     @Override
@@ -158,30 +152,38 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     @Override
+    public void onDataReady(RealmResults<Post> posts) {
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
+        final PostAdapter adapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
+                channelType, mChannelLastViewed, onPostLongClick);
+
+        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
+
+        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
+        mRvMessages.addOnScrollListener(mPaginationListener);
+        mRvMessages.setAdapter(adapter);
+
+        if (posts.size() > 0) {
+            hideEmptyState();
+        } else {
+            displayEmptyState();
+        }
+    }
+
+    @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
     }
 
     @Override
-    public void onPostDeleted(Post post) {
-        mAdapter.deletePost(post);
-    }
-
-    @Override
-    public void onPostUpdated(Post post) {
-        mAdapter.updatePost(post);
-    }
-
-    @Override
-    public void displayData(List<PostDto> posts) {
-        Log.d(ChatActivity.class.getSimpleName(), "Data Displayed");
-
-        displayPosts(posts);
-    }
-
-    @Override
     public void onFailure(Throwable cause) {
         ErrorHandler.handleError(cause);
+    }
+
+    @OnClick(R.id.iv_send_message)
+    public void onSend() {
+        mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+        mEtMessage.setText("");
     }
 
     private void displayEmptyState() {
@@ -199,19 +201,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 ? CHANNEL_PREFIX : DIRECT_PREFIX;
 
         mToolbar.setTitle(prefix + mChannelName);
-    }
-
-    private void displayPosts(List<PostDto> posts) {
-        if (posts == null || posts.isEmpty()) {
-            displayEmptyState();
-            return;
-        }
-        mAdapter.updateDataSet(posts);
-        if (mIsNeedToScrollToStart) {
-            mRvMessages.scrollToPosition(0);
-            mIsNeedToScrollToStart = false;
-        }
-        hideEmptyState();
     }
 
     @Override
@@ -252,8 +241,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.save, (dialog, which) -> {
-                    post.setMessage(input.getText().toString());
-                    mPresenter.editMessage(mChannelId, post);
+                    mPresenter.editMessage(channelId, post);
                 })
                 .show();
     }
@@ -266,25 +254,14 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mChannelLastViewed = extras.getLong(CHANNEL_LAST_VIEWED_KEY);
     }
 
-    private LinearLayoutManager getLayoutManager() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        return linearLayoutManager;
-    }
-
     private void initView() {
         setSupportActionBar(mToolbar);
-        mRvMessages.addOnScrollListener(mPaginationListener);
         final ActionBar actionBar = getSupportActionBar();
-        mRvMessages.setLayoutManager(getLayoutManager());
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         }
-
-        mRvMessages.setAdapter(mAdapter);
     }
 }

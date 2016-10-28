@@ -6,10 +6,11 @@ import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import io.realm.OrderedRealmCollection;
+import io.realm.RealmResults;
 
 @StateStrategyType(value = SkipStrategy.class)
 public interface ChatListView extends MvpView {
 
-    void displayInitialData(OrderedRealmCollection<Channel> channels);
+    void displayInitialData(RealmResults<Channel> channels);
     void showUnreadIndicator(boolean showIndicator);
 }

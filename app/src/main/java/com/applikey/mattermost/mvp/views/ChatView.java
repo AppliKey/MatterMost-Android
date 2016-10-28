@@ -1,23 +1,19 @@
 package com.applikey.mattermost.mvp.views;
 
 import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.post.PostDto;
+import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-import java.util.List;
+import io.realm.RealmResults;
 
 @StateStrategyType(value = SkipStrategy.class)
 public interface ChatView extends MvpView {
 
-    void displayData(List<PostDto> posts);
+    void onDataReady(RealmResults<Post> posts);
 
     void onDataFetched();
-
-    void onPostDeleted(Post post);
-
-    void onPostUpdated(Post post);
 
     void showProgress(boolean enabled);
 

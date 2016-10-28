@@ -4,6 +4,7 @@ import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
+import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
@@ -90,6 +91,11 @@ public interface Api {
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
             @Path("channelId") String channelId);
+
+    @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")
+    Observable<Post> createPost(@Path("teamId") String teamId,
+                                @Path("channelId") String channelId,
+                                @Body PendingPost request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
     Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
