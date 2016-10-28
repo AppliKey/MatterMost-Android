@@ -154,7 +154,5 @@ dependencies {
     compile 'nl.littlerobots.rxlint:rxlint:1.0'
 
     // gcm
-    compile 'com.google.android.gms:play-services-gcm:9.6.1'
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
 }
-
-apply plugin: 'com.google.gms.google-services'

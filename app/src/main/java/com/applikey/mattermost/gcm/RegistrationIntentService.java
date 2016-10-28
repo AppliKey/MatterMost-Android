@@ -3,6 +3,7 @@ package com.applikey.mattermost.gcm;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
@@ -25,10 +26,14 @@ public class RegistrationIntentService extends IntentService {
         super(TAG);
 
         App.getComponent().inject(this);
+
+        Log.d(TAG, "Registration service constructor");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "Registration intent");
+
         final InstanceID instanceId = InstanceID.getInstance(this);
         try {
             synchronized (TAG) {
