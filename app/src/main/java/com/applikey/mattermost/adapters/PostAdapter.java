@@ -1,7 +1,6 @@
 package com.applikey.mattermost.adapters;
 
 import android.content.Context;
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,16 +33,17 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
     private final long mLastViewed;
-    private int mNewMessageIndicatorPosition;
+    private int mNewMessageIndicatorPosition = -1;
 
-    public PostAdapter(
-            Context context,
-            RealmResults<Post> posts,
-            String currentUserId,
-            ImageLoader imageLoader,
-            Channel.ChannelType channelType,
-            long lastViewed,
-            OnLongClickListener onLongClickListener) {
+
+    //FIXME fix new message logic
+    public PostAdapter(Context context,
+                       RealmResults<Post> posts,
+                       String currentUserId,
+                       ImageLoader imageLoader,
+                       Channel.ChannelType channelType,
+                       long lastViewed,
+                       OnLongClickListener onLongClickListener) {
         super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
@@ -107,9 +107,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         holder.bindHeader(showNewMessageIndicator, showDate);
 
         if (isMy(post)) {
-            holder.bindOwnPost(mChannelType,post, user, showAuthor, showTime, showDate, mOnLongClickListener);
+            holder.bindOwnPost(mChannelType, post, user, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType,post, user, showAuthor, showTime, showDate, mImageLoader);
+            holder.bindOtherPost(mChannelType, post, user, showAuthor, showTime, showDate, mImageLoader);
         }
     }
 
@@ -159,7 +159,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
 
-        private void bind(Post post, User user, boolean showAuthor, boolean showTime, boolean showDate) {
+        private void bind(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate) {
             mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(user));
@@ -173,9 +173,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             }
         }
 
-        void bindOwn(Post post, User user, boolean showAuthor, boolean showTime, boolean showDate,
-                     OnLongClickListener onLongClickListener) {
-            bind(post, user, showAuthor, showTime, showDate);
+        void bindOwnPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate,
+                         OnLongClickListener onLongClickListener) {
+            bind(channelType, post, user, showAuthor, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
                 onLongClickListener.onLongClick(post);
@@ -184,9 +184,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvName.setText(R.string.you);
         }
 
-        void bindOtherPost(Channel.ChannelType channelType,Post post, User user, boolean showAuthor, boolean showTime,
+        void bindOtherPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime,
                            boolean showDate, ImageLoader imageLoader) {
-            bind(post, user, showAuthor, showTime, showDate);
+            bind(channelType, post, user, showAuthor, showTime, showDate);
 
             final String previewImagePath = user.getProfileImage();
             if (mIvPreviewImageLayout != null && mIvPreviewImage != null

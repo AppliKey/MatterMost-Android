@@ -154,7 +154,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Override
     public void onDataReady(RealmResults<Post> posts) {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
-        final PostAdapter adapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader, onPostLongClick);
+        final PostAdapter adapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
+                channelType, mChannelLastViewed, onPostLongClick);
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
