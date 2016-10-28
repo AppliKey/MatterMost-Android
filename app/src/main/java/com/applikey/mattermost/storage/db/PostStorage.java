@@ -4,6 +4,7 @@ import com.applikey.mattermost.models.post.Post;
 
 import java.util.List;
 
+import io.realm.RealmResults;
 import rx.Observable;
 
 public class PostStorage {
@@ -14,24 +15,20 @@ public class PostStorage {
         mDb = db;
     }
 
-    public void saveAllWithRemoval(List<Post> posts) {
-        mDb.saveTransactionalWithRemoval(posts);
-    }
-
     public void delete(Post post) {
-        mDb.deleteTransactional(post);
+        mDb.deleteTransactionalSync(post);
     }
 
     public void update(Post post) {
-        mDb.saveTransactional(post);
+        mDb.saveTransactionalSync(post);
     }
 
     public void saveAll(List<Post> posts) {
         mDb.saveTransactional(posts);
     }
 
-    public Observable<List<Post>> listByChannel(String channelId) {
-        return mDb.listRealmObjectsFilteredSorted(Post.class, Post.FIELD_NAME_CHANNEL_ID,
-                Post.FIELD_NAME_CHANNEL_CREATE_AT, channelId);
+    public Observable<RealmResults<Post>> listByChannel(String channelId) {
+        return mDb.resultRealmObjectsFilteredSorted(Post.class, Post.FIELD_NAME_CHANNEL_ID,
+                channelId, Post.FIELD_NAME_CHANNEL_CREATE_AT);
     }
 }

@@ -29,6 +29,12 @@ public class Db {
         });
     }
 
+    public void saveTransactionalSync(RealmObject object) {
+        mRealm.executeTransaction(realm -> {
+            realm.copyToRealmOrUpdate(object);
+        });
+    }
+
     public <T extends RealmObject> Observable<T> getObject(Class<T> tClass, String id) {
         return mRealm.where(tClass)
                 .equalTo("id", id)
@@ -39,7 +45,7 @@ public class Db {
 
     @SuppressWarnings("unchecked")
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
-            String id, Func2<T, Realm, Boolean> update) {
+                                                            String id, Func2<T, Realm, Boolean> update) {
         mRealm.executeTransactionAsync(realm -> {
             final T realmObject = realm.where(tClass).equalTo("id", id).findFirst();
             if (realmObject.isLoaded()) {
@@ -50,6 +56,12 @@ public class Db {
 
     public void deleteTransactional(final RealmObject realmObject) {
         mRealm.executeTransactionAsync(realm -> {
+            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
+        });
+    }
+
+    public void deleteTransactionalSync(final RealmObject realmObject) {
+        mRealm.executeTransaction(realm -> {
             realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
         });
     }
@@ -103,8 +115,8 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-            String fieldName,
-            String value) {
+                                                                                String fieldName,
+                                                                                String value) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -128,10 +140,10 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
-            tClass,
-            String fieldName,
-            String sortBy,
-            String value) {
+                                                                                              tClass,
+                                                                                      String fieldName,
+                                                                                      String sortBy,
+                                                                                      String value) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -142,23 +154,22 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
-            String fieldName,
-            String value,
-            String sortBy) {
+                                                                                                String fieldName,
+                                                                                                String value,
+                                                                                                String sortBy) {
 
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
-                .beginGroup()
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
-            String fieldName,
-            boolean value,
-            String sortBy) {
+                                                                                                String fieldName,
+                                                                                                boolean value,
+                                                                                                String sortBy) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -168,8 +179,8 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-            String fieldName,
-            boolean value) {
+                                                                                String fieldName,
+                                                                                boolean value) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -203,7 +214,7 @@ public class Db {
     }
 
     public <T extends RealmObject> List<T> restoreIfExist(List<T> objects,
-            Class<T> tClass, Func1<T, String> getId, Func2<T, T, Boolean> update) {
+                                                          Class<T> tClass, Func1<T, String> getId, Func2<T, T, Boolean> update) {
         if (objects == null || objects.isEmpty()) {
             return objects;
         }
@@ -214,7 +225,7 @@ public class Db {
     }
 
     private <T extends RealmObject> void restore(T object, Class<T> tClass,
-            Func1<T, String> getId, Func2<T, T, Boolean> update) {
+                                                 Func1<T, String> getId, Func2<T, T, Boolean> update) {
         if (object == null) {
             return;
         }

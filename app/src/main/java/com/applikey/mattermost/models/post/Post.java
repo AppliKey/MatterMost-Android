@@ -4,10 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
 
+import io.realm.DiffEquals;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Post extends RealmObject {
+public class Post extends RealmObject implements DiffEquals<Post> {
 
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
@@ -114,5 +115,10 @@ public class Post extends RealmObject {
         result = 31 * result + getMessage().hashCode();
         result = 31 * result + getPriority();
         return result;
+    }
+
+    @Override
+    public boolean diffEquals(Post o) {
+        return this.getId().equals(o.getId());
     }
 }
