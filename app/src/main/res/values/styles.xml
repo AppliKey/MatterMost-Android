@@ -16,10 +16,9 @@
         <item name="android:textSize">@dimen/text_primary_button</item>
     </style>
 
-    <style name="AppToolbar" parent="Base.Widget.AppCompat.Toolbar">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
+    <style name="AppToolbar" parent="Base.ThemeOverlay.AppCompat.Light">
         <item name="contentInsetStartWithNavigation">60dp</item>
+        <item name="android:background">@android:color/white</item>
     </style>
 
     <style name="CircularCounter">

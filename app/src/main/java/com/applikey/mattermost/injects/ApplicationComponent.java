@@ -8,7 +8,6 @@ import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
-import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.presenters.SplashPresenter;
@@ -47,6 +46,4 @@ public interface ApplicationComponent {
     void inject(ChatPresenter presenter);
 
     UserComponent.Builder userComponentBuilder();
-
-    void inject(CreateChannelPresenter createChannelPresenter);
 }

@@ -23,6 +23,8 @@ public interface UserComponent {
 
     void inject(BaseChatListFragment fragment);
 
+    void inject(CreateChannelPresenter createChannelPresenter);
+
     @Subcomponent.Builder
     interface Builder {
         UserComponent.Builder userModule(UserModule userModule);
