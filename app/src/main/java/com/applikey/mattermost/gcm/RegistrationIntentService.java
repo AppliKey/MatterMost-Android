@@ -39,7 +39,7 @@ public class RegistrationIntentService extends IntentService {
             synchronized (TAG) {
                 final String token = instanceId.getToken(getString(R.string.gcm_sender_id),
                         GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-
+                Log.d(TAG, token);
                 mPrefs.setGcmToken(token);
             }
         } catch (IOException e) {
