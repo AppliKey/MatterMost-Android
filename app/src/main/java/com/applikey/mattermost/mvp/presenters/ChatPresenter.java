@@ -63,8 +63,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         updateLastViewedAt(channelId);
 
-        mPostStorage.
-                listByChannel(channelId)
+        mPostStorage.listByChannel(channelId)
                 .first()
                 .subscribe(view::onRealmAttached, view::onFailure);
     }
