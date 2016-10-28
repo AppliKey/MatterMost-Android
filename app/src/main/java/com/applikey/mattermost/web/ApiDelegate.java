@@ -4,6 +4,7 @@ import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
+import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
@@ -148,8 +149,13 @@ public class ApiDelegate implements Api {
     }
 
     @Override
+    public Observable<Post> createPost(@Path("teamId") String teamId, @Path("channelId") String channelId, @Body PendingPost request) {
+        return getRealApi().createPost(teamId, channelId, request);
+    }
+
+    @Override
     public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
-            @Path("channelId") String channelId) {
+                                                           @Path("channelId") String channelId) {
         return getRealApi().updateLastViewedAt(teamId, channelId);
     }
 }

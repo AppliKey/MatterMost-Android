@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,7 +22,6 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.post.PostDto;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
@@ -28,13 +29,13 @@ import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.realm.RealmResults;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -44,9 +45,12 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private static final String CHANNEL_ID_KEY = "channel-id";
     private static final String CHANNEL_NAME_KEY = "channel-name";
     private static final String CHANNEL_TYPE_KEY = "channel-type";
+    private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
 
     private static final String CHANNEL_PREFIX = "#";
     private static final String DIRECT_PREFIX = "";
+
+    private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -60,6 +64,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Bind(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
+    @Bind(R.id.et_message)
+    EditText mEtMessage;
+
     @InjectPresenter
     ChatPresenter mPresenter;
 
@@ -70,14 +77,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
-    private PostAdapter mAdapter;
-
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
+    private long mChannelLastViewed;
+    private PostAdapter mAdapter;
+
     private boolean mIsNeedToScrollToStart = true;
-
-
     private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override
         public void onLoad() {
@@ -92,7 +98,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         bundle.putString(CHANNEL_ID_KEY, channel.getId());
         bundle.putString(CHANNEL_NAME_KEY, channel.getDisplayName());
         bundle.putString(CHANNEL_TYPE_KEY, channel.getType());
-
+        bundle.putLong(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         intent.putExtras(bundle);
 
         return intent;
@@ -107,9 +113,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
 
-        mAdapter = new PostAdapter(mCurrentUserId, mImageLoader, onPostLongClick);
-        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
-
         initParameters();
         initView();
     }
@@ -119,7 +122,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         super.onStart();
 
         mPresenter.getInitialData(mChannelId);
-        mPresenter.fetchData(mChannelId);
     }
 
     @Override
@@ -130,31 +132,67 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE, MENU_ITEM_SEARCH, Menu.NONE, R.string.search)
+                .setIcon(R.drawable.ic_search)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case MENU_ITEM_SEARCH:
+                //presenter.search()
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public void onDataReady(RealmResults<Post> posts) {
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
+        mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
+                channelType, mChannelLastViewed, onPostLongClick);
+
+        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
+
+        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
+        mRvMessages.addOnScrollListener(mPaginationListener);
+        mRvMessages.setAdapter(mAdapter);
+
+        if (posts.size() > 0) {
+            hideEmptyState();
+        } else {
+            displayEmptyState();
+        }
+    }
+
+    @Override
     public void onDataFetched() {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
-
-    }
-
-    @Override
-    public void onPostDeleted(Post post) {
-        mAdapter.deletePost(post);
-    }
-
-    @Override
-    public void onPostUpdated(Post post) {
-        mAdapter.updatePost(post);
-    }
-
-    @Override
-    public void displayData(List<PostDto> posts) {
-        Log.d(ChatActivity.class.getSimpleName(), "Data Displayed");
-
-        displayPosts(posts);
     }
 
     @Override
     public void onFailure(Throwable cause) {
         ErrorHandler.handleError(cause);
+    }
+
+    @OnClick(R.id.iv_send_message)
+    public void onSend() {
+        mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+    }
+
+    @Override
+    public void onMessageSent(long createdAt) {
+        mEtMessage.setText("");
+        mAdapter.setLastViewed(createdAt);
+        scrollToStart();
+    }
+
+    private void scrollToStart() {
+        mRvMessages.scrollToPosition(0);
     }
 
     private void displayEmptyState() {
@@ -172,19 +210,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 ? CHANNEL_PREFIX : DIRECT_PREFIX;
 
         mToolbar.setTitle(prefix + mChannelName);
-    }
-
-    private void displayPosts(List<PostDto> posts) {
-        if (posts == null || posts.isEmpty()) {
-            displayEmptyState();
-            return;
-        }
-        mAdapter.updateDataSet(posts);
-        if (mIsNeedToScrollToStart) {
-            mRvMessages.scrollToPosition(0);
-            mIsNeedToScrollToStart = false;
-        }
-        hideEmptyState();
     }
 
     @Override
@@ -225,8 +250,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.save, (dialog, which) -> {
-                    post.setMessage(input.getText().toString());
-                    mPresenter.editMessage(mChannelId, post);
+                    mPresenter.editMessage(channelId, post);
                 })
                 .show();
     }
@@ -236,26 +260,27 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mChannelId = extras.getString(CHANNEL_ID_KEY);
         mChannelName = extras.getString(CHANNEL_NAME_KEY);
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
-    }
-
-    private LinearLayoutManager getLayoutManager() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        return linearLayoutManager;
+        mChannelLastViewed = extras.getLong(CHANNEL_LAST_VIEWED_KEY);
     }
 
     private void initView() {
         setSupportActionBar(mToolbar);
-        mRvMessages.addOnScrollListener(mPaginationListener);
         final ActionBar actionBar = getSupportActionBar();
-        mRvMessages.setLayoutManager(getLayoutManager());
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+            mToolbar.setOnClickListener(v -> scrollToStart());
         }
-
-        mRvMessages.setAdapter(mAdapter);
+        mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState != RecyclerView.SCROLL_STATE_DRAGGING) {
+                    return;
+                }
+                hideKeyboard();
+            }
+        });
     }
 }
