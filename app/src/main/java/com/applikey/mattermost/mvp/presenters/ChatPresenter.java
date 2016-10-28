@@ -63,7 +63,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         updateLastViewedAt(channelId);
 
-        mPostStorage.listByChannel(channelId).subscribe(view::onRealmAttached, view::onFailure);
+        mPostStorage.
+                listByChannel(channelId)
+                .first()
+                .subscribe(view::onRealmAttached, view::onFailure);
     }
 
     private void updateLastViewedAt(String channelId) {
@@ -72,7 +75,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
                 .toCompletable()
-                .subscribe(ErrorHandler::handleError, ()->{}));
+                .subscribe(ErrorHandler::handleError, () -> {
+                }));
 
         mChannelStorage.updateLastViewedAt(channelId);
     }

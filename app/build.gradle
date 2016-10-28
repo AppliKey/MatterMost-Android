@@ -145,7 +145,7 @@ dependencies {
     compile 'com.annimon:stream:1.1.2'
 
     //Realm Adapter
-    compile 'com.github.ReginFell:realm-android-adapters:7264600a02'
+    compile 'com.github.ReginFell:realm-android-adapters:175990bf26'
 
     // crashlytics
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {

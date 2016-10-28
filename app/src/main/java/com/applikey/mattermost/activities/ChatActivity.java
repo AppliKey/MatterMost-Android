@@ -129,8 +129,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
-        mRvMessages.setLayoutManager(getLayoutManager());
-        //mRvMessages.addOnScrollListener(mPaginationListener);
+        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
+        mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(adapter);
 
         if (posts.size() > 0) {
@@ -221,12 +221,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mChannelId = extras.getString(CHANNEL_ID_KEY);
         mChannelName = extras.getString(CHANNEL_NAME_KEY);
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
-    }
-
-    private LinearLayoutManager getLayoutManager() {
-        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        return linearLayoutManager;
     }
 
     private void initView() {
