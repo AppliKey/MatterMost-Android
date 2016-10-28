@@ -18,7 +18,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -59,8 +58,10 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         if (getData() != null && getData().size() > 0) {
             final Post post = getData().get(position);
 
-            Realm realm = Realm.getDefaultInstance();
-            final User user = realm.where(User.class).equalTo("id", post.getUserId()).findFirst(); //TODO when scroll issue fixed, replace to presenter
+            final Realm realm = Realm.getDefaultInstance();
+            final User user = realm.where(User.class).equalTo("id", post.getUserId()).findFirst();
+            //TODO Discuss with team how we can avoid this
+            //TODO when scroll issue fixed, replace to presenter
 
             final boolean isLastPost = position == getData().size() - 1;
             final boolean isFirstPost = position == 0;

@@ -117,6 +117,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .subscribe(posts -> mPostStorage.delete(post), ErrorHandler::handleError));
     }
 
+    //FIXME Currently we have problem when sending RealmProxy object to server
     public void editMessage(String channelId, Post post) {
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.updatePost(team.getId(), channelId, post)
