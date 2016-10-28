@@ -27,12 +27,12 @@ public class RegistrationIntentService extends IntentService {
 
         App.getComponent().inject(this);
 
-        Log.d(TAG, "Registration service constructor");
+        Log.d(Constants.LOG_TAG_DEBUG, "RegistrationIntentService - Registration service constructor");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "Registration intent");
+        Log.d(Constants.LOG_TAG_DEBUG, "RegistrationIntentService - Registering intent");
 
         final InstanceID instanceId = InstanceID.getInstance(this);
         try {
@@ -41,12 +41,16 @@ public class RegistrationIntentService extends IntentService {
                         GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
                 Log.d(TAG, token);
                 mPrefs.setGcmToken(token);
+
+                Log.d(Constants.LOG_TAG_DEBUG, "RegistrationIntentService - token - " + token);
             }
         } catch (IOException e) {
+            Log.d(Constants.LOG_TAG_DEBUG, "RegistrationIntentService - IOException");
             Timber.e("Failed to refresh token");
         }
 
         final Intent registrationComplete = new Intent(Constants.GCM_REGISTRATION_COMPLETE);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
+        Log.d(Constants.LOG_TAG_DEBUG, "RegistrationIntentService - Registering complete");
     }
 }

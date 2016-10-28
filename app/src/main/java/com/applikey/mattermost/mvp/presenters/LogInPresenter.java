@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.BuildConfig;
+import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.web.RequestError;
@@ -71,13 +72,13 @@ public class LogInPresenter extends BasePresenter<LogInView> {
 
     public void loadTeams() {
         final LogInView view = getViewState();
-        mApi.listTeams()
+        mSubscription.add(mApi.listTeams()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     mTeamStorage.saveTeamsWithRemoval(response.values());
                     view.onTeamsRetrieved(response);
-                }, view::onTeamsReceiveFailed);
+                }, view::onTeamsReceiveFailed));
     }
 
     private void handleSuccessfulResponse(Response<AuthenticationResponse> response) {
@@ -90,7 +91,15 @@ public class LogInPresenter extends BasePresenter<LogInView> {
             cacheHeaders(response);
 
             mPrefs.setCurrentUserId(response.body().getId());
-            getViewState().onSuccessfulAuth();
+
+            // TODO Refactor
+            final AttachDeviceRequest request = new AttachDeviceRequest();
+            request.setDeviceId("android:" + mPrefs.getGcmToken());
+
+            mSubscription.add(mApi.attachDevice(request)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(result -> getViewState().onSuccessfulAuth(), ErrorHandler::handleError));
             return;
         }
 

@@ -2,6 +2,7 @@ package com.applikey.mattermost.web;
 
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.post.PendingPost;
@@ -157,5 +158,10 @@ public class ApiDelegate implements Api {
     public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
                                                            @Path("channelId") String channelId) {
         return getRealApi().updateLastViewedAt(teamId, channelId);
+    }
+
+    @Override
+    public Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
+        return getRealApi().attachDevice(request);
     }
 }
