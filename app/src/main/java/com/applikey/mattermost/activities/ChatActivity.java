@@ -273,5 +273,14 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
             mToolbar.setOnClickListener(v -> scrollToStart());
         }
+        mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState != RecyclerView.SCROLL_STATE_DRAGGING) {
+                    return;
+                }
+                hideKeyboard();
+            }
+        });
     }
 }
