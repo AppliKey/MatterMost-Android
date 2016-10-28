@@ -28,7 +28,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
 

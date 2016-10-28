@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "566930802510",
+    "firebase_url": "https://nutscracker-mattermost-push.firebaseio.com",
+    "project_id": "nutscracker-mattermost-push",
+    "storage_bucket": "nutscracker-mattermost-push.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566930802510:android:e7800719a4c4d320",
+        "android_client_info": {
+          "package_name": "com.applikey.mattermost"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "566930802510-lmvbmtmfm7obk27hobpopq59tsk1g9sq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDy1-2cFse7d7mouATDi53rgWCNBamXGRw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

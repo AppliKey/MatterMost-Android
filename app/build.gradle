@@ -1,10 +1,10 @@
 buildscript {
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.22.0'
-    }
     repositories {
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
+    }
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.22.0'
     }
 }
 
@@ -142,14 +142,19 @@ dependencies {
     //logging
     compile 'com.jakewharton.timber:timber:4.3.1'
 
-    //Stream API
+    // Stream API
     compile 'com.annimon:stream:1.1.2'
 
     // crashlytics
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
-        transitive = true;
+        transitive = true
     }
 
-    compile 'com.annimon:stream:1.1.2'
+    // lint
     compile 'nl.littlerobots.rxlint:rxlint:1.0'
+
+    // gcm
+    compile 'com.google.android.gms:play-services-gcm:9.6.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
