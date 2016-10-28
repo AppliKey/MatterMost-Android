@@ -11,8 +11,8 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
-import io.realm.RealmResults;
 import rx.Observable;
+import io.realm.RealmResults;
 
 public class ChannelStorage {
 

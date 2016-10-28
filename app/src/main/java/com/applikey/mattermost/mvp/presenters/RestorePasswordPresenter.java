@@ -25,7 +25,6 @@ public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView>
 
     public void sendRestorePasswordRequest(String email) {
         final RestorePasswordView view = getViewState();
-
         if (!validateEmailFormat(email)) {
             view.onFailure(INVALID_EMAIL_MESSAGE);
             return;

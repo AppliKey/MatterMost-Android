@@ -126,6 +126,19 @@ public class Db {
                 .map(mRealm::copyFromRealm);
     }
 
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsExcluded(Class<T>
+            tClass,
+            String fieldName,
+            String value) {
+        return mRealm
+                .where(tClass)
+                .notEqualTo(fieldName, value)
+                .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .map(mRealm::copyFromRealm);
+    }
+
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
                                                                                               tClass,
                                                                                       String fieldName,

@@ -1,6 +1,7 @@
 package com.applikey.mattermost.injects;
 
 import android.content.Context;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -151,5 +152,11 @@ public class GlobalModule {
     @PerApp
     PostStorage providePostStorage(Db db) {
         return new PostStorage(db);
+    }
+
+    @Provides
+    @PerApp
+    Context provideApplicationContext() {
+        return mApplicationContext;
     }
 }

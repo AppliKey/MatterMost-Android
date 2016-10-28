@@ -16,6 +16,7 @@ public class TeamStorage {
 
     private final Db mDb;
 
+    @Inject
     public TeamStorage(Db db) {
         mDb = db;
     }

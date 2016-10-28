@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    tools:parentTag="LinearLayout">
+
+    <TextView
+        android:id="@+id/tv_type_public"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/channel_type_margin"
+        android:drawablePadding="@dimen/switch_channel_type_icon_margin"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/channel_type_textsize"
+        android:text="@string/public_channel" />
+
+    <ToggleButton
+        android:id="@+id/toggle_channel_type"
+        android:layout_width="@dimen/channel_type_toggle_width"
+        android:layout_height="@dimen/channel_type_toggle_height"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:background="@drawable/selector_switch"
+        android:textOff=""
+        android:textOn=""
+        />
+
+
+    <TextView
+        android:id="@+id/tvTypePrivate"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/channel_type_margin"
+        android:drawablePadding="@dimen/switch_channel_type_icon_margin"
+        android:includeFontPadding="false"
+        android:textSize="@dimen/channel_type_textsize"
+        android:text="@string/private_channel" />
+
+</merge>
