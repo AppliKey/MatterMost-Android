@@ -8,10 +8,10 @@ public class GcmMessageHandler extends GcmListenerService {
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
+        super.onMessageReceived(from, data);
+
         final String type = data.getString("type");
 
         Timber.d(type);
-
-        super.onMessageReceived(from, data);
     }
 }
