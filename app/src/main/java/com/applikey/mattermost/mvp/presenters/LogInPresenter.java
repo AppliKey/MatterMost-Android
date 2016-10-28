@@ -92,9 +92,9 @@ public class LogInPresenter extends BasePresenter<LogInView> {
 
             mPrefs.setCurrentUserId(response.body().getId());
 
-            // TODO Refactor
+            // Register GCM token on a server after authorization
             final AttachDeviceRequest request = new AttachDeviceRequest();
-            request.setDeviceId("android:" + mPrefs.getGcmToken());
+            request.setGcmToken(mPrefs.getGcmToken());
 
             mSubscription.add(mApi.attachDevice(request)
                     .subscribeOn(Schedulers.io())
