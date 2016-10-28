@@ -16,7 +16,7 @@ public class PostStorage {
     }
 
     public void delete(Post post) {
-        mDb.saveTransactionalSync(post);
+        mDb.deleteTransactionalSync(post);
     }
 
     public void update(Post post) {

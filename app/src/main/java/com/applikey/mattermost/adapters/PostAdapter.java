@@ -18,6 +18,7 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;

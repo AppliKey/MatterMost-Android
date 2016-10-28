@@ -114,7 +114,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         super.onStart();
 
         mPresenter.getInitialData(mChannelId);
-        mPresenter.fetchData(mChannelId);
     }
 
     @Override
@@ -131,7 +130,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
         mRvMessages.setLayoutManager(getLayoutManager());
-        mRvMessages.addOnScrollListener(mPaginationListener);
+        //mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(adapter);
 
         if (posts.size() > 0) {

@@ -2,7 +2,6 @@ package com.applikey.mattermost.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListAdapter.ViewHolder> {
 
@@ -33,7 +33,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
     private Context mContext;
 
-    public ChatListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Channel> data,
+    public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
                            ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
         mContext = context;

@@ -148,7 +148,7 @@ public class Db {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
-                .beginGroup()
+                //.beginGroup()
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());
