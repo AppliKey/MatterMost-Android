@@ -81,10 +81,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelName;
     private String mChannelType;
     private long mChannelLastViewed;
+    private PostAdapter mAdapter;
 
     private boolean mIsNeedToScrollToStart = true;
-
-
     private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override
         public void onLoad() {
@@ -154,14 +153,14 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Override
     public void onDataReady(RealmResults<Post> posts) {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
-        final PostAdapter adapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
+        mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
                 channelType, mChannelLastViewed, onPostLongClick);
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
         mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
-        mRvMessages.setAdapter(adapter);
+        mRvMessages.setAdapter(mAdapter);
 
         if (posts.size() > 0) {
             hideEmptyState();
@@ -183,7 +182,17 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @OnClick(R.id.iv_send_message)
     public void onSend() {
         mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+    }
+
+    @Override
+    public void onMessageSent(long createdAt) {
         mEtMessage.setText("");
+        mAdapter.setLastViewed(createdAt);
+        scrollToStart();
+    }
+
+    private void scrollToStart() {
+        mRvMessages.scrollToPosition(0);
     }
 
     private void displayEmptyState() {
@@ -262,6 +271,16 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+            mToolbar.setOnClickListener(v -> scrollToStart());
         }
+        mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState != RecyclerView.SCROLL_STATE_DRAGGING) {
+                    return;
+                }
+                hideKeyboard();
+            }
+        });
     }
 }

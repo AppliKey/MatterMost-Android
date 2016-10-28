@@ -32,24 +32,28 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private final ImageLoader mImageLoader;
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
-    private final long mLastViewed;
+
+    private long mLastViewed;
     private int mNewMessageIndicatorPosition = -1;
 
-
-    //FIXME fix new message logic
     public PostAdapter(Context context,
-                       RealmResults<Post> posts,
-                       String currentUserId,
-                       ImageLoader imageLoader,
-                       Channel.ChannelType channelType,
-                       long lastViewed,
-                       OnLongClickListener onLongClickListener) {
+            RealmResults<Post> posts,
+            String currentUserId,
+            ImageLoader imageLoader,
+            Channel.ChannelType channelType,
+            long lastViewed,
+            OnLongClickListener onLongClickListener) {
         super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
         mChannelType = channelType;
         mLastViewed = lastViewed;
         mOnLongClickListener = onLongClickListener;
+    }
+
+
+    public void setLastViewed(long lastViewed) {
+        mLastViewed = lastViewed;
     }
 
     @Override
@@ -174,7 +178,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOwnPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate,
-                         OnLongClickListener onLongClickListener) {
+                OnLongClickListener onLongClickListener) {
             bind(channelType, post, user, showAuthor, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
@@ -185,7 +189,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOtherPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime,
-                           boolean showDate, ImageLoader imageLoader) {
+                boolean showDate, ImageLoader imageLoader) {
             bind(channelType, post, user, showAuthor, showTime, showDate);
 
             final String previewImagePath = user.getProfileImage();
