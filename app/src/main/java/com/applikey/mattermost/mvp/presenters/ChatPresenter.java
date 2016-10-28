@@ -128,9 +128,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     public void sendMessage(String channelId, String message) {
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
+        final String pendingId = currentUserId + ":" + createdAt;
 
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
-                message, "", currentUserId + ":" + createdAt);
+                message, "", pendingId);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
