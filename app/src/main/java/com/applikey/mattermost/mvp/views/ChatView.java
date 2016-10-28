@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.views;
 
 import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
@@ -18,4 +17,6 @@ public interface ChatView extends MvpView {
     void showProgress(boolean enabled);
 
     void onFailure(Throwable cause);
+
+    void onMessageSent(long createdAt);
 }
