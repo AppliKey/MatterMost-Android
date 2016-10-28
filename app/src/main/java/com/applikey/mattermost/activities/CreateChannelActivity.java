@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.models.channel.UserPendingInvitation;
@@ -24,6 +26,7 @@ import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.applikey.mattermost.views.ChannelTypeView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -59,6 +62,8 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @InjectPresenter
     CreateChannelPresenter mPresenter;
+
+    private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
 
     private PeopleToNewChannelAdapter mAdapter;
 
@@ -162,5 +167,27 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @Override
     public void showEmptyChannelNameError() {
         showToast(getString(R.string.error_channel_name_empty));
+    }
+
+    @OnClick(R.id.added_people_layout)
+    public void onAddedUsersPanelClick() {
+        List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
+                .map(User::getId)
+                .collect(Collectors.toList());
+        Intent intent = AddedMembersActivity.getIntent(this, (ArrayList<String>)alreadyAddedUsersIds);
+        startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_ADDED_MEMBERS_DIALOG: {
+                if (resultCode == RESULT_OK) {
+                    ArrayList<String> addedUsersIds = data.getStringArrayListExtra(AddedMembersActivity.USERS_IDS_KEY);
+                    mPresenter.showAlreadyAddedUsers(addedUsersIds);
+                }
+            } break;
+            default: super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

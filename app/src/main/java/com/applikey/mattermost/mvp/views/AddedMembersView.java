@@ -1,6 +1,6 @@
 package com.applikey.mattermost.mvp.views;
 
-import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.arellomobile.mvp.MvpView;
 
 import java.util.List;
@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface AddedMembersView extends MvpView {
 
-    void showAddedMembers(List<User> users);
+    void showAddedMembers(List<UserPendingInvitation> users);
 }

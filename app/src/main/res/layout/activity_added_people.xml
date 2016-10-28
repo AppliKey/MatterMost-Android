@@ -13,18 +13,19 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/AppToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_back" />
 
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_added_members"
-        android:padding="30dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="30dp"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager">
 
     </android.support.v7.widget.RecyclerView>
-
-
 
 </LinearLayout>
