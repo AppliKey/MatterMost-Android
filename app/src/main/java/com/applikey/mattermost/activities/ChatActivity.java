@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,9 +45,12 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private static final String CHANNEL_ID_KEY = "channel-id";
     private static final String CHANNEL_NAME_KEY = "channel-name";
     private static final String CHANNEL_TYPE_KEY = "channel-type";
+    private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
 
     private static final String CHANNEL_PREFIX = "#";
     private static final String DIRECT_PREFIX = "";
+
+    private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -75,6 +80,10 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
+    private long mChannelLastViewed;
+
+    private boolean mIsNeedToScrollToStart = true;
+
 
     private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override
@@ -90,7 +99,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         bundle.putString(CHANNEL_ID_KEY, channel.getId());
         bundle.putString(CHANNEL_NAME_KEY, channel.getDisplayName());
         bundle.putString(CHANNEL_TYPE_KEY, channel.getType());
-
+        bundle.putLong(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         intent.putExtras(bundle);
 
         return intent;
@@ -124,7 +133,27 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE, MENU_ITEM_SEARCH, Menu.NONE, R.string.search)
+                .setIcon(R.drawable.ic_search)
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case MENU_ITEM_SEARCH:
+                //presenter.search()
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public void onDataReady(RealmResults<Post> posts) {
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
         final PostAdapter adapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader, onPostLongClick);
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
@@ -221,6 +250,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mChannelId = extras.getString(CHANNEL_ID_KEY);
         mChannelName = extras.getString(CHANNEL_NAME_KEY);
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
+        mChannelLastViewed = extras.getLong(CHANNEL_LAST_VIEWED_KEY);
     }
 
     private void initView() {
@@ -229,6 +259,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         }
     }
