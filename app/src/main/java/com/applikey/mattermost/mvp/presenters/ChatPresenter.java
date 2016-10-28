@@ -65,7 +65,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         mPostStorage.listByChannel(channelId)
                 .first()
-                .subscribe(view::onRealmAttached, view::onFailure);
+                .subscribe(view::onDataReady, view::onFailure);
     }
 
     private void updateLastViewedAt(String channelId) {
@@ -126,16 +126,11 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void sendMessage(String channelId, String message) {
-        final PendingPost pendingPost = new PendingPost();
+        final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
 
-        final String currentUserId = mPrefs.getCurrentUserId();
-        pendingPost.setUserId(currentUserId);
-        pendingPost.setMessage(message);
-        pendingPost.setCreatedAt(createdAt);
-        pendingPost.setChannelId(channelId);
-        pendingPost.setPendingPostId(currentUserId + ":" + createdAt);
-        pendingPost.setType("");
+        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
+                message, "", currentUserId + ":" + createdAt);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)

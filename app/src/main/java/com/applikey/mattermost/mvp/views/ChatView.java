@@ -11,7 +11,7 @@ import io.realm.RealmResults;
 @StateStrategyType(value = SkipStrategy.class)
 public interface ChatView extends MvpView {
 
-    void onRealmAttached(RealmResults<Post> posts);
+    void onDataReady(RealmResults<Post> posts);
 
     void onDataFetched();
 

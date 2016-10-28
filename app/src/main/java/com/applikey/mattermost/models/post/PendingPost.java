@@ -6,31 +6,24 @@ import com.google.gson.annotations.SerializedName;
 public class PendingPost {
 
     @SerializedName("id")
-    @Expose
     private String id;
 
     @SerializedName("create_at")
-    @Expose
     private long createdAt;
 
     @SerializedName("user_id")
-    @Expose
     private String userId;
 
     @SerializedName("channel_id")
-    @Expose
     private String channelId;
 
     @SerializedName("message")
-    @Expose
     private String message;
 
     @SerializedName("type")
-    @Expose
     private String type;
 
     @SerializedName("pending_post_id")
-    @Expose
     private String pendingPostId;
 
     public String getId() {
@@ -40,7 +33,7 @@ public class PendingPost {
     public PendingPost() {
     }
 
-    public PendingPost(String id, long createdAt, String userId, String channelId, String message, String type, String pendingPostId) {
+    public PendingPost(long createdAt, String userId, String channelId, String message, String type, String pendingPostId) {
         this.id = id;
         this.createdAt = createdAt;
         this.userId = userId;
