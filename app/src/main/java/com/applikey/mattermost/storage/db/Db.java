@@ -34,8 +34,14 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<T> getObject(Class<T> tClass, String id) {
+        return getObjectQualified(tClass, "id", id);
+    }
+
+    public <T extends RealmObject> Observable<T> getObjectQualified(Class<T> tClass,
+                                                                    String fieldName,
+                                                                    String fieldValue) {
         return mRealm.where(tClass)
-                .equalTo("id", id)
+                .equalTo(fieldName, fieldValue)
                 .findFirstAsync()
                 .<T>asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());

@@ -4,11 +4,30 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.storage.db.UserStorage;
 import com.google.android.gms.gcm.GcmListenerService;
+
+import rx.subscriptions.CompositeSubscription;
 
 public class GcmMessageHandler extends GcmListenerService {
 
     private static final String MESSAGE_TYPE_CLEAR = "clear";
+
+    private CompositeSubscription mSubscription;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mSubscription = new CompositeSubscription();
+    }
+
+    @Override
+    public void onDestroy() {
+        mSubscription.clear();
+
+        super.onDestroy();
+    }
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -26,6 +45,7 @@ public class GcmMessageHandler extends GcmListenerService {
             // show notification
 
             final GcmMessageHelper.RawPostDto rawPost = GcmMessageHelper.extractRawPost(data);
+            processPostDto();
         }
     }
 
@@ -48,6 +68,10 @@ public class GcmMessageHandler extends GcmListenerService {
         super.onSendError(messageId, error);
 
         logD("on send error - " + messageId + " - " + error);
+    }
+
+    private void processPostDto() {
+
     }
 
     private void logD(String message) {
