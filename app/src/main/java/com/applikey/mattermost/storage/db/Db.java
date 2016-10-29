@@ -24,9 +24,7 @@ public class Db {
     }
 
     public void saveTransactional(RealmObject object) {
-        mRealm.executeTransactionAsync(realm -> {
-            realm.copyToRealmOrUpdate(object);
-        });
+        mRealm.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(object));
     }
 
     public void saveTransactionalSync(RealmObject object) {
