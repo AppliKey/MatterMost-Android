@@ -18,6 +18,7 @@ import com.applikey.mattermost.mvp.views.CreateChannelView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.applikey.mattermost.web.Api;
 import com.arellomobile.mvp.InjectViewState;
 
@@ -188,5 +189,42 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         return pendingUsers;
     }
 
+    /**
+     * How it works:
+     * <li>1. All team members are fetched from data source</li>
+     * <li>2. Fetched members are sorted by comparator {@link User#compareTo(User)}</li>
+     * <li>3. User list is iterated and filtered by comparing ids with every id in
+     * <code>addedUsersIds</code>. Thus we get the list of already added users</li>
+     * <li>4. The list of already added users is shown in
+     * {@link AddedPeopleLayout}</li>
+     * <li>5. The initial list of users is converted to {@link UserPendingInvitation}</li>
+     * <li>6. The {@link UserPendingInvitation} list is shown in RecyclerView</li>
+     *
+     * @param addedUsersIds the list of already added users' ids
+     */
+    public void showAlreadyAddedUsers(List<String> addedUsersIds) {
+
+        final Subscription subscription = mUserStorage.listDirectProfiles()
+                .first()                                                               //      Start of Section 1
+                .flatMap(Observable::from)                                             //
+                .filter(user -> !user.getId().equals(mCurrentUserId))                  //      End of Section 1
+                .toSortedList()                                                        //      Section 2
+                .map(users -> {                                                        //      Start of Section 3
+                    final List<User> alreadyAddedUsers = Stream.of(users)              //
+                            .filter(user ->                                            //
+                                    Stream.of(addedUsersIds)                           //
+                                            .anyMatch(id -> user.getId().equals(id)))  //
+                            .collect(Collectors.toList());                             //      End of Section 3
+                    mInvitedUsers = alreadyAddedUsers;
+                    getViewState().showAddedUsers(mInvitedUsers);                      //      Section 4
+                    return convertToPendingUsers(users, alreadyAddedUsers);            //      Section 5
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        results -> getViewState().showUsers(results),                  //      Section 6
+                        error -> Timber.e("", error)
+                );
+        mSubscription.add(subscription);
+    }
 }
 

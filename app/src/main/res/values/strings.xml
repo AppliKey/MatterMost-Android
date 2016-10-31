@@ -69,6 +69,7 @@
     <string name="search">Search</string>
     <string name="create_chat_hint_name">Example: Project Name, Bugs, Sales</string>
     <string name="create_channel_description_hint">What are you going to discuss\n in this group</string>
+    <string name="added_members_title">Added members</string>
 
     <array name="post_own_opinion_array">
         <item>Delete</item>

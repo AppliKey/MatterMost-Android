@@ -4,6 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.fragments.BaseFragment;
+import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
@@ -46,4 +47,6 @@ public interface ApplicationComponent {
     void inject(ChatPresenter presenter);
 
     UserComponent.Builder userComponentBuilder();
+
+    void inject(AddedMembersPresenter presenter);
 }
