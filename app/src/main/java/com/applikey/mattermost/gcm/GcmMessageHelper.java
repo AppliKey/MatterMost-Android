@@ -2,10 +2,9 @@ package com.applikey.mattermost.gcm;
 
 import android.os.Bundle;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class GcmMessageHelper {
+final class GcmMessageHelper {
 
     private static final String ARG_CHANNEL_ID = "channel_id";
     private static final String ARG_GOOGLE_SENT_TIME = "google.sent_time";
@@ -26,34 +25,26 @@ class GcmMessageHelper {
         return message.getString(ARG_TYPE);
     }
 
-    static RawPostDto extractRawPost(Bundle message) {
-        final String rawString = message.getString(ARG_MESSAGE);
-
-        final Matcher matcher = MESSAGE_PATTERN.matcher(rawString);
-        if (!matcher.find()) {
-            throw new IllegalArgumentException("Illegal GCM message format");
-        }
-        final String group0 = matcher.group(1);
-        final String group1 = matcher.group(2);
-
-        return new RawPostDto(group0, group1);
+    static NotificationDto extractNotification(Bundle message) {
+        return new NotificationDto(message.getString(ARG_CHANNEL_ID), message.getString(ARG_MESSAGE));
     }
 
-    static class RawPostDto {
-        private final String authorName;
+    static class NotificationDto {
+        private final String chanelId;
+
         private final String message;
 
-        RawPostDto(String authorName, String message) {
-            this.authorName = authorName;
+        NotificationDto(String chanelId, String message) {
+            this.chanelId = chanelId;
             this.message = message;
-        }
-
-        String getAuthorName() {
-            return authorName;
         }
 
         String getMessage() {
             return message;
+        }
+
+        String getChanelId() {
+            return chanelId;
         }
     }
 }

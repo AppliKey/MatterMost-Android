@@ -23,6 +23,8 @@
     <string name="enter_your_password">Enter your password</string>
     <string name="forgot_password_capt">FORGOT PASSWORD</string>
     <string name="restore_password_capt">RESTORE PASSWORD</string>
+    <string name="reply">Reply</string>
+    <string name="new_message_received">New message received"</string>
 
     <string name="edit_message">Edit Message</string>
     <string name="cancel">Cancel</string>
