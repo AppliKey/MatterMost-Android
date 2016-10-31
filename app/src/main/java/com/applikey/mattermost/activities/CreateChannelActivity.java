@@ -171,10 +171,10 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @OnClick(R.id.added_people_layout)
     public void onAddedUsersPanelClick() {
-        List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
+        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
                 .map(User::getId)
                 .collect(Collectors.toList());
-        Intent intent = AddedMembersActivity.getIntent(this, (ArrayList<String>)alreadyAddedUsersIds);
+        final Intent intent = AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
     }
 
@@ -183,7 +183,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         switch (requestCode) {
             case REQUEST_ADDED_MEMBERS_DIALOG: {
                 if (resultCode == RESULT_OK) {
-                    ArrayList<String> addedUsersIds = data.getStringArrayListExtra(AddedMembersActivity.USERS_IDS_KEY);
+                    final ArrayList<String> addedUsersIds = data.getStringArrayListExtra(AddedMembersActivity.USERS_IDS_KEY);
                     mPresenter.showAlreadyAddedUsers(addedUsersIds);
                 }
             }
