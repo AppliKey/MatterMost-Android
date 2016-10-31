@@ -10,6 +10,7 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
+import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -39,6 +40,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     @Inject
     ChannelStorage mChannelStorage;
+
+    @Inject
+    StorageDestroyer mStorageDestroyer;
 
     @Inject
     Prefs mPrefs;
@@ -130,6 +134,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     public void logout() {
         mPrefs.setKeyAuthToken(null);
         App.releaseUserComponent();
+        mStorageDestroyer.deleteDatabase();
         getViewState().logout();
     }
 }

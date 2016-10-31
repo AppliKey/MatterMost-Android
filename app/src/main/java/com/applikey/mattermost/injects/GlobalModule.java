@@ -7,6 +7,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.PostStorage;
+import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -152,6 +153,12 @@ public class GlobalModule {
     @PerApp
     PostStorage providePostStorage(Db db) {
         return new PostStorage(db);
+    }
+
+    @Provides
+    @PerApp
+    StorageDestroyer provideStorageDestroyer(Db db) {
+        return new StorageDestroyer(db);
     }
 
     @Provides
