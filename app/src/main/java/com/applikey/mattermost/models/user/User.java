@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.user;
 
+import android.text.TextUtils;
+
 import com.applikey.mattermost.R;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +11,7 @@ import java.util.Map;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject implements Comparable<User>{
+public class User extends RealmObject implements Comparable<User>, Searchable<String> {
 
     @PrimaryKey
     @SerializedName("id")
@@ -190,12 +192,6 @@ public class User extends RealmObject implements Comparable<User>{
 
         final User user = (User) o;
 
-/*        if (getLastActivityAt() != user.getLastActivityAt())
-            return false;
-        if (getUpdateAt() != user.getUpdateAt())
-            return false;
-        if (getStatus() != user.getStatus())
-            return false;*/
         if (!getId().equals(user.getId()))
             return false;
         if (!getUsername().equals(user.getUsername()))
@@ -235,5 +231,18 @@ public class User extends RealmObject implements Comparable<User>{
     @Override
     public String toString() {
         return User.getDisplayableName(this);
+    }
+
+    @Override
+    public boolean search(String searchFilter) {
+        if (TextUtils.isEmpty(searchFilter)) {
+            return true;
+        }
+        boolean result = false;
+
+        if (firstName.contains(searchFilter) || lastName.contains(searchFilter) || email.contains(searchFilter)) {
+            result = true;
+        }
+        return result;
     }
 }

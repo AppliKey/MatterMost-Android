@@ -86,13 +86,10 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
+            case android.R.id.home: {
                 onBackPressed();
                 return true;
-            case R.id.action_search_added_members: {
-
             }
-            break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -113,7 +110,7 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
                 .collect(Collectors.toList());
         intent.putStringArrayListExtra(USERS_IDS_KEY, (ArrayList<String>) addedMembersIds);
         setResult(RESULT_OK, intent);
-        finish();
+        super.onBackPressed();
     }
 
     @Override

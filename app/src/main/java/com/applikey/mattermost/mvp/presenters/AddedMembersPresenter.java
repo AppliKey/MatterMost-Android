@@ -1,7 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.text.TextUtils;
-
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
@@ -64,7 +62,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .first()
                 .flatMap(Observable::from)
                 .filter(user -> Stream.of(mAddedUsersIds).anyMatch(id -> user.getId().equals(id)))
-                .filter(user -> isUserPassesFilter(user, filter))
+                .filter(user -> user.search(filter))
                 .toSortedList()
                 .map(users -> convertToPendingUsers(users, mResultingList))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -77,21 +75,6 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
 
     public List<User> getResultingList() {
         return mResultingList;
-    }
-
-    private boolean isUserPassesFilter(User user, String filterString) {
-        if (TextUtils.isEmpty(filterString)) {
-            return true;
-        }
-        boolean result = false;
-        final String firstName = user.getFirstName();
-        final String lastName = user.getLastName();
-        final String userEmail = user.getEmail();
-        if (firstName.contains(filterString) || lastName.contains(filterString) || userEmail.contains(filterString)) {
-            result = true;
-        }
-        return result;
-
     }
 
     private List<UserPendingInvitation> convertToPendingUsers(List<User> users, List<User> alreadyAddedUsers) {

@@ -48,5 +48,5 @@ public interface ApplicationComponent {
 
     UserComponent.Builder userComponentBuilder();
 
-    void inject(AddedMembersPresenter addedMembersPresenter);
+    void inject(AddedMembersPresenter presenter);
 }

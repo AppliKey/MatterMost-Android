@@ -186,8 +186,9 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
                     ArrayList<String> addedUsersIds = data.getStringArrayListExtra(AddedMembersActivity.USERS_IDS_KEY);
                     mPresenter.showAlreadyAddedUsers(addedUsersIds);
                 }
-            } break;
-            default: super.onActivityResult(requestCode, resultCode, data);
+            }
+            break;
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
