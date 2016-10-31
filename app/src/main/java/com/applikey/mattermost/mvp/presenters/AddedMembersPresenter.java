@@ -7,6 +7,7 @@ import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.AddedMembersView;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 @InjectViewState
 public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
@@ -44,7 +44,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         users -> getViewState().showAddedMembers(users),
-                        error -> Timber.e("", error)
+                        ErrorHandler::handleError
                 );
         mSubscription.add(subscription);
     }
@@ -68,7 +68,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         users -> getViewState().showAddedMembers(users),
-                        error -> Timber.e("", error)
+                        ErrorHandler::handleError
                 );
         mSubscription.add(subscription);
     }

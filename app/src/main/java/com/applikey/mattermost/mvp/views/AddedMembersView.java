@@ -5,7 +5,6 @@ import com.arellomobile.mvp.MvpView;
 
 import java.util.List;
 
-
 public interface AddedMembersView extends MvpView {
 
     void showAddedMembers(List<UserPendingInvitation> users);
