@@ -1,11 +1,18 @@
 package com.applikey.mattermost.storage.db;
 
+import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.team.Team;
+import com.applikey.mattermost.models.user.User;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import io.realm.Realm;
+import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -235,5 +242,18 @@ public class Db {
             return;
         }
         update.call(object, realmObject);
+    }
+
+    private <T extends RealmModel> void deleteTable (Class<T> clazz) {
+        mRealm.delete(clazz);
+    }
+
+    public void deleteDatabase() {
+        deleteTable(Channel.class);
+        deleteTable(DictionaryEntry.class);
+        deleteTable(Membership.class);
+        deleteTable(Post.class);
+        deleteTable(Team.class);
+        deleteTable(User.class);
     }
 }
