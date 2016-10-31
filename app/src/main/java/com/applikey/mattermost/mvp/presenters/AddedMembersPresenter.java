@@ -53,22 +53,10 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
 
     public void addUser(User user) {
         mResultingList.add(user);
-        Timber.d("Resulting users");
-        for (User user1 : mResultingList) {
-            Timber.d("%s", user1);
-        }
     }
 
     public void removeUser(User user) {
         mResultingList.remove(user);
-        Timber.d("Resulting users");
-        for (User user1 : mResultingList) {
-            Timber.d("%s", user1);
-        }
-    }
-
-    public ArrayList<String> getIds() {
-        return (ArrayList<String>) mAddedUsersIds;
     }
 
     public void getUsersAndFilterByFullName(String filter) {
@@ -90,7 +78,6 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     public List<User> getResultingList() {
         return mResultingList;
     }
-
 
     private boolean isUserPassesFilter(User user, String filterString) {
         if (TextUtils.isEmpty(filterString)) {

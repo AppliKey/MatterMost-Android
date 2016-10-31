@@ -4,9 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -23,9 +24,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnTextChanged;
 
-public class AddedMembersActivity extends BaseMvpActivity implements AddedMembersView, PeopleToNewChannelAdapter.OnUserChosenListener {
+public class AddedMembersActivity extends BaseMvpActivity implements AddedMembersView, PeopleToNewChannelAdapter.OnUserChosenListener, SearchView.OnQueryTextListener {
 
     public static final String USERS_IDS_KEY = "USERS_IDS_KEY";
 
@@ -35,8 +35,10 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     @Bind(R.id.rv_added_members)
     RecyclerView mRvAddedMembers;
 
-    @Bind(R.id.et_added_members_filter)
-    EditText mEtAddedMembersFilter;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+
+    private SearchView mSearchView;
 
     private PeopleToNewChannelAdapter mAdapter;
 
@@ -53,11 +55,18 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_added_people);
         ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
         final List<String> usersIds = getIntent().getStringArrayListExtra(USERS_IDS_KEY);
         mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
         mRvAddedMembers.setAdapter(mAdapter);
         mPresenter.getUsersByIds(usersIds);
         setTitle(R.string.added_members_title);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_added_members, menu);
+        return true;
     }
 
     @Override
@@ -77,9 +86,23 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: onBackPressed(); return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_search_added_members: {
+
+            }
+            break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final MenuItem searchViewMenuItem = menu.findItem(R.id.action_search_added_members);
+        mSearchView = (SearchView) searchViewMenuItem.getActionView();
+        mSearchView.setOnQueryTextListener(this);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -93,8 +116,14 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
         finish();
     }
 
-    @OnTextChanged(R.id.et_added_members_filter)
-    public void onFilterStringChanged(Editable editable) {
-        mPresenter.getUsersAndFilterByFullName(editable.toString());
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mPresenter.getUsersAndFilterByFullName(newText);
+        return true;
     }
 }
