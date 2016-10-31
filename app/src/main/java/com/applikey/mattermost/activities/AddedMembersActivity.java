@@ -4,8 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.view.MenuItem;
+import android.widget.EditText;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.models.channel.UserPendingInvitation;
@@ -19,6 +23,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnTextChanged;
 
 public class AddedMembersActivity extends BaseMvpActivity implements AddedMembersView, PeopleToNewChannelAdapter.OnUserChosenListener {
 
@@ -29,6 +34,9 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
 
     @Bind(R.id.rv_added_members)
     RecyclerView mRvAddedMembers;
+
+    @Bind(R.id.et_added_members_filter)
+    EditText mEtAddedMembersFilter;
 
     private PeopleToNewChannelAdapter mAdapter;
 
@@ -77,8 +85,16 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     @Override
     public void onBackPressed() {
         final Intent intent = new Intent();
-        intent.putStringArrayListExtra(USERS_IDS_KEY, mPresenter.getIds());
+        final List<String> addedMembersIds = Stream.of(mPresenter.getResultingList())
+                .map(User::getId)
+                .collect(Collectors.toList());
+        intent.putStringArrayListExtra(USERS_IDS_KEY, (ArrayList<String>) addedMembersIds);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @OnTextChanged(R.id.et_added_members_filter)
+    public void onFilterStringChanged(Editable editable) {
+        mPresenter.getUsersAndFilterByFullName(editable.toString());
     }
 }

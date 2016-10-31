@@ -215,7 +215,8 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                                     Stream.of(addedUsersIds)                           //
                                             .anyMatch(id -> user.getId().equals(id)))  //
                             .collect(Collectors.toList());                             //      End of Section 3
-                    getViewState().showAddedUsers(alreadyAddedUsers);                  //      Section 4
+                    mInvitedUsers = alreadyAddedUsers;
+                    getViewState().showAddedUsers(mInvitedUsers);                      //      Section 4
                     return convertToPendingUsers(users, alreadyAddedUsers);            //      Section 5
                 })
                 .observeOn(AndroidSchedulers.mainThread())
