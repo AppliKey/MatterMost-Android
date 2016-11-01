@@ -50,9 +50,11 @@
         <activity
             android:name=".activities.ChatActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.CreateChannelActivity"
+        <activity
+            android:name=".activities.CreateChannelActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".activities.AddedMembersActivity"
+        <activity
+            android:name=".activities.AddedMembersActivity"
             android:screenOrientation="portrait"/>
 
         <receiver
@@ -60,16 +62,10 @@
             android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <!-- for Gingerbread GSF backward compat -->
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <category android:name="com.applikey.mattermost" />
-            </intent-filter>
-        </receiver>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
 
-        <receiver
-            android:name="com.applikey.mattermost.gcm.NotificationDismissReceiver"
-            android:exported="false">
+                <category android:name="com.applikey.mattermost"/>
+            </intent-filter>
         </receiver>
 
         <service

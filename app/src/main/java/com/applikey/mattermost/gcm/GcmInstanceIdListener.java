@@ -10,7 +10,7 @@ public class GcmInstanceIdListener extends InstanceIDListenerService {
     public void onTokenRefresh() {
         super.onTokenRefresh();
 
-        final Intent intent = new Intent(this, RegistrationIntentService.class);
+        final Intent intent = RegistrationIntentService.getIntent(this);
         startService(intent);
     }
 }

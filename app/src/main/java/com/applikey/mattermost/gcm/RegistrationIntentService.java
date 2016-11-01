@@ -1,6 +1,7 @@
 package com.applikey.mattermost.gcm;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.util.Log;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.activities.LogInActivity;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
@@ -24,6 +26,10 @@ public class RegistrationIntentService extends IntentService {
 
     @Inject
     Prefs mPrefs;
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, LogInActivity.class);
+    }
 
     public RegistrationIntentService() {
         super(TAG);

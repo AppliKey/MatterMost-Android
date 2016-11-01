@@ -16,5 +16,4 @@ public class Constants {
     public static final String GCM_REGISTRATION_COMPLETE = "registrationComplete";
     public static final String GCM_SENT_TOKEN_TO_SERVER = "sentTokenToServer";
 
-    public static final String LOG_TAG_DEBUG = "LOG_TAG_DEBUG_5554";
 }
