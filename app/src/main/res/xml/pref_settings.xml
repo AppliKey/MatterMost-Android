@@ -4,6 +4,7 @@
     <CheckBoxPreference
         android:key="unread_tabs"
         android:summary="@string/settings_unread_tabs_content"
-        android:title="@string/settings_unread_tabs_title">
+        android:title="@string/settings_unread_tabs_title"
+        android:defaultValue="true">
     </CheckBoxPreference>
 </PreferenceScreen>

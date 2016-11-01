@@ -56,4 +56,8 @@ public class Prefs {
     public String getValue(String key) {
         return mSharedPreferences.getString(key, null);
     }
+
+    public boolean getValue(String key, boolean defValue) {
+        return mSharedPreferences.getBoolean(key, defValue);
+    }
 }

@@ -70,8 +70,10 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
 
     private void initView() {
         mPresenter.applyInitialViewState();
+        ChatListPagerAdapter chatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager());
 
-        mViewPager.setAdapter(new ChatListPagerAdapter(getSupportFragmentManager()));
+
+        mViewPager.setAdapter(chatListPagerAdapter);
 
         mTabLayout.setupWithViewPager(mViewPager);
         final int tabCount = mTabLayout.getTabCount();
