@@ -236,4 +236,10 @@ public class Db {
         }
         update.call(object, realmObject);
     }
+
+    void deleteDatabase() {
+        mRealm.beginTransaction();
+        mRealm.deleteAll();
+        mRealm.commitTransaction();
+    }
 }
