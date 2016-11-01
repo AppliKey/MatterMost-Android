@@ -133,7 +133,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public void logout() {
-        mPrefs.setKeyAuthToken(null);
+        mPrefs.setAuthToken(null);
         App.releaseUserComponent();
         mStorageDestroyer.get().deleteDatabase();
         getViewState().logout();

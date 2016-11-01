@@ -3,6 +3,7 @@ package com.applikey.mattermost.mvp.presenters;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -25,7 +26,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
-
 
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
@@ -51,6 +51,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     @Inject
     Prefs mPrefs;
+
+    @Inject
+    NotificationManager mNotificationManager;
 
     private int mCurrentPage;
 
@@ -78,6 +81,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 }));
 
         mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
+        mNotificationManager.dismissNotification(channelId);
     }
 
     public void fetchData(String channelId) {
@@ -143,7 +147,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .doOnNext(result -> mPostStorage.update(result))
                 .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
     }
-
 
     private List<Post> transform(PostResponse response, int offset) {
         final List<String> order = response.getOrder();
