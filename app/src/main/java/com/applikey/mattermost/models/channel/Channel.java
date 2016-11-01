@@ -69,7 +69,10 @@ public class Channel extends RealmObject {
     }
 
     public void updateLastActivityTime() {
-        this.lastActivityTime = Math.max(createdAt, lastPost != null ? lastPost.getCreatedAt() : 0);
+        if (lastPost != null) {
+            this.lastPostAt = lastPost.getCreatedAt();
+        }
+        this.lastActivityTime = Math.max(createdAt, lastPostAt);
     }
 
     public User getDirectCollocutor() {

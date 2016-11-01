@@ -66,8 +66,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         updateLastViewedAt(channelId);
         mSubscription.add(mChannelStorage.channel(channelId)
-                .doOnNext(channel -> mChannel = channel)
-                .subscribe());
+                .subscribe(channel -> mChannel = channel, ErrorHandler::handleError));
         mSubscription.add(mPostStorage.listByChannel(channelId)
                 .first()
                 .subscribe(view::onDataReady, view::onFailure));

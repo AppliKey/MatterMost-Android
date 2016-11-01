@@ -92,8 +92,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                         .onErrorResumeNext(throwable -> null), this::transform)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.updateLastPost(channel))
-                .subscribe();
+                .subscribe(channel -> mChannelStorage.updateLastPost(channel), ErrorHandler::handleError);
     }
 
     private void fetchUserStatus(StartupFetchResult response) {
