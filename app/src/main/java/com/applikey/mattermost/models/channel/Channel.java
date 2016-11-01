@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import io.realm.DiffEquals;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.RealmClass;
 
 
 public class Channel extends RealmObject implements DiffEquals<Channel> {
@@ -157,14 +156,6 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
 
     public String getPreviewImagePath() {
         return previewImagePath;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public long getLastViewedAt() {

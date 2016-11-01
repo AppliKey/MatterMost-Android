@@ -13,9 +13,7 @@ import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
-import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SplashPresenter;
-import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 
 import dagger.Component;
 
@@ -59,5 +57,4 @@ public interface ApplicationComponent {
 
     // Components
     UserComponent.Builder userComponentBuilder();
-    void inject(SearchUserPresenter searchUserPresenter);
 }

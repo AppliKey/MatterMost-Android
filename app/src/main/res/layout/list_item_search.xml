@@ -13,8 +13,8 @@
             android:id="@+id/iv_preview_image"
             android:layout_width="@dimen/list_item_image"
             android:layout_height="@dimen/list_item_image"
-            android:layout_marginTop="@dimen/padding_default"
-            android:layout_marginBottom="@dimen/padding_default"
+            android:layout_marginTop="@dimen/small"
+            android:layout_marginBottom="@dimen/small"
             android:src="@drawable/no_resource" />
 
 

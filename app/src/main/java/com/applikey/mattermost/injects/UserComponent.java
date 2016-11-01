@@ -25,10 +25,13 @@ public interface UserComponent {
 
     void inject(CreateChannelPresenter createChannelPresenter);
 
+    void inject(SearchUserPresenter searchUserPresenter);
+
     @Subcomponent.Builder
     interface Builder {
         UserComponent.Builder userModule(UserModule userModule);
 
         UserComponent build();
     }
+
 }

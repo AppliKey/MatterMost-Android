@@ -1,8 +1,10 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchUserView;
@@ -16,7 +18,9 @@ import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -43,16 +47,27 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     @Inject
     TeamStorage mTeamStorage;
 
+    @Inject
+    @Named(Constants.CURRENT_USER_QUALIFIER)
+    String mCurrentUserId;
+
     public SearchUserPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void getData(String text) {
         final SearchUserView view = getViewState();
         mSubscription.add(
                 mUserStorage.searchUsers(text)
+                        .first()
+                        .flatMap(Observable::from)
+                        .filter(user -> !TextUtils.equals(user.getId(), mCurrentUserId))
+                        .toSortedList()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, ErrorHandler::handleError));
+                        .subscribe((users) -> {
+                            Log.d(TAG, "getData: " + users);
+                            view.displayData(users);
+                        }, ErrorHandler::handleError));
     }
 
     public void handleUserClick(User user) {

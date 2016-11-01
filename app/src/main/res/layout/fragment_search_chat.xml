@@ -14,9 +14,9 @@
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_search_2"
+            android:src="@drawable/ic_search"
             android:tint="@color/colorPrimary"
-            android:padding="@dimen/padding_default"
+            android:padding="@dimen/small"
             android:background="@android:color/transparent"/>
 
         <com.devspark.robototextview.widget.RobotoEditText
@@ -34,9 +34,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:visibility="gone"
-            app:srcCompat="@drawable/ic_search_2"
+            android:src="@drawable/ic_search"
             android:tint="@color/colorPrimary"
-            android:padding="@dimen/padding_default"
+            android:padding="@dimen/small"
             android:background="@android:color/transparent"/>
 
     </FrameLayout>
