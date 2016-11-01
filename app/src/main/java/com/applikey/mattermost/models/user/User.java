@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.user;
 
+import android.text.TextUtils;
+
 import com.applikey.mattermost.R;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +11,9 @@ import java.util.Map;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject {
+public class User extends RealmObject implements Comparable<User>, Searchable<String> {
+
+    public static final String FIELD_USERNAME = "username";
 
     public static final String USER_NAME = "username";
     public static final String FIRST_NAME = "firstName";
@@ -19,7 +23,7 @@ public class User extends RealmObject {
     @SerializedName("id")
     private String id;
 
-    @SerializedName("username")
+    @SerializedName(FIELD_USERNAME)
     private String username;
 
     @SerializedName("email")
@@ -135,6 +139,7 @@ public class User extends RealmObject {
     public static String getDisplayableName(User user) {
         final StringBuilder builder = new StringBuilder();
 
+
         if (!user.getFirstName().isEmpty()) {
             builder.append(user.getFirstName());
         }
@@ -170,10 +175,10 @@ public class User extends RealmObject {
 
         private static final Map<String, Status> representations =
                 new HashMap<String, Status>() {{
-            put("offline", OFFLINE);
-            put("online", ONLINE);
-            put("away", AWAY);
-        }};
+                    put("offline", OFFLINE);
+                    put("online", ONLINE);
+                    put("away", AWAY);
+                }};
 
         public static Status from(String representation) {
             return representations.get(representation);
@@ -185,17 +190,65 @@ public class User extends RealmObject {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        final User user = (User) o;
+
+        if (!getId().equals(user.getId()))
+            return false;
+        if (!getUsername().equals(user.getUsername()))
+            return false;
+        if (!getEmail().equals(user.getEmail()))
+            return false;
+        if (!getFirstName().equals(user.getFirstName()))
+            return false;
+        if (!getLastName().equals(user.getLastName()))
+            return false;
+        return getProfileImage().equals(user.getProfileImage());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getUsername().hashCode();
+        result = 31 * result + getEmail().hashCode();
+        result = 31 * result + getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + (int) (getLastActivityAt() ^ (getLastActivityAt() >>> 32));
+        result = 31 * result + (int) (getUpdateAt() ^ (getUpdateAt() >>> 32));
+        result = 31 * result + getProfileImage().hashCode();
+        result = 31 * result + getStatus();
+        return result;
+    }
+
+    @Override
+    public int compareTo(User o) {
+        if (this == o) return 0;
+        final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();
+        final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
+        return thisUserDisplayableNameIgnoreCase.compareTo(otherUserDisplayableNameIgnoreCase);
+    }
+
+    @Override
     public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", lastActivityAt=" + lastActivityAt +
-                ", updateAt=" + updateAt +
-                ", profileImage='" + profileImage + '\'' +
-                ", status=" + status +
-                '}';
+        return User.getDisplayableName(this);
+    }
+
+    @Override
+    public boolean search(String searchFilter) {
+        if (TextUtils.isEmpty(searchFilter)) {
+            return true;
+        }
+        boolean result = false;
+
+        if (firstName.contains(searchFilter) || lastName.contains(searchFilter) || email.contains(searchFilter)) {
+            result = true;
+        }
+        return result;
     }
 }

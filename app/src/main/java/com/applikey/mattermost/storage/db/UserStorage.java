@@ -18,14 +18,26 @@ public class UserStorage {
         mImagePathHelper = imagePathHelper;
     }
 
-    public void saveUsers(Map<String, User> directProfiles, Map<String, String> userStatuses) {
+    public void saveUsers(Map<String, User> directProfiles) {
         addImagePathInfo(directProfiles);
+        mDb.saveTransactional(directProfiles.values());
+    }
+
+    public void saveUsersStatuses(Map<String, User> directProfiles, Map<String, String> userStatuses) {
         addStatusData(directProfiles, userStatuses);
-        mDb.saveTransactionalWithRemoval(directProfiles.values());
+        mDb.saveTransactional(directProfiles.values());
     }
 
     public Observable<List<User>> listDirectProfiles() {
         return mDb.listRealmObjects(User.class);
+    }
+
+    public Observable<User> getDirectProfile(String id) {
+        return mDb.getObject(User.class, id);
+    }
+
+    public Observable<User> getUserByUsername(String userName) {
+        return mDb.getObjectQualified(User.class, User.FIELD_USERNAME, userName);
     }
 
     public Observable<List<User>> searchUsers(String text){

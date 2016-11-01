@@ -1,43 +1,49 @@
 package com.applikey.mattermost.adapters;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
-public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
+public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListAdapter.ViewHolder> {
 
-    private List<Channel> mDataSet = null;
-    private ImageLoader mImageLoader;
+    private final ImageLoader mImageLoader;
+    private final String mCurrentUserId;
+
     private ClickListener mClickListener = null;
 
-    public ChatListAdapter(List<Channel> dataSet, ImageLoader imageLoader) {
-        super();
+    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
+    private Context mContext;
 
+    public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
+                           ImageLoader imageLoader, String currentUserId) {
+        super(context, data, true);
+        mContext = context;
         mImageLoader = imageLoader;
-        mDataSet = new ArrayList<>(dataSet.size());
-        mDataSet.addAll(dataSet);
-        Collections.sort(mDataSet, Channel.COMPARATOR_BY_DATE);
+        mCurrentUserId = currentUserId;
     }
 
     @Override
     public ChatListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View v = LayoutInflater.from(parent.getContext())
+        final View v = LayoutInflater.from(mContext)
                 .inflate(R.layout.list_item_chat, parent, false);
 
         final ViewHolder vh = new ViewHolder(v);
@@ -48,26 +54,47 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
-        final Channel data = mDataSet.get(position);
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
+            return;
+        }
+        final Channel channel = data.get(position);
 
-        final long lastPostAt = data.getLastPostAt();
+        final long lastPostAt = channel.getLastPostAt();
 
-        vh.getChannelName().setText(data.getDisplayName());
+        vh.getChannelName().setText(channel.getDisplayName());
+
+        final String messagePreview = getMessagePreview(channel, mContext);
+
+        vh.getMessagePreview().setText(messagePreview);
         vh.getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
-                        data.getCreatedAt()));
+                        channel.getCreatedAt()));
 
-        setChannelIcon(vh, data);
-        setChannelIconVisibility(vh, data);
-        setStatusIcon(vh, data);
-        setUnreadStatus(vh, data);
+        setChannelIcon(vh, channel);
+        setChannelIconVisibility(vh, channel);
+        setStatusIcon(vh, channel);
+        setUnreadStatus(vh, channel);
 
         vh.getRoot().setTag(position);
     }
 
-    @Override
-    public int getItemCount() {
-        return mDataSet != null ? mDataSet.size() : 0;
+    private String getMessagePreview(Channel channel, Context context) {
+        final Post lastPost = channel.getLastPost();
+        final String messagePreview;
+        if (channel.getLastPost() == null) {
+            messagePreview = context.getString(R.string.channel_preview_message_placeholder);
+        } else if (isMy(lastPost)) {
+            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
+                    channel.getLastPost().getMessage();
+        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
+            messagePreview = context.getString(R.string.channel_post_author_name_format,
+                    channel.getLastPostAuthorDisplayName()) +
+                    channel.getLastPost().getMessage();
+        } else {
+            messagePreview = channel.getLastPost().getMessage();
+        }
+        return messagePreview;
     }
 
     public void setOnClickListener(ClickListener listener) {
@@ -75,10 +102,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
-
-        final String previewImagePath = element.getPreviewImagePath();
+        final User member = element.getDirectCollocutor();
+        final String previewImagePath = member != null ?
+                member.getProfileImage() : null;
+        final ImageView previewImage = viewHolder.getPreviewImage();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
+            mImageLoader.displayCircularImage(previewImagePath, previewImage);
+        } else {
+            previewImage.setImageResource(R.drawable.no_resource);
         }
     }
 
@@ -93,7 +124,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     private void setStatusIcon(ViewHolder vh, Channel data) {
         if (Channel.ChannelType.DIRECT.getRepresentation().equals(data.getType())) {
-            final User.Status status = User.Status.from(data.getStatus());
+            final User member = data.getDirectCollocutor();
+            final User.Status status = member != null ?
+                    User.Status.from(member.getStatus()) : null;
             if (status != null) {
                 vh.getStatus().setImageResource(status.getDrawableId());
             }
@@ -106,11 +139,18 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     private void setUnreadStatus(ViewHolder vh, Channel data) {
-        if (data.isUnread()) {
+        if (data.hasUnreadMessages()) {
             vh.getNotificationIcon().setVisibility(View.VISIBLE);
+            vh.getContainer().setBackgroundResource(R.color.unread_background);
         } else {
             vh.getNotificationIcon().setVisibility(View.GONE);
+            vh.getContainer().setBackgroundResource(android.R.color.white);
+
         }
+    }
+
+    private boolean isMy(Post post) {
+        return post.getUserId().equals(mCurrentUserId);
     }
 
     public interface ClickListener {
@@ -119,9 +159,13 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     }
 
     private final View.OnClickListener mOnClickListener = v -> {
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
+            return;
+        }
         final int position = (Integer) v.getTag();
 
-        final Channel team = mDataSet.get(position);
+        final Channel team = data.get(position);
 
         if (mClickListener != null) {
             mClickListener.onItemClicked(team);
@@ -156,6 +200,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         @Bind(R.id.tv_message_preview)
         TextView mMessagePreview;
+
+        @Bind(R.id.container)
+        LinearLayout mContainer;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -199,6 +246,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         ImageView getNotificationIcon() {
             return mNotificationIcon;
+        }
+
+        LinearLayout getContainer() {
+            return mContainer;
         }
     }
 }

@@ -12,6 +12,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +21,9 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
-import com.applikey.mattermost.fragments.BaseChatListFragment.TabBehavior;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
+import com.applikey.mattermost.views.TabBehavior;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -103,7 +104,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
                 case R.id.start_new_chat:
                     return true; //TODO replace with start new chat logic
                 case R.id.create_channel:
-                    return true; //TODO replace with create channel logic
+                    startActivity(CreateChannelActivity.getIntent(this));
                 case R.id.settings:
                     return true; //TODO replace with settings logic
                 case R.id.logout:
@@ -214,7 +215,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         }
     }
 
-
     private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
 
     private class TabIndicatorModel {
@@ -227,6 +227,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         void handleEvent(TabIndicatorRequested event) {
             synchronized (mutex) {
                 final TabBehavior tab = event.getBehavior();
+                Log.d("cc", "handleEvent: " + event.getBehavior());
                 mIndicatorVisibilities.put(tab, event.isVisible());
                 updateVisibility(tab, event.isVisible());
             }

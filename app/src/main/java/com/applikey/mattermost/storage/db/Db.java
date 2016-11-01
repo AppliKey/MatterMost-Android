@@ -9,12 +9,14 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
+import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 public class Db {
 
@@ -23,39 +25,65 @@ public class Db {
     private static final String TAG = Db.class.getSimpleName();
 
     private final Executor mWritesExecutor;
+    private final Realm mRealm;
 
-    public Db(Context context) {
+    public Db(Realm realm) {
         mWritesExecutor = Executors.newCachedThreadPool();
-        final RealmConfiguration config = new RealmConfiguration.Builder(context)
-                .name(REALM_NAME)
-                .schemaVersion(0)
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        Realm.setDefaultConfiguration(config);
+        mRealm = realm;
     }
 
     public void saveTransactional(RealmObject object) {
-        final Realm realm = getRealm();
-        realm.executeTransactionAsync(bgRealm -> {
-            bgRealm.copyToRealmOrUpdate(object);
-        }, realm::close);
+        mRealm.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(object));
     }
 
-    public void deleteTransactional(RealmObject realmObject) {
-        final Realm realm = getRealm();
-        realm.beginTransaction();
-        realmObject = realm.copyToRealmOrUpdate(realmObject);
-        realmObject.deleteFromRealm();
-        realm.commitTransaction();
-        realm.close();
+    public void saveTransactionalSync(RealmObject object) {
+        mRealm.executeTransaction(realm -> {
+            realm.copyToRealmOrUpdate(object);
+        });
+    }
+
+    public <T extends RealmObject> Observable<T> getObject(Class<T> tClass, String id) {
+        return getObjectQualified(tClass, "id", id);
+    }
+
+    public <T extends RealmObject> Observable<T> getObjectQualified(Class<T> tClass,
+                                                                    String fieldName,
+                                                                    String fieldValue) {
+        return mRealm.where(tClass)
+                .equalTo(fieldName, fieldValue)
+                .findFirstAsync()
+                .<T>asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends RealmObject> void updateTransactional(Class<T> tClass,
+                                                            String id, Func2<T, Realm, Boolean> update) {
+        mRealm.executeTransactionAsync(realm -> {
+            final T realmObject = realm.where(tClass).equalTo("id", id).findFirst();
+            if (realmObject.isLoaded()) {
+                update.call(realmObject, realm);
+            }
+        });
+    }
+
+    public void deleteTransactional(final RealmObject realmObject) {
+        mRealm.executeTransactionAsync(realm -> {
+            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
+        });
+    }
+
+    public void deleteTransactionalSync(final RealmObject realmObject) {
+        mRealm.executeTransaction(realm -> {
+            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
+        });
     }
 
     public void saveTransactionalWithRemoval(RealmObject object) {
-        final Realm realm = getRealm();
-        realm.executeTransactionAsync(bgRealm -> {
-            bgRealm.delete(object.getClass());
-            bgRealm.copyToRealmOrUpdate(object);
-        }, realm::close);
+        mRealm.executeTransactionAsync(realm -> {
+            realm.delete(object.getClass());
+            realm.copyToRealmOrUpdate(object);
+        });
     }
 
     public void saveTransactionalWithRemoval(Iterable<? extends RealmObject> objects) {
@@ -63,12 +91,11 @@ public class Db {
         if (!iterator.hasNext()) {
             return;
         }
-        final Realm realm = getRealm();
-        realm.executeTransactionAsync(bgRealm -> {
+        mRealm.executeTransactionAsync(realm -> {
             final Class<? extends RealmObject> clazz = iterator.next().getClass();
-            bgRealm.delete(clazz);
-            bgRealm.copyToRealmOrUpdate(objects);
-        }, realm::close);
+            realm.delete(clazz);
+            realm.copyToRealmOrUpdate(objects);
+        });
     }
 
     @Deprecated
@@ -79,9 +106,8 @@ public class Db {
     }
 
     public void saveTransactional(Iterable<? extends RealmObject> objects) {
-        final Realm realm = getRealm();
-        realm.executeTransaction(bgRealm -> {
-            bgRealm.copyToRealmOrUpdate(objects);
+        mRealm.executeTransaction(realm -> {
+            realm.copyToRealmOrUpdate(objects);
         });
     }
 
@@ -93,87 +119,142 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjects(Class<T> tClass) {
-        final Realm realm = getRealm();
-        return realm
+        return mRealm
                 .where(tClass)
                 .findAllAsync()
                 .asObservable()
                 .filter(response -> !response.isEmpty())
-                .doOnUnsubscribe(realm::close)
-                .map(realm::copyFromRealm);
+                .map(mRealm::copyFromRealm);
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-            String fieldName,
-            String value) {
-        final Realm realm = getRealm();
-        return realm
+                                                                                String fieldName,
+                                                                                String value) {
+        return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .findAllAsync()
                 .asObservable()
                 .filter(response -> !response.isEmpty())
-                .doOnUnsubscribe(realm::close)
-                .map(realm::copyFromRealm);
+                .map(mRealm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsExcluded(Class<T>
+            tClass,
+            String fieldName,
+            String value) {
+        return mRealm
+                .where(tClass)
+                .notEqualTo(fieldName, value)
+                .findAllAsync()
+                .asObservable()
+                .filter(response -> !response.isEmpty())
+                .map(mRealm::copyFromRealm);
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
-            tClass,
-            String fieldName,
-            String sortBy,
-            String value) {
-        final Realm realm = getRealm();
-        return realm
+                                                                                              tClass,
+                                                                                      String fieldName,
+                                                                                      String sortBy,
+                                                                                      String value) {
+        return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(response -> !response.isEmpty())
-                .doOnUnsubscribe(realm::close)
-                .map(realm::copyFromRealm);
+                .map(mRealm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
+                                                                                                String fieldName,
+                                                                                                String value,
+                                                                                                String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
+                                                                                                String fieldName,
+                                                                                                boolean value,
+                                                                                                String sortBy) {
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-            String fieldName,
-            boolean value) {
-        final Realm realm = getRealm();
-        return realm
+                                                                                String fieldName,
+                                                                                boolean value) {
+        return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .findAllAsync()
                 .asObservable()
                 .filter(response -> !response.isEmpty())
-                .doOnUnsubscribe(realm::close)
-                .map(realm::copyFromRealm);
+                .map(mRealm::copyFromRealm);
     }
 
     public <T extends RealmObject> Observable<T> listSingeRealmObject(
             Class<T> tClass,
             String primaryKeyColumnName, String primaryKey) {
-        final Realm realm = getRealm();
-        return realm
+        return mRealm
                 .where(tClass)
                 .equalTo(primaryKeyColumnName, primaryKey)
                 .findFirstAsync()
                 .<T>asObservable()
                 .filter(o -> o.isLoaded() && o.isValid())
-                .doOnUnsubscribe(realm::close)
-                .map(realm::copyFromRealm);
+                .map(mRealm::copyFromRealm);
     }
 
     public Observable<DictionaryEntry> getSingleDictionaryEntry(String key) {
-        final Realm realm = getRealm();
-        return realm
+        return mRealm
                 .where(DictionaryEntry.class)
                 .equalTo("key", key)
                 .findFirstAsync()
                 .<DictionaryEntry>asObservable()
                 .filter(o -> o.isLoaded() && o.isValid())
-                .doOnUnsubscribe(realm::close)
-                .map(realm::copyFromRealm);
+                .map(mRealm::copyFromRealm);
 
     }
 
+    public <T extends RealmObject> List<T> restoreIfExist(List<T> objects,
+                                                          Class<T> tClass, Func1<T, String> getId, Func2<T, T, Boolean> update) {
+        if (objects == null || objects.isEmpty()) {
+            return objects;
+        }
+        for (T object : objects) {
+            restore(object, tClass, getId, update);
+        }
+        return objects;
+    }
+
+    private <T extends RealmObject> void restore(T object, Class<T> tClass,
+                                                 Func1<T, String> getId, Func2<T, T, Boolean> update) {
+        if (object == null) {
+            return;
+        }
+
+        final T realmObject = mRealm.where(tClass).equalTo("id", getId.call(object)).findFirst();
+        if (realmObject == null) {
+            return;
+        }
+        update.call(object, realmObject);
+    }
+
+    void deleteDatabase() {
+        mRealm.beginTransaction();
+        mRealm.deleteAll();
+        mRealm.commitTransaction();
+    }
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
             String text,
             String[] fields) {

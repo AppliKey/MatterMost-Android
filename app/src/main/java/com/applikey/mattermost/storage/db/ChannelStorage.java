@@ -1,8 +1,10 @@
 package com.applikey.mattermost.storage.db;
 
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
 
@@ -10,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import io.realm.RealmResults;
 import rx.Single;
 
 public class ChannelStorage {
@@ -26,31 +29,60 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Channel.class);
     }
 
-    public Observable<List<Channel>> listOpen() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PUBLIC.getRepresentation());
+    public Observable<RealmResults<Channel>> listOpen() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.PUBLIC.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
-    public Observable<List<Channel>> listClosed() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PRIVATE.getRepresentation());
+    public Observable<RealmResults<Channel>> listClosed() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.PRIVATE.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
-    public Observable<List<Channel>> listDirect() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.DIRECT.getRepresentation());
+    public Observable<RealmResults<Channel>> listDirect() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.DIRECT.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<List<Channel>> listAll() {
         return mDb.listRealmObjects(Channel.class);
     }
 
-    public Observable<List<Channel>> listUnread() {
-        return mDb.listRealmObjectsFiltered(Channel.class, Channel.FIELD_UNREAD_TYPE, true);
+    public Observable<RealmResults<Channel>> listUnread() {
+        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
+                true,
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+
     }
 
     public Observable<List<Membership>> listMembership() {
         return mDb.listRealmObjects(Membership.class);
+    }
+
+    public void updateChannelData(Channel channel) {
+        mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
+            final Post lastPost = channel.getLastPost();
+            if (lastPost == null) {
+                return false;
+            }
+
+            final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
+            realmChannel.setLastPost(realmPost);
+            realmChannel.updateLastActivityTime();
+            realmChannel.setLastPostAuthorDisplayName(channel.getLastPostAuthorDisplayName());
+            return true;
+        });
+    }
+
+    public void updateLastViewedAt(String id, long lastViewedAt) {
+        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+            realmChannel.setHasUnreadMessages(false);
+            realmChannel.setLastViewedAt(lastViewedAt);
+            return true;
+        });
     }
 
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
@@ -62,7 +94,8 @@ public class ChannelStorage {
         final Map<String, Membership> membership = response.getMembershipEntries();
 
         final List<Channel> channels = response.getChannels();
-        for (Channel channel : channels) {
+
+        Stream.of(channels).forEach(channel -> {
             if (channel.getType().equals(directChannelType)) {
                 updateDirectChannelData(channel, userProfiles, currentUserId);
             }
@@ -71,9 +104,18 @@ public class ChannelStorage {
             if (membershipData != null) {
                 channel.setLastViewedAt(membershipData.getLastViewedAt());
             }
-        }
+        });
 
-        mDb.saveTransactionalWithRemoval(channels);
+        mDb.saveTransactional(restoreChannels(channels));
+    }
+
+    private List<Channel> restoreChannels(List<Channel> channels) {
+        return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
+            channel.setLastPost(storedChannel.getLastPost());
+            channel.setLastPostAuthorDisplayName(storedChannel.getLastPostAuthorDisplayName());
+            channel.updateLastActivityTime();
+            return true;
+        });
     }
 
     public Single<Channel> getChannel(String id){
@@ -85,20 +127,19 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-                                         Map<String, User> contacts,
-                                         String currentUserId) {
-        final String channelId = channel.getName();
-        final String otherUserId = extractOtherUserId(channelId, currentUserId);
+            Map<String, User> contacts,
+            String currentUserId) {
+        final String channelName = channel.getName();
+        final String otherUserId = extractOtherUserId(channelName, currentUserId);
 
         final User user = contacts.get(otherUserId);
         if (user != null) {
+            channel.setDirectCollocutor(user);
             channel.setDisplayName(User.getDisplayableName(user));
-            channel.setPreviewImagePath(user.getProfileImage());
-            channel.setStatus(user.getStatus());
         }
     }
 
-    private String extractOtherUserId(String channelId, String currentUserId) {
-        return channelId.replace(currentUserId, "").replace("__", "");
+    private String extractOtherUserId(String channelName, String currentUserId) {
+        return channelName.replace(currentUserId, "").replace("__", "");
     }
 }

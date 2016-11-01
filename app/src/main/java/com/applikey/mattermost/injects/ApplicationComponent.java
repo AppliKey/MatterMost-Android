@@ -2,18 +2,15 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
-import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.activities.ChooseServerActivity;
-import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.BaseFragment;
-import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
-import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
+import com.applikey.mattermost.gcm.GcmMessageHandler;
+import com.applikey.mattermost.gcm.RegistrationIntentService;
+import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
-import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
-import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
@@ -29,7 +26,6 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     // Components
-    void inject(BaseChatListFragment fragment);
 
     void inject(BaseFragment fragment);
 
@@ -37,11 +33,9 @@ public interface ApplicationComponent {
 
     void inject(ChooseServerActivity baseActivity);
 
-    void inject(ChatActivity activity);
-
     void inject(App app);
 
-    //Presenters
+    // Presenters
     void inject(SplashPresenter presenter);
 
     void inject(LogInPresenter presenter);
@@ -54,17 +48,16 @@ public interface ApplicationComponent {
 
     void inject(ChatListScreenPresenter presenter);
 
-    void inject(ChannelListPresenter presenter);
-
-    void inject(GroupListPresenter presenter);
-
-    void inject(DirectChatListPresenter presenter);
-
-    void inject(BaseChatListPresenter presenter);
-
-    void inject(UnreadChatListPresenter presenter);
-
     void inject(ChatPresenter presenter);
 
+    void inject(AddedMembersPresenter presenter);
+
+    // Services
+    void inject(RegistrationIntentService service);
+
+    void inject(GcmMessageHandler service);
+
+    // Components
+    UserComponent.Builder userComponentBuilder();
     void inject(SearchUserPresenter searchUserPresenter);
 }

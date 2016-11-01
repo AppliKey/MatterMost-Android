@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout android:id="@+id/container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -42,8 +44,8 @@
             android:id="@+id/iv_notification_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
             android:layout_alignBottom="@+id/tv_channel_name"
+            android:layout_marginBottom="6dp"
             android:layout_marginRight="8dp"
             android:layout_toRightOf="@id/iv_preview_image_layout"
             android:src="@drawable/ic_notification" />
@@ -89,9 +91,9 @@
             android:layout_marginTop="@dimen/list_item_heading_bottom_margin"
             android:layout_toRightOf="@id/iv_preview_image_layout"
             android:maxLines="2"
-            android:text="@string/example_message_preview"
             android:textColor="@color/textListSecondary"
-            android:textSize="@dimen/list_item_secondary_text" />
+            android:textSize="@dimen/list_item_secondary_text"
+            tools:text="@string/example_message_preview" />
 
     </RelativeLayout>
 

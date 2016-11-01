@@ -14,7 +14,15 @@
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:background">@drawable/round_button_gradient</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
-        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="AppToolbar" parent="Base.ThemeOverlay.AppCompat.Light">
+        <item name="contentInsetStartWithNavigation">60dp</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+
+    <style name="CircularCounter">
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="BorderlessButton" parent="Widget.AppCompat.Button.Borderless">
@@ -30,11 +38,14 @@
     <style name="TextHeadingSecondary">
         <item name="android:textColor">@color/textSecondary</item>
         <item name="android:textSize">@dimen/text_heading_size</item>
-        <item name="android:padding">@dimen/text_heading_padding</item>
     </style>
 
     <style name="TextHeadingSecondary.Small">
         <item name="android:textSize">@dimen/text_heading_small_size</item>
+    </style>
+
+    <style name="TextHeadingSecondary.Small.Capitalize" parent="TextHeadingSecondary.Small">
+        <item name="android:textAllCaps">true</item>
     </style>
 
     <style name="EditTextPrimary">
@@ -61,6 +72,18 @@
 
     <style name="ChatListTabLayoutTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="PostHeaderStyle">
+        <item name="android:fontFamily">sans-serif-regular</item>
+        <item name="android:paddingEnd">@dimen/large</item>
+        <item name="android:paddingLeft">@dimen/large</item>
+        <item name="android:paddingRight">@dimen/large</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/large</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/list_item_chat_date_size</item>
+        <item name="android:height">24dp</item>
     </style>
 
 

@@ -16,6 +16,7 @@ public class TeamStorage {
 
     private final Db mDb;
 
+    @Inject
     public TeamStorage(Db db) {
         mDb = db;
     }
@@ -32,7 +33,7 @@ public class TeamStorage {
         mDb.saveTransactional(new DictionaryEntry(CHOSEN_TEAM_KEY, team.getId()));
     }
 
-    public Observable<Team> getChosenTeam() {
+        public Observable<Team> getChosenTeam() {
         final Observable<DictionaryEntry> dictionaryEntry =
                 mDb.getSingleDictionaryEntry(CHOSEN_TEAM_KEY);
         return dictionaryEntry.flatMap(v -> {
