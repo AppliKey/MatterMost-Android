@@ -119,7 +119,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Override
     protected void onStart() {
         super.onStart();
-
         mPresenter.getInitialData(mChannelId);
     }
 

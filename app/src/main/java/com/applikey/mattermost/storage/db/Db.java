@@ -39,6 +39,11 @@ public class Db {
                 .filter(o -> o.isLoaded() && o.isValid());
     }
 
+    public <T extends RealmObject> Observable<T> getObjectWithCopy(Class<T> tClass, String id) {
+        return getObject(tClass, id)
+                .map(mRealm::copyFromRealm);
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
             String id, Func2<T, Realm, Boolean> update) {

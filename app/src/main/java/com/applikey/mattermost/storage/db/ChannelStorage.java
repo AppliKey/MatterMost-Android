@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 
 public class ChannelStorage {
@@ -22,6 +23,10 @@ public class ChannelStorage {
     public ChannelStorage(final Db db, final Prefs prefs) {
         mDb = db;
         mPrefs = prefs;
+    }
+
+    public Observable<Channel> channel(String channelId) {
+        return mDb.getObjectWithCopy(Channel.class, channelId);
     }
 
     public Observable<List<Channel>> list() {
@@ -63,12 +68,22 @@ public class ChannelStorage {
 
     public void updateLastPost(Channel channel) {
         final Post lastPost = channel.getLastPost();
-        if (lastPost == null) {
-            return;
-        }
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, lastPost.getUserId()).findFirst();
-            final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
+            final Post realmPost;
+            if (lastPost == null) {//If last post null, find last post
+                final RealmResults<Post> result = realm.where(Post.class)
+                        .equalTo(Post.FIELD_NAME_CHANNEL_ID, channel.getId())
+                        .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING);
+                if (result.size() > 0) {
+                    realmPost = result.first();
+                } else {
+                    return false;
+                }
+            } else {
+                realmPost = realm.copyToRealmOrUpdate(lastPost);
+            }
+            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, realmPost.getUserId()).findFirst();
+
             realmPost.setAuthor(author);
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
