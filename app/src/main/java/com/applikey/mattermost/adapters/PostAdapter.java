@@ -48,8 +48,14 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         mChannelType = channelType;
         mLastViewed = lastViewed;
         mOnLongClickListener = onLongClickListener;
+        setHasStableIds(true);
     }
 
+    @Override
+    public long getItemId(int index) {
+        final Post item = getItem(index);
+        return item != null ? item.hashCode() : 0;
+    }
 
     public void setLastViewed(long lastViewed) {
         mLastViewed = lastViewed;

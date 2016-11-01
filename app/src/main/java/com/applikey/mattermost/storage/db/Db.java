@@ -44,6 +44,10 @@ public class Db {
                 .map(mRealm::copyFromRealm);
     }
 
+    public <T extends RealmObject> T copyFromRealm(T object) {
+        return mRealm.copyFromRealm(object);
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
             String id, Func2<T, Realm, Boolean> update) {

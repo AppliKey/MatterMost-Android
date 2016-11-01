@@ -21,7 +21,7 @@ public class PostStorage {
     }
 
     public void update(Post post) {
-        mDb.saveTransactionalSync(post);
+        mDb.saveTransactional(post);
     }
 
     public void saveAll(List<Post> posts) {
@@ -35,16 +35,8 @@ public class PostStorage {
         });
     }
 
-    public void save(Post post) {
-        if (post == null) {
-            return;
-        }
-        mDb.doTransactional(realm -> {
-            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, post.getUserId()).findFirst();
-            final Post realmPost = realm.copyToRealmOrUpdate(post);
-            realmPost.setAuthor(author);
-            return true;
-        });
+    public Post copyFromDb(Post post) {
+        return mDb.copyFromRealm(post);
     }
 
     public Observable<RealmResults<Post>> listByChannel(String channelId) {

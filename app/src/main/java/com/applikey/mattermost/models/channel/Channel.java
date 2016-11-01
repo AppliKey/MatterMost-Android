@@ -8,11 +8,10 @@ import java.util.Comparator;
 
 import javax.annotation.Nullable;
 
-import io.realm.DiffEquals;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Channel extends RealmObject implements DiffEquals<Channel> {
+public class Channel extends RealmObject {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
@@ -179,11 +178,6 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
         final long lastPostAt = getLastPostAt();
 
         hasUnreadMessages = lastPostAt > lastViewedAt;
-    }
-
-    @Override
-    public boolean diffEquals(Channel o) {
-        return this.getId().equals(o.getId());
     }
 
     public enum ChannelType {

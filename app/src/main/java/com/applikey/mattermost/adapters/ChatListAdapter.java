@@ -39,6 +39,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         mContext = context;
         mImageLoader = imageLoader;
         mCurrentUserId = currentUserId;
+        setHasStableIds(true);
     }
 
     @Override
@@ -51,6 +52,13 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
         return vh;
     }
+
+    @Override
+    public long getItemId(int index) {
+        final Channel item = getItem(index);
+        return item != null ? item.hashCode() : 0;
+    }
+
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {

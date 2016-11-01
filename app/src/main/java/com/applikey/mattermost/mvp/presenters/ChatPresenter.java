@@ -118,12 +118,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), ErrorHandler::handleError));
     }
 
-    public void editMessage(String channelId, Post post) {
+    public void editMessage(String channelId, Post post, String newMessage) {
+        final Post finalPost = mPostStorage.copyFromDb(post);
+        finalPost.setMessage(newMessage);
         mSubscription.add(mTeamStorage.getChosenTeam()
-                .flatMap(team -> mApi.updatePost(team.getId(), channelId, post)
+                .flatMap(team -> mApi.updatePost(team.getId(), channelId, finalPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> mPostStorage.update(post), ErrorHandler::handleError));
+                .subscribe(posts -> mPostStorage.update(finalPost), ErrorHandler::handleError));
     }
 
     public void sendMessage(String channelId, String message) {
