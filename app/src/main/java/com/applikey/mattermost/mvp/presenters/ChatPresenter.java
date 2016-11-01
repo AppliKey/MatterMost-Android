@@ -1,9 +1,9 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.app.NotificationManager;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -81,7 +81,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 }));
 
         mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
-        mNotificationManager.cancel(channelId.hashCode());
+        mNotificationManager.dismissNotification(channelId);
     }
 
     public void fetchData(String channelId) {

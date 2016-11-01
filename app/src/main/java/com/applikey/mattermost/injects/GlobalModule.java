@@ -1,7 +1,7 @@
 package com.applikey.mattermost.injects;
 
-import android.app.NotificationManager;
 import android.content.Context;
+import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -121,8 +121,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    NotificationManager provideNotificationManager() {
-        return (NotificationManager) mApplicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
+    NotificationManagerCompat provideNotificationManager() {
+        return NotificationManagerCompat.from(mApplicationContext);
     }
 
     @Provides

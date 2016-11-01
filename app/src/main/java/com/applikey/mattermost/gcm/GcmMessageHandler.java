@@ -1,13 +1,9 @@
 package com.applikey.mattermost.gcm;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.NotificationCompat;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.R;
+import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.google.android.gms.gcm.GcmListenerService;
 
 import javax.inject.Inject;
@@ -33,21 +29,14 @@ public class GcmMessageHandler extends GcmListenerService {
         final String type = data.getString(ARG_TYPE);
 
         if (type != null && type.equals(MESSAGE_TYPE_CLEAR)) {
-            // cancel notification
+            //todo cancel notification
         } else {
-            showNotification(data.getString(ARG_MESSAGE), data.getString(ARG_CHANNEL_ID));
+            String message = data.getString(ARG_MESSAGE);
+            String id = data.getString(ARG_CHANNEL_ID);
+
+            if (message != null && id != null) {
+                mNotificationManager.showNotification(message, id);
+            }
         }
-    }
-
-    private void showNotification(String message, String channelId) {
-        final Notification newMessageNotification =
-                new NotificationCompat.Builder(this)
-                        .setColor(ContextCompat.getColor(this, R.color.colorPrimary))
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(getString(R.string.new_message_received))
-                        .setContentText(message)
-                        .build();
-
-        mNotificationManager.notify(channelId.hashCode(), newMessageNotification);
     }
 }
