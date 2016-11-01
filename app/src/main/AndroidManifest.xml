@@ -50,6 +50,10 @@
         <activity
             android:name=".activities.ChatActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".activities.CreateChannelActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.AddedMembersActivity"
+            android:screenOrientation="portrait"/>
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

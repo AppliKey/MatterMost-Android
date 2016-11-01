@@ -28,15 +28,16 @@
         android:layout_below="@id/tv_welcome"
         android:layout_marginBottom="@dimen/welcome_screen_headers_margin_bottom"
         android:gravity="center_horizontal"
+        android:padding="@dimen/text_heading_padding"
         android:text="@string/all_your_team_communication" />
 
     <TextView
-        android:paddingStart="4dp"
         android:id="@+id/tv_url"
         style="@style/TextHeadingSecondary.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_subheading"
+        android:paddingStart="@dimen/activity_choose_server_et_url_padding_start"
         android:text="@string/enter_server_url_capt" />
 
     <Spinner
@@ -67,6 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/margin_default"
+        android:padding="@dimen/activity_choose_server_button_padding"
         android:text="@string/next" />
 
 </RelativeLayout>

@@ -1,24 +1,19 @@
 package com.applikey.mattermost.models.auth;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class AuthenticationResponse {
 
     @SerializedName("id")
-    @Expose
     private String id;
 
     @SerializedName("username")
-    @Expose
     private String userName;
 
     @SerializedName("first_name")
-    @Expose
     private String firstName;
 
     @SerializedName("last_name")
-    @Expose
     private String lastName;
 
     public AuthenticationResponse(String id, String userName, String firstName, String lastName) {

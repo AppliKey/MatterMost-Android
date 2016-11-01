@@ -1,17 +1,14 @@
 package com.applikey.mattermost.models.auth;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @SuppressWarnings("WeakerAccess")
 public class AuthenticationRequest {
 
     @SerializedName("login_id")
-    @Expose
     private String login;
 
     @SerializedName("password")
-    @Expose
     private String password;
 
     public AuthenticationRequest() {
