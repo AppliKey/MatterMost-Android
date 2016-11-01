@@ -53,8 +53,13 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     }
 
     private void initView() {
+
         mPagerAdapter = new SearchChatAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
+
+
     }
+
+
 
 }

@@ -79,5 +79,6 @@
     </array>
 
     <string name="gcm_sender_id">400589284558</string>
+    <string name="activity.search.chat.search">Search...</string>
 
 </resources>
