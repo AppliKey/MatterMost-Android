@@ -16,7 +16,7 @@ public class BearerTokenFactory {
     }
 
     public void setBearerToken(String value) {
-        mPrefs.setKeyAuthToken(value);
+        mPrefs.setAuthToken(value);
     }
 
     public String getBearerTokenString() {

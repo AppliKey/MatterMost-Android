@@ -15,6 +15,7 @@ public class Prefs {
     private static final String KEY_USER_ID = Constants.PACKAGE_NAME + ".USER_ID";
     private static final String KEY_SERVER_URL = Constants.PACKAGE_NAME + ".SERVER_URL";
     private static final String KEY_AUTH_TOKEN = Constants.PACKAGE_NAME + ".AUTH_TOKEN";
+    private static final String KEY_GCM_TOKEN = Constants.PACKAGE_NAME + ".GCM_TOKEN";
 
     private SharedPreferences mSharedPreferences;
 
@@ -45,8 +46,16 @@ public class Prefs {
         return mSharedPreferences.getString(KEY_AUTH_TOKEN, null);
     }
 
-    public void setKeyAuthToken(@Nullable String authToken) {
+    public void setAuthToken(@Nullable String authToken) {
         mSharedPreferences.edit().putString(KEY_AUTH_TOKEN, authToken).apply();
+    }
+
+    public String getGcmToken() {
+        return mSharedPreferences.getString(KEY_GCM_TOKEN, null);
+    }
+
+    public void setGcmToken(@Nullable String gcmToken) {
+        mSharedPreferences.edit().putString(KEY_GCM_TOKEN, gcmToken).apply();
     }
 
     public void setValue(String key, String value) {
