@@ -3,6 +3,7 @@ package com.applikey.mattermost.injects;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.mvp.presenters.*;
+import com.applikey.mattermost.platform.WebSocketService;
 import dagger.Subcomponent;
 
 @PerUser
@@ -24,6 +25,8 @@ public interface UserComponent {
     void inject(BaseChatListFragment fragment);
 
     void inject(CreateChannelPresenter createChannelPresenter);
+
+    void inject(WebSocketService service);
 
     @Subcomponent.Builder
     interface Builder {

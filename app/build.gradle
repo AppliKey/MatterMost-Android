@@ -149,8 +149,12 @@ dependencies {
 
     // crashlytics
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
-        transitive = true;
+        transitive = true
     }
 
+    // lint
     compile 'nl.littlerobots.rxlint:rxlint:1.0'
+
+    //sockets
+    compile 'com.neovisionaries:nv-websocket-client:1.30'
 }

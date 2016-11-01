@@ -64,6 +64,8 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribe(v -> {
                 }, ErrorHandler::handleError);
         mSubscription.add(subscription);
+
+        view.startWebSocketService();
     }
 
     private Observable<StartupFetchResult> fetchStartup(String teamId) {
@@ -98,9 +100,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(userStatusResponse -> {
-                    mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse);
-                })
+                .doOnNext(userStatusResponse -> mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse))
                 .subscribe(v -> {
                 }, ErrorHandler::handleError);
     }
@@ -122,14 +122,15 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public void applyInitialViewState() {
-        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team -> {
-            getViewState().setToolbarTitle(team.getDisplayName());
-        }, ErrorHandler::handleError));
+        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
+                getViewState().setToolbarTitle(team.getDisplayName()), ErrorHandler::handleError));
     }
 
     public void logout() {
         mPrefs.setKeyAuthToken(null);
         App.releaseUserComponent();
-        getViewState().logout();
+        final ChatListScreenView view = getViewState();
+        view.stopWebSocketService();
+        view.logout();
     }
 }

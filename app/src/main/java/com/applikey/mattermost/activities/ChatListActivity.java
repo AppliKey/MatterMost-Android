@@ -22,6 +22,7 @@ import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
+import com.applikey.mattermost.platform.WebSocketService;
 import com.applikey.mattermost.views.TabBehavior;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
@@ -144,6 +145,16 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Subscribe
     public void on(TabIndicatorRequested event) {
         mTabIndicatorModel.handleEvent(event);
+    }
+
+    @Override
+    public void startWebSocketService() {
+        startService(WebSocketService.getIntent(this));
+    }
+
+    @Override
+    public void stopWebSocketService() {
+        stopService(WebSocketService.getIntent(this));
     }
 
     public static Intent getIntent(Context context) {
