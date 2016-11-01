@@ -1,7 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
-
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
@@ -90,7 +88,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                                 .doOnError(ErrorHandler::handleError)
                 )
                 .switchIfEmpty(Observable.empty())
-                .doOnNext(v -> Log.d("offset", String.valueOf(mCurrentPage * PAGE_SIZE)))
                 .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -104,8 +101,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         error -> {
                             getViewState().showProgress(false);
                             ErrorHandler.handleError(error);
-                        },
-                        () -> getViewState().showProgress(false)));
+                        }));
     }
 
     public void deleteMessage(String channelId, Post post) {

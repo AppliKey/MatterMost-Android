@@ -11,8 +11,8 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
-import rx.Observable;
 import io.realm.RealmResults;
+import rx.Observable;
 
 public class ChannelStorage {
 
@@ -61,17 +61,17 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Membership.class);
     }
 
-    public void updateChannelData(Channel channel) {
+    public void updateLastPost(Channel channel) {
+        final Post lastPost = channel.getLastPost();
+        if (lastPost == null) {
+            return;
+        }
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            final Post lastPost = channel.getLastPost();
-            if (lastPost == null) {
-                return false;
-            }
-
+            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, lastPost.getUserId()).findFirst();
             final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
+            realmPost.setAuthor(author);
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
-            realmChannel.setLastPostAuthorDisplayName(channel.getLastPostAuthorDisplayName());
             return true;
         });
     }
@@ -111,7 +111,6 @@ public class ChannelStorage {
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
             channel.setLastPost(storedChannel.getLastPost());
-            channel.setLastPostAuthorDisplayName(storedChannel.getLastPostAuthorDisplayName());
             channel.updateLastActivityTime();
             return true;
         });

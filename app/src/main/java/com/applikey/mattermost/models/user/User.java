@@ -13,6 +13,8 @@ import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject implements Comparable<User>, Searchable<String> {
 
+    public static final String FIELD_NAME_ID = "id";
+
     @PrimaryKey
     @SerializedName("id")
     private String id;
@@ -133,6 +135,9 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     public static String getDisplayableName(User user) {
         final StringBuilder builder = new StringBuilder();
 
+        if (user == null) {
+            return "";
+        }
 
         if (!user.getFirstName().isEmpty()) {
             builder.append(user.getFirstName());
@@ -222,7 +227,8 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
 
     @Override
     public int compareTo(User o) {
-        if (this == o) return 0;
+        if (this == o)
+            return 0;
         final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();
         final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
         return thisUserDisplayableNameIgnoreCase.compareTo(otherUserDisplayableNameIgnoreCase);
