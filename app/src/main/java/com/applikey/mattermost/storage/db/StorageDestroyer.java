@@ -1,9 +1,12 @@
 package com.applikey.mattermost.storage.db;
 
+import javax.inject.Inject;
+
 public class StorageDestroyer {
 
-    private Db mDb;
+    private final Db mDb;
 
+    @Inject
     public StorageDestroyer(Db db) {
         mDb = db;
     }

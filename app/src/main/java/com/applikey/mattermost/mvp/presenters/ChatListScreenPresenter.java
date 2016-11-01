@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -42,7 +43,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     ChannelStorage mChannelStorage;
 
     @Inject
-    StorageDestroyer mStorageDestroyer;
+    Lazy<StorageDestroyer> mStorageDestroyer;
 
     @Inject
     Prefs mPrefs;
@@ -134,7 +135,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     public void logout() {
         mPrefs.setKeyAuthToken(null);
         App.releaseUserComponent();
-        mStorageDestroyer.deleteDatabase();
+        mStorageDestroyer.get().deleteDatabase();
         getViewState().logout();
     }
 }
