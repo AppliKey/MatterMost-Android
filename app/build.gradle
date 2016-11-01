@@ -17,8 +17,6 @@ apply plugin: 'io.fabric'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 
-
-
 android {
     compileOptions.incremental = false
 
@@ -141,7 +139,7 @@ dependencies {
     //logging
     compile 'com.jakewharton.timber:timber:4.3.1'
 
-    //Stream API
+    // stream api
     compile 'com.annimon:stream:1.1.2'
 
     //Realm Adapter
@@ -149,8 +147,11 @@ dependencies {
 
     // crashlytics
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
-        transitive = true;
+        transitive = true
     }
 
     compile 'nl.littlerobots.rxlint:rxlint:1.0'
+
+    compile 'com.google.android.gms:play-services-gcm:9.8.0'
+
 }
