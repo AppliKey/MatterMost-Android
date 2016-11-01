@@ -104,8 +104,10 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
                     return true; //TODO replace with start new chat logic
                 case R.id.create_channel:
                     startActivity(CreateChannelActivity.getIntent(this));
+                    break;
                 case R.id.settings:
-                    return true; //TODO replace with settings logic
+                    startActivity(SettingsActivity.getIntent(this));
+                    break;
                 case R.id.logout:
                     mPresenter.logout();
                     return true;
