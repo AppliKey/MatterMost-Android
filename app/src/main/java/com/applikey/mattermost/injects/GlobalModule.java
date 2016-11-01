@@ -1,6 +1,8 @@
 package com.applikey.mattermost.injects;
 
+import android.app.NotificationManager;
 import android.content.Context;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -115,6 +117,12 @@ public class GlobalModule {
     @PerApp
     Api provideApi(OkHttpClient okHttpClient, ServerUrlFactory serverUrlFactory) {
         return new ApiDelegate(okHttpClient, serverUrlFactory);
+    }
+
+    @Provides
+    @PerApp
+    NotificationManager provideNotificationManager() {
+        return (NotificationManager) mApplicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Provides

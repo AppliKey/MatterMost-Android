@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.app.NotificationManager;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
@@ -51,6 +52,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     @Inject
     Prefs mPrefs;
 
+    @Inject
+    NotificationManager mNotificationManager;
+
     private int mCurrentPage;
 
     public ChatPresenter() {
@@ -77,6 +81,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 }));
 
         mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
+        mNotificationManager.cancel(channelId.hashCode());
     }
 
     public void fetchData(String channelId) {
@@ -142,7 +147,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .doOnNext(result -> mPostStorage.update(result))
                 .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
     }
-
 
     private List<Post> transform(PostResponse response, int offset) {
         final List<String> order = response.getOrder();

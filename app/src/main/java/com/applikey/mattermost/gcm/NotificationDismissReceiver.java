@@ -10,7 +10,5 @@ public class NotificationDismissReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        Log.d(Constants.LOG_TAG_DEBUG, "NotificationDismissReceiver - receive");
     }
 }
