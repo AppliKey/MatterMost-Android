@@ -82,5 +82,7 @@
     <string name="new_group_or_channel">New group or channel</string>
     <string name="invite_new_member">Invite new member</string>
     <string name="all_channels">All channels</string>
+    <string name="channel_display_name_format">#%s</string>
+    <string name="members">Members</string>
 
 </resources>

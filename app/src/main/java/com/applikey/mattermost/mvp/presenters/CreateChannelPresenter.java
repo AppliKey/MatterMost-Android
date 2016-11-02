@@ -20,6 +20,7 @@ import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.applikey.mattermost.web.Api;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
@@ -139,7 +140,6 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
             result = true;
         }
         return result;
-
     }
 
     private List<UserPendingInvitation> filterUserListByFullName(List<UserPendingInvitation> source, String filter) {
@@ -157,15 +157,16 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .observeOn(Schedulers.io())
                 .map(Team::getId)
                 .first()
-                .flatMap(teamId -> mApi.createChannel(teamId, request), (teamId, channel) -> new CreatedChannel(teamId, channel.getId()))
-                .flatMap(createdChannel -> from(mInvitedUsers), AddedUser::new)
-                .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(), user.getCreatedChannel().getChannelId(), new RequestUserId(user.getUser().getId())))
+                .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        v -> {
-                        },
-                        error -> Timber.d("empty sequence"),
-                        () -> getViewState().successfulClose());
+                .doOnNext(createdChannel -> mChannelStorage.save(createdChannel.getChannel()))
+                .observeOn(Schedulers.io())
+                .flatMap(createdChannel -> from(mInvitedUsers), AddedUser::new)
+                .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
+                        user.getCreatedChannel().getChannel().getId(),
+                        new RequestUserId(user.getUser().getId())))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(v -> getViewState().successfulClose(), ErrorHandler::handleError);
         mSubscription.add(subscription);
     }
 

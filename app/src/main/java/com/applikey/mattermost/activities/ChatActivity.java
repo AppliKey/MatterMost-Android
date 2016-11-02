@@ -22,6 +22,7 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
@@ -295,12 +296,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    public void openChannelDetails(String channelId) {
-
+    public void openChannelDetails(Channel channel) {
+        startActivity(ChannelDetailsActivity.getIntent(this, channel));
     }
 
     @Override
-    public void openUserProfile(String userId) {
+    public void openUserProfile(User user) {
 
     }
 }

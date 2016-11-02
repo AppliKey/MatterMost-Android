@@ -75,9 +75,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     public void channelNameClick() {
         final ChatView view = getViewState();
         if (Channel.ChannelType.DIRECT.getRepresentation().equals(mChannel.getType())) {
-            view.openUserProfile(mChannel.getDirectCollocutor().getId());
+            view.openUserProfile(mChannel.getDirectCollocutor());
         } else {
-            view.openChannelDetails(mChannel.getId());
+            view.openChannelDetails(mChannel);
         }
     }
 
