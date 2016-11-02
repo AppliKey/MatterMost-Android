@@ -1,5 +1,6 @@
 package com.applikey.mattermost.models.user;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.R;
@@ -134,12 +135,8 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         this.status = status;
     }
 
-    public static String getDisplayableName(User user) {
+    public static String getDisplayableName(@NonNull User user) {
         final StringBuilder builder = new StringBuilder();
-
-        if (user == null) {
-            return "";
-        }
 
         if (!user.getFirstName().isEmpty()) {
             builder.append(user.getFirstName());
