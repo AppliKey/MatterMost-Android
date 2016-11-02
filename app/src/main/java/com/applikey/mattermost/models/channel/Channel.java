@@ -307,23 +307,25 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Channel{" +
-                "id='" + getId() + '\'' +
-                ", type='" + getType() + '\'' +
-                ", displayName='" + getDisplayName() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", header='" + getHeader() + '\'' +
-                ", purpose='" + getPurpose() + '\'' +
-                ", lastPostAt=" + getLastPostAt() +
-                ", createdAt=" + getCreatedAt() +
-                ", directCollocutor=" + getDirectCollocutor() +
-                ", lastViewedAt=" + getLastViewedAt() +
-                ", hasUnreadMessages=" + hasUnreadMessages() +
-                ", lastPost=" + getLastPost() +
-                ", lastPostAuthorDisplayName='" + getLastPostAuthorDisplayName() + '\'' +
-                ", lastActivityTime=" + getLastActivityTime() +
-                '}';
-    }
+    // FIXME Commented out to fix crashes
+//
+//    @Override
+//    public String toString() {
+//        return "Channel{" +
+//                "id='" + getId() + '\'' +
+//                ", type='" + getType() + '\'' +
+//                ", displayName='" + getDisplayName() + '\'' +
+//                ", name='" + getName() + '\'' +
+//                ", header='" + getHeader() + '\'' +
+//                ", purpose='" + getPurpose() + '\'' +
+//                ", lastPostAt=" + getLastPostAt() +
+//                ", createdAt=" + getCreatedAt() +
+//                ", directCollocutor=" + getDirectCollocutor() +
+//                ", lastViewedAt=" + getLastViewedAt() +
+//                ", hasUnreadMessages=" + hasUnreadMessages() +
+//                ", lastPost=" + getLastPost() +
+//                ", lastPostAuthorDisplayName='" + getLastPostAuthorDisplayName() + '\'' +
+//                ", lastActivityTime=" + getLastActivityTime() +
+//                '}';
+//    }
 }

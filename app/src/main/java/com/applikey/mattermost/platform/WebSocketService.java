@@ -3,15 +3,20 @@ package com.applikey.mattermost.platform;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
+import com.applikey.mattermost.storage.db.ChannelStorage;
+import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
 import com.applikey.mattermost.web.BearerTokenFactory;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.google.gson.Gson;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
@@ -21,6 +26,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import javax.inject.Inject;
 import java.io.IOException;
 
+// FIXME Problems with lifecycle
 public class WebSocketService extends IntentService {
 
     private static final String TAG = WebSocketService.class.getSimpleName();
@@ -34,6 +40,12 @@ public class WebSocketService extends IntentService {
 
     @Inject
     BearerTokenFactory mTokenFactory;
+
+    @Inject
+    PostStorage mPostStorage;
+
+    @Inject
+    ChannelStorage mChannelStorage;
 
     private WebSocket mWebSocket;
 
@@ -110,6 +122,20 @@ public class WebSocketService extends IntentService {
 
                 final Post post = extractPostFromSocket(gson, event);
                 Log.d(TAG, "Post message: " + post.getMessage());
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    mPostStorage.update(post);
+
+                    mChannelStorage
+                            .findByIdAndCopy(post.getChannelId())
+                            .first()
+                            .doOnNext(channel -> {
+                                channel.setLastPost(post);
+                                mChannelStorage.updateChannelData(channel);
+                            })
+                            .subscribe(v -> {
+                            }, ErrorHandler::handleError);
+                });
             }
         }
     }

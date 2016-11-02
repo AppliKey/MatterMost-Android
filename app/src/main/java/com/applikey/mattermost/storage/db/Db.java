@@ -24,15 +24,11 @@ public class Db {
     }
 
     public void saveTransactional(RealmObject object) {
-        mRealm.executeTransactionAsync(realm -> {
-            realm.copyToRealmOrUpdate(object);
-        });
+        mRealm.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(object));
     }
 
     public void saveTransactionalSync(RealmObject object) {
-        mRealm.executeTransaction(realm -> {
-            realm.copyToRealmOrUpdate(object);
-        });
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(object));
     }
 
     public <T extends RealmObject> Observable<T> getObject(Class<T> tClass, String id) {
@@ -41,6 +37,11 @@ public class Db {
                 .findFirstAsync()
                 .<T>asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    public <T extends RealmObject> Observable<T> getObjectAndCopy(Class<T> tClass, String id) {
+        return getObject(tClass, id)
+                .map(mRealm::copyFromRealm);
     }
 
     @SuppressWarnings("unchecked")
@@ -127,9 +128,9 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsExcluded(Class<T>
-            tClass,
-            String fieldName,
-            String value) {
+                                                                                        tClass,
+                                                                                String fieldName,
+                                                                                String value) {
         return mRealm
                 .where(tClass)
                 .notEqualTo(fieldName, value)

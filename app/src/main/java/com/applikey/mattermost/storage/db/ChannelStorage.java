@@ -24,6 +24,14 @@ public class ChannelStorage {
         mPrefs = prefs;
     }
 
+    public Observable<Channel> findById(String id) {
+        return mDb.getObject(Channel.class, id);
+    }
+
+    public Observable<Channel> findByIdAndCopy(String id) {
+        return mDb.getObjectAndCopy(Channel.class, id);
+    }
+
     public Observable<List<Channel>> list() {
         return mDb.listRealmObjects(Channel.class);
     }
@@ -118,8 +126,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 
