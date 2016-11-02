@@ -59,6 +59,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     public void setDataSet(List<User> dataSet) {
+        mDataSet.clear();
         mDataSet.addAll(dataSet);
         notifyDataSetChanged();
     }
