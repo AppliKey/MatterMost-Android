@@ -40,6 +40,7 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.ChatListActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.ChooseTeamActivity"

@@ -11,8 +11,8 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
-import rx.Observable;
 import io.realm.RealmResults;
+import rx.Observable;
 
 public class ChannelStorage {
 
@@ -44,6 +44,10 @@ public class ChannelStorage {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.DIRECT.getRepresentation(),
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+    }
+
+    public Observable<Channel> channelById(String id) {
+        return mDb.getObject(Channel.class, id);
     }
 
     public Observable<List<Channel>> listAll() {
@@ -118,8 +122,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

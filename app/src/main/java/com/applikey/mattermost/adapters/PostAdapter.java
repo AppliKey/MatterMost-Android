@@ -3,6 +3,7 @@ package com.applikey.mattermost.adapters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,12 +40,12 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private int mNewMessageIndicatorPosition = -1;
 
     public PostAdapter(Context context,
-            RealmResults<Post> posts,
-            String currentUserId,
-            ImageLoader imageLoader,
-            Channel.ChannelType channelType,
-            long lastViewed,
-            OnLongClickListener onLongClickListener) {
+                       RealmResults<Post> posts,
+                       String currentUserId,
+                       ImageLoader imageLoader,
+                       Channel.ChannelType channelType,
+                       long lastViewed,
+                       OnLongClickListener onLongClickListener) {
         super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
@@ -178,7 +181,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOwnPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate,
-                OnLongClickListener onLongClickListener) {
+                         OnLongClickListener onLongClickListener) {
             bind(channelType, post, user, showAuthor, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
@@ -189,7 +192,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOtherPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime,
-                boolean showDate, ImageLoader imageLoader) {
+                           boolean showDate, ImageLoader imageLoader) {
             bind(channelType, post, user, showAuthor, showTime, showDate);
 
             final String previewImagePath = user.getProfileImage();

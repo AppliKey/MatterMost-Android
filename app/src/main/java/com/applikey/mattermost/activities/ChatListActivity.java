@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +21,8 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
+import com.applikey.mattermost.manager.notitifcation.NotificationManager;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.views.TabBehavior;
@@ -56,6 +59,9 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
 
+    @Nullable
+    private Bundle pendingBundle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +72,21 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         initView();
 
         mEventBus.register(this);
+
+        onNewIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Bundle bundle = getIntent().getBundleExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY);
+        if (bundle != null) {
+            String channelId = bundle.getString(NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
+
+            if (channelId != null) {
+                mPresenter.preloadChannel(channelId);
+            }
+        }
     }
 
     private void initView() {
@@ -121,6 +142,12 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     }
 
     @Override
+    public void onChannelLoaded(Channel channel) {
+        Log.d("onChannelLoaded", "onChannelLoaded: ");
+        startActivity(ChatActivity.getIntent(this, channel));
+    }
+
+    @Override
     public void logout() {
         final Intent intent = new Intent(this, ChooseServerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -148,6 +175,13 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
 
     public static Intent getIntent(Context context) {
         final Intent intent = new Intent(context, ChatListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return intent;
+    }
+
+    public static Intent getIntent(Context context, Bundle bundle) {
+        final Intent intent = new Intent(context, ChatListActivity.class);
+        intent.putExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY, bundle);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
     }

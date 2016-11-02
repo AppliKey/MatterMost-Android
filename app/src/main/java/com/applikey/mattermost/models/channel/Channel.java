@@ -16,6 +16,7 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
+
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
