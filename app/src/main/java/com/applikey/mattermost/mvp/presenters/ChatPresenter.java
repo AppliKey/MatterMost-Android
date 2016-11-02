@@ -1,8 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
-
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
@@ -56,6 +55,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     NotificationManager mNotificationManager;
 
     private int mCurrentPage;
+    private Channel mChannel;
 
     public ChatPresenter() {
         App.getComponent().inject(this);
@@ -65,10 +65,11 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final ChatView view = getViewState();
 
         updateLastViewedAt(channelId);
-
-        mPostStorage.listByChannel(channelId)
+        mSubscription.add(mChannelStorage.channel(channelId)
+                .subscribe(channel -> mChannel = channel, ErrorHandler::handleError));
+        mSubscription.add(mPostStorage.listByChannel(channelId)
                 .first()
-                .subscribe(view::onDataReady, view::onFailure);
+                .subscribe(view::onDataReady, view::onFailure));
     }
 
     private void updateLastViewedAt(String channelId) {
@@ -94,7 +95,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                                 .doOnError(ErrorHandler::handleError)
                 )
                 .switchIfEmpty(Observable.empty())
-                .doOnNext(v -> Log.d("offset", String.valueOf(mCurrentPage * PAGE_SIZE)))
                 .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -108,8 +108,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         error -> {
                             getViewState().showProgress(false);
                             ErrorHandler.handleError(error);
-                        },
-                        () -> getViewState().showProgress(false)));
+                        }));
     }
 
     public void deleteMessage(String channelId, Post post) {
@@ -117,16 +116,19 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .flatMap(team -> mApi.deletePost(team.getId(), channelId, post.getId())
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> mPostStorage.delete(post), ErrorHandler::handleError));
+                .doOnNext(posts -> mPostStorage.delete(post))
+                .doOnNext(posts -> mChannel.setLastPost(null))
+                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), ErrorHandler::handleError));
     }
 
-    //FIXME Currently we have problem when sending RealmProxy object to server
-    public void editMessage(String channelId, Post post) {
+    public void editMessage(String channelId, Post post, String newMessage) {
+        final Post finalPost = mPostStorage.copyFromDb(post);
+        finalPost.setMessage(newMessage);
         mSubscription.add(mTeamStorage.getChosenTeam()
-                .flatMap(team -> mApi.updatePost(team.getId(), channelId, post)
+                .flatMap(team -> mApi.updatePost(team.getId(), channelId, finalPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> mPostStorage.update(post), ErrorHandler::handleError));
+                .subscribe(posts -> mPostStorage.update(finalPost), ErrorHandler::handleError));
     }
 
     public void sendMessage(String channelId, String message) {
@@ -144,19 +146,17 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(result -> mPostStorage.update(result))
+                .doOnNext(post -> mChannel.setLastPost(post))
+                .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
                 .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
     }
 
     private List<Post> transform(PostResponse response, int offset) {
         final List<String> order = response.getOrder();
-
         for (int i = 0; i < order.size(); i++) {
             final String id = order.get(i);
-
             response.getPosts().get(id).setPriority(i + offset);
         }
-
         return new ArrayList<>(response.getPosts().values());
     }
 }

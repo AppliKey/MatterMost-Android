@@ -83,7 +83,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private long mChannelLastViewed;
     private PostAdapter mAdapter;
 
-    private boolean mIsNeedToScrollToStart = true;
     private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override
         public void onLoad() {
@@ -120,7 +119,6 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Override
     protected void onStart() {
         super.onStart();
-
         mPresenter.getInitialData(mChannelId);
     }
 
@@ -250,7 +248,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.save, (dialog, which) -> {
-                    mPresenter.editMessage(channelId, post);
+                    mPresenter.editMessage(channelId, post, input.getText().toString());
                 })
                 .show();
     }

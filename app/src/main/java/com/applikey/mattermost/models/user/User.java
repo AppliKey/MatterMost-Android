@@ -1,5 +1,6 @@
 package com.applikey.mattermost.models.user;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.R;
@@ -13,10 +14,12 @@ import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject implements Comparable<User>, Searchable<String> {
 
+    public static final String FIELD_NAME_ID = "id";
+
     public static final String FIELD_USERNAME = "username";
 
     @PrimaryKey
-    @SerializedName("id")
+    @SerializedName(FIELD_NAME_ID)
     private String id;
 
     @SerializedName(FIELD_USERNAME)
@@ -132,9 +135,8 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         this.status = status;
     }
 
-    public static String getDisplayableName(User user) {
+    public static String getDisplayableName(@NonNull User user) {
         final StringBuilder builder = new StringBuilder();
-
 
         if (!user.getFirstName().isEmpty()) {
             builder.append(user.getFirstName());
@@ -224,7 +226,8 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
 
     @Override
     public int compareTo(User o) {
-        if (this == o) return 0;
+        if (this == o)
+            return 0;
         final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();
         final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
         return thisUserDisplayableNameIgnoreCase.compareTo(otherUserDisplayableNameIgnoreCase);
