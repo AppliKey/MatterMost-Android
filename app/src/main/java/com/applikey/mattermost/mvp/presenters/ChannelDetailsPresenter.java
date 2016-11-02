@@ -6,6 +6,7 @@ import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
@@ -25,6 +26,9 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
     @Inject
     ChannelStorage mChannelStorage;
 
+    @Inject
+    Api mApi;
+
     private Channel mChannel;
 
     public ChannelDetailsPresenter() {
@@ -37,5 +41,15 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
         mSubscription.add(mChannelStorage.channel(channelId)
                 .doOnNext(view::showBaseDetails)
                 .subscribe(channel -> mChannel = channel, ErrorHandler::handleError));
+/*        mSubscription.add(
+                mTeamStorage.getChosenTeam()
+                        .observeOn(Schedulers.io())
+                        .map(Team::getId)
+                        .flatMap(teamId -> mApi.getChannelExtra(teamId, channelId))
+                        .map(ExtraInfo::getMembers)
+                        .flatMap(Observable::from)
+                        .map()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(users -> view.showMembers(users)));*/
     }
 }
