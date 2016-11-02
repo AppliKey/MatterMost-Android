@@ -60,6 +60,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_chat_list);
 
         ButterKnife.bind(this);

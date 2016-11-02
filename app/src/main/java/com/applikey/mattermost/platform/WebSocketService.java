@@ -6,9 +6,13 @@ import android.content.Intent;
 import android.util.Log;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.socket.MessagePostedEventData;
+import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
 import com.applikey.mattermost.web.BearerTokenFactory;
+import com.google.gson.Gson;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -20,6 +24,10 @@ import java.io.IOException;
 public class WebSocketService extends IntentService {
 
     private static final String TAG = WebSocketService.class.getSimpleName();
+
+    private static final String EVENT_STATUS_CHANGE = "status_change";
+    private static final String EVENT_TYPING = "typing";
+    private static final String EVENT_MESSAGE_POSTED = "posted";
 
     @Inject
     Prefs mPrefs;
@@ -50,6 +58,8 @@ public class WebSocketService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
 
+        Log.d(TAG, "closing socket");
+
         mWebSocket.disconnect();
     }
 
@@ -58,6 +68,8 @@ public class WebSocketService extends IntentService {
     }
 
     private void openSocket() throws IOException, WebSocketException {
+        Log.d(TAG, "Opening socket");
+
         String baseUrl = mPrefs.getCurrentServerUrl();
         baseUrl = UrlUtil.removeProtocol(baseUrl);
         baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
@@ -67,17 +79,45 @@ public class WebSocketService extends IntentService {
                 .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
                 .createSocket(baseUrl);
 
+        final Gson gson = new Gson();
+
         mWebSocket.addListener(new WebSocketAdapter() {
             @Override
             public void onTextMessage(WebSocket websocket, String text) throws Exception {
                 super.onTextMessage(websocket, text);
                 Log.d(TAG, text);
+
+                handleMessage(gson, text);
             }
         });
 
         mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mTokenFactory.getBearerTokenString());
 
         mWebSocket.connectAsynchronously();
+        Log.d(TAG, "Socket opened");
+    }
+
+    private void handleMessage(Gson gson, String message) {
+        final WebSocketEvent event = gson.fromJson(message, WebSocketEvent.class);
+
+        final String eventType = event.getEvent();
+
+        Log.d(TAG, "Got event: " + eventType);
+
+        switch (eventType) {
+            case EVENT_MESSAGE_POSTED: {
+                Log.d(TAG, "Extracting message");
+
+                final Post post = extractPostFromSocket(gson, event);
+                Log.d(TAG, "Post message: " + post.getMessage());
+            }
+        }
+    }
+
+    private Post extractPostFromSocket(Gson gson, WebSocketEvent event) {
+        final MessagePostedEventData data = gson.fromJson(event.getData(), MessagePostedEventData.class);
+        final String postObject = data.getPostObject();
+        return gson.fromJson(postObject, Post.class);
     }
 
     public static Intent getIntent(Context context) {

@@ -1,5 +1,6 @@
 package com.applikey.mattermost.models.socket;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 public class WebSocketEvent {
@@ -20,7 +21,7 @@ public class WebSocketEvent {
      * Serialized event data as json
      */
     @SerializedName("data")
-    private String data;
+    private JsonObject data;
 
     public String getTeamId() {
         return teamId;
@@ -38,7 +39,7 @@ public class WebSocketEvent {
         return event;
     }
 
-    public String getData() {
+    public JsonObject getData() {
         return data;
     }
 }
