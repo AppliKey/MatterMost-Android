@@ -56,27 +56,63 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
 
+    private boolean mShouldShowUnreadTab;
+
+    private ChatListPagerAdapter mChatListPagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
 
         ButterKnife.bind(this);
-
         initView();
-
         mEventBus.register(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), mPresenter.initTabs());
+        mViewPager.setAdapter(mChatListPagerAdapter);
+        mChatListPagerAdapter.notifyDataSetChanged();
+        mTabLayout.setupWithViewPager(mViewPager);
+        int offset = 0;
+        if (!mPresenter.shouldShowUnreadTab()) {
+            offset = 1;
+        }
+
+        final int tabCount = mTabLayout.getTabCount();
+        for (int i = 0; i < tabCount; i++) {
+            final TabLayout.Tab tab = mTabLayout.getTabAt(i);
+            if (tab != null) {
+                tab.setCustomView(R.layout.tab_chat_list);
+                tab.setIcon(TabBehavior.getItemBehavior(i + offset).getIcon());
+
+                final View customTab = tab.getCustomView();
+                if (customTab != null) {
+                    final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
+                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(i + offset),
+                            (ImageView) notificationIcon);
+                }
+            }
+        }
+        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
+        mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
+        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
+        mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
+/*        mShouldShowUnreadTab = mPresenter.shouldShowUnreadTab();
+        if (!mShouldShowUnreadTab) {
+            mChatListPagerAdapter.setTabs(initTabs(mShouldShowUnreadTab));
+        }*/
     }
 
     private void initView() {
         mPresenter.applyInitialViewState();
-        ChatListPagerAdapter chatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager());
-
-
-        mViewPager.setAdapter(chatListPagerAdapter);
-
-        mTabLayout.setupWithViewPager(mViewPager);
-        final int tabCount = mTabLayout.getTabCount();
+        /*mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), mPresenter.initTabs());
+        mViewPager.setAdapter(mChatListPagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);*/
+        /*final int tabCount = mTabLayout.getTabCount();
         for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
             if (tab != null) {
@@ -90,12 +126,12 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
                             (ImageView) notificationIcon);
                 }
             }
-        }
+        }*/
 
-        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
+/*        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
-        mViewPager.setOffscreenPageLimit(tabCount - 1);
+        mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);*/
 
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
@@ -118,6 +154,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
             return false;
         });
     }
+
 
     @Override
     public void setToolbarTitle(String title) {

@@ -1,6 +1,13 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.support.v4.app.Fragment;
+
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.fragments.ChannelListFragment;
+import com.applikey.mattermost.fragments.DirectChatListFragment;
+import com.applikey.mattermost.fragments.EmptyChatListFragment;
+import com.applikey.mattermost.fragments.GroupListFragment;
+import com.applikey.mattermost.fragments.UnreadChatListFragment;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.post.Post;
@@ -14,11 +21,14 @@ import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.storage.preferences.SettingManager;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +57,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     @Inject
     Prefs mPrefs;
+
+    @Inject
+    SettingManager mSettingManager;
 
     @Inject
     Api mApi;
@@ -80,6 +93,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(response -> mChannelStorage.saveChannelResponse(response.getChannelResponse(),
                         response.getDirectProfiles()));
 
+    }
+
+    public boolean shouldShowUnreadTab() {
+        return mSettingManager.shouldShowUnreadMessages();
     }
 
     private void fetchLastMessages(StartupFetchResult response) {
@@ -137,5 +154,18 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         App.releaseUserComponent();
         mStorageDestroyer.get().deleteDatabase();
         getViewState().logout();
+    }
+
+
+    public List<Fragment> initTabs() {
+        final List<Fragment> tabs = new ArrayList<>();
+        if (shouldShowUnreadTab()) {
+            tabs.add(UnreadChatListFragment.newInstance());
+        }
+        tabs.add(EmptyChatListFragment.newInstance());
+        tabs.add(ChannelListFragment.newInstance());
+        tabs.add(GroupListFragment.newInstance());
+        tabs.add(DirectChatListFragment.newInstance());
+        return tabs;
     }
 }

@@ -32,7 +32,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         App.getUserComponent().inject(this);
     }
 
-    @Override
+/*    @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         final ChatListView view = getViewState();
@@ -43,6 +43,13 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
                 .subscribe(view::displayInitialData, ErrorHandler::handleError));
+    }*/
+
+    public void displayData() {
+        mSubscription.add(getInitData()
+                .doOnNext(channels -> mChannels = channels)
+                .doOnNext(channels -> channels.addChangeListener(this))
+                .subscribe(getViewState()::displayInitialData, ErrorHandler::handleError));
     }
 
     @Override

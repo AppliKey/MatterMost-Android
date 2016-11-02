@@ -34,6 +34,12 @@ public class GroupListFragment extends BaseChatListFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.displayData();
+    }
+
+    @Override
     protected int getEmptyStateTextId() {
         return R.string.no_groups_available;
     }
