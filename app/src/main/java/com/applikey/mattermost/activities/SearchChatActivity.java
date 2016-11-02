@@ -44,6 +44,11 @@ import static android.view.View.VISIBLE;
 public class SearchChatActivity extends BaseMvpActivity implements SearchChatView {
 
     private static final String TAG = SearchChatActivity.class.getSimpleName();
+
+    private static final int ALL_FRAGMENT = 0;
+    private static final int CHANNEL_FRAGMENT = 1;
+    private static final int USER_FRAGMENT = 2;
+
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.view_pager)
@@ -120,7 +125,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     public void onTextChanged(CharSequence text){
         Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
         switch (mTabLayout.getSelectedTabPosition()){
-            case 3 :
+            case USER_FRAGMENT :
                 mSearchChatPresenter.handleUserTextChanges(text.toString());
                 break;
         }

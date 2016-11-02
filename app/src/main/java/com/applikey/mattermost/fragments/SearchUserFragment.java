@@ -84,6 +84,7 @@ public class SearchUserFragment extends BaseMvpFragment implements SearchUserVie
 
     @Override
     public void onItemClicked(User user) {
+        Log.d(TAG, "onItemClicked: ");
         getPresenter().handleUserClick(user);
     }
 

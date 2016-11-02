@@ -51,6 +51,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     private static final String DIRECT_PREFIX = "";
 
     private static final int MENU_ITEM_SEARCH = Menu.FIRST;
+    private static final String TAG = ChatActivity.class.getSimpleName();
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -249,9 +250,7 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         builder.setView(input)
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save, (dialog, which) -> {
-                    mPresenter.editMessage(channelId, post);
-                })
+                .setPositiveButton(R.string.save, (dialog, which) -> mPresenter.editMessage(channelId, post))
                 .show();
     }
 

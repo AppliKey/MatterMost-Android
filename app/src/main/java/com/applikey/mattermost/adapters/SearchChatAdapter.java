@@ -8,7 +8,7 @@ import com.applikey.mattermost.fragments.SearchUserFragment;
 
 public class SearchChatAdapter extends FragmentPagerAdapter {
 
-    private final static int PAGE_NUMBER = 4;
+    private final static int PAGE_NUMBER = 3;
 
     public SearchChatAdapter(FragmentManager fm) {
         super(fm);

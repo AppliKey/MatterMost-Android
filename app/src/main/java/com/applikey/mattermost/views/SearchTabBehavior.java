@@ -18,12 +18,6 @@ public enum SearchTabBehavior {
             return R.drawable.ic_hamburger;
         }
     },
-    UNREAD {
-        @Override
-        public int getIcon() {
-            return R.drawable.ic_unread;
-        }
-    },
     CHANNELS {
         @Override
         public int getIcon() {
