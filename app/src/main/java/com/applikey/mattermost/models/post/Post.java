@@ -32,7 +32,6 @@ public class Post extends RealmObject {
     // Application-specific fields
     private int priority;
 
-    // Application-specific fields
     private User author;
 
     public String getId() {
