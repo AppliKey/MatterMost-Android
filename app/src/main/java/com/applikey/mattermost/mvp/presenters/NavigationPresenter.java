@@ -38,4 +38,8 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
         mStorageDestroyer.get().deleteDatabase();
         getViewState().onLogout();
     }
+
+    public void createNewChannel() {
+        getViewState().startChannelCreating();
+    }
 }

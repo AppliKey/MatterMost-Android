@@ -9,4 +9,6 @@ public interface NavigationView extends MvpView {
 
     void onLogout();
 
+    void startChannelCreating();
+
 }

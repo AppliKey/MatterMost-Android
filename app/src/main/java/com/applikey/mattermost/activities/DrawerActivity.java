@@ -20,8 +20,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
 public abstract class DrawerActivity extends BaseMvpActivity implements NavigationView {
 
-    private static final String TAG = "DrawerActivity";
-
     private static final int ITEM_ALL_CHANNELS = 0;
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
@@ -99,8 +97,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     }
 
     private void headerClick() {
-        startActivity(CreateChannelActivity.getIntent(this));
-        closeDrawer();
+        mPresenter.createNewChannel();
     }
 
     protected void closeDrawer() {
@@ -130,5 +127,11 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         final Intent intent = new Intent(this, ChooseServerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void startChannelCreating() {
+        startActivity(CreateChannelActivity.getIntent(this));
+        closeDrawer();
     }
 }
