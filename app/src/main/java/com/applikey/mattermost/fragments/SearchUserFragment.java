@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
@@ -22,15 +20,10 @@ import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.views.SearchUserView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnTextChanged;
 
 /**
  * @author Anatoliy Chub
@@ -44,14 +37,6 @@ public class SearchUserFragment extends BaseMvpFragment implements SearchUserVie
     @InjectPresenter
     SearchUserPresenter mPresenter;
 
-    @Inject
-    EventBus mEventBus;
-    @Bind(R.id.btn_search)
-    ImageButton mBtnSearch;
-    @Bind(R.id.et_input)
-    EditText mEtInput;
-    @Bind(R.id.btn_close)
-    ImageButton mBtnClose;
     @Bind(R.id.recycle_view)
     RecyclerView mRecycleView;
 
@@ -116,13 +101,6 @@ public class SearchUserFragment extends BaseMvpFragment implements SearchUserVie
         getPresenter().unSubscribe();
     }
 
-    @OnTextChanged(R.id.et_input)
-    public void onInputText(CharSequence text) {
-        Log.d(TAG, "onInputText: " + text);
-        mUserAdapter.clear();
-        getPresenter().getData(text.toString());
-    }
-
     @Override
     public void displayData(List<User> users) {
         Log.d(TAG, "displayData: ");
@@ -146,6 +124,11 @@ public class SearchUserFragment extends BaseMvpFragment implements SearchUserVie
         } else {
             ((BaseActivity) getActivity()).hideLoadingDialog();
         }
+    }
+
+    @Override
+    public void clearData(){
+        mUserAdapter.clear();
     }
 
 }

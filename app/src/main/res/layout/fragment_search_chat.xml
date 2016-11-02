@@ -6,41 +6,6 @@
     android:layout_height="match_parent"
     android:focusableInTouchMode="true">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageButton
-            android:id="@+id/btn_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_search"
-            android:tint="@color/colorPrimary"
-            android:padding="@dimen/small"
-            android:background="@android:color/transparent"/>
-
-        <com.devspark.robototextview.widget.RobotoEditText
-            android:id="@+id/et_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/margin_3x"
-            android:layout_marginEnd="@dimen/margin_3x"
-            android:background="@null" />
-
-        <ImageButton
-            android:id="@+id/btn_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:visibility="gone"
-            android:src="@drawable/ic_search"
-            android:tint="@color/colorPrimary"
-            android:padding="@dimen/small"
-            android:background="@android:color/transparent"/>
-
-    </FrameLayout>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycle_view"
         android:layout_width="match_parent"

@@ -18,4 +18,6 @@ public interface SearchUserView extends MvpView{
 
     void showLoading(boolean show);
 
+    void clearData();
+
 }

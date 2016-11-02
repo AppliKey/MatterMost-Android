@@ -4,12 +4,18 @@ import android.support.annotation.DrawableRes;
 
 import com.applikey.mattermost.R;
 
-public enum TabBehavior {
+public enum SearchTabBehavior {
 
     UNDEFINED {
         @Override
         public int getIcon() {
             return R.drawable.no_resource;
+        }
+    },
+    ALL {
+        @Override
+        public int getIcon() {
+            return R.drawable.ic_hamburger;
         }
     },
     UNREAD {
@@ -18,22 +24,10 @@ public enum TabBehavior {
             return R.drawable.ic_unread;
         }
     },
-    FAVOURITES {
-        @Override
-        public int getIcon() {
-            return R.drawable.ic_favourites_tab;
-        }
-    },
     CHANNELS {
         @Override
         public int getIcon() {
             return R.drawable.ic_public_channels_tab;
-        }
-    },
-    GROUPS {
-        @Override
-        public int getIcon() {
-            return R.drawable.ic_private_channels_tab;
         }
     },
     DIRECT {
@@ -46,8 +40,8 @@ public enum TabBehavior {
     @DrawableRes
     public abstract int getIcon();
 
-    public static TabBehavior getItemBehavior(int pageIndex) {
+    public static SearchTabBehavior getItemBehavior(int pageIndex) {
         // Offset should be introduced
-        return TabBehavior.values()[pageIndex + 1];
+        return SearchTabBehavior.values()[pageIndex + 1];
     }
 }

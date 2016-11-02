@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.events.SearchUserTextChanged;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchUserView;
@@ -16,6 +17,9 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -48,11 +52,21 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     TeamStorage mTeamStorage;
 
     @Inject
+    EventBus mEventBus;
+
+    @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
     public SearchUserPresenter() {
         App.getUserComponent().inject(this);
+        mEventBus.register(this);
+    }
+
+    @Override
+    public void unSubscribe() {
+        super.unSubscribe();
+        mEventBus.unregister(this);
     }
 
     public void getData(String text) {
@@ -101,6 +115,13 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                     view.showLoading(false);
                 });
 
+    }
+
+    @Subscribe
+    public void onTextChanged(SearchUserTextChanged event){
+        final SearchUserView view = getViewState();
+        view.clearData();
+        getData(event.getText());
     }
 
 }

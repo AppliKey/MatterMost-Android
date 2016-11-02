@@ -15,6 +15,9 @@
     <dimen name="margin_4x">64dp</dimen>
     <dimen name="margin_default">16dp</dimen>
 
+    <dimen name="user_avatar_right_margin">20dp</dimen>
+    <dimen name="user_item_top_padding">20dp</dimen>
+
     <dimen name="small">8dp</dimen>
     <dimen name="normal">16dp</dimen>
     <dimen name="large">32dp</dimen>
