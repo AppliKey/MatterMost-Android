@@ -70,7 +70,9 @@ public class ChannelStorage {
         final Post lastPost = channel.getLastPost();
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
             final Post realmPost;
-            if (lastPost == null) {//If last post null, find last post
+
+            //If last post null, find last post
+            if (lastPost == null) {
                 final RealmResults<Post> result = realm.where(Post.class)
                         .equalTo(Post.FIELD_NAME_CHANNEL_ID, channel.getId())
                         .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING);
