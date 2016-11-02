@@ -114,6 +114,7 @@ public class Db {
                 .where(tClass)
                 .findAllAsync()
                 .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid())
                 .filter(response -> !response.isEmpty())
                 .map(mRealm::copyFromRealm);
     }
