@@ -80,5 +80,7 @@
 
     <string name="gcm_sender_id">400589284558</string>
     <string name="new_group_or_channel">New group or channel</string>
+    <string name="invite_new_member">Invite new member</string>
+    <string name="all_channels">All channels</string>
 
 </resources>

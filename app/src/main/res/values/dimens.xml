@@ -79,4 +79,10 @@
     <dimen name="pending_people_item_bottom_margin">10dp</dimen>
     <dimen name="added_people_rv_margin">20dp</dimen>
     <dimen name="drawer_item_text_size">18sp</dimen>
+
+    <dimen name="status_bar_height">24dp</dimen>
+
+    <!--drawer-->
+    <dimen name="material_drawer_item_primary_text">@dimen/drawer_item_text_size</dimen>
+
 </resources>

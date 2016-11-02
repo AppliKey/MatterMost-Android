@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -36,7 +33,7 @@ import butterknife.ButterKnife;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class ChatListActivity extends BaseMvpActivity implements ChatListScreenView {
+public class ChatListActivity extends DrawerActivity implements ChatListScreenView {
 
     @InjectPresenter
     ChatListScreenPresenter mPresenter;
@@ -50,12 +47,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Bind(R.id.vpChatList)
     ViewPager mViewPager;
 
-    @Bind(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
-
-    @Bind(R.id.navigation_view)
-    NavigationView mNavigationView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +57,11 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         initView();
 
         mEventBus.register(this);
+    }
+
+    @Override
+    protected Toolbar getToolbar() {
+        return mToolbar;
     }
 
     private void initView() {
@@ -96,25 +92,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         mViewPager.setOffscreenPageLimit(tabCount - 1);
 
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
-
-        mNavigationView.getHeaderView(0).setOnClickListener(v -> {
-            startActivity(CreateChannelActivity.getIntent(this));
-        });
-
-        mNavigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.start_new_chat:
-                    return true; //TODO replace with start new chat logic
-                case R.id.settings:
-                    return true; //TODO replace with settings logic
-                case R.id.logout:
-                    mPresenter.logout();
-                    return true;
-            }
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-            return false;
-        });
     }
 
     @Override
