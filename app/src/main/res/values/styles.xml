@@ -40,6 +40,11 @@
         <item name="android:textSize">@dimen/text_heading_size</item>
     </style>
 
+    <style name="SettingsElement">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/settings_element_text_size</item>
+    </style>
+
     <style name="TextHeadingSecondary.Small">
         <item name="android:textSize">@dimen/text_heading_small_size</item>
     </style>
@@ -86,4 +91,5 @@
         <item name="android:height">24dp</item>
     </style>
 
+    <dimen name="settings_element_text_size">18sp</dimen>
 </resources>

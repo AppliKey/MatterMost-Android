@@ -81,5 +81,7 @@
     </array>
 
     <string name="gcm_sender_id">400589284558</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="unread_messages">Unread messages</string>
 
 </resources>

@@ -78,4 +78,6 @@
     <dimen name="pending_people_item_top_margin">10dp</dimen>
     <dimen name="pending_people_item_bottom_margin">10dp</dimen>
     <dimen name="added_people_rv_margin">20dp</dimen>
+    <dimen name="settings_element_height">56dp</dimen>
+    <dimen name="margin_settings_elements">1dp</dimen>
 </resources>

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
+import com.applikey.mattermost.events.UnreadTabStateChangedEvent;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.views.TabBehavior;
@@ -57,6 +58,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     NavigationView mNavigationView;
 
     private boolean mShouldShowUnreadTab;
+    private Boolean mStateChanged;
 
     private ChatListPagerAdapter mChatListPagerAdapter;
 
@@ -73,10 +75,25 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (mStateChanged != null && mStateChanged != mShouldShowUnreadTab) {
+            mShouldShowUnreadTab = mStateChanged;
+            initViewPager();
+        }
+        //initViewPager();
+
+
+/*        mShouldShowUnreadTab = mPresenter.shouldShowUnreadTab();
+        if (!mShouldShowUnreadTab) {
+            mChatListPagerAdapter.setTabs(initTabs(mShouldShowUnreadTab));
+        }*/
+    }
+
+    private void initViewPager() {
         mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), mPresenter.initTabs());
         mViewPager.setAdapter(mChatListPagerAdapter);
         mChatListPagerAdapter.notifyDataSetChanged();
-        mTabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.setupWithViewPager(mViewPager, false);
         int offset = 0;
         if (!mPresenter.shouldShowUnreadTab()) {
             offset = 1;
@@ -101,14 +118,34 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
-/*        mShouldShowUnreadTab = mPresenter.shouldShowUnreadTab();
-        if (!mShouldShowUnreadTab) {
-            mChatListPagerAdapter.setTabs(initTabs(mShouldShowUnreadTab));
-        }*/
     }
 
     private void initView() {
         mPresenter.applyInitialViewState();
+/*        int offset = 0;
+        if (!mPresenter.shouldShowUnreadTab()) {
+            offset = 1;
+        }
+
+        final int tabCount = mTabLayout.getTabCount();
+        for (int i = 0; i < tabCount; i++) {
+            final TabLayout.Tab tab = mTabLayout.getTabAt(i);
+            if (tab != null) {
+                tab.setCustomView(R.layout.tab_chat_list);
+                tab.setIcon(TabBehavior.getItemBehavior(i + offset).getIcon());
+
+                final View customTab = tab.getCustomView();
+                if (customTab != null) {
+                    final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
+                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(i + offset),
+                            (ImageView) notificationIcon);
+                }
+            }
+        }
+        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
+        mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
+        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
+        mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);*/
         /*mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), mPresenter.initTabs());
         mViewPager.setAdapter(mChatListPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);*/
@@ -132,7 +169,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);*/
-
+        initViewPager();
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
 
@@ -155,6 +192,11 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         });
     }
 
+    @Subscribe
+    public void onTabUnreadStateChagedEventListener(UnreadTabStateChangedEvent event) {
+        final boolean unreadTabState = event.getUnreadTabState();
+        mStateChanged = unreadTabState;
+    }
 
     @Override
     public void setToolbarTitle(String title) {
