@@ -27,4 +27,8 @@ public class SearchChatPresenter extends BasePresenter<SearchChatView> {
         mBus.post(new SearchUserTextChanged(text));
     }
 
+    public void handleChannelTextChanges(String text){
+        mBus.post(new SearchUserTextChanged(text));
+    }
+
 }

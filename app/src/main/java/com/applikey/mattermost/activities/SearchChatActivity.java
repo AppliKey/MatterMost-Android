@@ -128,6 +128,9 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
             case USER_FRAGMENT :
                 mSearchChatPresenter.handleUserTextChanges(text.toString());
                 break;
+            case CHANNEL_FRAGMENT :
+                mSearchChatPresenter.handleChannelTextChanges(text.toString());
+                break;
         }
     }
 

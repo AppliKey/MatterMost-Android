@@ -34,4 +34,5 @@ public interface UserComponent {
         UserComponent build();
     }
 
+    void inject(SearchChannelPresenter searchChannelPresenter);
 }

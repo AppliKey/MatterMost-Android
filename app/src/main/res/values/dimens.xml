@@ -22,6 +22,10 @@
     <dimen name="normal">16dp</dimen>
     <dimen name="large">32dp</dimen>
 
+    <dimen name="divider_size">1dp</dimen>
+    <dimen name="search_item_date_text_size">12sp</dimen>
+
+    <dimen name="search_channel_message_top_margin">4dp</dimen>
     <dimen name="welcome_screen_headers_margin_top">72dp</dimen>
     <dimen name="welcome_screen_headers_margin_bottom">48dp</dimen>
 
@@ -43,6 +47,7 @@
     <dimen name="list_item_margin_double">40dp</dimen>
     <dimen name="list_item_image">60dp</dimen>
     <dimen name="list_item_image_chat">40dp</dimen>
+    <dimen name="list_item_mini_image_chat">28dp</dimen>
     <dimen name="list_item_heading_text">18sp</dimen>
     <dimen name="list_item_secondary_text">14sp</dimen>
     <dimen name="list_item_heading_bottom_margin">5dp</dimen>

@@ -29,6 +29,7 @@
             android:layout_marginEnd="@dimen/user_avatar_right_margin"
             android:layout_marginStart="@dimen/user_avatar_right_margin"
             android:singleLine="true"
+            android:maxLines="1"
             android:textColor="@color/textListPrimary"
             app:typeface="roboto_regular"
             android:textSize="@dimen/list_item_heading_text" />

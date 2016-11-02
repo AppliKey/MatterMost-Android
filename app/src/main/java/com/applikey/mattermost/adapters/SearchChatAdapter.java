@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.applikey.mattermost.fragments.SearchChannelFragment;
 import com.applikey.mattermost.fragments.SearchUserFragment;
 
 public class SearchChatAdapter extends FragmentPagerAdapter {
@@ -22,7 +23,7 @@ public class SearchChatAdapter extends FragmentPagerAdapter {
                 return SearchUserFragment.newInstance();
             }
             case 1: {
-                return SearchUserFragment.newInstance();
+                return SearchChannelFragment.newInstance();
             }
             case 2: {
                 return SearchUserFragment.newInstance();

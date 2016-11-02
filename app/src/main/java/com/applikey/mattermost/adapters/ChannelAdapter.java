@@ -5,10 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
@@ -17,24 +18,24 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
+public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.ViewHolder> {
 
-    private static final String TAG = UserAdapter.class.getSimpleName();
+    private static final String TAG = ChannelAdapter.class.getSimpleName();
 
-    private List<User> mDataSet = new ArrayList<>();
+    private List<Channel> mDataSet = new ArrayList<>();
     private ImageLoader mImageLoader;
     private ClickListener mClickListener = null;
 
-    public UserAdapter(ImageLoader imageLoader) {
+    public ChannelAdapter(ImageLoader imageLoader) {
         super();
 
         mImageLoader = imageLoader;
     }
 
     @Override
-    public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_search_user, parent, false);
+                .inflate(R.layout.list_item_search_channel, parent, false);
 
         final ViewHolder vh = new ViewHolder(v);
         vh.getRoot().setOnClickListener(mOnClickListener);
@@ -43,10 +44,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(UserAdapter.ViewHolder vh, int position) {
-        final User data = mDataSet.get(position);
+    public void onBindViewHolder(ViewHolder vh, int position) {
+        final Channel data = mDataSet.get(position);
 
-        vh.getChannelName().setText(User.getDisplayableName(data));
+        vh.getChannelName().setText(data.getDisplayName());
 
         setChannelIcon(vh, data);
 
@@ -58,7 +59,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         return mDataSet != null ? mDataSet.size() : 0;
     }
 
-    public void setDataSet(List<User> dataSet) {
+    public void setDataSet(List<Channel> dataSet) {
         mDataSet.clear();
         mDataSet.addAll(dataSet);
         notifyDataSetChanged();
@@ -73,27 +74,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         this.mClickListener = listener;
     }
 
-    private void setChannelIcon(ViewHolder viewHolder, User element) {
+    private void setChannelIcon(ViewHolder viewHolder, Channel element) {
 
-        final String previewImagePath = element.getProfileImage();
-        if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
-        }
     }
 
 
     public interface ClickListener {
 
-        void onItemClicked(User user);
+        void onItemClicked(Channel channel);
     }
 
     private final View.OnClickListener mOnClickListener = v -> {
         final int position = (Integer) v.getTag();
 
-        final User user = mDataSet.get(position);
+        final Channel channel = mDataSet.get(position);
 
         if (mClickListener != null) {
-            mClickListener.onItemClicked(user);
+            mClickListener.onItemClicked(channel);
         }
     };
 
@@ -102,11 +99,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         private final View mRoot;
 
-        @Bind(R.id.iv_preview_image)
-        ImageView mPreviewImage;
-
+        @Bind(R.id.iv_preview_image1)
+        ImageView mIvPreviewImage1;
+        @Bind(R.id.iv_preview_image2)
+        ImageView mIvPreviewImage2;
+        @Bind(R.id.iv_preview_image3)
+        ImageView mIvPreviewImage3;
+        @Bind(R.id.iv_preview_image4)
+        ImageView mIvPreviewImage4;
+        @Bind(R.id.table)
+        TableLayout mTable;
+        @Bind(R.id.tv_message)
+        TextView mTvMessage;
+        @Bind(R.id.tv_date)
+        TextView mTvDate;
         @Bind(R.id.tv_channel_name)
-        TextView mChannelName;
+        TextView mTvChannelName;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -120,13 +128,25 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             return mRoot;
         }
 
-        ImageView getPreviewImage() {
-            return mPreviewImage;
+
+        public ImageView getIvPreviewImage1() {
+            return mIvPreviewImage1;
         }
 
+        public ImageView getIvPreviewImage2() {
+            return mIvPreviewImage2;
+        }
+
+        public ImageView getIvPreviewImage3() {
+            return mIvPreviewImage3;
+        }
+
+        public ImageView getIvPreviewImage4() {
+            return mIvPreviewImage4;
+        }
 
         TextView getChannelName() {
-            return mChannelName;
+            return mTvChannelName;
         }
 
     }
