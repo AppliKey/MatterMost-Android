@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primaryStart"
+    android:drawableEnd="@drawable/ic_add_white"
+    android:foreground="?attr/selectableItemBackground"
+    android:padding="@dimen/normal"
+    android:text="@string/new_group_or_channel"
+    android:textAppearance="@style/DrawerItemTextAppearance"
+    android:textColor="@android:color/white" />

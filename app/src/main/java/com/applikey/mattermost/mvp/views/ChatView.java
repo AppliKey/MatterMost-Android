@@ -19,4 +19,8 @@ public interface ChatView extends MvpView {
     void onFailure(Throwable cause);
 
     void onMessageSent(long createdAt);
+
+    void openChannelDetails(String channelId);
+
+    void openUserProfile(String userId);
 }

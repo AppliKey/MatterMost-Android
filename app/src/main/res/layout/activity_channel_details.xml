@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,46 +17,50 @@
             android:layout_height="?actionBarSize"
             app:contentInsetStartWithNavigation="60dp"
             app:elevation="2dp" />
-
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/srl_chat"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/image_button_dimen_large"
-        android:background="@color/background"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/background">
 
-        <FrameLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srl_chat"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_messages"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:visibility="visible"
-                tools:listitem="@layout/list_item_post_my" />
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tv_empty_state"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/no_posts_to_display" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical"
+                    android:visibility="visible"
+                    tools:listitem="@layout/list_item_post_my" />
 
-        </FrameLayout>
+                <TextView
+                    android:id="@+id/tv_empty_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/no_posts_to_display" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+
+            </FrameLayout>
+
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/l_message"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/image_button_dimen_large"
-        android:layout_gravity="bottom"
-        android:background="@android:color/white"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageView
@@ -90,4 +95,4 @@
 
     </LinearLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

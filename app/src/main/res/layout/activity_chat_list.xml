@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<android.support.v4.widget.DrawerLayout android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:openDrawer="start">
@@ -19,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:contentInsetStartWithNavigation="60dp"
-            app:navigationIcon="@drawable/ic_hamburger"/>
+            app:navigationIcon="@drawable/ic_hamburger" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
@@ -27,13 +26,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabIndicatorHeight="0px"
-            app:tabMode="fixed"/>
+            app:tabMode="fixed" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/vpChatList"
             android:layout_width="match_parent"
             android:layout_height="0px"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
@@ -41,7 +40,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:menu="@menu/menu_drawer"/>
+        app:headerLayout="@layout/header_drawer"
+        app:itemTextAppearance="@style/DrawerItemTextAppearance"
+        app:menu="@menu/menu_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

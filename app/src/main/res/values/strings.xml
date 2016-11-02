@@ -40,9 +40,9 @@
 
     <string name="action_search">Search</string>
 
-    <string name="default_server_text"/>
-    <string name="default_login_text"/>
-    <string name="default_password"/>
+    <string name="default_server_text" />
+    <string name="default_login_text" />
+    <string name="default_password" />
 
     <string name="message">Message…</string>
     <string name="loading">Loading…</string>
@@ -50,7 +50,7 @@
     <string name="channel_preview_message_placeholder">No messages yet</string>
 
     <string name="start_new_direct_chat">Start new direct chat</string>
-    <string name="create_channel">Create Channel</string>
+    <string name="create_channel">Create channel</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
     <string name="create_channel_title_name">Name</string>
@@ -79,5 +79,6 @@
     </array>
 
     <string name="gcm_sender_id">400589284558</string>
+    <string name="new_group_or_channel">New group or channel</string>
 
 </resources>

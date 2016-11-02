@@ -269,7 +269,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-            mToolbar.setOnClickListener(v -> scrollToStart());
+            mToolbar.setOnClickListener(v -> {
+                mPresenter.channelNameClick();
+            });
         }
         mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -280,5 +282,15 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 hideKeyboard();
             }
         });
+    }
+
+    @Override
+    public void openChannelDetails(String channelId) {
+
+    }
+
+    @Override
+    public void openUserProfile(String userId) {
+
     }
 }

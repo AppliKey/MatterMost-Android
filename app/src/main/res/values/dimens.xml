@@ -78,4 +78,5 @@
     <dimen name="pending_people_item_top_margin">10dp</dimen>
     <dimen name="pending_people_item_bottom_margin">10dp</dimen>
     <dimen name="added_people_rv_margin">20dp</dimen>
+    <dimen name="drawer_item_text_size">18sp</dimen>
 </resources>

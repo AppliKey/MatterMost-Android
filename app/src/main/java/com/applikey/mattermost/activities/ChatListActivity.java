@@ -98,12 +98,14 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
 
+        mNavigationView.getHeaderView(0).setOnClickListener(v -> {
+            startActivity(CreateChannelActivity.getIntent(this));
+        });
+
         mNavigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.start_new_chat:
                     return true; //TODO replace with start new chat logic
-                case R.id.create_channel:
-                    startActivity(CreateChannelActivity.getIntent(this));
                 case R.id.settings:
                     return true; //TODO replace with settings logic
                 case R.id.logout:
