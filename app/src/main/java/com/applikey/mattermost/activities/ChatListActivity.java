@@ -59,9 +59,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
 
-    @Nullable
-    private Bundle pendingBundle;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +140,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
 
     @Override
     public void onChannelLoaded(Channel channel) {
-        Log.d("onChannelLoaded", "onChannelLoaded: ");
         startActivity(ChatActivity.getIntent(this, channel));
     }
 
@@ -180,9 +176,8 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     }
 
     public static Intent getIntent(Context context, Bundle bundle) {
-        final Intent intent = new Intent(context, ChatListActivity.class);
+        final Intent intent = getIntent(context);
         intent.putExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY, bundle);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
     }
 

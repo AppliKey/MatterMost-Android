@@ -134,7 +134,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     public void preloadChannel(String channelId) {
         Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
-                mTeamStorage.getChosenTeam().flatMap(team -> mApi.getChannelById(team.getId(), channelId).subscribeOn(Schedulers.io())))
+                mTeamStorage.getChosenTeam()
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
+                                .subscribeOn(Schedulers.io())))
                 .observeOn(AndroidSchedulers.mainThread())
                 .first()
                 .subscribe(channel -> {
