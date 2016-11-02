@@ -1,6 +1,7 @@
 package com.applikey.mattermost.activities;
 
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,12 +10,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
+import com.applikey.mattermost.mvp.views.NavigationView;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.util.RobotoTypefaceManager;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
-public abstract class DrawerActivity extends BaseMvpActivity {
+public abstract class DrawerActivity extends BaseMvpActivity implements NavigationView {
 
     private static final String TAG = "DrawerActivity";
 
@@ -30,6 +34,9 @@ public abstract class DrawerActivity extends BaseMvpActivity {
     private PrimaryDrawerItem mItemSettings;
     private PrimaryDrawerItem mItemLogout;
 
+    @InjectPresenter
+    NavigationPresenter mPresenter;
+
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -37,6 +44,10 @@ public abstract class DrawerActivity extends BaseMvpActivity {
     }
 
     protected abstract Toolbar getToolbar();
+
+    protected boolean showHamburger() {
+        return true;
+    }
 
     private void initDrawer() {
         final Typeface typeface = RobotoTypefaceManager.obtainTypeface(this,
@@ -76,7 +87,15 @@ public abstract class DrawerActivity extends BaseMvpActivity {
 
         final ActionBarDrawerToggle toggle = mDrawer.getActionBarDrawerToggle();
         toggle.setDrawerIndicatorEnabled(false);
-        toggle.setHomeAsUpIndicator(R.drawable.ic_hamburger);
+
+        if (showHamburger()) {
+            toggle.setHomeAsUpIndicator(R.drawable.ic_hamburger);
+        } else {
+            toggle.setHomeAsUpIndicator(R.drawable.ic_back);
+            getToolbar().setNavigationOnClickListener(v -> {
+                onBackPressed();
+            });
+        }
     }
 
     private void headerClick() {
@@ -91,15 +110,25 @@ public abstract class DrawerActivity extends BaseMvpActivity {
     private void itemScreen(int id) {
         switch (id) {
             case ITEM_ALL_CHANNELS:
+                if (!(this instanceof ChatListActivity)) {
+                    finish();
+                }
                 break;
             case ITEM_INVITE_MEMBER:
                 break;
             case ITEM_SETTINGS:
                 break;
             case ITEM_LOGOUT:
+                mPresenter.logout();
                 break;
         }
         closeDrawer();
     }
 
+    @Override
+    public void onLogout() {
+        final Intent intent = new Intent(this, ChooseServerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
 }

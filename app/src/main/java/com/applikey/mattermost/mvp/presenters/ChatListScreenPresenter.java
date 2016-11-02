@@ -126,11 +126,4 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
             getViewState().setToolbarTitle(team.getDisplayName());
         }, ErrorHandler::handleError));
     }
-
-    public void logout() {
-        mPrefs.setAuthToken(null);
-        App.releaseUserComponent();
-        mStorageDestroyer.get().deleteDatabase();
-        getViewState().logout();
-    }
 }

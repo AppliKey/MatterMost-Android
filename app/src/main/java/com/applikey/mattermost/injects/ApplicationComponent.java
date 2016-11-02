@@ -12,6 +12,7 @@ import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
+import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.presenters.SplashPresenter;
 
@@ -49,6 +50,8 @@ public interface ApplicationComponent {
     void inject(ChatPresenter presenter);
 
     void inject(AddedMembersPresenter presenter);
+
+    void inject(NavigationPresenter navigationPresenter);
 
     // Services
     void inject(RegistrationIntentService service);

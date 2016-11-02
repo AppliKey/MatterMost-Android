@@ -109,6 +109,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    protected boolean showHamburger() {
+        return false;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
