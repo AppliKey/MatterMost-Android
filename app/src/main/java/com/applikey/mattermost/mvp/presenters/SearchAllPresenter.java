@@ -22,7 +22,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.realm.RealmResults;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -30,7 +29,7 @@ import rx.android.schedulers.AndroidSchedulers;
  * @author Anatoliy Chub
  */
 @InjectViewState
-public class SearchAllPresenter extends BasePresenter<SearchAllView> {
+public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
     private static final String TAG = SearchAllPresenter.class.getSimpleName();
 
@@ -59,10 +58,17 @@ public class SearchAllPresenter extends BasePresenter<SearchAllView> {
     }
 
     public void getData(String text) {
+        if(!mChannelsIsFetched){
+            return;
+        }
         final SearchAllView view = getViewState();
         mSubscription.add(
                 Observable.zip(
-                        getList(mChannelStorage.listUndirected(text)),
+                        Channel.getList(mChannelStorage.listUndirected(text))
+                                .map(channels -> {
+                                    channels.addAll(0, mFetchedChannels);
+                                    return channels;
+                                }),
                         mUserStorage.searchUsers(text), (items, users) -> {
 
                             List<SearchItem> searchItemList = new ArrayList<>();
@@ -89,16 +95,6 @@ public class SearchAllPresenter extends BasePresenter<SearchAllView> {
         final SearchAllView view = getViewState();
         view.clearData();
         getData(event.getText());
-    }
-
-    private Observable<List<SearchItem>> getList(Observable<RealmResults<Channel>> observable) {
-        return observable.map(channels -> {
-            List<SearchItem> channelList = new ArrayList<>();
-            for (Channel channel : channels) {
-                channelList.add(channel);
-            }
-            return channelList;
-        });
     }
 
 }

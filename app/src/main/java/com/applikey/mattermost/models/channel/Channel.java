@@ -5,13 +5,17 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
 import io.realm.DiffEquals;
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
+import rx.Observable;
 
 
 public class Channel extends RealmObject implements DiffEquals<Channel>, SearchItem {
@@ -341,5 +345,18 @@ public class Channel extends RealmObject implements DiffEquals<Channel>, SearchI
                 '}';
     }
 
+    public static Observable<List<Channel>> getList(Observable<RealmResults<Channel>> observable) {
+        return observable.map(Channel::getList);
+    }
+
+    public static List<Channel> getList(RealmResults<Channel> realmResults) {
+
+            List<Channel> channelList = new ArrayList<>();
+            for (Channel channel : realmResults) {
+                channelList.add(channel);
+            }
+            return channelList;
+
+    }
 
 }

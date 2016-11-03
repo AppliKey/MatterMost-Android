@@ -50,6 +50,8 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
+        Log.d(TAG, "onViewCreated: ");
+        getPresenter().requestNotJoinedChannels();
         getPresenter().getData("");
     }
 

@@ -1,17 +1,16 @@
 package com.applikey.mattermost.web;
 
+import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
-import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
-import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
-import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
+import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
@@ -119,4 +118,8 @@ public interface Api {
 
     @POST("/api/v3/teams/{team_id}/channels/create_direct")
     Observable<Channel> createChannel(@Path("team_id") String teamId, @Body DirectChannelRequest request);
+
+    @GET("api/v3/teams/{team_id}/channels/more")
+    Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
+
 }

@@ -1,7 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
-
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchUserTextChanged;
@@ -9,7 +7,6 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
@@ -25,17 +22,13 @@ import rx.android.schedulers.AndroidSchedulers;
  * @author Anatoliy Chub
  */
 @InjectViewState
-public class SearchChannelPresenter extends BasePresenter<SearchChannelView> {
+public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
     private static final String TAG = SearchChannelPresenter.class.getSimpleName();
-
-
 
     @Inject
     ChannelStorage mChannelStorage;
 
-    @Inject
-    Api mApi;
 
     @Inject
     Prefs mPrefs;
@@ -46,6 +39,8 @@ public class SearchChannelPresenter extends BasePresenter<SearchChannelView> {
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
+
+
 
     public SearchChannelPresenter() {
         App.getUserComponent().inject(this);
@@ -59,12 +54,16 @@ public class SearchChannelPresenter extends BasePresenter<SearchChannelView> {
     }
 
     public void getData(String text) {
+        if(!mChannelsIsFetched){
+            return;
+        }
         final SearchChannelView view = getViewState();
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
+                        .map(Channel::getList)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe((channels) -> {
-                            Log.d(TAG, "getData: " + channels);
+                            channels.addAll(0, mFetchedChannels);
                             view.displayData(channels);
                         }, ErrorHandler::handleError));
     }
@@ -80,5 +79,7 @@ public class SearchChannelPresenter extends BasePresenter<SearchChannelView> {
         view.clearData();
         getData(event.getText());
     }
+
+
 
 }

@@ -161,6 +161,11 @@ public class ApiDelegate implements Api {
     }
 
     @Override
+    public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
+        return getRealApi().getChannelsUserHasNotJoined(teamId);
+    }
+
+    @Override
     public Observable<Channel> createChannel(@Path("team_id") String teamId, @Body
             ChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
