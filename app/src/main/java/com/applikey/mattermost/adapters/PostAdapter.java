@@ -3,6 +3,7 @@ package com.applikey.mattermost.adapters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,10 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
+import java.util.List;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -49,8 +51,14 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         mChannelType = channelType;
         mLastViewed = lastViewed;
         mOnLongClickListener = onLongClickListener;
+        setHasStableIds(true);
     }
 
+    @Override
+    public long getItemId(int index) {
+        final Post item = getItem(index);
+        return item != null ? item.hashCode() : 0;
+    }
 
     public void setLastViewed(long lastViewed) {
         mLastViewed = lastViewed;
@@ -70,11 +78,6 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Post post = getData().get(position);
-
-        final Realm realm = Realm.getDefaultInstance();
-        final User user = realm.where(User.class).equalTo("id", post.getUserId()).findFirst();
-        //TODO Discuss with team how we can avoid this
-        //TODO when scroll issue fixed, replace to presenter
 
         final boolean isLastPost = position == getData().size() - 1;
         final boolean isFirstPost = position == 0;
@@ -111,9 +114,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         holder.bindHeader(showNewMessageIndicator, showDate);
 
         if (isMy(post)) {
-            holder.bindOwnPost(mChannelType, post, user, showAuthor, showTime, showDate, mOnLongClickListener);
+            holder.bindOwnPost(mChannelType, post, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, post, user, showAuthor, showTime, showDate, mImageLoader);
+            holder.bindOtherPost(mChannelType, post, showAuthor, showTime, showDate, mImageLoader);
         }
     }
 
@@ -163,10 +166,10 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
 
-        private void bind(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate) {
+        private void bind(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime, boolean showDate) {
             mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
-            mTvName.setText(User.getDisplayableName(user));
+            mTvName.setText(post.getAuthor().toString());
             mTvMessage.setText(post.getMessage());
 
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
@@ -177,9 +180,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             }
         }
 
-        void bindOwnPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime, boolean showDate,
+        void bindOwnPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime, boolean showDate,
                 OnLongClickListener onLongClickListener) {
-            bind(channelType, post, user, showAuthor, showTime, showDate);
+            bind(channelType, post, showAuthor, showTime, showDate);
 
             itemView.setOnLongClickListener(v -> {
                 onLongClickListener.onLongClick(post);
@@ -188,20 +191,22 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvName.setText(R.string.you);
         }
 
-        void bindOtherPost(Channel.ChannelType channelType, Post post, User user, boolean showAuthor, boolean showTime,
+        void bindOtherPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
                 boolean showDate, ImageLoader imageLoader) {
-            bind(channelType, post, user, showAuthor, showTime, showDate);
+            bind(channelType, post, showAuthor, showTime, showDate);
 
-            final String previewImagePath = user.getProfileImage();
+            final User author = post.getAuthor();
+
+            final String previewImagePath = author.getProfileImage();
             if (mIvPreviewImageLayout != null && mIvPreviewImage != null
                     && mIvStatus != null && previewImagePath != null
                     && !previewImagePath.isEmpty()) {
                 imageLoader.displayCircularImage(previewImagePath, mIvPreviewImage);
-                mIvStatus.setImageResource(User.Status.from(user.getStatus()).getDrawableId());
+                mIvStatus.setImageResource(User.Status.from(author.getStatus()).getDrawableId());
                 mIvPreviewImageLayout.setVisibility(showAuthor ? View.VISIBLE : View.INVISIBLE);
             }
 
-            if (channelType == Channel.ChannelType.DIRECT) {
+            if (mIvPreviewImageLayout != null && channelType == Channel.ChannelType.DIRECT) {
                 mIvPreviewImageLayout.setVisibility(View.GONE);
             }
         }

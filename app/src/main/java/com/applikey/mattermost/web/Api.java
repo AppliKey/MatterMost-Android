@@ -1,15 +1,15 @@
 package com.applikey.mattermost.web;
 
+import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
-import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
-import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
+import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
@@ -72,6 +72,9 @@ public interface Api {
     @GET("/api/v3/teams/{teamId}/channels/")
     Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
 
+    @GET("/api/v3/teams/{teamId}/channels/{channelId}")
+    Observable<Channel> getChannelById(@Path("teamId") String teamId, @Path("channelId") String channelId);
+
     //This url is not containing "/" symbol at the start
     //In this case it build full url in the next way :
     //"www.mattermost.com/v3/" + "applikeyteam" = "www.mattermost.com/v3/applikeyteam"
@@ -104,7 +107,7 @@ public interface Api {
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
     Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
-            @Path("channelId") String channelId);
+                                                    @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{team_id}/channels/create")
     Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
