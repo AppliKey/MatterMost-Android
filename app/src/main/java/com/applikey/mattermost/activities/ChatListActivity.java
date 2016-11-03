@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
+import com.applikey.mattermost.manager.notitifcation.NotificationManager;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.views.TabBehavior;
@@ -57,6 +59,21 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         initView();
 
         mEventBus.register(this);
+
+        onNewIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        final Bundle bundle = getIntent().getBundleExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY);
+        if (bundle != null) {
+            String channelId = bundle.getString(NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
+
+            if (channelId != null) {
+                mPresenter.preloadChannel(channelId);
+            }
+        }
     }
 
     @Override
@@ -100,6 +117,11 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     }
 
     @Override
+    public void onChannelLoaded(Channel channel) {
+        startActivity(ChatActivity.getIntent(this, channel));
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
@@ -121,6 +143,12 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     public static Intent getIntent(Context context) {
         final Intent intent = new Intent(context, ChatListActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return intent;
+    }
+
+    public static Intent getIntent(Context context, Bundle bundle) {
+        final Intent intent = getIntent(context);
+        intent.putExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY, bundle);
         return intent;
     }
 

@@ -118,7 +118,7 @@ public class Db {
                 .where(tClass)
                 .findAllAsync()
                 .asObservable()
-                .filter(response -> !response.isEmpty())
+                .filter(o -> o.isLoaded() && o.isValid())
                 .map(mRealm::copyFromRealm);
     }
 
@@ -135,9 +135,9 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsExcluded(Class<T>
-            tClass,
-            String fieldName,
-            String value) {
+                                                                                        tClass,
+                                                                                String fieldName,
+                                                                                String value) {
         return mRealm
                 .where(tClass)
                 .notEqualTo(fieldName, value)
