@@ -2,19 +2,19 @@ package com.applikey.mattermost.models.channel;
 
 public class CreatedChannel {
 
-    private String teamId;
-    private String channelId;
+    private final String teamId;
+    private final Channel channel;
 
-    public CreatedChannel(String teamId, String channelId) {
+    public CreatedChannel(String teamId, Channel channel) {
         this.teamId = teamId;
-        this.channelId = channelId;
+        this.channel = channel;
     }
 
     public String getTeamId() {
         return teamId;
     }
 
-    public String getChannelId() {
-        return channelId;
+    public Channel getChannel() {
+        return channel;
     }
 }
