@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.applikey.mattermost.R;
 import com.applikey.mattermost.gcm.RegistrationIntentService;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.mvp.presenters.SplashPresenter;
@@ -34,11 +33,11 @@ public class SplashActivity extends BaseMvpActivity implements SplashView {
     @Override
     public void isSessionExist(boolean exist) {
         final Intent intent;
-        if (!exist) {
-            intent = new Intent(this, ChooseServerActivity.class);
-        } else {
+        if (exist) {
             intent = ChatListActivity.getIntent(this,
                     getIntent().getBundleExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY));
+        } else {
+            intent = new Intent(this, ChooseServerActivity.class);
         }
         startActivity(intent);
     }
