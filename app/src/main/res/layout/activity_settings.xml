@@ -21,10 +21,12 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
+        android:id="@+id/btn_setting_edit_profile"
         android:layout_width="match_parent"
         android:background="@android:color/white"
         android:layout_height="@dimen/settings_element_height"
-        android:layout_marginTop="@dimen/normal">
+        android:layout_marginTop="@dimen/normal"
+        android:clickable="true">
         <com.devspark.robototextview.widget.RobotoTextView
             style="@style/SettingsElement"
             android:layout_width="wrap_content"
@@ -47,7 +49,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_element_height"
         android:layout_marginTop="@dimen/margin_settings_elements"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:clickable="true">
         <com.devspark.robototextview.widget.RobotoTextView
             style="@style/SettingsElement"
             android:layout_width="wrap_content"
@@ -66,10 +69,12 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/btn_setting_logout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_element_height"
         android:layout_marginTop="@dimen/normal"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:clickable="true">
 
         <com.devspark.robototextview.widget.RobotoTextView
             style="@style/SettingsElement"

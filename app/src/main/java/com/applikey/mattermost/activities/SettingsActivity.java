@@ -5,20 +5,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.events.UnreadTabStateChangedEvent;
+import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
+import com.applikey.mattermost.mvp.views.SettingsView;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
 
-public class SettingsActivity extends BaseMvpActivity {
+public class SettingsActivity extends BaseMvpActivity implements SettingsView {
 
-    public static final String KEY_UNREAD_TAB_SETTING = "unread_tabs";
+    @InjectPresenter
+    SettingsPresenter mPresenter;
+
     @Bind(R.id.sw_show_unread_messages)
     SwitchCompat mSwitchShowUnreadMessages;
-
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -36,8 +41,27 @@ public class SettingsActivity extends BaseMvpActivity {
         setTitle(R.string.settings);
     }
 
+    @Override
+    public void logout() {
+        final Intent intent = new Intent(this, ChooseServerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
     @OnCheckedChanged(R.id.sw_show_unread_messages)
     public void onSwitchUnreadTabCheckedChanged(boolean isChecked) {
-        mEventBus.post(new UnreadTabStateChangedEvent(isChecked));
+        mPresenter.setUnreadTabEnabled(isChecked);
+        //mEventBus.post(new UnreadTabStateChangedEvent(isChecked));
     }
+
+    @OnClick(R.id.btn_setting_logout)
+    public void onClickLogout() {
+        mPresenter.logout();
+    }
+
+    @OnClick(R.id.btn_setting_edit_profile)
+    public void onClickEditProfile() {
+        Toast.makeText(this, "Edit profile not implemented yet", Toast.LENGTH_SHORT).show();
+    }
+
 }

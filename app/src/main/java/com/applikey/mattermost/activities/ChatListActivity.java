@@ -183,9 +183,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
                 case R.id.settings:
                     startActivity(SettingsActivity.getIntent(this));
                     break;
-                case R.id.logout:
-                    mPresenter.logout();
-                    return true;
             }
             mDrawerLayout.closeDrawer(GravityCompat.START);
             return false;
@@ -201,13 +198,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Override
     public void setToolbarTitle(String title) {
         mToolbar.setTitle(title);
-    }
-
-    @Override
-    public void logout() {
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
     }
 
     @Override

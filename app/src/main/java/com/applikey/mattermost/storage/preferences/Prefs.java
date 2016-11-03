@@ -62,6 +62,10 @@ public class Prefs {
         mSharedPreferences.edit().putString(key, value).apply();
     }
 
+    public void setValue(String key, boolean value) {
+        mSharedPreferences.edit().putBoolean(key, value).apply();
+    }
+
     public String getValue(String key) {
         return mSharedPreferences.getString(key, null);
     }

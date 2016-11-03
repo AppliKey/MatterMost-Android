@@ -4,7 +4,7 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
-@StateStrategyType(value = AddToEndStrategy.class)
-public interface ChatListScreenView extends MvpView {
-    void setToolbarTitle(String title);
+@StateStrategyType(AddToEndStrategy.class)
+public interface SettingsView extends MvpView {
+    void logout();
 }

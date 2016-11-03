@@ -21,7 +21,7 @@ import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.storage.preferences.SettingManager;
+import com.applikey.mattermost.storage.preferences.SettingsManager;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
@@ -59,7 +59,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     Prefs mPrefs;
 
     @Inject
-    SettingManager mSettingManager;
+    SettingsManager mSettingsManager;
 
     @Inject
     Api mApi;
@@ -96,7 +96,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public boolean shouldShowUnreadTab() {
-        return mSettingManager.shouldShowUnreadMessages();
+        return mSettingsManager.shouldShowUnreadMessages();
     }
 
     private void fetchLastMessages(StartupFetchResult response) {
@@ -109,7 +109,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .flatMap(channel -> mUserStorage.getDirectProfile(channel.getLastPost().getUserId())
                         .distinctUntilChanged(), this::transform)
                 .doOnNext(channel -> mChannelStorage.updateChannelData(channel))
-                .subscribe();
+                .subscribe(v -> {}, ErrorHandler::handleError);
     }
 
     private void fetchUserStatus(StartupFetchResult response) {
@@ -147,13 +147,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team -> {
             getViewState().setToolbarTitle(team.getDisplayName());
         }, ErrorHandler::handleError));
-    }
-
-    public void logout() {
-        mPrefs.setAuthToken(null);
-        App.releaseUserComponent();
-        mStorageDestroyer.get().deleteDatabase();
-        getViewState().logout();
     }
 
 
