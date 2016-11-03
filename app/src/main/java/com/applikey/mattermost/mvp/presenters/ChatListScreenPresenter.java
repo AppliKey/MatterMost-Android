@@ -127,6 +127,20 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         }, ErrorHandler::handleError));
     }
 
+    public void preloadChannel(String channelId) {
+        Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
+                mTeamStorage.getChosenTeam()
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
+                                .subscribeOn(Schedulers.io())))
+                .observeOn(AndroidSchedulers.mainThread())
+                .first()
+                .subscribe(channel -> {
+                    getViewState().onChannelLoaded(channel);
+                }, ErrorHandler::handleError);
+
+        mSubscription.add(subscription);
+    }
+
     public void logout() {
         mPrefs.setAuthToken(null);
         App.releaseUserComponent();

@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.realm.RealmResults;
-import io.realm.Sort;
 import rx.Observable;
+import io.realm.Sort;
 
 public class ChannelStorage {
 
@@ -49,6 +49,10 @@ public class ChannelStorage {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.DIRECT.getRepresentation(),
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+    }
+
+    public Observable<Channel> channelById(String id) {
+        return mDb.getObject(Channel.class, id);
     }
 
     public Observable<List<Channel>> listAll() {

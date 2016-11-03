@@ -131,6 +131,11 @@ public class ApiDelegate implements Api {
     }
 
     @Override
+    public Observable<Channel> getChannelById(@Path("teamId") String teamId, @Path("channelId") String channelId) {
+        return getRealApi().getChannelById(teamId, channelId);
+    }
+
+    @Override
     public Observable<PingResponse> ping() {
         return getRealApi().ping();
     }
