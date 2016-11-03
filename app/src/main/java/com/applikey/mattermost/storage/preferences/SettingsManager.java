@@ -5,7 +5,7 @@ import javax.inject.Inject;
 public class SettingsManager {
 
     private final Prefs mPrefs;
-    private static final String KEY_UNREAD_TABS = "unread_tabs";
+    private static final String KEY_UNREAD_TABS = "unread-tabs";
 
     @Inject
     public SettingsManager(Prefs prefs) {
@@ -23,5 +23,4 @@ public class SettingsManager {
     public void deleteUserSession() {
         mPrefs.setAuthToken(null);
     }
-
 }

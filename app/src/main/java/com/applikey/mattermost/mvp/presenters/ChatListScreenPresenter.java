@@ -17,7 +17,6 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -34,7 +33,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -51,9 +49,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     @Inject
     ChannelStorage mChannelStorage;
-
-    @Inject
-    Lazy<StorageDestroyer> mStorageDestroyer;
 
     @Inject
     Prefs mPrefs;

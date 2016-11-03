@@ -63,7 +63,6 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     @OnCheckedChanged(R.id.sw_show_unread_messages)
     public void onSwitchUnreadTabCheckedChanged(boolean isChecked) {
         mPresenter.setUnreadTabEnabled(isChecked);
-        //mEventBus.post(new UnreadTabStateChangedEvent(isChecked));
     }
 
     @OnClick(R.id.btn_setting_logout)
@@ -71,7 +70,7 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
         mPresenter.logout();
     }
 
-    @OnClick(R.id.btn_setting_edit_profile)
+    @OnClick(R.id.btn_edit_profile)
     public void onClickEditProfile() {
         Toast.makeText(this, "Edit profile not implemented yet", Toast.LENGTH_SHORT).show();
     }

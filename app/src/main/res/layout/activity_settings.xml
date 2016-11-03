@@ -1,90 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/settings_background"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="0dp">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:theme = "@style/AppToolbar"
+            android:theme="@style/AppToolbar"
             app:navigationIcon="@drawable/ic_back" />
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/btn_setting_edit_profile"
-        android:layout_width="match_parent"
-        android:background="@android:color/white"
-        android:layout_height="@dimen/settings_element_height"
-        android:layout_marginTop="@dimen/normal"
-        android:clickable="true">
-        <com.devspark.robototextview.widget.RobotoTextView
-            style="@style/SettingsElement"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:typeface="roboto_light"
-            android:gravity="center_vertical"
-            android:text="@string/edit_profile"
-            android:layout_marginStart="@dimen/normal"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src = "@drawable/ic_forward_shevron"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="@dimen/normal"
-            />
-    </FrameLayout>
-
-    <FrameLayout
+    <com.devspark.robototextview.widget.RobotoTextView
+        style="@style/SettingsElement"
+        android:id="@+id/btn_edit_profile"
         android:layout_width="match_parent"
         android:layout_height="@dimen/settings_element_height"
+        android:layout_marginTop="@dimen/small"
+        android:drawableEnd="@drawable/ic_forward_shevron"
+        android:gravity="center_vertical"
+        android:paddingEnd="@dimen/normal"
+        android:paddingStart="@dimen/normal"
+        android:text="@string/edit_profile"
+        app:typeface="roboto_light" />
+
+    <com.devspark.robototextview.widget.RobotoSwitch
+        android:id="@+id/sw_show_unread_messages"
+        style="@style/SettingsElement"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_element_height"
+        android:layout_gravity="center_vertical|end"
         android:layout_marginTop="@dimen/margin_settings_elements"
-        android:background="@android:color/white"
-        android:clickable="true">
-        <com.devspark.robototextview.widget.RobotoTextView
-            style="@style/SettingsElement"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:typeface="roboto_light"
-            android:gravity="center_vertical"
-            android:text="@string/unread_messages"
-            android:layout_marginStart = "@dimen/normal"/>
+        app:typeface="roboto_light"
+        android:paddingEnd="@dimen/normal"
+        android:paddingStart="@dimen/normal"
+        android:text="@string/unread_messages"
+        android:theme = "@style/SwitchStyle"/>
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/sw_show_unread_messages"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="@dimen/normal"/>
-    </FrameLayout>
-
-    <FrameLayout
+    <com.devspark.robototextview.widget.RobotoTextView
+        style="@style/SettingsElement"
         android:id="@+id/btn_setting_logout"
         android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/small"
         android:layout_height="@dimen/settings_element_height"
-        android:layout_marginTop="@dimen/normal"
-        android:background="@android:color/white"
-        android:clickable="true">
-
-        <com.devspark.robototextview.widget.RobotoTextView
-            style="@style/SettingsElement"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:typeface="roboto_light"
-            android:gravity="center_vertical"
-            android:text="@string/logout"
-            android:layout_marginStart = "@dimen/normal"/>
-    </FrameLayout>
-
+        android:paddingEnd="@dimen/normal"
+        android:paddingStart="@dimen/normal"
+        android:gravity="center_vertical"
+        android:text="@string/logout"
+        app:typeface="roboto_light" />
 
 </LinearLayout>

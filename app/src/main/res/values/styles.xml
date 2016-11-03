@@ -43,6 +43,9 @@
     <style name="SettingsElement">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textSize">@dimen/settings_element_text_size</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:clickable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
     <style name="TextHeadingSecondary.Small">
@@ -91,5 +94,7 @@
         <item name="android:height">24dp</item>
     </style>
 
-    <dimen name="settings_element_text_size">18sp</dimen>
+    <style name="SwitchStyle">
+        <item name="colorControlActivated">@color/primaryStart</item>
+    </style>
 </resources>
