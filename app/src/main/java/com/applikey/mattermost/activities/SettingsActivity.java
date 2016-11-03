@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.applikey.mattermost.R;
@@ -48,6 +49,17 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
         startActivity(intent);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                onBackPressed();
+            }
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @OnCheckedChanged(R.id.sw_show_unread_messages)
     public void onSwitchUnreadTabCheckedChanged(boolean isChecked) {
         mPresenter.setUnreadTabEnabled(isChecked);
@@ -64,4 +76,8 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
         Toast.makeText(this, "Edit profile not implemented yet", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void setInitialViewState(SettingsPresenter.SettingDataHolder settingDataHolder) {
+        mSwitchShowUnreadMessages.setChecked(settingDataHolder.isUnreadTabEnabled());
+    }
 }

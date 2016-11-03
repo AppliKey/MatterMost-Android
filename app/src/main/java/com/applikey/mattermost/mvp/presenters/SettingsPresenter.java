@@ -28,6 +28,18 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         App.getUserComponent().inject(this);
     }
 
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        getViewState().setInitialViewState(getInitialSettingData());
+
+    }
+
+    private SettingDataHolder getInitialSettingData() {
+        final boolean isUnreadTabEnabled = mSettingsManager.shouldShowUnreadMessages();
+        return new SettingDataHolder(isUnreadTabEnabled);
+    }
+
     public void logout() {
         mSettingsManager.deleteUserSession();
         App.releaseUserComponent();
@@ -38,6 +50,19 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     public void setUnreadTabEnabled(boolean enabled) {
         mSettingsManager.setUnreadTabState(enabled);
         Timber.d("unread tab new state: %b", mSettingsManager.shouldShowUnreadMessages());
+    }
+
+
+    public static class SettingDataHolder {
+        private boolean isUnreadTabEnabled;
+
+        public SettingDataHolder(boolean isUnreadTabEnabled) {
+            this.isUnreadTabEnabled = isUnreadTabEnabled;
+        }
+
+        public boolean isUnreadTabEnabled() {
+            return isUnreadTabEnabled;
+        }
     }
 
 }
