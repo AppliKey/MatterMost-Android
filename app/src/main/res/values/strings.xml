@@ -76,6 +76,11 @@
     <array name="post_own_opinion_array">
         <item>Delete</item>
         <item>Edit</item>
+        <item>Reply</item>
+    </array>
+
+    <array name="post_opinion_array">
+        <item>Reply</item>
     </array>
 
     <string name="gcm_sender_id">400589284558</string>

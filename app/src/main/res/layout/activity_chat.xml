@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              xmlns:tools="http://schemas.android.com/tools"
+              android:animateLayoutChanges="true"
               android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
@@ -16,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:contentInsetStartWithNavigation="60dp"
-            app:elevation="2dp" />
+            app:elevation="2dp"/>
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
@@ -38,24 +39,67 @@
                     android:id="@+id/rv_messages"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    tools:listitem="@layout/list_item_post_my"
                     android:scrollbars="vertical"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    tools:listitem="@layout/list_item_post_my"/>
 
                 <TextView
                     android:id="@+id/tv_empty_state"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/no_posts_to_display" />
-
+                    android:text="@string/no_posts_to_display"/>
 
             </FrameLayout>
-
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_reply"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_button_dimen_large"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/tv_reply_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/normal"
+            android:layout_weight="1"
+            android:background="@null"
+            android:drawablePadding="@dimen/small"
+            android:drawableStart="@drawable/line"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textSize="@dimen/text_primary_button"
+            tools:text="User Message"/>
+
+        <ImageView
+            android:id="@+id/iv_reply_close"
+            style="@style/ImageButton"
+            android:layout_width="@dimen/image_button_dimen_large"
+            android:layout_height="@dimen/image_button_dimen_large"
+            android:layout_gravity="center"
+            android:layout_weight="0"
+            android:scaleType="center"
+            android:src="@drawable/ic_close"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_reply_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/separator_list"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <LinearLayout
         android:id="@+id/l_message"
@@ -70,7 +114,7 @@
             android:layout_height="@dimen/image_button_dimen_large"
             android:layout_gravity="center"
             android:scaleType="center"
-            android:src="@drawable/ic_attach" />
+            android:src="@drawable/ic_attach"/>
 
         <EditText
             android:id="@+id/et_message"
@@ -81,7 +125,7 @@
             android:background="@null"
             android:fontFamily="sans-serif-light"
             android:hint="@string/message"
-            android:textColorHint="@color/textSecondary" />
+            android:textColorHint="@color/textSecondary"/>
 
         <ImageView
             android:id="@+id/iv_send_message"
@@ -91,7 +135,7 @@
             android:layout_gravity="center"
             android:layout_weight="0"
             android:scaleType="center"
-            android:src="@drawable/ic_send" />
+            android:src="@drawable/ic_send"/>
 
     </LinearLayout>
 

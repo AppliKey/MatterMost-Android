@@ -12,7 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -67,6 +69,18 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
     @Bind(R.id.et_message)
     EditText mEtMessage;
 
+    @Bind(R.id.ll_reply)
+    LinearLayout mLlReply;
+
+    @Bind(R.id.view_reply_separator)
+    View mViewReplySeparator;
+
+    @Bind(R.id.iv_reply_close)
+    ImageView mIvReplyClose;
+
+    @Bind(R.id.tv_reply_message)
+    TextView mTvReplyMessage;
+
     @InjectPresenter
     ChatPresenter mPresenter;
 
@@ -76,6 +90,8 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     @Inject
     ImageLoader mImageLoader;
+
+    private String mOriginalId;
 
     private String mChannelId;
     private String mChannelName;
@@ -179,7 +195,11 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
 
     @OnClick(R.id.iv_send_message)
     public void onSend() {
-        mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+        if (mOriginalId == null) {
+            mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+        } else {
+            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mOriginalId);
+        }
     }
 
     @Override
@@ -215,20 +235,36 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         mSrlChat.setRefreshing(enabled);
     }
 
-    private final PostAdapter.OnLongClickListener onPostLongClick = post -> {
-        final AlertDialog.Builder opinionDialogBuilder = new AlertDialog.Builder(this);
-        opinionDialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
-            switch (which) {
-                case 0:
-                    deleteMessage(mChannelId, post);
-                    break;
-                case 1:
-                    editMessage(mChannelId, post);
-                    break;
-                default:
-                    throw new RuntimeException("Not implemented feature");
-            }
-        }).show();
+    private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        if (isOwner) {
+            dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        deleteMessage(mChannelId, post);
+                        break;
+                    case 1:
+                        editMessage(mChannelId, post);
+                        break;
+                    case 2:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        } else {
+            dialogBuilder.setItems(R.array.post_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        }
+        dialogBuilder.show();
     };
 
     private void deleteMessage(String channelId, Post post) {
@@ -251,6 +287,13 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                     mPresenter.editMessage(channelId, post, input.getText().toString());
                 })
                 .show();
+    }
+
+    private void replyMessage(Post post) {
+        mLlReply.setVisibility(VISIBLE);
+        mViewReplySeparator.setVisibility(VISIBLE);
+        mTvReplyMessage.setText(post.getMessage());
+        mOriginalId = post.getId();
     }
 
     private void initParameters() {
@@ -279,6 +322,12 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
                 }
                 hideKeyboard();
             }
+        });
+
+        mIvReplyClose.setOnClickListener(v -> {
+            mLlReply.setVisibility(GONE);
+            mViewReplySeparator.setVisibility(GONE);
+            mOriginalId = null;
         });
     }
 }

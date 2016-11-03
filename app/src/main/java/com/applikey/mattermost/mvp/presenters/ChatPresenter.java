@@ -1,8 +1,8 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -136,11 +136,31 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
 
+        PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
+                message, "", pendingId);
+
         final long lastViewedAt = System.currentTimeMillis();
         mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
 
-        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
-                message, "", pendingId);
+        mSubscription.add(mTeamStorage.getChosenTeam()
+                .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
+                        .subscribeOn(Schedulers.io()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannel.setLastPost(post))
+                .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
+                .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
+    }
+
+    public void sendReplyMessage(String channelId, String message, String originalId) {
+        final String currentUserId = mPrefs.getCurrentUserId();
+        final long createdAt = System.currentTimeMillis();
+        final String pendingId = currentUserId + ":" + createdAt;
+
+        PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
+                message, "", pendingId, originalId);
+
+        final long lastViewedAt = System.currentTimeMillis();
+        mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
