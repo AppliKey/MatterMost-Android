@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.BuildConfig;
+import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.web.RequestError;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 
 import okhttp3.Headers;
 import retrofit2.Response;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -48,13 +50,15 @@ public class LogInPresenter extends BasePresenter<LogInView> {
         final LogInView view = getViewState();
         final AuthenticationRequest request = new AuthenticationRequest(email, password);
 
-        mSubscription.add(mApi.authorize(request)
+        final Subscription subscription = mApi.authorize(request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::handleSuccessfulResponse, throwable -> {
                     ErrorHandler.handleError(context, throwable);
                     view.onUnsuccessfulAuth(throwable.getMessage());
-                }));
+                });
+
+        mSubscription.add(subscription);
     }
 
     public void getInitialData() {
@@ -71,13 +75,15 @@ public class LogInPresenter extends BasePresenter<LogInView> {
 
     public void loadTeams() {
         final LogInView view = getViewState();
-        mApi.listTeams()
+        final Subscription subscription = mApi.listTeams()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     mTeamStorage.saveTeamsWithRemoval(response.values());
                     view.onTeamsRetrieved(response);
                 }, view::onTeamsReceiveFailed);
+
+        mSubscription.add(subscription);
     }
 
     private void handleSuccessfulResponse(Response<AuthenticationResponse> response) {
@@ -90,7 +96,15 @@ public class LogInPresenter extends BasePresenter<LogInView> {
             cacheHeaders(response);
 
             mPrefs.setCurrentUserId(response.body().getId());
-            getViewState().onSuccessfulAuth();
+
+            // Register GCM token on a server after authorization
+            final AttachDeviceRequest request = new AttachDeviceRequest();
+            request.setGcmToken(mPrefs.getGcmToken());
+
+            mSubscription.add(mApi.attachDevice(request)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(result -> getViewState().onSuccessfulAuth(), ErrorHandler::handleError));
             return;
         }
 

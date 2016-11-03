@@ -1,14 +1,15 @@
 package com.applikey.mattermost.web;
 
+import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
-import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
+import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
@@ -59,17 +60,20 @@ public interface Api {
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
     Observable<Void> deletePost(@Path("teamId") String teamId,
-            @Path("channelId") String channelId,
-            @Path("postId") String postId);
+                                @Path("channelId") String channelId,
+                                @Path("postId") String postId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/update")
     Observable<Post> updatePost(@Path("teamId") String teamId,
-            @Path("channelId") String channelId,
-            @Body Post post);
+                                @Path("channelId") String channelId,
+                                @Body Post post);
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")
     Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
+
+    @GET("/api/v3/teams/{teamId}/channels/{channelId}")
+    Observable<Channel> getChannelById(@Path("teamId") String teamId, @Path("channelId") String channelId);
 
     //This url is not containing "/" symbol at the start
     //In this case it build full url in the next way :
@@ -84,22 +88,26 @@ public interface Api {
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
     Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
-            @Path("channelId") String channelId,
-            @Path("offset") int offset,
-            @Path("limit") int limit);
+                                          @Path("channelId") String channelId,
+                                          @Path("offset") int offset,
+                                          @Path("limit") int limit);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/0/1")
     Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
-            @Path("channelId") String channelId);
+                                         @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
-            @Path("channelId") String channelId);
+                                          @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")
     Observable<Post> createPost(@Path("teamId") String teamId,
                                 @Path("channelId") String channelId,
                                 @Body PendingPost request);
+
+    @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
+    Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+                                                    @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{team_id}/channels/create")
     Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
@@ -107,7 +115,6 @@ public interface Api {
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/add")
     Observable<Membership> addUserToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId, @Body RequestUserId userId);
 
-    @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
-    Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
-            @Path("channelId") String channelId);
+    @POST("/api/v3/users/attach_device")
+    Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request);
 }

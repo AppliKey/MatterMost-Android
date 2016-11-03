@@ -23,6 +23,8 @@
     <string name="enter_your_password">Enter your password</string>
     <string name="forgot_password_capt">FORGOT PASSWORD</string>
     <string name="restore_password_capt">RESTORE PASSWORD</string>
+    <string name="reply">Reply</string>
+    <string name="new_message_received">New message received"</string>
 
     <string name="edit_message">Edit Message</string>
     <string name="cancel">Cancel</string>
@@ -69,10 +71,13 @@
     <string name="search">Search</string>
     <string name="create_chat_hint_name">Example: Project Name, Bugs, Sales</string>
     <string name="create_channel_description_hint">What are you going to discuss\n in this group</string>
+    <string name="added_members_title">Added members</string>
 
     <array name="post_own_opinion_array">
         <item>Delete</item>
         <item>Edit</item>
     </array>
+
+    <string name="gcm_sender_id">400589284558</string>
 
 </resources>

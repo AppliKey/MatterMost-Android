@@ -1,5 +1,8 @@
 package com.applikey.mattermost.models.user;
 
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+
 import com.applikey.mattermost.R;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,13 +12,17 @@ import java.util.Map;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject implements Comparable<User>{
+public class User extends RealmObject implements Comparable<User>, Searchable<String> {
+
+    public static final String FIELD_NAME_ID = "id";
+
+    public static final String FIELD_USERNAME = "username";
 
     @PrimaryKey
-    @SerializedName("id")
+    @SerializedName(FIELD_NAME_ID)
     private String id;
 
-    @SerializedName("username")
+    @SerializedName(FIELD_USERNAME)
     private String username;
 
     @SerializedName("email")
@@ -43,8 +50,8 @@ public class User extends RealmObject implements Comparable<User>{
     }
 
     public User(String id, String username, String email, String firstName,
-            String lastName, long lastActivityAt, long updateAt,
-            String profileImage, int status) {
+                String lastName, long lastActivityAt, long updateAt,
+                String profileImage, int status) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -128,9 +135,8 @@ public class User extends RealmObject implements Comparable<User>{
         this.status = status;
     }
 
-    public static String getDisplayableName(User user) {
+    public static String getDisplayableName(@NonNull User user) {
         final StringBuilder builder = new StringBuilder();
-
 
         if (!user.getFirstName().isEmpty()) {
             builder.append(user.getFirstName());
@@ -190,12 +196,6 @@ public class User extends RealmObject implements Comparable<User>{
 
         final User user = (User) o;
 
-/*        if (getLastActivityAt() != user.getLastActivityAt())
-            return false;
-        if (getUpdateAt() != user.getUpdateAt())
-            return false;
-        if (getStatus() != user.getStatus())
-            return false;*/
         if (!getId().equals(user.getId()))
             return false;
         if (!getUsername().equals(user.getUsername()))
@@ -226,7 +226,8 @@ public class User extends RealmObject implements Comparable<User>{
 
     @Override
     public int compareTo(User o) {
-        if (this == o) return 0;
+        if (this == o)
+            return 0;
         final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();
         final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
         return thisUserDisplayableNameIgnoreCase.compareTo(otherUserDisplayableNameIgnoreCase);
@@ -235,5 +236,18 @@ public class User extends RealmObject implements Comparable<User>{
     @Override
     public String toString() {
         return User.getDisplayableName(this);
+    }
+
+    @Override
+    public boolean search(String searchFilter) {
+        if (TextUtils.isEmpty(searchFilter)) {
+            return true;
+        }
+        boolean result = false;
+
+        if (firstName.contains(searchFilter) || lastName.contains(searchFilter) || email.contains(searchFilter)) {
+            result = true;
+        }
+        return result;
     }
 }

@@ -10,6 +10,8 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
+import com.applikey.mattermost.storage.db.PostStorage;
+import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -23,6 +25,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -39,6 +42,12 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     @Inject
     ChannelStorage mChannelStorage;
+
+    @Inject
+    PostStorage mPostStorage;
+
+    @Inject
+    Lazy<StorageDestroyer> mStorageDestroyer;
 
     @Inject
     Prefs mPrefs;
@@ -82,19 +91,15 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .flatMap(channel -> mApi.getLastPost(response.getTeamId(), channel.getId())
                         .onErrorResumeNext(throwable -> null), this::transform)
                 .subscribeOn(Schedulers.io())
-                .filter(channel -> channel.getLastPost() != null)
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(channel -> mUserStorage.getDirectProfile(channel.getLastPost().getUserId())
-                        .distinctUntilChanged(), this::transform)
-                .doOnNext(channel -> mChannelStorage.updateChannelData(channel))
-                .subscribe();
+                .subscribe(channel -> mChannelStorage.updateLastPost(channel), ErrorHandler::handleError);
     }
 
     private void fetchUserStatus(StartupFetchResult response) {
         final Set<String> keys = response.getDirectProfiles().keySet();
 
         // TODO: Remove v3.3 API support
-        mApi.getUserStatusesCompatible(keys.toArray(new String[]{}))
+        mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -109,13 +114,8 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         return channel;
     }
 
-    private Channel transform(Channel channel, User user) {
-        channel.setLastPostAuthorDisplayName(User.getDisplayableName(user));
-        return channel;
-    }
-
     private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> contacts, String teamId) {
+            Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 
@@ -124,9 +124,24 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 getViewState().setToolbarTitle(team.getDisplayName()), ErrorHandler::handleError));
     }
 
+    public void preloadChannel(String channelId) {
+        Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
+                mTeamStorage.getChosenTeam()
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
+                                .subscribeOn(Schedulers.io())))
+                .observeOn(AndroidSchedulers.mainThread())
+                .first()
+                .subscribe(channel -> {
+                    getViewState().onChannelLoaded(channel);
+                }, ErrorHandler::handleError);
+
+        mSubscription.add(subscription);
+    }
+
     public void logout() {
-        mPrefs.setKeyAuthToken(null);
+        mPrefs.setAuthToken(null);
         App.releaseUserComponent();
+        mStorageDestroyer.get().deleteDatabase();
         final ChatListScreenView view = getViewState();
         view.stopWebSocketService();
         view.logout();

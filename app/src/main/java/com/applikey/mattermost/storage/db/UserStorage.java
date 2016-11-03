@@ -36,6 +36,10 @@ public class UserStorage {
         return mDb.getObject(User.class, id);
     }
 
+    public Observable<User> getUserByUsername(String userName) {
+        return mDb.getObjectQualified(User.class, User.FIELD_USERNAME, userName);
+    }
+
     private void addImagePathInfo(Map<String, User> users) {
         for (User user : users.values()) {
             user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
