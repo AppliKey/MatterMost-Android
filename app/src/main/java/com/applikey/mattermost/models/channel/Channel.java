@@ -8,11 +8,10 @@ import java.util.Comparator;
 
 import javax.annotation.Nullable;
 
-import io.realm.DiffEquals;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Channel extends RealmObject implements DiffEquals<Channel> {
+public class Channel extends RealmObject {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
@@ -59,8 +58,6 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
 
     private Post lastPost;
 
-    private String lastPostAuthorDisplayName;
-
     // Index field, which contains the time of the last message or creation time. Used by Realm, as it can not compare multiple fields
     private long lastActivityTime;
 
@@ -73,7 +70,10 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
     }
 
     public void updateLastActivityTime() {
-        this.lastActivityTime = Math.max(createdAt, lastPost != null ? lastPost.getCreatedAt() : 0);
+        if (lastPost != null) {
+            this.lastPostAt = lastPost.getCreatedAt();
+        }
+        this.lastActivityTime = Math.max(createdAt, lastPostAt);
     }
 
     public User getDirectCollocutor() {
@@ -177,25 +177,11 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
         this.lastPost = lastPost;
     }
 
-    @Nullable
-    public String getLastPostAuthorDisplayName() {
-        return lastPostAuthorDisplayName;
-    }
-
-    public void setLastPostAuthorDisplayName(@Nullable String lastPostAuthorDisplayName) {
-        this.lastPostAuthorDisplayName = lastPostAuthorDisplayName;
-    }
-
     private void rebuildHasUnreadMessages() {
         final long lastViewedAt = getLastViewedAt();
         final long lastPostAt = getLastPostAt();
 
         hasUnreadMessages = lastPostAt > lastViewedAt;
-    }
-
-    @Override
-    public boolean diffEquals(Channel o) {
-        return this.getId().equals(o.getId());
     }
 
     public enum ChannelType {
@@ -281,12 +267,7 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
             return false;
         if (getDirectCollocutor() != null ? !getDirectCollocutor().equals(channel.getDirectCollocutor()) : channel.getDirectCollocutor() != null)
             return false;
-        if (getLastPost() != null ? !getLastPost().equals(channel.getLastPost()) : channel.getLastPost() != null)
-            return false;
-        return getLastPostAuthorDisplayName() != null
-                ? getLastPostAuthorDisplayName().equals(channel.getLastPostAuthorDisplayName())
-                : channel.getLastPostAuthorDisplayName() == null;
-
+        return getLastPost() != null ? !getLastPost().equals(channel.getLastPost()) : channel.getLastPost() != null;
     }
 
     @Override
@@ -303,7 +284,6 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
         result = 31 * result + (int) (getLastViewedAt() ^ (getLastViewedAt() >>> 32));
         result = 31 * result + (hasUnreadMessages() ? 1 : 0);
         result = 31 * result + (getLastPost() != null ? getLastPost().hashCode() : 0);
-        result = 31 * result + (getLastPostAuthorDisplayName() != null ? getLastPostAuthorDisplayName().hashCode() : 0);
         result = 31 * result + (int) (getLastActivityTime() ^ (getLastActivityTime() >>> 32));
         return result;
     }
@@ -323,7 +303,6 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
                 ", lastViewedAt=" + getLastViewedAt() +
                 ", hasUnreadMessages=" + hasUnreadMessages() +
                 ", lastPost=" + getLastPost() +
-                ", lastPostAuthorDisplayName='" + getLastPostAuthorDisplayName() + '\'' +
                 ", lastActivityTime=" + getLastActivityTime() +
                 '}';
     }

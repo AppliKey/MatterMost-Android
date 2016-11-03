@@ -34,11 +34,12 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     private Context mContext;
 
     public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-                           ImageLoader imageLoader, String currentUserId) {
+            ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
         mContext = context;
         mImageLoader = imageLoader;
         mCurrentUserId = currentUserId;
+        setHasStableIds(true);
     }
 
     @Override
@@ -51,6 +52,13 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
         return vh;
     }
+
+    @Override
+    public long getItemId(int index) {
+        final Channel item = getItem(index);
+        return item != null ? item.hashCode() : 0;
+    }
+
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
@@ -88,8 +96,8 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
             messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
                     channel.getLastPost().getMessage();
         } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
-            messagePreview = context.getString(R.string.channel_post_author_name_format,
-                    channel.getLastPostAuthorDisplayName()) +
+            final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
+            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor) +
                     channel.getLastPost().getMessage();
         } else {
             messagePreview = channel.getLastPost().getMessage();

@@ -1,6 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
 import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.user.User;
 
 import java.util.List;
 
@@ -20,11 +21,22 @@ public class PostStorage {
     }
 
     public void update(Post post) {
-        mDb.saveTransactionalSync(post);
+        mDb.saveTransactional(post);
     }
 
     public void saveAll(List<Post> posts) {
-        mDb.saveTransactional(posts);
+        mDb.doTransactional(realm -> {
+            for (Post post : posts) {
+                final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, post.getUserId()).findFirst();
+                final Post realmPost = realm.copyToRealmOrUpdate(post);
+                realmPost.setAuthor(author);
+            }
+            return true;
+        });
+    }
+
+    public Post copyFromDb(Post post) {
+        return mDb.copyFromRealm(post);
     }
 
     public Observable<RealmResults<Post>> listByChannel(String channelId) {

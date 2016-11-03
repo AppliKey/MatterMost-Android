@@ -13,6 +13,7 @@ import java.util.Map;
 
 import io.realm.RealmResults;
 import rx.Observable;
+import io.realm.Sort;
 
 public class ChannelStorage {
 
@@ -22,6 +23,10 @@ public class ChannelStorage {
     public ChannelStorage(final Db db, final Prefs prefs) {
         mDb = db;
         mPrefs = prefs;
+    }
+
+    public Observable<Channel> channel(String channelId) {
+        return mDb.getObjectWithCopy(Channel.class, channelId);
     }
 
     public Observable<List<Channel>> list() {
@@ -65,17 +70,29 @@ public class ChannelStorage {
         return mDb.listRealmObjects(Membership.class);
     }
 
-    public void updateChannelData(Channel channel) {
+    public void updateLastPost(Channel channel) {
+        final Post lastPost = channel.getLastPost();
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            final Post lastPost = channel.getLastPost();
-            if (lastPost == null) {
-                return false;
-            }
+            final Post realmPost;
 
-            final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
+            //If last post null, find last post
+            if (lastPost == null) {
+                final RealmResults<Post> result = realm.where(Post.class)
+                        .equalTo(Post.FIELD_NAME_CHANNEL_ID, channel.getId())
+                        .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING);
+                if (result.size() > 0) {
+                    realmPost = result.first();
+                } else {
+                    return false;
+                }
+            } else {
+                realmPost = realm.copyToRealmOrUpdate(lastPost);
+            }
+            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, realmPost.getUserId()).findFirst();
+
+            realmPost.setAuthor(author);
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
-            realmChannel.setLastPostAuthorDisplayName(channel.getLastPostAuthorDisplayName());
             return true;
         });
     }
@@ -115,15 +132,14 @@ public class ChannelStorage {
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
             channel.setLastPost(storedChannel.getLastPost());
-            channel.setLastPostAuthorDisplayName(storedChannel.getLastPostAuthorDisplayName());
             channel.updateLastActivityTime();
             return true;
         });
     }
 
     private void updateDirectChannelData(Channel channel,
-                                         Map<String, User> contacts,
-                                         String currentUserId) {
+            Map<String, User> contacts,
+            String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 
