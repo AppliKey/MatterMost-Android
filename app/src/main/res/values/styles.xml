@@ -4,7 +4,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
@@ -13,6 +12,7 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:background">@drawable/round_button_gradient</item>
+        <item name="android:padding">@dimen/button_padding</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
     </style>
 
@@ -92,6 +92,11 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/list_item_chat_date_size</item>
         <item name="android:height">24dp</item>
+    </style>
+
+    <style name="DrawerItemTextAppearance">
+        <item name="android:textSize">@dimen/drawer_item_text_size</item>
+        <item name="typeface">roboto_regular</item>
     </style>
 
     <style name="SwitchStyle">

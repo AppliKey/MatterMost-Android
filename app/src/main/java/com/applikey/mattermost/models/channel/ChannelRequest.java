@@ -5,19 +5,19 @@ import com.google.gson.annotations.SerializedName;
 public class ChannelRequest {
 
     @SerializedName("name")
-    private String name;
+    private final String name;
 
     @SerializedName("display_name")
-    private String displayName;
+    private final String displayName;
 
     @SerializedName("purpose")
-    private String purpose;
+    private final String purpose;
 
     @SerializedName("type")
-    private String type;
+    private final String type;
 
     public ChannelRequest(String name, String purpose, String type) {
-        this.name = name;
+        this.name = name.toLowerCase();
         this.displayName = name;
         this.purpose = purpose;
         this.type = type;

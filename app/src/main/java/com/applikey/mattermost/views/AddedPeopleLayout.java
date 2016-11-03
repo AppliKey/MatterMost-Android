@@ -34,7 +34,6 @@ public class AddedPeopleLayout extends LinearLayout {
 
     public AddedPeopleLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-
     }
 
     public AddedPeopleLayout(Context context) {
@@ -49,6 +48,9 @@ public class AddedPeopleLayout extends LinearLayout {
     }
 
     public void showUsers(List<User> users) {
+        if (mImageLoader == null) {
+            throw new RuntimeException("Please initialize ImageLoader");
+        }
         mUsers = users;
         setVisible(isNeedToBeShown(users.size()));
         showCounterIfNeeded(isCounterVisible(users.size()), users.size());
@@ -58,14 +60,12 @@ public class AddedPeopleLayout extends LinearLayout {
     }
 
     private void displayUserAvatarsInActivatedViews(List<User> users, int activatedViewsCount) {
-
         Stream.range(0, activatedViewsCount)
                 .forEach(index -> {
                     final ImageView imageView = mAddedUserAvatars[index];
                     imageView.setVisibility(VISIBLE);
                     mImageLoader.displayCircularImage(users.get(index).getProfileImage(), imageView);
                 });
-
     }
 
     private int getCountOfActivatedViews(int dataSize) {

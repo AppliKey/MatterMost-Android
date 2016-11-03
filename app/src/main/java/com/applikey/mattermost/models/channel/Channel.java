@@ -288,7 +288,7 @@ public class Channel extends RealmObject {
         return result;
     }
 
-    @Override
+/*    @Override
     public String toString() {
         return "Channel{" +
                 "id='" + getId() + '\'' +
@@ -305,5 +305,5 @@ public class Channel extends RealmObject {
                 ", lastPost=" + getLastPost() +
                 ", lastActivityTime=" + getLastActivityTime() +
                 '}';
-    }
+    }*/
 }

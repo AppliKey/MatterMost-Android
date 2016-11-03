@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -39,7 +36,7 @@ import timber.log.Timber;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class ChatListActivity extends BaseMvpActivity implements ChatListScreenView {
+public class ChatListActivity extends DrawerActivity implements ChatListScreenView {
 
     @InjectPresenter
     ChatListScreenPresenter mPresenter;
@@ -52,12 +49,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
 
     @Bind(R.id.vpChatList)
     ViewPager mViewPager;
-
-    @Bind(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
-
-    @Bind(R.id.navigation_view)
-    NavigationView mNavigationView;
 
     private ChatListPagerAdapter mChatListPagerAdapter;
 
@@ -101,6 +92,17 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         }
     }
 
+    @Override
+    protected Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    private void initView() {
+        mPresenter.applyInitialViewState();
+
+        mViewPager.setAdapter(new ChatListPagerAdapter(getSupportFragmentManager()));
+
+        mTabLayout.setupWithViewPager(mViewPager);
     private void initViewPager() {
         mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), mPresenter.initTabs());
         mViewPager.setAdapter(mChatListPagerAdapter);
@@ -158,13 +160,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Override
     public void onChannelLoaded(Channel channel) {
         startActivity(ChatActivity.getIntent(this, channel));
-    }
-
-    @Override
-    public void logout() {
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
     }
 
     @Override
