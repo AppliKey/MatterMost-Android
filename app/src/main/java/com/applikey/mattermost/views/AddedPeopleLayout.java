@@ -49,7 +49,7 @@ public class AddedPeopleLayout extends LinearLayout {
 
     public void showUsers(List<User> users) {
         if (mImageLoader == null) {
-            throw new RuntimeException("Please, initialize ImageLoader");
+            throw new RuntimeException("Please initialize ImageLoader");
         }
         mUsers = users;
         setVisible(isNeedToBeShown(users.size()));

@@ -30,7 +30,7 @@ import butterknife.OnClick;
 
 public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDetailsView {
 
-    private static final String CHANNEL_ID_KEY = "channel_id";
+    private static final String CHANNEL_ID_KEY = "channel-id";
     private static final int MENU_ITEM_FAVORITE = Menu.FIRST;
 
     @InjectPresenter
@@ -38,12 +38,16 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
     @Bind(R.id.channel_name)
     RobotoTextView mChannelName;
+
     @Bind(R.id.channel_description)
     RobotoTextView mChannelDescription;
+
     @Bind(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
+
     @Bind(R.id.container)
     LinearLayout mContainer;
 
@@ -51,14 +55,11 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChannelDetailsActivity.class);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(CHANNEL_ID_KEY, channel.getId());
-        intent.putExtras(bundle);
-
+        intent.putExtra(CHANNEL_ID_KEY, channel.getId());
         return intent;
     }
 
+    //TODO Implement Invite members logic
     @OnClick(R.id.b_invite_member)
     public void onInviteMemberClick() {
     }

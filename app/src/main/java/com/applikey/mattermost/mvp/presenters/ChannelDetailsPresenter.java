@@ -38,7 +38,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
 
     private Channel mChannel;
 
-    //temp field
+    //temp field, remove after implement Make favorite logic
     private boolean mIsFavorite;
 
     public ChannelDetailsPresenter() {
