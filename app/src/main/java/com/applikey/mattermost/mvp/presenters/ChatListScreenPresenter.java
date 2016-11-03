@@ -1,6 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -65,8 +64,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribe(v -> {
                 }, ErrorHandler::handleError);
         mSubscription.add(subscription);
-
-        view.startWebSocketService();
     }
 
     private Observable<StartupFetchResult> fetchStartup(String teamId) {

@@ -68,6 +68,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         initView();
 
         mEventBus.register(this);
+        startService(WebSocketService.getIntent(this));
     }
 
     private void initView() {
@@ -146,11 +147,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Subscribe
     public void on(TabIndicatorRequested event) {
         mTabIndicatorModel.handleEvent(event);
-    }
-
-    @Override
-    public void startWebSocketService() {
-        startService(WebSocketService.getIntent(this));
     }
 
     @Override

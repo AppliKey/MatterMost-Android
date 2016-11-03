@@ -72,6 +72,7 @@ public class WebSocketService extends IntentService {
 
         Log.d(TAG, "closing socket");
 
+        mWebSocket.sendClose();
         mWebSocket.disconnect();
     }
 
@@ -81,6 +82,10 @@ public class WebSocketService extends IntentService {
 
     private void openSocket() throws IOException, WebSocketException {
         Log.d(TAG, "Opening socket");
+
+        if (mWebSocket != null) {
+            mWebSocket.disconnect();
+        }
 
         String baseUrl = mPrefs.getCurrentServerUrl();
         baseUrl = UrlUtil.removeProtocol(baseUrl);

@@ -13,11 +13,6 @@ public interface ChatListScreenView extends MvpView {
     void logout();
 
     /**
-     * Actually it's a platform-specific operation, but we need a context to perform it, so it's impossible to do from presenter.
-     */
-    void startWebSocketService();
-
-    /**
      * Platform-specific. We call it explicitly to separate this logic from logout.
      */
     void stopWebSocketService();
