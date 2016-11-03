@@ -84,5 +84,6 @@
     <string name="all_channels">All channels</string>
     <string name="channel_display_name_format">#%s</string>
     <string name="members">Members</string>
+    <string name="make_favorite">Make favorite</string>
 
 </resources>

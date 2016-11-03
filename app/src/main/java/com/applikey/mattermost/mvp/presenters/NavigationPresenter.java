@@ -4,7 +4,6 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.NavigationView;
 import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.web.Api;
 import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
@@ -18,13 +17,10 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
     Lazy<StorageDestroyer> mStorageDestroyer;
 
     @Inject
-    Prefs mPrefs;
-
-    @Inject
-    Api mApi;
+    Lazy<Prefs> mPrefs;
 
     public NavigationPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     @Override
@@ -33,7 +29,7 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
     }
 
     public void logout() {
-        mPrefs.setAuthToken(null);
+        mPrefs.get().setAuthToken(null);
         App.releaseUserComponent();
         mStorageDestroyer.get().deleteDatabase();
         getViewState().onLogout();

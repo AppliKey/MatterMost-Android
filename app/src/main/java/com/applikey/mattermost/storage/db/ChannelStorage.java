@@ -61,6 +61,7 @@ public class ChannelStorage {
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
+    //TODO Save channel after create
     public void save(Channel channel){
         mDb.saveTransactional(channel);
     }

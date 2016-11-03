@@ -158,9 +158,6 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .map(Team::getId)
                 .first()
                 .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(createdChannel -> mChannelStorage.save(createdChannel.getChannel()))
-                .observeOn(Schedulers.io())
                 .flatMap(createdChannel -> from(mInvitedUsers), AddedUser::new)
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
                         user.getCreatedChannel().getChannel().getId(),

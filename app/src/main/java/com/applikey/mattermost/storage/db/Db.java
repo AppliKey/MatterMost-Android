@@ -33,9 +33,20 @@ public class Db {
         return getObjectQualified(tClass, "id", id);
     }
 
+    public <T extends RealmObject> Observable<List<T>> getObjectsQualifiedWithCopy(Class<T> tClass,
+            String fieldName,
+            String[] fieldValue) {
+        return mRealm.where(tClass)
+                .in(fieldName, fieldValue)
+                .findAllAsync()
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty())
+                .map(mRealm::copyFromRealm);
+    }
+
     public <T extends RealmObject> Observable<T> getObjectQualified(Class<T> tClass,
-                                                                    String fieldName,
-                                                                    String fieldValue) {
+            String fieldName,
+            String fieldValue) {
         return mRealm.where(tClass)
                 .equalTo(fieldName, fieldValue)
                 .findFirstAsync()
