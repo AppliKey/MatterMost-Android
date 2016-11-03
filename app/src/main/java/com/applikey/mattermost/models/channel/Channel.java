@@ -73,6 +73,7 @@ public class Channel extends RealmObject {
             this.lastPostAt = lastPost.getCreatedAt();
         }
         this.lastActivityTime = Math.max(createdAt, lastPostAt);
+        rebuildHasUnreadMessages();
     }
 
     public User getDirectCollocutor() {

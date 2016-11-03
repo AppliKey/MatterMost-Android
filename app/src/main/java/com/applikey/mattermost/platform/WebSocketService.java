@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 // FIXME Problems with lifecycle
+// FIXME move to service, introduce composite subscription
 public class WebSocketService extends IntentService {
 
     private static final String TAG = WebSocketService.class.getSimpleName();
@@ -72,8 +73,8 @@ public class WebSocketService extends IntentService {
 
         Log.d(TAG, "closing socket");
 
-        mWebSocket.sendClose();
-        mWebSocket.disconnect();
+//        mWebSocket.sendClose();
+//        mWebSocket.disconnect();
     }
 
     @Override
@@ -136,6 +137,7 @@ public class WebSocketService extends IntentService {
                             .first()
                             .doOnNext(channel -> {
                                 channel.setLastPost(post);
+                                channel.setLastPostAt(post.getCreatedAt());
                                 mChannelStorage.updateLastPost(channel);
                             })
                             .subscribe(v -> {
