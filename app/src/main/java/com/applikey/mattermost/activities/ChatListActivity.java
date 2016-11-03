@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.ChatListPagerAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
-import com.applikey.mattermost.events.UnreadTabStateChangedEvent;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.views.TabBehavior;
@@ -33,6 +32,7 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -57,36 +57,31 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Bind(R.id.navigation_view)
     NavigationView mNavigationView;
 
-    private boolean mShouldShowUnreadTab;
-    private Boolean mStateChanged;
-
     private ChatListPagerAdapter mChatListPagerAdapter;
+
+    private boolean mLastUnreadTabState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
-
         ButterKnife.bind(this);
         initView();
-        mEventBus.register(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (mStateChanged != null && mStateChanged != mShouldShowUnreadTab) {
-            mShouldShowUnreadTab = mStateChanged;
+        if (mChatListPagerAdapter == null) {
             initViewPager();
+            mLastUnreadTabState = mPresenter.shouldShowUnreadTab();
+        } else {
+            if (mLastUnreadTabState != mPresenter.shouldShowUnreadTab()) {
+                Timber.d("recreating viewPager");
+                initViewPager();
+                mLastUnreadTabState = mPresenter.shouldShowUnreadTab();
+            }
         }
-        //initViewPager();
-
-
-/*        mShouldShowUnreadTab = mPresenter.shouldShowUnreadTab();
-        if (!mShouldShowUnreadTab) {
-            mChatListPagerAdapter.setTabs(initTabs(mShouldShowUnreadTab));
-        }*/
     }
 
     private void initViewPager() {
@@ -94,22 +89,19 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         mViewPager.setAdapter(mChatListPagerAdapter);
         mChatListPagerAdapter.notifyDataSetChanged();
         mTabLayout.setupWithViewPager(mViewPager, false);
-        int offset = 0;
-        if (!mPresenter.shouldShowUnreadTab()) {
-            offset = 1;
-        }
-
+        final int offset = mPresenter.shouldShowUnreadTab() ? 0 : 1;
         final int tabCount = mTabLayout.getTabCount();
         for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
+            final int tabIconIndex = i + offset;
             if (tab != null) {
                 tab.setCustomView(R.layout.tab_chat_list);
-                tab.setIcon(TabBehavior.getItemBehavior(i + offset).getIcon());
+                tab.setIcon(TabBehavior.getItemBehavior(tabIconIndex).getIcon());
 
                 final View customTab = tab.getCustomView();
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
-                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(i + offset),
+                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(tabIconIndex),
                             (ImageView) notificationIcon);
                 }
             }
@@ -122,54 +114,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
 
     private void initView() {
         mPresenter.applyInitialViewState();
-/*        int offset = 0;
-        if (!mPresenter.shouldShowUnreadTab()) {
-            offset = 1;
-        }
-
-        final int tabCount = mTabLayout.getTabCount();
-        for (int i = 0; i < tabCount; i++) {
-            final TabLayout.Tab tab = mTabLayout.getTabAt(i);
-            if (tab != null) {
-                tab.setCustomView(R.layout.tab_chat_list);
-                tab.setIcon(TabBehavior.getItemBehavior(i + offset).getIcon());
-
-                final View customTab = tab.getCustomView();
-                if (customTab != null) {
-                    final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
-                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(i + offset),
-                            (ImageView) notificationIcon);
-                }
-            }
-        }
-        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
-        mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
-        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
-        mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);*/
-        /*mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), mPresenter.initTabs());
-        mViewPager.setAdapter(mChatListPagerAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);*/
-        /*final int tabCount = mTabLayout.getTabCount();
-        for (int i = 0; i < tabCount; i++) {
-            final TabLayout.Tab tab = mTabLayout.getTabAt(i);
-            if (tab != null) {
-                tab.setCustomView(R.layout.tab_chat_list);
-                tab.setIcon(TabBehavior.getItemBehavior(i).getIcon());
-
-                final View customTab = tab.getCustomView();
-                if (customTab != null) {
-                    final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
-                    mTabIndicatorModel.register(TabBehavior.values()[i + 1],
-                            (ImageView) notificationIcon);
-                }
-            }
-        }*/
-
-/*        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
-        mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
-        mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
-        mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);*/
-        initViewPager();
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
 
@@ -189,12 +133,6 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
         });
     }
 
-    @Subscribe
-    public void onTabUnreadStateChagedEventListener(UnreadTabStateChangedEvent event) {
-        final boolean unreadTabState = event.getUnreadTabState();
-        mStateChanged = unreadTabState;
-    }
-
     @Override
     public void setToolbarTitle(String title) {
         mToolbar.setTitle(title);
@@ -209,9 +147,7 @@ public class ChatListActivity extends BaseMvpActivity implements ChatListScreenV
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         mPresenter.unSubscribe();
-        mEventBus.unregister(this);
     }
 
     @Subscribe

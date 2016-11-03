@@ -149,7 +149,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         }, ErrorHandler::handleError));
     }
 
-
     public List<Fragment> initTabs() {
         final List<Fragment> tabs = new ArrayList<>();
         if (shouldShowUnreadTab()) {
