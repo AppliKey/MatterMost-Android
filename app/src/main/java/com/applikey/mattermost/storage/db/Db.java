@@ -1,6 +1,5 @@
 package com.applikey.mattermost.storage.db;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.Iterator;
@@ -179,6 +178,22 @@ public class Db {
                 .filter(o -> o.isLoaded() && o.isValid());
     }
 
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedExcept(Class<T> tClass,
+            String fieldName,
+            String value,
+            String exceptFieldName,
+            String exceptValue,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .notEqualTo(exceptFieldName, exceptValue)
+                .contains(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
+    }
+
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
                                                                                                 String fieldName,
                                                                                                 boolean value,
@@ -190,6 +205,7 @@ public class Db {
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());
     }
+
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
                                                                                 String fieldName,

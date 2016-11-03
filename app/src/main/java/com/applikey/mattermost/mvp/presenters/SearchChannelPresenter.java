@@ -16,14 +16,9 @@ import com.arellomobile.mvp.InjectViewState;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.realm.RealmResults;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -66,14 +61,7 @@ public class SearchChannelPresenter extends BasePresenter<SearchChannelView> {
     public void getData(String text) {
         final SearchChannelView view = getViewState();
         mSubscription.add(
-                Observable.zip(
-                        getList(mChannelStorage.listClosed()),
-                        getList(mChannelStorage.listOpen()), (channels, channels2) -> {
-                            List<Channel> list = new ArrayList<>();
-                            list.addAll(channels);
-                            list.addAll(channels2);
-                            return list;
-                        })
+                mChannelStorage.listUndirected(text)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe((channels) -> {
                             Log.d(TAG, "getData: " + channels);
@@ -91,16 +79,6 @@ public class SearchChannelPresenter extends BasePresenter<SearchChannelView> {
         final SearchChannelView view = getViewState();
         view.clearData();
         getData(event.getText());
-    }
-
-    private Observable<List<Channel>> getList(Observable<RealmResults<Channel>> observable) {
-        return observable.map(channels -> {
-            List<Channel> channelList = new ArrayList<>();
-            for (Channel channel : channels) {
-                channelList.add(channel);
-            }
-            return channelList;
-        });
     }
 
 }

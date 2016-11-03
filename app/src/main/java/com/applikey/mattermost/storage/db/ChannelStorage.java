@@ -11,8 +11,8 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
-import rx.Observable;
 import io.realm.RealmResults;
+import rx.Observable;
 import rx.Single;
 
 public class ChannelStorage {
@@ -27,6 +27,14 @@ public class ChannelStorage {
 
     public Observable<List<Channel>> list() {
         return mDb.listRealmObjects(Channel.class);
+    }
+
+    public Observable<RealmResults<Channel>> listUndirected(String name) {
+        return mDb.resultRealmObjectsFilteredSortedExcept(Channel.class, Channel.FIELD_NAME,
+                name,
+                Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.DIRECT.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
@@ -110,19 +118,21 @@ public class ChannelStorage {
     }
 
     private List<Channel> restoreChannels(List<Channel> channels) {
-        return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
-            channel.setLastPost(storedChannel.getLastPost());
-            channel.setLastPostAuthorDisplayName(storedChannel.getLastPostAuthorDisplayName());
-            channel.updateLastActivityTime();
-            return true;
-        });
+        return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
+                (channel, storedChannel) -> {
+                    channel.setLastPost(storedChannel.getLastPost());
+                    channel.setLastPostAuthorDisplayName(
+                            storedChannel.getLastPostAuthorDisplayName());
+                    channel.updateLastActivityTime();
+                    return true;
+                });
     }
 
-    public Single<Channel> getChannel(String id){
+    public Single<Channel> getChannel(String id) {
         return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
     }
 
-    public void saveChannel(Channel channel){
+    public void saveChannel(Channel channel) {
         mDb.saveTransactional(channel);
     }
 
