@@ -136,7 +136,7 @@ public class WebSocketService extends IntentService {
                             .first()
                             .doOnNext(channel -> {
                                 channel.setLastPost(post);
-                                mChannelStorage.updateChannelData(channel);
+                                mChannelStorage.updateLastPost(channel);
                             })
                             .subscribe(v -> {
                             }, ErrorHandler::handleError);

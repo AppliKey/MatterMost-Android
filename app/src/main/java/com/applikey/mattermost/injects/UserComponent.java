@@ -9,6 +9,7 @@ import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 
+import com.applikey.mattermost.platform.WebSocketService;
 import dagger.Subcomponent;
 
 @PerUser
