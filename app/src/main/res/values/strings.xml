@@ -85,5 +85,6 @@
     <string name="channel_display_name_format">#%s</string>
     <string name="members">Members</string>
     <string name="make_favorite">Make favorite</string>
+    <string name="direct_message">Direct message</string>
 
 </resources>
