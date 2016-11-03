@@ -30,8 +30,8 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
 
     public void logout() {
         mPrefs.get().setAuthToken(null);
-        App.releaseUserComponent();
         mStorageDestroyer.get().deleteDatabase();
+        App.releaseUserComponent();
         getViewState().onLogout();
     }
 
