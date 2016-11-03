@@ -4,20 +4,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
+public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
 
     private static final String TAG = UserAdapter.class.getSimpleName();
 
@@ -32,18 +28,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     }
 
     @Override
-    public UserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_search_user, parent, false);
 
-        final ViewHolder vh = new ViewHolder(v);
+        final UserViewHolder vh = new UserViewHolder(v);
         vh.getRoot().setOnClickListener(mOnClickListener);
 
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(UserAdapter.ViewHolder vh, int position) {
+    public void onBindViewHolder(UserViewHolder vh, int position) {
         final User data = mDataSet.get(position);
 
         vh.getChannelName().setText(User.getDisplayableName(data));
@@ -73,7 +69,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         this.mClickListener = listener;
     }
 
-    private void setChannelIcon(ViewHolder viewHolder, User element) {
+    private void setChannelIcon(UserViewHolder viewHolder, User element) {
 
         final String previewImagePath = element.getProfileImage();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
@@ -98,36 +94,5 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     };
 
     /* package */
-    class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final View mRoot;
-
-        @Bind(R.id.iv_preview_image)
-        ImageView mPreviewImage;
-
-        @Bind(R.id.tv_channel_name)
-        TextView mChannelName;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-
-            mRoot = itemView;
-
-            ButterKnife.bind(this, itemView);
-        }
-
-        View getRoot() {
-            return mRoot;
-        }
-
-        ImageView getPreviewImage() {
-            return mPreviewImage;
-        }
-
-
-        TextView getChannelName() {
-            return mChannelName;
-        }
-
-    }
 }

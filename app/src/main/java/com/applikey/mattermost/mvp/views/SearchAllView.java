@@ -1,0 +1,26 @@
+package com.applikey.mattermost.mvp.views;
+
+import com.applikey.mattermost.models.SearchItem;
+import com.arellomobile.mvp.MvpView;
+import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
+import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
+import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
+
+import java.util.List;
+
+/**
+ * @author Anatoliy Chub
+ */
+@StateStrategyType(value = SingleStateStrategy.class)
+public interface SearchAllView extends MvpView{
+
+    void displayData(List<SearchItem> items);
+
+    @StateStrategyType(value = SkipStrategy.class)
+    void startChatActivity(SearchItem item);
+
+    void showLoading(boolean show);
+
+    void clearData();
+
+}

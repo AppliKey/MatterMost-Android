@@ -3,6 +3,7 @@ package com.applikey.mattermost.models.user;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.SearchItem;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Map;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject implements Comparable<User>, Searchable<String> {
+public class User extends RealmObject implements Comparable<User>, Searchable<String>, SearchItem {
 
     public static final String FIELD_USERNAME = "username";
 
@@ -250,5 +251,11 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
             result = true;
         }
         return result;
+    }
+
+    @Override
+    @Type
+    public int getSearchType() {
+        return USER;
     }
 }

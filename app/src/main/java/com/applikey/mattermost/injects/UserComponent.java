@@ -35,4 +35,6 @@ public interface UserComponent {
     }
 
     void inject(SearchChannelPresenter searchChannelPresenter);
+
+    void inject(SearchAllPresenter searchAllPresenter);
 }

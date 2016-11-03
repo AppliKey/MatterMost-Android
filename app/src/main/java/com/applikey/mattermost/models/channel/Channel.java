@@ -1,5 +1,6 @@
 package com.applikey.mattermost.models.channel;
 
+import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
@@ -13,7 +14,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 
-public class Channel extends RealmObject implements DiffEquals<Channel> {
+public class Channel extends RealmObject implements DiffEquals<Channel>, SearchItem {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
@@ -192,6 +193,11 @@ public class Channel extends RealmObject implements DiffEquals<Channel> {
 
     public void setLastPostAuthorDisplayName(@Nullable String lastPostAuthorDisplayName) {
         this.lastPostAuthorDisplayName = lastPostAuthorDisplayName;
+    }
+
+    @Override
+    public int getSearchType() {
+        return CHANNEL;
     }
 
     private void rebuildHasUnreadMessages() {

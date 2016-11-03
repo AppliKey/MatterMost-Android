@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.applikey.mattermost.fragments.SearchAllFragment;
 import com.applikey.mattermost.fragments.SearchChannelFragment;
 import com.applikey.mattermost.fragments.SearchUserFragment;
 
@@ -20,7 +21,7 @@ public class SearchChatAdapter extends FragmentPagerAdapter {
         // Indexes should equal to tab behavior indexes
         switch (position) {
             case 0: {
-                return SearchUserFragment.newInstance();
+                return SearchAllFragment.newInstance();
             }
             case 1: {
                 return SearchChannelFragment.newInstance();
