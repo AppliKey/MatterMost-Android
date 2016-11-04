@@ -156,6 +156,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         setToolbarText();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.NONE, MENU_ITEM_SEARCH, Menu.NONE, R.string.search)
@@ -215,9 +216,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onMessageSent(long createdAt) {
-        mEtMessage.setText("");
+        mEtMessage.setText(null);
         mAdapter.setLastViewed(createdAt);
         scrollToStart();
+        hideReply();
+    }
+
+    @Override
+    public void showProgress(boolean enabled) {
+        mSrlChat.setRefreshing(enabled);
     }
 
     private void scrollToStart() {
@@ -234,16 +241,23 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mTvEmptyState.setVisibility(GONE);
     }
 
+    private void displayReply() {
+        mLlReply.setVisibility(VISIBLE);
+        mViewReplySeparator.setVisibility(VISIBLE);
+    }
+
+    private void hideReply() {
+        mLlReply.setVisibility(GONE);
+        mViewReplySeparator.setVisibility(GONE);
+        mTvReplyMessage.setText(null);
+        mOriginalId = null;
+    }
+
     private void setToolbarText() {
         final String prefix = !mChannelType.equals(Channel.ChannelType.DIRECT.getRepresentation())
                 ? CHANNEL_PREFIX : DIRECT_PREFIX;
 
         mToolbar.setTitle(prefix + mChannelName);
-    }
-
-    @Override
-    public void showProgress(boolean enabled) {
-        mSrlChat.setRefreshing(enabled);
     }
 
     private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
@@ -301,8 +315,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     private void replyMessage(Post post) {
-        mLlReply.setVisibility(VISIBLE);
-        mViewReplySeparator.setVisibility(VISIBLE);
+        displayReply();
         mTvReplyMessage.setText(post.getMessage());
         mOriginalId = post.getId();
     }
@@ -337,11 +350,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
             }
         });
 
-        mIvReplyClose.setOnClickListener(v -> {
-            mLlReply.setVisibility(GONE);
-            mViewReplySeparator.setVisibility(GONE);
-            mOriginalId = null;
-        });
+        mIvReplyClose.setOnClickListener(v -> hideReply());
     }
 
     @Override

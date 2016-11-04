@@ -3,6 +3,7 @@ package com.applikey.mattermost.adapters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,11 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
+
+import static android.view.View.GONE;
 
 public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.ViewHolder> {
 
@@ -153,6 +157,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         @Bind(R.id.tv_name)
         TextView mTvName;
 
+        @Bind(R.id.tv_reply_message)
+        TextView mTvReplyMessage;
+
         ViewHolder(View itemView) {
             super(itemView);
 
@@ -160,8 +167,8 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         private void bindHeader(boolean showNewMessageIndicator, boolean showDate) {
-            mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
-            mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
+            mTvDate.setVisibility(showDate ? View.VISIBLE : GONE);
+            mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : GONE);
         }
 
         private void bind(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime, boolean showDate) {
@@ -170,11 +177,22 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvName.setText(post.getAuthor().toString());
             mTvMessage.setText(post.getMessage());
 
-            mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
-            mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
+            mTvName.setVisibility(showAuthor ? View.VISIBLE : GONE);
+            mTvTimestamp.setVisibility(showTime ? View.VISIBLE : GONE);
 
             if (channelType == Channel.ChannelType.DIRECT) {
-                mTvName.setVisibility(View.GONE);
+                mTvName.setVisibility(GONE);
+            }
+
+            if (!TextUtils.isEmpty(post.getRootId())) {
+
+                Realm realm = Realm.getDefaultInstance();
+                mTvReplyMessage.setVisibility(View.VISIBLE);
+                mTvReplyMessage.setText(realm.where(Post.class).equalTo("id", post.getRootId()).findFirst().getMessage());
+                realm.close();
+            } else {
+                mTvReplyMessage.setVisibility(View.GONE);
+                mTvReplyMessage.setText(null);
             }
         }
 
@@ -210,7 +228,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             });
 
             if (mIvPreviewImageLayout != null && channelType == Channel.ChannelType.DIRECT) {
-                mIvPreviewImageLayout.setVisibility(View.GONE);
+                mIvPreviewImageLayout.setVisibility(GONE);
             }
         }
     }

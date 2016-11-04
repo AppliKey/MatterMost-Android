@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="end"
-    android:minHeight="@dimen/list_item_min_height"
-    android:orientation="vertical"
-    android:paddingEnd="@dimen/list_item_chat_padding"
-    android:paddingStart="@dimen/list_item_chat_padding">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end"
+              android:minHeight="@dimen/list_item_min_height"
+              android:orientation="vertical"
+              android:paddingEnd="@dimen/list_item_chat_padding"
+              android:paddingStart="@dimen/list_item_chat_padding">
 
-    <include layout="@layout/header_post" />
+    <include layout="@layout/header_post"/>
 
-    <include layout="@layout/content_post_my" />
+    <include layout="@layout/content_post_my"/>
 
 </LinearLayout>
