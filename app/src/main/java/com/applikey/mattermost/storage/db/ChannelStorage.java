@@ -1,5 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
+import android.text.TextUtils;
+
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -12,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.realm.RealmResults;
-import rx.Observable;
 import io.realm.Sort;
+import rx.Observable;
 
 public class ChannelStorage {
 
@@ -66,7 +68,7 @@ public class ChannelStorage {
     }
 
     //TODO Save channel after create
-    public void save(Channel channel){
+    public void save(Channel channel) {
         mDb.saveTransactional(channel);
     }
 
@@ -94,7 +96,12 @@ public class ChannelStorage {
             }
             final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, realmPost.getUserId()).findFirst();
 
+            final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+                    realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, realmPost.getRootId()).findFirst()
+                    : null;
+
             realmPost.setAuthor(author);
+            realmPost.setRootPost(rootPost);
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
             return true;
@@ -142,8 +149,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

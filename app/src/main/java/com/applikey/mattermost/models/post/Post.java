@@ -12,6 +12,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class Post extends RealmObject {
 
+    public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
 
@@ -25,6 +26,9 @@ public class Post extends RealmObject {
     @Nullable
     @SerializedName("root_id")
     private String rootId;
+
+    @Nullable
+    private Post rootPost;
 
     @Nullable
     @SerializedName("parent_id")
@@ -119,6 +123,15 @@ public class Post extends RealmObject {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    @Nullable
+    public Post getRootPost() {
+        return rootPost;
+    }
+
+    public void setRootPost(@Nullable Post rootPost) {
+        this.rootPost = rootPost;
     }
 
     @Override

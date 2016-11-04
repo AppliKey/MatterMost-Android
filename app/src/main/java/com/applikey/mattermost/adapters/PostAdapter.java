@@ -3,7 +3,6 @@ package com.applikey.mattermost.adapters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -184,12 +182,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
                 mTvName.setVisibility(GONE);
             }
 
-            if (!TextUtils.isEmpty(post.getRootId())) {
-
-                Realm realm = Realm.getDefaultInstance();
+            if (post.getRootPost() != null) {
                 mTvReplyMessage.setVisibility(View.VISIBLE);
-                mTvReplyMessage.setText(realm.where(Post.class).equalTo("id", post.getRootId()).findFirst().getMessage());
-                realm.close();
+                mTvReplyMessage.setText(post.getRootPost().getMessage());
             } else {
                 mTvReplyMessage.setVisibility(View.GONE);
                 mTvReplyMessage.setText(null);
