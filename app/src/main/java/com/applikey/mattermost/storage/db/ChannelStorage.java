@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
-import io.realm.Sort;
 
 public class ChannelStorage {
 
@@ -75,7 +75,7 @@ public class ChannelStorage {
     }
 
     //TODO Save channel after create
-    public void save(Channel channel){
+    public void save(Channel channel) {
         mDb.saveTransactional(channel);
     }
 
@@ -101,7 +101,9 @@ public class ChannelStorage {
             } else {
                 realmPost = realm.copyToRealmOrUpdate(lastPost);
             }
-            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, realmPost.getUserId()).findFirst();
+            final User author = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                    .findFirst();
 
             realmPost.setAuthor(author);
             realmChannel.setLastPost(realmPost);
@@ -112,8 +114,10 @@ public class ChannelStorage {
 
     public void updateLastViewedAt(String id, long lastViewedAt) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
-            realmChannel.setHasUnreadMessages(false);
-            realmChannel.setLastViewedAt(lastViewedAt);
+            if (realmChannel != null) {
+                realmChannel.setHasUnreadMessages(false);
+                realmChannel.setLastViewedAt(lastViewedAt);
+            }
             return true;
         });
     }
@@ -143,11 +147,12 @@ public class ChannelStorage {
     }
 
     private List<Channel> restoreChannels(List<Channel> channels) {
-        return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
-            channel.setLastPost(storedChannel.getLastPost());
-            channel.updateLastActivityTime();
-            return true;
-        });
+        return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
+                (channel, storedChannel) -> {
+                    channel.setLastPost(storedChannel.getLastPost());
+                    channel.updateLastActivityTime();
+                    return true;
+                });
     }
 
     public Single<Channel> getChannel(String id) {
