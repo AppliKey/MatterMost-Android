@@ -115,11 +115,17 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
             case ITEM_INVITE_MEMBER:
                 break;
             case ITEM_SETTINGS:
+                startSettings();
                 break;
             case ITEM_LOGOUT:
                 mPresenter.logout();
                 break;
         }
+        closeDrawer();
+    }
+
+    private void startSettings() {
+        startActivity(SettingsActivity.getIntent(this));
         closeDrawer();
     }
 

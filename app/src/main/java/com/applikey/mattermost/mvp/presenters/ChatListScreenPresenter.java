@@ -1,6 +1,13 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.support.v4.app.Fragment;
+
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.fragments.ChannelListFragment;
+import com.applikey.mattermost.fragments.DirectChatListFragment;
+import com.applikey.mattermost.fragments.EmptyChatListFragment;
+import com.applikey.mattermost.fragments.GroupListFragment;
+import com.applikey.mattermost.fragments.UnreadChatListFragment;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.post.Post;
@@ -11,21 +18,21 @@ import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
-import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.storage.preferences.SettingsManager;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -47,13 +54,12 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     PostStorage mPostStorage;
 
     @Inject
-    Lazy<StorageDestroyer> mStorageDestroyer;
-
-    @Inject
-    Prefs mPrefs;
+    SettingsManager mSettingsManager;
 
     @Inject
     Api mApi;
+
+    private boolean mLastUnreadTabState;
 
     public ChatListScreenPresenter() {
         App.getComponent().inject(this);
@@ -84,6 +90,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(response -> mChannelStorage.saveChannelResponse(response.getChannelResponse(),
                         response.getDirectProfiles()));
 
+    }
+
+    public boolean shouldShowUnreadTab() {
+        return mSettingsManager.shouldShowUnreadMessages();
     }
 
     private void fetchLastMessages(StartupFetchResult response) {
@@ -125,7 +135,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public void preloadChannel(String channelId) {
-        Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
+        final Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
                 mTeamStorage.getChosenTeam()
                         .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
                                 .subscribeOn(Schedulers.io())))
@@ -136,5 +146,30 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 }, ErrorHandler::handleError);
 
         mSubscription.add(subscription);
+    }
+
+    private List<Fragment> initTabs(boolean shouldShowUnreadTab) {
+        final List<Fragment> tabs = new ArrayList<>();
+        if (shouldShowUnreadTab) {
+            tabs.add(UnreadChatListFragment.newInstance());
+        }
+        tabs.add(EmptyChatListFragment.newInstance());
+        tabs.add(ChannelListFragment.newInstance());
+        tabs.add(GroupListFragment.newInstance());
+        tabs.add(DirectChatListFragment.newInstance());
+        return tabs;
+    }
+
+    public void initPages() {
+        mLastUnreadTabState = shouldShowUnreadTab();
+        getViewState().initViewPager(initTabs(mLastUnreadTabState));
+    }
+
+    public void checkSettingChanges() {
+        final boolean shouldShowUnreadTab = shouldShowUnreadTab();
+        if (mLastUnreadTabState != shouldShowUnreadTab) {
+            mLastUnreadTabState = shouldShowUnreadTab;
+            getViewState().initViewPager(initTabs(shouldShowUnreadTab));
+        }
     }
 }

@@ -39,6 +39,10 @@ public class ChannelStorage {
         return mDb.getObjectAndCopy(Channel.class, id);
     }
 
+    public Observable<Channel> directChannel(String userId) {
+        return mDb.getObjectQualified(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
+    }
+
     public Observable<List<Channel>> list() {
         return mDb.listRealmObjects(Channel.class);
     }
@@ -77,7 +81,7 @@ public class ChannelStorage {
     }
 
     //TODO Save channel after create
-    public void save(Channel channel){
+    public void save(Channel channel) {
         mDb.saveTransactional(channel);
     }
 

@@ -9,7 +9,9 @@ import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
+import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 
 import com.applikey.mattermost.platform.WebSocketService;
 import dagger.Subcomponent;
@@ -32,7 +34,9 @@ public interface UserComponent {
 
     void inject(BaseChatListFragment fragment);
 
-    void inject(CreateChannelPresenter createChannelPresenter);
+    void inject(CreateChannelPresenter presenter);
+
+    void inject(SettingsPresenter presenter);
 
     void inject(WebSocketService service);
 
@@ -40,9 +44,10 @@ public interface UserComponent {
 
     void inject(NavigationPresenter navigationPresenter);
 
+    void inject(UserProfilePresenter userProfilePresenter);
+
     @Subcomponent.Builder
     interface Builder {
-
         UserComponent.Builder userModule(UserModule userModule);
 
         UserComponent build();
