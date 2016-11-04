@@ -74,7 +74,11 @@ public class ChannelStorage {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
                 true,
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+    }
 
+    //TODO Save channel after create
+    public void save(Channel channel){
+        mDb.saveTransactional(channel);
     }
 
     public Observable<List<Membership>> listMembership() {

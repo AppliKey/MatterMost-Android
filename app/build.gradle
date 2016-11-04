@@ -126,6 +126,9 @@ dependencies {
     // views
     compile 'com.tasomaniac:delayed-progress:0.3'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
+    compile('com.mikepenz:materialdrawer:5.7.0@aar') {
+        transitive = true
+    }
 
     // mvp
     compile 'com.arello-mobile:moxy:0.5.4'
@@ -155,6 +158,9 @@ dependencies {
 
     // gcm
     compile 'com.google.android.gms:play-services-gcm:9.8.0'
+
+    // animations
+    compile "com.andkulikov:transitionseverywhere:1.6.9"
 
     //sockets
     compile 'com.neovisionaries:nv-websocket-client:1.30'

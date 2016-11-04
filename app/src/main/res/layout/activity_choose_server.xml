@@ -68,7 +68,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="@dimen/margin_default"
-        android:padding="@dimen/activity_choose_server_button_padding"
         android:text="@string/next" />
 
 </RelativeLayout>

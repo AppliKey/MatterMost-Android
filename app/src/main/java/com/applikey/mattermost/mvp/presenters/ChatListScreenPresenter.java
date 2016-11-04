@@ -138,6 +138,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         mSubscription.add(subscription);
     }
 
+    // TODO CHANGE LOGOUT LOGIC ELSEWHERE
     public void logout() {
         mPrefs.setAuthToken(null);
         App.releaseUserComponent();

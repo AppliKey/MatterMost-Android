@@ -1,8 +1,8 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -70,6 +70,15 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mSubscription.add(mPostStorage.listByChannel(channelId)
                 .first()
                 .subscribe(view::onDataReady, view::onFailure));
+    }
+
+    public void channelNameClick() {
+        final ChatView view = getViewState();
+        if (Channel.ChannelType.DIRECT.getRepresentation().equals(mChannel.getType())) {
+            view.openUserProfile(mChannel.getDirectCollocutor());
+        } else {
+            view.openChannelDetails(mChannel);
+        }
     }
 
     private void updateLastViewedAt(String channelId) {
