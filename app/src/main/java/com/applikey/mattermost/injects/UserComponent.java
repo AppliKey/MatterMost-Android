@@ -14,7 +14,9 @@ import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 
+import com.applikey.mattermost.platform.WebSocketService;
 import dagger.Subcomponent;
 
 @PerUser
@@ -39,18 +41,21 @@ public interface UserComponent {
 
     void inject(SettingsPresenter presenter);
 
+    void inject(WebSocketService service);
+
     void inject(ChannelDetailsPresenter channelDetailsPresenter);
 
     void inject(NavigationPresenter navigationPresenter);
+
+    void inject(UserProfilePresenter userProfilePresenter);
 
     void inject(SearchUserPresenter searchUserPresenter);
 
     @Subcomponent.Builder
     interface Builder {
-
         UserComponent.Builder userModule(UserModule userModule);
-        UserComponent build();
 
+        UserComponent build();
     }
 
     void inject(SearchChannelPresenter searchChannelPresenter);

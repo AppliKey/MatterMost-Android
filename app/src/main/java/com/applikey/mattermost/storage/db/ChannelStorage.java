@@ -1,5 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
+import android.text.TextUtils;
+
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -26,8 +28,22 @@ public class ChannelStorage {
         mPrefs = prefs;
     }
 
+    // TODO Naming
     public Observable<Channel> channel(String channelId) {
         return mDb.getObjectWithCopy(Channel.class, channelId);
+    }
+
+    public Observable<Channel> findById(String id) {
+        return mDb.getObject(Channel.class, id);
+    }
+
+    // TODO Duplicate
+    public Observable<Channel> findByIdAndCopy(String id) {
+        return mDb.getObjectAndCopy(Channel.class, id);
+    }
+
+    public Observable<Channel> directChannel(String userId) {
+        return mDb.getObjectQualified(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
     }
 
     public Observable<List<Channel>> list() {
@@ -60,6 +76,7 @@ public class ChannelStorage {
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
+    // TODO Duplicate
     public Observable<Channel> channelById(String id) {
         return mDb.getObject(Channel.class, id);
     }
@@ -105,7 +122,12 @@ public class ChannelStorage {
                     .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
                     .findFirst();
 
+            final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+                    realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, realmPost.getRootId()).findFirst()
+                    : null;
+
             realmPost.setAuthor(author);
+            realmPost.setRootPost(rootPost);
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
             return true;
@@ -164,8 +186,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

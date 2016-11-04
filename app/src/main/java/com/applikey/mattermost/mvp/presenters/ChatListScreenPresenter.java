@@ -2,6 +2,8 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.support.v4.app.Fragment;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.DirectChatListFragment;
@@ -14,6 +16,7 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.web.LastPostResult;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -26,7 +29,6 @@ import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,14 +104,17 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                         .onErrorResumeNext(throwable -> null), this::transform)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(channel -> mChannelStorage.updateLastPost(channel), ErrorHandler::handleError);
+                .subscribe(lastPostResult -> {
+                    mPostStorage.saveAll(lastPostResult.getPosts());
+                    mChannelStorage.updateLastPost(lastPostResult.getChannel());
+                }, ErrorHandler::handleError);
     }
 
     private void fetchUserStatus(StartupFetchResult response) {
         final Set<String> keys = response.getDirectProfiles().keySet();
 
         // TODO: Remove v3.3 API support
-        mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
+        mApi.getUserStatusesCompatible(keys.toArray(new String[]{}))
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -118,21 +123,27 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 }, ErrorHandler::handleError);
     }
 
-    private Channel transform(Channel channel, PostResponse postResponse) {
-        final Iterator<Post> posts = postResponse.getPosts().values().iterator();
-        channel.setLastPost(posts.hasNext() ? posts.next() : null);
-        return channel;
+    private LastPostResult transform(Channel channel, PostResponse postResponse) {
+
+        final List<Post> posts = Stream.of(postResponse.getPosts())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+
+        if (!posts.isEmpty()) {
+            channel.setLastPost(posts.get(posts.size() - 1));
+        }
+
+        return new LastPostResult(channel, posts);
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,
-            Map<String, User> contacts, String teamId) {
+                                         Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 
     public void applyInitialViewState() {
-        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team -> {
-            getViewState().setToolbarTitle(team.getDisplayName());
-        }, ErrorHandler::handleError));
+        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
+                getViewState().setToolbarTitle(team.getDisplayName()), ErrorHandler::handleError));
     }
 
     public void preloadChannel(String channelId) {

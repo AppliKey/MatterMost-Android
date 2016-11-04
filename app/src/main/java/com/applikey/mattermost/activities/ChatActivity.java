@@ -12,7 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -69,6 +71,18 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Bind(R.id.et_message)
     EditText mEtMessage;
 
+    @Bind(R.id.ll_reply)
+    LinearLayout mLlReply;
+
+    @Bind(R.id.view_reply_separator)
+    View mViewReplySeparator;
+
+    @Bind(R.id.iv_reply_close)
+    ImageView mIvReplyClose;
+
+    @Bind(R.id.tv_reply_message)
+    TextView mTvReplyMessage;
+
     @InjectPresenter
     ChatPresenter mPresenter;
 
@@ -78,6 +92,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Inject
     ImageLoader mImageLoader;
+
+    private String mRootId;
 
     private String mChannelId;
     private String mChannelName;
@@ -94,14 +110,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(CHANNEL_ID_KEY, channel.getId());
-        bundle.putString(CHANNEL_NAME_KEY, channel.getDisplayName());
-        bundle.putString(CHANNEL_TYPE_KEY, channel.getType());
-        bundle.putLong(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
-        intent.putExtras(bundle);
-
+        intent.putExtra(CHANNEL_ID_KEY, channel.getId());
+        intent.putExtra(CHANNEL_NAME_KEY, channel.getDisplayName());
+        intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
+        intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         return intent;
     }
 
@@ -140,6 +152,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         setToolbarText();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -191,14 +204,24 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @OnClick(R.id.iv_send_message)
     public void onSend() {
-        mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+        if (mRootId == null) {
+            mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+        } else {
+            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
+        }
     }
 
     @Override
     public void onMessageSent(long createdAt) {
-        mEtMessage.setText("");
+        mEtMessage.setText(null);
         mAdapter.setLastViewed(createdAt);
         scrollToStart();
+        hideReply();
+    }
+
+    @Override
+    public void showProgress(boolean enabled) {
+        mSrlChat.setRefreshing(enabled);
     }
 
     private void scrollToStart() {
@@ -215,6 +238,18 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mTvEmptyState.setVisibility(GONE);
     }
 
+    private void displayReply() {
+        mLlReply.setVisibility(VISIBLE);
+        mViewReplySeparator.setVisibility(VISIBLE);
+    }
+
+    private void hideReply() {
+        mLlReply.setVisibility(GONE);
+        mViewReplySeparator.setVisibility(GONE);
+        mTvReplyMessage.setText(null);
+        mRootId = null;
+    }
+
     private void setToolbarText() {
         final String prefix = !mChannelType.equals(Channel.ChannelType.DIRECT.getRepresentation())
                 ? CHANNEL_PREFIX : DIRECT_PREFIX;
@@ -222,25 +257,36 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mToolbar.setTitle(prefix + mChannelName);
     }
 
-    @Override
-    public void showProgress(boolean enabled) {
-        mSrlChat.setRefreshing(enabled);
-    }
-
-    private final PostAdapter.OnLongClickListener onPostLongClick = post -> {
-        final AlertDialog.Builder opinionDialogBuilder = new AlertDialog.Builder(this);
-        opinionDialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
-            switch (which) {
-                case 0:
-                    deleteMessage(mChannelId, post);
-                    break;
-                case 1:
-                    editMessage(mChannelId, post);
-                    break;
-                default:
-                    throw new RuntimeException("Not implemented feature");
-            }
-        }).show();
+    private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        if (isOwner) {
+            dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        deleteMessage(mChannelId, post);
+                        break;
+                    case 1:
+                        editMessage(mChannelId, post);
+                        break;
+                    case 2:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        } else {
+            dialogBuilder.setItems(R.array.post_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        }
+        dialogBuilder.show();
     };
 
     private void deleteMessage(String channelId, Post post) {
@@ -263,6 +309,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                     mPresenter.editMessage(channelId, post, input.getText().toString());
                 })
                 .show();
+    }
+
+    private void replyMessage(Post post) {
+        displayReply();
+        mTvReplyMessage.setText(post.getMessage());
+        mRootId = post.getId();
     }
 
     private void initParameters() {
@@ -294,6 +346,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 hideKeyboard();
             }
         });
+
+        mIvReplyClose.setOnClickListener(v -> hideReply());
     }
 
     @Override
@@ -303,6 +357,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void openUserProfile(User user) {
-
+        startActivity(UserProfileActivity.getIntent(this, user));
     }
 }

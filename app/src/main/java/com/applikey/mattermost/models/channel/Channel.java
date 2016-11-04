@@ -21,12 +21,12 @@ public class Channel extends RealmObject implements  SearchItem {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
-
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
     public static final String FIELD_NAME = "name";
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
+    public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
     @PrimaryKey
     @SerializedName("id")
@@ -84,6 +84,7 @@ public class Channel extends RealmObject implements  SearchItem {
             this.lastPostAt = lastPost.getCreatedAt();
         }
         this.lastActivityTime = Math.max(createdAt, lastPostAt);
+        rebuildHasUnreadMessages();
     }
 
     public User getDirectCollocutor() {

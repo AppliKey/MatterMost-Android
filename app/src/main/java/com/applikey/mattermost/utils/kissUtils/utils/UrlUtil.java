@@ -13,9 +13,11 @@ import java.net.URLEncoder;
 
 public class UrlUtil {
 
-    public static final String TAG = "UrlUtil";
+    public static final String TAG = UrlUtil.class.getSimpleName();
+    public static final String PROTOCOL_DELIMITER = "://";
+    public static final String WEB_SERVICE_PROTOCOL_PREFIX = "ws" + PROTOCOL_DELIMITER;
 
-    private UrlUtil () {
+    private UrlUtil() {
     }
 
     public static String encode(String url) {
@@ -68,5 +70,15 @@ public class UrlUtil {
             e.printStackTrace();
         }
         return value;
+    }
+
+    public static String removeProtocol(String baseUrl) {
+        final int index = baseUrl.indexOf(PROTOCOL_DELIMITER);
+
+        if (index == -1) {
+            return baseUrl;
+        }
+
+        return baseUrl.substring(index + PROTOCOL_DELIMITER.length());
     }
 }

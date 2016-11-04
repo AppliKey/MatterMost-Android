@@ -17,6 +17,11 @@ public interface ChatListScreenView extends MvpView {
     @StateStrategyType(value = SkipStrategy.class)
     void onChannelLoaded(Channel channel);
 
+    /**
+     * Platform-specific. We call it explicitly to separate this logic from logout.
+     */
+    void stopWebSocketService();
+
     @StateStrategyType(value = SkipStrategy.class)
     void initViewPager(List<Fragment> pages);
 }

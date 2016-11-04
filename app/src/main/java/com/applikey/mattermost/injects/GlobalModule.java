@@ -94,7 +94,7 @@ public class GlobalModule {
             Request request = chain.request();
             final String authToken = tokenFactory.getBearerTokenString();
             if (authToken != null) {
-                final Headers headers = request.headers().newBuilder().add("Authorization", authToken).build();
+                final Headers headers = request.headers().newBuilder().add(Constants.AUTHORIZATION_HEADER, authToken).build();
                 request = request.newBuilder().headers(headers).build();
             }
             return chain.proceed(request);

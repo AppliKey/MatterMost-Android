@@ -76,7 +76,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
         vh.getMessagePreview().setText(messagePreview);
         vh.getLastMessageTime().setText(
-                TimeUtil.formatTimeOrDateOnly(lastPostAt != 0 ? lastPostAt :
+                TimeUtil.formatTimeOrDateOnlyChannel(lastPostAt != 0 ? lastPostAt :
                         channel.getCreatedAt()));
 
         setChannelIcon(vh, channel);
@@ -153,7 +153,6 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         } else {
             vh.getNotificationIcon().setVisibility(View.GONE);
             vh.getContainer().setBackgroundResource(android.R.color.white);
-
         }
     }
 

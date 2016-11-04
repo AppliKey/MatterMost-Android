@@ -1,5 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
+import android.text.TextUtils;
+
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 
@@ -28,9 +30,30 @@ public class PostStorage {
         mDb.doTransactional(realm -> {
             for (Post post : posts) {
                 final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, post.getUserId()).findFirst();
+
+                final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
+                        realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, post.getRootId()).findFirst()
+                        : null;
+
                 final Post realmPost = realm.copyToRealmOrUpdate(post);
                 realmPost.setAuthor(author);
+                realmPost.setRootPost(rootPost);
             }
+            return true;
+        });
+    }
+
+    public void save(Post post) {
+        mDb.doTransactional(realm -> {
+            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, post.getUserId()).findFirst();
+
+            final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
+                    realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, post.getRootId()).findFirst()
+                    : null;
+
+            final Post realmPost = realm.copyToRealmOrUpdate(post);
+            realmPost.setAuthor(author);
+            realmPost.setRootPost(rootPost);
             return true;
         });
     }

@@ -32,9 +32,7 @@ public class Db {
     }
 
     public void saveTransactionalSync(RealmObject object) {
-        mRealm.executeTransaction(realm -> {
-            realm.copyToRealmOrUpdate(object);
-        });
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(object));
     }
 
     public <T extends RealmObject> Observable<T> getObject(Class<T> tClass, String id) {
@@ -60,6 +58,12 @@ public class Db {
                 .findFirstAsync()
                 .<T>asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    // FIXME Duplicated
+    public <T extends RealmObject> Observable<T> getObjectAndCopy(Class<T> tClass, String id) {
+        return getObject(tClass, id)
+                .map(mRealm::copyFromRealm);
     }
 
     public <T extends RealmObject> Observable<T> getObjectWithCopy(Class<T> tClass, String id) {

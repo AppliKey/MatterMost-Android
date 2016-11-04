@@ -1,6 +1,5 @@
 package com.applikey.mattermost.models.post;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class PendingPost {
@@ -26,6 +25,12 @@ public class PendingPost {
     @SerializedName("pending_post_id")
     private String pendingPostId;
 
+    @SerializedName("parent_id")
+    private String parentId;
+
+    @SerializedName("root_id")
+    private String rootId;
+
     public String getId() {
         return id;
     }
@@ -33,14 +38,21 @@ public class PendingPost {
     public PendingPost() {
     }
 
-    public PendingPost(long createdAt, String userId, String channelId, String message, String type, String pendingPostId) {
-        this.id = id;
+    public PendingPost(long createdAt, String userId, String channelId, String message, String type,
+                       String pendingPostId) {
         this.createdAt = createdAt;
         this.userId = userId;
         this.channelId = channelId;
         this.message = message;
         this.type = type;
         this.pendingPostId = pendingPostId;
+    }
+
+    public PendingPost(long createdAt, String userId, String channelId, String message, String type,
+                       String pendingPostId, String parentId, String rootId) {
+        this(createdAt, userId, channelId, message, type, pendingPostId);
+        this.parentId = parentId;
+        this.rootId = rootId;
     }
 
     public void setId(String id) {
