@@ -145,7 +145,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
 
-        PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
+        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId);
 
         final long lastViewedAt = System.currentTimeMillis();
@@ -165,7 +165,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
 
-        PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
+        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId, mRootId, mRootId);
 
         final long lastViewedAt = System.currentTimeMillis();
