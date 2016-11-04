@@ -48,12 +48,15 @@ public class WebSocketService extends Service {
     ChannelStorage mChannelStorage;
 
     private WebSocket mWebSocket;
+    private Handler mHandler;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         App.getUserComponent().inject(this);
+
+        mHandler = new Handler(Looper.getMainLooper());
 
         try {
             openSocket();
@@ -136,7 +139,7 @@ public class WebSocketService extends Service {
                 final Post post = extractPostFromSocket(gson, event);
                 Log.d(TAG, "Post message: " + post.getMessage());
 
-                new Handler(Looper.getMainLooper()).post(() -> {
+                mHandler.post(() -> {
                     mPostStorage.update(post);
 
                     mChannelStorage
