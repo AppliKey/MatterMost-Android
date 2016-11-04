@@ -225,7 +225,7 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     }
 
     @Override
-    public int compareTo(User o) {
+    public int compareTo(@NonNull User o) {
         if (this == o)
             return 0;
         final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();

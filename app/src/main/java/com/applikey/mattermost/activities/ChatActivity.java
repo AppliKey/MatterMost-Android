@@ -24,6 +24,7 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
@@ -42,7 +43,7 @@ import io.realm.RealmResults;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class ChatActivity extends BaseMvpActivity implements ChatView {
+public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
     private static final String CHANNEL_NAME_KEY = "channel-name";
@@ -117,6 +118,16 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
         intent.putExtras(bundle);
 
         return intent;
+    }
+
+    @Override
+    protected Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    @Override
+    protected boolean showHamburger() {
+        return false;
     }
 
     @Override
@@ -312,7 +323,9 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-            mToolbar.setOnClickListener(v -> scrollToStart());
+            mToolbar.setOnClickListener(v -> {
+                mPresenter.channelNameClick();
+            });
         }
         mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -329,5 +342,15 @@ public class ChatActivity extends BaseMvpActivity implements ChatView {
             mViewReplySeparator.setVisibility(GONE);
             mOriginalId = null;
         });
+    }
+
+    @Override
+    public void openChannelDetails(Channel channel) {
+        startActivity(ChannelDetailsActivity.getIntent(this, channel));
+    }
+
+    @Override
+    public void openUserProfile(User user) {
+
     }
 }

@@ -72,6 +72,15 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .subscribe(view::onDataReady, view::onFailure));
     }
 
+    public void channelNameClick() {
+        final ChatView view = getViewState();
+        if (Channel.ChannelType.DIRECT.getRepresentation().equals(mChannel.getType())) {
+            view.openUserProfile(mChannel.getDirectCollocutor());
+        } else {
+            view.openChannelDetails(mChannel);
+        }
+    }
+
     private void updateLastViewedAt(String channelId) {
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .first()

@@ -140,11 +140,4 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
         mSubscription.add(subscription);
     }
-
-    public void logout() {
-        mPrefs.setAuthToken(null);
-        App.releaseUserComponent();
-        mStorageDestroyer.get().deleteDatabase();
-        getViewState().logout();
-    }
 }
