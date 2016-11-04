@@ -50,4 +50,11 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView> {
     public void toggleChannelFavorite() {
         getViewState().onMakeChannelFavorite(mIsFavorite = !mIsFavorite);
     }
+
+    //TODO Create direct chat
+    public void sendDirectMessage() {
+        mSubscription.add(mChannelStorage.directChannel(mUser.getId())
+                .first()
+                .subscribe(channel -> getViewState().openDirectChannel(channel), ErrorHandler::handleError));
+    }
 }

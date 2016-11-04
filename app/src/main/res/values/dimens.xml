@@ -81,6 +81,8 @@
     <dimen name="drawer_item_text_size">18sp</dimen>
 
     <dimen name="status_bar_height">24dp</dimen>
+    <dimen name="status_indicator_size">12dp</dimen>
+    <dimen name="avatar_large_size">100dp</dimen>
 
     <!--drawer-->
     <dimen name="material_drawer_item_primary_text">@dimen/drawer_item_text_size</dimen>

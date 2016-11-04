@@ -51,6 +51,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ChatActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CreateChannelActivity"
@@ -60,6 +61,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ChannelDetailsActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.UserProfileActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
         <receiver
@@ -83,7 +89,7 @@
 
         <service
             android:name=".gcm.RegistrationIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <service
             android:name=".gcm.GcmInstanceIdListener"

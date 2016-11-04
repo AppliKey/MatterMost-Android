@@ -8,19 +8,22 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 import com.applikey.mattermost.mvp.views.UserProfileView;
-import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.widget.RobotoTextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.applikey.mattermost.R.id.status;
 
 public class UserProfileActivity extends BaseMvpActivity implements UserProfileView {
 
@@ -33,17 +36,20 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.channel_name)
-    RobotoTextView mChannelName;
-
-    @Bind(R.id.channel_description)
-    RobotoTextView mChannelDescription;
-
-    @Bind(R.id.added_people_layout)
-    AddedPeopleLayout mAddedPeopleLayout;
-
     @Bind(R.id.container)
     LinearLayout mContainer;
+
+    @Bind(status)
+    ImageView mStatus;
+
+    @Bind(R.id.display_name)
+    RobotoTextView mDisplayName;
+
+    @Bind(R.id.email)
+    RobotoTextView mEmail;
+
+    @Bind(R.id.avatar)
+    ImageView mAvatar;
 
     private Menu mMenu;
 
@@ -53,15 +59,15 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         return intent;
     }
 
-    //TODO Implement Invite members logic
-    @OnClick(R.id.b_invite_member)
-    public void onInviteMemberClick() {
+    @OnClick(R.id.b_direct_message)
+    public void onClick() {
+        mPresenter.sendDirectMessage();
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_channel_details);
+        setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(this);
         initViews();
         initParameters();
@@ -89,12 +95,8 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
 
     private void initViews() {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
         getSupportActionBar().setTitle(null);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        mAddedPeopleLayout.setImageLoader(mImageLoader);
     }
 
     private void initParameters() {
@@ -105,12 +107,25 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
 
     @Override
     public void showBaseDetails(User user) {
+        mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
+        mDisplayName.setText(user.toString());
+        mEmail.setText(user.getEmail());
+        setStatusIcon(user);
+    }
 
+    private void setStatusIcon(User user) {
+        final User.Status status = User.Status.from(user.getStatus());
+        mStatus.setImageResource(status.getDrawableId());
     }
 
     @Override
     public void onMakeChannelFavorite(boolean favorite) {
         final int iconRes = favorite ? R.drawable.ic_favorite_check : R.drawable.ic_favorite_uncheck;
         mMenu.getItem(0).setIcon(iconRes);
+    }
+
+    @Override
+    public void openDirectChannel(Channel channel) {
+        startActivity(ChatActivity.getIntent(this, channel));
     }
 }
