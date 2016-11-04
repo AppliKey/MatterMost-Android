@@ -93,7 +93,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .subscribe(ErrorHandler::handleError, () -> {
                 });
 
-        mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
+        mChannelStorage.updateLastViewedAt(channelId);
         mNotificationManager.dismissNotification(channelId);
     }
 
@@ -154,8 +154,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId);
 
-        final long lastViewedAt = System.currentTimeMillis();
-        mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
+        mChannelStorage.updateLastViewedAt(channelId);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
@@ -163,7 +162,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
-                .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
     }
 
     public void sendReplyMessage(String channelId, String message, String mRootId) {
@@ -174,8 +173,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId, mRootId, mRootId);
 
-        final long lastViewedAt = System.currentTimeMillis();
-        mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
+        mChannelStorage.updateLastViewedAt(channelId);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
@@ -183,7 +181,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
-                .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
     }
 
     private List<Post> transform(PostResponse response, int offset) {
