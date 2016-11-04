@@ -57,6 +57,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     String mCurrentUserId;
 
     private List<User> mInvitedUsers = new ArrayList<>();
+    private List<User> mInvitedAutomatically = new ArrayList<>();
 
     public CreateChannelPresenter() {
         App.getUserComponent().inject(this);
@@ -80,13 +81,42 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     public void addAllUsers() {
         final Subscription subscription = mUserStorage.listDirectProfiles()
+                .first()
+                .flatMap(Observable::from)
+                .filter(user -> !user.getId().equals(mCurrentUserId))
+                .toSortedList()
+                .doOnNext(allUsers -> {
+                    List<User> usersCopy = new ArrayList<>(allUsers);
+                    usersCopy.removeAll(mInvitedUsers);
+                    mInvitedAutomatically = usersCopy;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(results -> {
-                    mInvitedUsers = results;
                     getViewState().addAllUsers(results);
-                    setAddAllButtonState();
                 }, Timber::e);
         mSubscription.add(subscription);
+    }
+
+    public void removeAutomaticallyAddedUsers() {
+        final Subscription subscription = mUserStorage.listDirectProfiles()
+                .first()
+                .flatMap(Observable::from)
+                .filter(user -> !user.getId().equals(mCurrentUserId))
+                .toSortedList()
+                .doOnCompleted(() -> mInvitedAutomatically.clear())
+                .map(users -> convertToPendingUsers(users, mInvitedUsers))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(results -> {
+                            getViewState().showAddedUsers(mInvitedUsers);
+                            getViewState().showUsers(results);
+                        },
+                        ErrorHandler::handleError
+                );
+        mSubscription.add(subscription);
+    }
+
+    public boolean hasUsersInvitedAutomatically() {
+        return mInvitedAutomatically.size() != 0;
     }
 
     public void getUsersAndFilterByFullName(String filterString, List<User> alreadyAddedUsers) {
@@ -106,14 +136,21 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     public void addUser(User user) {
         mInvitedUsers.add(user);
-        setAddAllButtonState();
+
         getViewState().showAddedUsers(mInvitedUsers);
     }
 
     public void removeUser(User user) {
         mInvitedUsers.remove(user);
-        setAddAllButtonState();
         getViewState().showAddedUsers(mInvitedUsers);
+    }
+
+    private void setButtonAddAllState(boolean isNeedCancel) {
+        if (mInvitedUsers.size() == 0 && mInvitedUsers.size() == 0) {
+            getViewState().setAddAllButtonState(false);
+        } else {
+            getViewState().setAddAllButtonState(true);
+        }
     }
 
 
@@ -148,11 +185,8 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .collect(Collectors.toList());
     }
 
-    private void setAddAllButtonState() {
-        getViewState().setAddAllButtonEnabled(mInvitedUsers.size() == 0);
-    }
-
     private void createChannelWithRequest(ChannelRequest request) {
+        mInvitedUsers.addAll(mInvitedAutomatically);
         final Subscription subscription = mTeamStorage.getChosenTeam()
                 .observeOn(Schedulers.io())
                 .map(Team::getId)

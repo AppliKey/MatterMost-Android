@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -128,13 +127,30 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     }
 
     @Override
+    public void setAddAllButtonState(boolean isNeedToCancel) {
+        if (isNeedToCancel) {
+            mBtnAddAll.setText(R.string.button_add_all);
+            mBtnAddAll.setBackgroundResource(R.drawable.round_button_gradient);
+        } else {
+            mBtnAddAll.setText(R.string.button_clear);
+            mBtnAddAll.setBackgroundResource(R.drawable.round_button_gray);
+        }
+    }
+
+    @Override
     public void showUsers(List<UserPendingInvitation> results) {
         mAdapter.addUsers(results);
     }
 
     @OnClick(R.id.btn_add_all)
-    public void onBtnAddAllClick() {
-        mPresenter.addAllUsers();
+    public void onBtnAddAllClick(Button view) {
+        if (mPresenter.hasUsersInvitedAutomatically()) {
+            mPresenter.removeAutomaticallyAddedUsers();
+            setAddAllButtonState(true);
+        } else {
+            mPresenter.addAllUsers();
+            setAddAllButtonState(false);
+        }
     }
 
     @Override
@@ -157,11 +173,6 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @Override
     public void successfulClose() {
         finish();
-    }
-
-    @Override
-    public void setAddAllButtonEnabled(boolean enabled) {
-        mBtnAddAll.setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
 
     @Override
