@@ -17,6 +17,9 @@ public class WebSocketEvent {
     @SerializedName("event")
     private String event;
 
+    @SerializedName("action")
+    private String action;
+
     /**
      * Serialized event data as json
      */
@@ -37,6 +40,10 @@ public class WebSocketEvent {
 
     public String getEvent() {
         return event;
+    }
+
+    public String getAction() {
+        return action;
     }
 
     public JsonObject getData() {
