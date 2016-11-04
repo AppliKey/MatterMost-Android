@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.events.SearchUserTextChanged;
+import com.applikey.mattermost.events.SearchAllTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchAllView;
@@ -65,10 +65,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))
-                                .map(channels -> {
-                                    channels.addAll(0, mFetchedChannels);
-                                    return channels;
-                                }),
+                                .doOnNext(channels -> addFilterChannels(channels, text)),
                         mUserStorage.searchUsers(text), (items, users) -> {
 
                             List<SearchItem> searchItemList = new ArrayList<>();
@@ -91,7 +88,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
 
     @Subscribe
-    public void onTextChanged(SearchUserTextChanged event) {
+    public void onTextChanged(SearchAllTextChanged event) {
         final SearchAllView view = getViewState();
         view.clearData();
         getData(event.getText());

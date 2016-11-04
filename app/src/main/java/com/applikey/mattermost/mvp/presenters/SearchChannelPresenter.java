@@ -2,7 +2,7 @@ package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.events.SearchUserTextChanged;
+import com.applikey.mattermost.events.SearchChannelTextChanged;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Anatoliy Chub
@@ -61,11 +62,10 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
                         .map(Channel::getList)
+                        .observeOn(Schedulers.io())
+                        .doOnNext(channels -> addFilterChannels(channels, text))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((channels) -> {
-                            channels.addAll(0, mFetchedChannels);
-                            view.displayData(channels);
-                        }, ErrorHandler::handleError));
+                        .subscribe(view::displayData, ErrorHandler::handleError));
     }
 
     public void handleChannelClick(Channel channel) {
@@ -74,7 +74,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     }
 
     @Subscribe
-    public void onTextChanged(SearchUserTextChanged event) {
+    public void onTextChanged(SearchChannelTextChanged event) {
         final SearchChannelView view = getViewState();
         view.clearData();
         getData(event.getText());

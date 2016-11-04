@@ -9,6 +9,9 @@ import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
+import com.applikey.mattermost.mvp.presenters.SearchAllPresenter;
+import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
+import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 

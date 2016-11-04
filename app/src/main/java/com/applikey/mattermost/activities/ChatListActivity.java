@@ -113,7 +113,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
                 }
             }
         }
-        final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
+        final TabSelectedListener mOnTabSelectedListener = new ChatListTabSelectedListener(mViewPager);
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);

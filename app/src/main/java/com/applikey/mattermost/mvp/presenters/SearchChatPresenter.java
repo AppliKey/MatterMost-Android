@@ -1,6 +1,8 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.events.SearchAllTextChanged;
+import com.applikey.mattermost.events.SearchChannelTextChanged;
 import com.applikey.mattermost.events.SearchUserTextChanged;
 import com.applikey.mattermost.mvp.views.SearchChatView;
 import com.arellomobile.mvp.InjectViewState;
@@ -28,7 +30,12 @@ public class SearchChatPresenter extends BasePresenter<SearchChatView> {
     }
 
     public void handleChannelTextChanges(String text){
-        mBus.post(new SearchUserTextChanged(text));
+        mBus.post(new SearchChannelTextChanged(text));
     }
+
+    public void handleAllTextChanges(String text){
+        mBus.post(new SearchAllTextChanged(text));
+    }
+
 
 }

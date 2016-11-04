@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -63,7 +62,27 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     @InjectPresenter
     SearchChatPresenter mSearchChatPresenter;
 
-    private PagerAdapter mPagerAdapter;
+    private String mSearchText;
+
+    private SearchChatAdapter mPagerAdapter;
+
+    private final ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            onContentChanged(mSearchText, position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
 
     public static void startActivity(Context context) {
         context.startActivity(new Intent(context, SearchChatActivity.class));
@@ -87,6 +106,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         mViewPager.setAdapter(mPagerAdapter);
 
         mTabLayout.setupWithViewPager(mViewPager);
+        mViewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
         final int tabCount = mTabLayout.getTabCount();
         for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
@@ -114,6 +134,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
                 mOnTabSelectedListener = new SearchTabSelectedListener(mViewPager);
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
+        mViewPager.addOnPageChangeListener(mOnPageChangeListener);
     }
 
     @Subscribe
@@ -124,12 +145,20 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     @OnTextChanged(R.id.et_search)
     public void onTextChanged(CharSequence text){
         Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
-        switch (mTabLayout.getSelectedTabPosition()){
+        mSearchText = text.toString();
+        onContentChanged(mSearchText, mTabLayout.getSelectedTabPosition());
+    }
+
+    private void onContentChanged(String text, int tabPosition){
+        switch (tabPosition){
             case USER_FRAGMENT :
-                mSearchChatPresenter.handleUserTextChanges(text.toString());
+                mSearchChatPresenter.handleUserTextChanges(text);
                 break;
             case CHANNEL_FRAGMENT :
-                mSearchChatPresenter.handleChannelTextChanges(text.toString());
+                mSearchChatPresenter.handleChannelTextChanges(text);
+                break;
+            case ALL_FRAGMENT:
+                mSearchChatPresenter.handleAllTextChanges(text);
                 break;
         }
     }

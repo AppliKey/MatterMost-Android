@@ -21,7 +21,6 @@ public class Db {
     private static final String REALM_NAME = "Test1.realm";
     private static final String TAG = Db.class.getSimpleName();
 
-    private final Executor mWritesExecutor;
     private final Realm mRealm;
 
     public Db(Realm realm) {

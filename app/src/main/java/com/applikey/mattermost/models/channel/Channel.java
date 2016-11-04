@@ -17,7 +17,7 @@ import io.realm.annotations.PrimaryKey;
 import rx.Observable;
 
 
-public class Channel extends RealmObject implements DiffEquals<Channel>, SearchItem {
+public class Channel extends RealmObject implements  SearchItem {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
@@ -191,15 +191,6 @@ public class Channel extends RealmObject implements DiffEquals<Channel>, SearchI
         this.lastPost = lastPost;
     }
 
-    @Nullable
-    public String getLastPostAuthorDisplayName() {
-        return lastPostAuthorDisplayName;
-    }
-
-    public void setLastPostAuthorDisplayName(@Nullable String lastPostAuthorDisplayName) {
-        this.lastPostAuthorDisplayName = lastPostAuthorDisplayName;
-    }
-
     @Override
     public int getSearchType() {
         return CHANNEL;
@@ -332,7 +323,7 @@ public class Channel extends RealmObject implements DiffEquals<Channel>, SearchI
                 ", lastPost=" + getLastPost() +
                 ", lastActivityTime=" + getLastActivityTime() +
                 '}';
-    }
+    }*/
 
     public static Observable<List<Channel>> getList(Observable<RealmResults<Channel>> observable) {
         return observable.map(Channel::getList);
@@ -348,5 +339,5 @@ public class Channel extends RealmObject implements DiffEquals<Channel>, SearchI
 
     }
 
-    }*/
+
 }
