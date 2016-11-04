@@ -1,9 +1,10 @@
 package com.applikey.mattermost.platform;
 
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import com.applikey.mattermost.App;
@@ -28,7 +29,7 @@ import java.io.IOException;
 
 // FIXME Problems with lifecycle
 // FIXME move to service, introduce composite subscription
-public class WebSocketService extends IntentService {
+public class WebSocketService extends Service {
 
     private static final String TAG = WebSocketService.class.getSimpleName();
 
@@ -50,10 +51,6 @@ public class WebSocketService extends IntentService {
 
     private WebSocket mWebSocket;
 
-    public WebSocketService() {
-        super(TAG);
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -68,17 +65,29 @@ public class WebSocketService extends IntentService {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        try {
+            openSocket();
+        } catch (IOException | WebSocketException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        return START_REDELIVER_INTENT;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
         Log.d(TAG, "closing socket");
 
-//        mWebSocket.sendClose();
-//        mWebSocket.disconnect();
+        closeSocket();
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     private void openSocket() throws IOException, WebSocketException {
@@ -145,6 +154,11 @@ public class WebSocketService extends IntentService {
                 });
             }
         }
+    }
+
+    private void closeSocket() {
+        mWebSocket.sendClose();
+        mWebSocket.disconnect();
     }
 
     private Post extractPostFromSocket(Gson gson, WebSocketEvent event) {
