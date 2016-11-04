@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,6 +13,7 @@ import android.view.View;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
+import com.applikey.mattermost.utils.kissUtils.utils.SystemUtil;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.util.RobotoTypefaceManager;
 import com.mikepenz.materialdrawer.Drawer;
@@ -93,6 +95,10 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
             getToolbar().setNavigationOnClickListener(v -> {
                 onBackPressed();
             });
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            final int statusBarHeight = SystemUtil.getStatusBarHeight(this);
+            header.setPadding(0, statusBarHeight, 0, 0);
         }
     }
 

@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
@@ -22,6 +24,7 @@ import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.widget.RobotoTextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -95,9 +98,6 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     private void initViews() {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
         getSupportActionBar().setTitle(null);
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mAddedPeopleLayout.setImageLoader(mImageLoader);
@@ -107,6 +107,14 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         final Bundle extras = getIntent().getExtras();
         final String channelId = extras.getString(CHANNEL_ID_KEY);
         mPresenter.getInitialData(channelId);
+    }
+
+    @OnClick(R.id.added_people_layout)
+    public void onAddedUsersPanelClick() {
+        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
+                .map(User::getId)
+                .collect(Collectors.toList());
+        startActivity(AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds));
     }
 
     @Override

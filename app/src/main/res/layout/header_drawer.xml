@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/primaryStart"
-    android:foreground="?attr/selectableItemBackground"
-    android:paddingTop="@dimen/status_bar_height">
+    android:foreground="?attr/selectableItemBackground">
 
     <TextView
         android:layout_width="match_parent"

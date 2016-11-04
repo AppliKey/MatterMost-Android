@@ -81,7 +81,6 @@
     <dimen name="added_people_rv_margin">20dp</dimen>
     <dimen name="drawer_item_text_size">18sp</dimen>
 
-    <dimen name="status_bar_height">24dp</dimen>
     <dimen name="status_indicator_size">12dp</dimen>
     <dimen name="avatar_large_size">100dp</dimen>
 
