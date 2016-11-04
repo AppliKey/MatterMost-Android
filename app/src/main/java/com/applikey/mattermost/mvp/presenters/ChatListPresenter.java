@@ -8,4 +8,6 @@ import rx.Observable;
 public interface ChatListPresenter extends UnsubscribeablePresenter {
 
     Observable<RealmResults<Channel>> getInitData();
+
+    void displayData();
 }

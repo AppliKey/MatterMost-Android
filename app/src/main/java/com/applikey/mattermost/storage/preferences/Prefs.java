@@ -17,7 +17,7 @@ public class Prefs {
     private static final String KEY_AUTH_TOKEN = Constants.PACKAGE_NAME + ".AUTH_TOKEN";
     private static final String KEY_GCM_TOKEN = Constants.PACKAGE_NAME + ".GCM_TOKEN";
 
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
 
     public Prefs(Context context) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -62,7 +62,15 @@ public class Prefs {
         mSharedPreferences.edit().putString(key, value).apply();
     }
 
+    public void setValue(String key, boolean value) {
+        mSharedPreferences.edit().putBoolean(key, value).apply();
+    }
+
     public String getValue(String key) {
         return mSharedPreferences.getString(key, null);
+    }
+
+    public boolean getValue(String key, boolean defValue) {
+        return mSharedPreferences.getBoolean(key, defValue);
     }
 }
