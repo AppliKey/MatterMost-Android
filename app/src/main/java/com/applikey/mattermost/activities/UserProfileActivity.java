@@ -109,7 +109,7 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     public void showBaseDetails(User user) {
         mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
         mDisplayName.setText(user.toString());
-        mEmail.setText(user.getEmail());
+        mEmail.setText(User.getDisplayableName(user));
         setStatusIcon(user);
     }
 
