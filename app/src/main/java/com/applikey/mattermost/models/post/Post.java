@@ -1,14 +1,14 @@
 package com.applikey.mattermost.models.post;
 
+import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
 
-import io.realm.DiffEquals;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Post extends RealmObject implements DiffEquals<Post> {
+public class Post extends RealmObject {
 
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
@@ -31,6 +31,8 @@ public class Post extends RealmObject implements DiffEquals<Post> {
 
     // Application-specific fields
     private int priority;
+
+    private User author;
 
     public String getId() {
         return id;
@@ -83,6 +85,14 @@ public class Post extends RealmObject implements DiffEquals<Post> {
     public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
             -> o2.getPriority() - o1.getPriority();
 
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -90,7 +100,7 @@ public class Post extends RealmObject implements DiffEquals<Post> {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        Post post = (Post) o;
+        final Post post = (Post) o;
 
         if (getCreatedAt() != post.getCreatedAt())
             return false;
@@ -102,7 +112,9 @@ public class Post extends RealmObject implements DiffEquals<Post> {
             return false;
         if (!getUserId().equals(post.getUserId()))
             return false;
-        return getMessage().equals(post.getMessage());
+        if (!getMessage().equals(post.getMessage()))
+            return false;
+        return getAuthor() != null ? getAuthor().equals(post.getAuthor()) : post.getAuthor() == null;
 
     }
 
@@ -114,11 +126,7 @@ public class Post extends RealmObject implements DiffEquals<Post> {
         result = 31 * result + getUserId().hashCode();
         result = 31 * result + getMessage().hashCode();
         result = 31 * result + getPriority();
+        result = 31 * result + (getAuthor() != null ? getAuthor().hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public boolean diffEquals(Post o) {
-        return this.getId().equals(o.getId());
     }
 }

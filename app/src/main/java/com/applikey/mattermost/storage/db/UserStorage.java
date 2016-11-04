@@ -57,4 +57,10 @@ public class UserStorage {
                     User.Status.OFFLINE.ordinal());
         }
     }
+
+    public Observable<List<User>> findUsers(List<String> ids) {
+        String[] idsArray = new String[ids.size()];
+        idsArray = ids.toArray(idsArray);
+        return mDb.getObjectsQualifiedWithCopy(User.class, User.FIELD_NAME_ID, idsArray);
+    }
 }

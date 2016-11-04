@@ -4,8 +4,6 @@ import android.util.Log;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -27,7 +25,6 @@ public class Db {
     private final Realm mRealm;
 
     public Db(Realm realm) {
-        mWritesExecutor = Executors.newCachedThreadPool();
         mRealm = realm;
     }
 
@@ -45,9 +42,20 @@ public class Db {
         return getObjectQualified(tClass, "id", id);
     }
 
+    public <T extends RealmObject> Observable<List<T>> getObjectsQualifiedWithCopy(Class<T> tClass,
+            String fieldName,
+            String[] fieldValue) {
+        return mRealm.where(tClass)
+                .in(fieldName, fieldValue)
+                .findAllAsync()
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty())
+                .map(mRealm::copyFromRealm);
+    }
+
     public <T extends RealmObject> Observable<T> getObjectQualified(Class<T> tClass,
-                                                                    String fieldName,
-                                                                    String fieldValue) {
+            String fieldName,
+            String fieldValue) {
         return mRealm.where(tClass)
                 .equalTo(fieldName, fieldValue)
                 .findFirstAsync()
@@ -55,15 +63,26 @@ public class Db {
                 .filter(o -> o.isLoaded() && o.isValid());
     }
 
+    public <T extends RealmObject> Observable<T> getObjectWithCopy(Class<T> tClass, String id) {
+        return getObject(tClass, id)
+                .map(mRealm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> T copyFromRealm(T object) {
+        return mRealm.copyFromRealm(object);
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
-                                                            String id, Func2<T, Realm, Boolean> update) {
+            String id, Func2<T, Realm, Boolean> update) {
         mRealm.executeTransactionAsync(realm -> {
             final T realmObject = realm.where(tClass).equalTo("id", id).findFirst();
-            if (realmObject.isLoaded()) {
-                update.call(realmObject, realm);
-            }
+            update.call(realmObject, realm);
         });
+    }
+
+    public void doTransactional(Func1<Realm, Boolean> update) {
+        mRealm.executeTransactionAsync(update::call);
     }
 
     public void deleteTransactional(final RealmObject realmObject) {
@@ -97,23 +116,9 @@ public class Db {
         });
     }
 
-    @Deprecated
-    public void saveTransactionalWithRemovalAsync(RealmObject object) {
-        mWritesExecutor.execute(() -> {
-            saveTransactionalWithRemoval(object);
-        });
-    }
-
     public void saveTransactional(Iterable<? extends RealmObject> objects) {
         mRealm.executeTransaction(realm -> {
             realm.copyToRealmOrUpdate(objects);
-        });
-    }
-
-    @Deprecated
-    public void saveTransactionalWithRemovalAsync(Iterable<? extends RealmObject> objects) {
-        mWritesExecutor.execute(() -> {
-            saveTransactionalWithRemoval(objects);
         });
     }
 
@@ -122,13 +127,13 @@ public class Db {
                 .where(tClass)
                 .findAllAsync()
                 .asObservable()
-                .filter(response -> !response.isEmpty())
+                .filter(o -> o.isLoaded() && o.isValid())
                 .map(mRealm::copyFromRealm);
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-                                                                                String fieldName,
-                                                                                String value) {
+            String fieldName,
+            String value) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -139,9 +144,9 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsExcluded(Class<T>
-            tClass,
-            String fieldName,
-            String value) {
+                                                                                        tClass,
+                                                                                String fieldName,
+                                                                                String value) {
         return mRealm
                 .where(tClass)
                 .notEqualTo(fieldName, value)
@@ -152,10 +157,10 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
-                                                                                              tClass,
-                                                                                      String fieldName,
-                                                                                      String sortBy,
-                                                                                      String value) {
+            tClass,
+            String fieldName,
+            String sortBy,
+            String value) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -166,9 +171,9 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
-                                                                                                String fieldName,
-                                                                                                String value,
-                                                                                                String sortBy) {
+            String fieldName,
+            String value,
+            String sortBy) {
 
         return mRealm
                 .where(tClass)
@@ -195,9 +200,9 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
-                                                                                                String fieldName,
-                                                                                                boolean value,
-                                                                                                String sortBy) {
+            String fieldName,
+            boolean value,
+            String sortBy) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -208,8 +213,8 @@ public class Db {
 
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
-                                                                                String fieldName,
-                                                                                boolean value) {
+            String fieldName,
+            boolean value) {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
@@ -243,18 +248,18 @@ public class Db {
     }
 
     public <T extends RealmObject> List<T> restoreIfExist(List<T> objects,
-                                                          Class<T> tClass, Func1<T, String> getId, Func2<T, T, Boolean> update) {
+            Class<T> tClass, Func1<T, String> getId, Func2<T, T, Boolean> update) {
         if (objects == null || objects.isEmpty()) {
             return objects;
         }
         for (T object : objects) {
-            restore(object, tClass, getId, update);
+            restoreIfExist(object, tClass, getId, update);
         }
         return objects;
     }
 
-    private <T extends RealmObject> void restore(T object, Class<T> tClass,
-                                                 Func1<T, String> getId, Func2<T, T, Boolean> update) {
+    public <T extends RealmObject> void restoreIfExist(T object, Class<T> tClass,
+            Func1<T, String> getId, Func2<T, T, Boolean> update) {
         if (object == null) {
             return;
         }

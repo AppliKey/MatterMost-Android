@@ -126,6 +126,9 @@ dependencies {
     // views
     compile 'com.tasomaniac:delayed-progress:0.3'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
+    compile('com.mikepenz:materialdrawer:5.7.0@aar') {
+        transitive = true
+    }
 
     // mvp
     compile 'com.arello-mobile:moxy:0.5.4'
@@ -142,8 +145,8 @@ dependencies {
     // stream api
     compile 'com.annimon:stream:1.1.2'
 
-    // realm adapter
-    compile 'com.github.ReginFell:realm-android-adapters:175990bf26'
+    //Realm Adapter
+    compile 'io.realm:android-adapters:1.4.0'
 
     // crashlytics
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
@@ -154,4 +157,6 @@ dependencies {
 
     compile 'com.google.android.gms:play-services-gcm:9.8.0'
 
+    // animations
+    compile "com.andkulikov:transitionseverywhere:1.6.9"
 }

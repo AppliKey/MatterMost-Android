@@ -2,11 +2,13 @@
     <dimen name="activity_horizontal_margin">40dp</dimen>
     <dimen name="activity_vertical_margin">40dp</dimen>
 
+    <dimen name="text_title_size">18sp</dimen>
     <dimen name="text_heading_size">14sp</dimen>
     <dimen name="text_heading_small_size">12sp</dimen>
     <dimen name="text_welcome_heading_size">24sp</dimen>
     <dimen name="text_heading_padding">8dp</dimen>
     <dimen name="text_primary_button">16sp</dimen>
+    <dimen name="settings_element_text_size">18sp</dimen>
 
     <dimen name="edit_text_bottom_padding">20dp</dimen>
     <dimen name="edit_text_push_right">4dp</dimen>
@@ -69,8 +71,7 @@
     <dimen name="dialog_create_channel_top_padding">40dp</dimen>
     <dimen name="create_channel_label_top_margin">16dp</dimen>
     <dimen name="create_channel_type_bottom_margin">40dp</dimen>
-    <dimen name="added_people_margin">8dp</dimen>
-    <dimen name="activity_choose_server_button_padding">16dp</dimen>
+    <dimen name="button_padding">16dp</dimen>
     <dimen name="activity_choose_server_et_url_padding_start">4dp</dimen>
     <dimen name="added_people_layout_item_width">40dp</dimen>
     <dimen name="added_people_layout_item_height">40dp</dimen>
@@ -90,4 +91,13 @@
     <dimen name="added_people_rv_margin">20dp</dimen>
 
     <dimen name="search_chat_toolbar_text_size">18sp</dimen>
+    <dimen name="drawer_item_text_size">18sp</dimen>
+
+    <dimen name="status_bar_height">24dp</dimen>
+
+    <!--drawer-->
+    <dimen name="material_drawer_item_primary_text">@dimen/drawer_item_text_size</dimen>
+
+    <dimen name="settings_element_height">56dp</dimen>
+    <dimen name="margin_settings_elements">1dp</dimen>
 </resources>

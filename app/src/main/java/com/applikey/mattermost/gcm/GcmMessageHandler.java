@@ -35,7 +35,7 @@ public class GcmMessageHandler extends GcmListenerService {
             String id = data.getString(ARG_CHANNEL_ID);
 
             if (message != null && id != null) {
-                mNotificationManager.showNotification(id, message);
+                mNotificationManager.showNewMessageNotification(id, message);
             }
         }
     }
