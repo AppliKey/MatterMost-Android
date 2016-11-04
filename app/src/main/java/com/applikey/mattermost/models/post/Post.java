@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.post;
 
+import android.support.annotation.Nullable;
+
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,6 +12,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class Post extends RealmObject {
 
+    public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
 
@@ -19,6 +22,17 @@ public class Post extends RealmObject {
 
     @SerializedName("channel_id")
     private String channelId;
+
+    @Nullable
+    @SerializedName("root_id")
+    private String rootId;
+
+    @Nullable
+    private Post rootPost;
+
+    @Nullable
+    @SerializedName("parent_id")
+    private String parentId;
 
     @SerializedName("create_at")
     private long createdAt;
@@ -82,6 +96,24 @@ public class Post extends RealmObject {
         this.priority = priority;
     }
 
+    @Nullable
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(@Nullable String parentId) {
+        this.parentId = parentId;
+    }
+
+    @Nullable
+    public String getRootId() {
+        return rootId;
+    }
+
+    public void setRootId(@Nullable String rootId) {
+        this.rootId = rootId;
+    }
+
     public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
             -> o2.getPriority() - o1.getPriority();
 
@@ -91,6 +123,15 @@ public class Post extends RealmObject {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    @Nullable
+    public Post getRootPost() {
+        return rootPost;
+    }
+
+    public void setRootPost(@Nullable Post rootPost) {
+        this.rootPost = rootPost;
     }
 
     @Override
@@ -104,6 +145,10 @@ public class Post extends RealmObject {
 
         if (getCreatedAt() != post.getCreatedAt())
             return false;
+        if (getParentId() != null && !getParentId().equals(post.getParentId()))
+            return false;
+        if (getRootId() != null && !getRootId().equals(post.getRootId()))
+            return false;
         if (getPriority() != post.getPriority())
             return false;
         if (!getId().equals(post.getId()))
@@ -115,7 +160,6 @@ public class Post extends RealmObject {
         if (!getMessage().equals(post.getMessage()))
             return false;
         return getAuthor() != null ? getAuthor().equals(post.getAuthor()) : post.getAuthor() == null;
-
     }
 
     @Override
