@@ -64,6 +64,7 @@
         <com.applikey.mattermost.views.SafeButton
             android:id="@+id/b_invite_member"
             style="@style/Button"
+            android:padding="@dimen/button_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/normal"

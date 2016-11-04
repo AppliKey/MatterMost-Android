@@ -17,6 +17,7 @@
 
     <dimen name="small">8dp</dimen>
     <dimen name="normal">16dp</dimen>
+    <dimen name="more">24dp</dimen>
     <dimen name="large">32dp</dimen>
 
     <dimen name="welcome_screen_headers_margin_top">72dp</dimen>
@@ -88,4 +89,7 @@
 
     <dimen name="settings_element_height">56dp</dimen>
     <dimen name="margin_settings_elements">1dp</dimen>
+    <dimen name="button_text_size">14sp</dimen>
+    <dimen name="button_height">40dp</dimen>
+    <dimen name="button_width">180dp</dimen>
 </resources>

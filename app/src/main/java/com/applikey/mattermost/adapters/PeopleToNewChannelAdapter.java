@@ -66,15 +66,15 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final UserPendingInvitation user = mUsers.get(position);
-        holder.mAddedPeopleName.setText(User.getDisplayableName(user.getUser()));
+        holder.mTvAddedMember.setText(User.getDisplayableName(user.getUser()));
         @DrawableRes final int iconRes = user.isInvited() ? R.drawable.ic_check : R.drawable.ic_add;
-        holder.mAddPeopleImage.setBackgroundResource(iconRes);
+        holder.mTvAddedMember.setCompoundDrawablesWithIntrinsicBounds(0, 0, iconRes, 0);
         mImageLoader.displayCircularImage(user.getUser().getProfileImage(), holder.mAddedPeopleAvatar);
         holder.rootView.setOnClickListener(button -> {
             final boolean isUserInvited = user.isInvited();
             user.setInvited(!isUserInvited);
             @DrawableRes final int userButtonDrawableRes = isUserInvited ?  R.drawable.ic_add :R.drawable.ic_check;
-            holder.mAddPeopleImage.setBackgroundResource(userButtonDrawableRes);
+            holder.mTvAddedMember.setCompoundDrawablesWithIntrinsicBounds(0, 0, userButtonDrawableRes, 0);
             mChosenListener.onChosen(user.getUser(), user.isInvited());
         });
     }
@@ -84,13 +84,10 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         @Bind(R.id.iv_pending_people_avatar)
         ImageView mAddedPeopleAvatar;
 
-        @Bind(R.id.tv_added_people_name)
-        TextView mAddedPeopleName;
-
-        @Bind(R.id.add_people_image)
-        View mAddPeopleImage;
-
         View rootView;
+
+        @Bind(R.id.tv_added_member)
+        TextView mTvAddedMember;
 
         public ViewHolder(View itemView) {
             super(itemView);
