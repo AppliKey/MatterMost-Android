@@ -128,7 +128,11 @@ public class WebSocketService extends Service {
     private void handleMessage(Gson gson, String message) {
         final WebSocketEvent event = gson.fromJson(message, WebSocketEvent.class);
 
-        final String eventType = event.getEvent();
+        String eventType = event.getEvent();
+        // Mattermost Old API fix
+        if (eventType == null) {
+            eventType = event.getAction();
+        }
 
         Log.d(TAG, "Got event: " + eventType);
 
