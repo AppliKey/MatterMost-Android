@@ -27,8 +27,6 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import javax.inject.Inject;
 import java.io.IOException;
 
-// FIXME Problems with lifecycle
-// FIXME move to service, introduce composite subscription
 public class WebSocketService extends Service {
 
     private static final String TAG = WebSocketService.class.getSimpleName();
