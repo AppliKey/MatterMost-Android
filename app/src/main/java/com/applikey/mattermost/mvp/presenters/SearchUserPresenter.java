@@ -28,9 +28,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * @author Anatoliy Chub
- */
 @InjectViewState
 public class SearchUserPresenter extends BasePresenter<SearchUserView> {
 
@@ -97,12 +94,20 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                 }));
     }
 
-    private void createChannel( User user) {
+    @Subscribe
+    public void onTextChanged(SearchUserTextChanged event) {
+        final SearchUserView view = getViewState();
+        view.clearData();
+        getData(event.getText());
+    }
+
+    private void createChannel(User user) {
         final SearchUserView view = getViewState();
         view.showLoading(true);
         mTeamStorage.getChosenTeam()
                 .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.createChannel(team.getId(), new DirectChannelRequest(user.getId())),
+                .flatMap(team -> mApi.createChannel(team.getId(),
+                        new DirectChannelRequest(user.getId())),
                         (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
@@ -115,13 +120,6 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                     view.showLoading(false);
                 });
 
-    }
-
-    @Subscribe
-    public void onTextChanged(SearchUserTextChanged event){
-        final SearchUserView view = getViewState();
-        view.clearData();
-        getData(event.getText());
     }
 
 }

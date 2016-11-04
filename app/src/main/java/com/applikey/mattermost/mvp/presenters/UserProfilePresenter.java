@@ -55,6 +55,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView> {
     public void sendDirectMessage() {
         mSubscription.add(mChannelStorage.directChannel(mUser.getId())
                 .first()
-                .subscribe(channel -> getViewState().openDirectChannel(channel), ErrorHandler::handleError));
+                .subscribe(channel -> getViewState().openDirectChannel(channel),
+                        ErrorHandler::handleError));
     }
 }

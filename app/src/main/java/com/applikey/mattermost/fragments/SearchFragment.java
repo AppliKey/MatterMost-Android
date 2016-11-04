@@ -16,21 +16,12 @@ import com.applikey.mattermost.models.channel.Channel;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * @author Anatoliy Chub
- */
-
 public abstract class SearchFragment extends BaseMvpFragment {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
     @Bind(R.id.recycle_view)
     RecyclerView mRecycleView;
-
-
-    @LayoutRes
-    protected abstract int getLayout();
-
 
     @Nullable
     @Override
@@ -50,7 +41,6 @@ public abstract class SearchFragment extends BaseMvpFragment {
         ButterKnife.unbind(this);
     }
 
-
     public void startChatActivity(Channel channel) {
         getActivity().startActivity(ChatActivity.getIntent(getContext(), channel));
     }
@@ -63,5 +53,7 @@ public abstract class SearchFragment extends BaseMvpFragment {
         }
     }
 
+    @LayoutRes
+    protected abstract int getLayout();
 
 }

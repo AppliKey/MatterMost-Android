@@ -22,14 +22,6 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
     @InjectPresenter
     RestorePasswordPresenter mPresenter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_restore_password);
-
-        ButterKnife.bind(this);
-    }
-
     @OnClick(R.id.back)
     public void onBack() {
         finish();
@@ -53,14 +45,22 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
         mEtLogin.setError(message);
     }
 
+    public static Intent getIntent(Context context) {
+        return new Intent(context, RestorePasswordActivity.class);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_restore_password);
+
+        ButterKnife.bind(this);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
         mPresenter.unSubscribe();
-    }
-
-    public static Intent getIntent(Context context) {
-        return new Intent(context, RestorePasswordActivity.class);
     }
 }

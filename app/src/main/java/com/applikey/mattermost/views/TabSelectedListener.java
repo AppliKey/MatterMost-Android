@@ -9,7 +9,7 @@ import android.support.v4.view.ViewPager;
  * @author Anatoliy Chub
  */
 
-public abstract class TabSelectedListener  extends TabLayout.ViewPagerOnTabSelectedListener  {
+public abstract class TabSelectedListener extends TabLayout.ViewPagerOnTabSelectedListener {
 
     protected int selectedTabColor = -1;
     protected int unSelectedTabColor = -1;
@@ -45,7 +45,7 @@ public abstract class TabSelectedListener  extends TabLayout.ViewPagerOnTabSelec
         }
     }
 
-    protected abstract int getSelectedTabColor() ;
+    protected abstract int getSelectedTabColor();
 
-    protected  abstract int getUnSelectedTabColor() ;
+    protected abstract int getUnSelectedTabColor();
 }

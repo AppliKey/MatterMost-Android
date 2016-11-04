@@ -20,6 +20,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
     private List<User> mDataSet = new ArrayList<>();
     private ImageLoader mImageLoader;
     private ClickListener mClickListener = null;
+    private final View.OnClickListener mOnClickListener = v -> {
+        final int position = (Integer) v.getTag();
+
+        final User user = mDataSet.get(position);
+
+        if (mClickListener != null) {
+            mClickListener.onItemClicked(user);
+        }
+    };
+
+    public interface ClickListener {
+
+        void onItemClicked(User user);
+    }
 
     public UserAdapter(ImageLoader imageLoader) {
         super();
@@ -55,8 +69,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
     }
 
     public void setDataSet(List<User> dataSet) {
-        mDataSet.clear();
-        mDataSet.addAll(dataSet);
+        mDataSet = dataSet;
         notifyDataSetChanged();
     }
 
@@ -76,22 +89,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
             mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
         }
     }
-
-
-    public interface ClickListener {
-
-        void onItemClicked(User user);
-    }
-
-    private final View.OnClickListener mOnClickListener = v -> {
-        final int position = (Integer) v.getTag();
-
-        final User user = mDataSet.get(position);
-
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(user);
-        }
-    };
 
     /* package */
 

@@ -95,6 +95,13 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
 
     @Override
     @CallSuper
+    protected void onStart() {
+        super.onStart();
+        lifecycleSubject.onNext(ActivityEvent.START);
+    }
+
+    @Override
+    @CallSuper
     protected void onStop() {
         lifecycleSubject.onNext(ActivityEvent.STOP);
         super.onStop();
@@ -119,12 +126,5 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     protected void onResume() {
         super.onResume();
         lifecycleSubject.onNext(ActivityEvent.RESUME);
-    }
-
-    @Override
-    @CallSuper
-    protected void onStart() {
-        super.onStart();
-        lifecycleSubject.onNext(ActivityEvent.START);
     }
 }

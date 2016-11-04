@@ -34,19 +34,15 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
-        setTitle(R.string.settings);
-    }
-
-    @Override
     public void logout() {
         final Intent intent = new Intent(this, ChooseServerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    public void setInitialViewState(SettingsPresenter.SettingDataHolder settingDataHolder) {
+        mSwitchShowUnreadMessages.setChecked(settingDataHolder.isUnreadTabEnabled());
     }
 
     @Override
@@ -76,7 +72,11 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     }
 
     @Override
-    public void setInitialViewState(SettingsPresenter.SettingDataHolder settingDataHolder) {
-        mSwitchShowUnreadMessages.setChecked(settingDataHolder.isUnreadTabEnabled());
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
+        setTitle(R.string.settings);
     }
 }

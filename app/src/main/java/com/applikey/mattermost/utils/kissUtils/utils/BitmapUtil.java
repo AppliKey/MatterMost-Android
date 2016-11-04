@@ -86,7 +86,7 @@ public class BitmapUtil {
     }
 
     public static Options getOptions(String absPath, int desireWidth,
-                                     int desireHeight) {
+            int desireHeight) {
         if (!FileUtil.exists(absPath) || desireWidth <= 0 || desireHeight <= 0) {
             return null;
         }
@@ -258,7 +258,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap resizeImage(Bitmap bitmap, int desireWidth,
-                                     int desireHeight, boolean isEnlarge) {
+            int desireHeight, boolean isEnlarge) {
         if (bitmap == null || desireHeight <= 0 || desireWidth <= 0) {
             return null;
         }
@@ -290,7 +290,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap getThumbnail(String absPath, int width,
-                                      int height) {
+            int height) {
         if (!FileUtil.exists(absPath) || width <= 0 || height <= 0) {
             return null;
         }
@@ -309,7 +309,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap getVideoThumbnail(String absPath, int width,
-                                           int height) {
+            int height) {
         if (!FileUtil.exists(absPath) || width <= 0 || height <= 0) {
             return null;
         }
@@ -324,7 +324,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap waterMark(Context context, Bitmap bitmap,
-                                   int waterResId, int gravity) {
+            int waterResId, int gravity) {
         final Drawable waterPrintDrawable = context.getResources().getDrawable(
                 waterResId);
         final int waterPrintWidth = waterPrintDrawable.getIntrinsicWidth();
@@ -345,7 +345,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap toRounded(Context context, Bitmap bitmap,
-                                   int color, int borderDips, int desireWidth) {
+            int color, int borderDips, int desireWidth) {
         try {
             final Bitmap bitmap0 = squareImage(bitmap);
             final Bitmap bitmap1 = resizeImage(bitmap0, desireWidth, desireWidth,
@@ -439,7 +439,7 @@ public class BitmapUtil {
     }
 
     public static Bitmap drawRing(Bitmap bitmap, int deltaRadius,
-                                  int color) {
+            int color) {
         final int w = bitmap.getWidth();
         final int dia = deltaRadius * 2 + w;
         final float radius = (float) dia / 2;
@@ -551,7 +551,7 @@ public class BitmapUtil {
     }
 
     private static void blur(int[] in, int[] out, int width, int height,
-                             int radius) {
+            int radius) {
         final int widthMinus1 = width - 1;
         final int tableSize = 2 * radius + 1;
         final int divide[] = new int[256 * tableSize];

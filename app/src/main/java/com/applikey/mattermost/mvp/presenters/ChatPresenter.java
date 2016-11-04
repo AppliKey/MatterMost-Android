@@ -81,26 +81,13 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         }
     }
 
-    private void updateLastViewedAt(String channelId) {
-        // Does not belong to UI
-        mTeamStorage.getChosenTeam()
-                .first()
-                .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
-                .toCompletable()
-                .subscribe(ErrorHandler::handleError, () -> {
-                });
-
-        mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
-        mNotificationManager.dismissNotification(channelId);
-    }
-
     public void fetchData(String channelId) {
         getViewState().showProgress(true);
         Timber.d("fetching data");
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team ->
-                        mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE, PAGE_SIZE)
+                        mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE,
+                                PAGE_SIZE)
                                 .subscribeOn(Schedulers.io())
                                 .doOnError(ErrorHandler::handleError)
                 )
@@ -128,7 +115,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(posts -> mPostStorage.delete(post))
                 .doOnNext(posts -> mChannel.setLastPost(null))
-                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), ErrorHandler::handleError));
+                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel),
+                        ErrorHandler::handleError));
     }
 
     public void editMessage(String channelId, Post post, String newMessage) {
@@ -158,7 +146,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
-                .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
+                .subscribe(result -> getViewState().onMessageSent(lastViewedAt),
+                        ErrorHandler::handleError));
     }
 
     public void sendReplyMessage(String channelId, String message, String mRootId) {
@@ -178,7 +167,22 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
-                .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
+                .subscribe(result -> getViewState().onMessageSent(lastViewedAt),
+                        ErrorHandler::handleError));
+    }
+
+    private void updateLastViewedAt(String channelId) {
+        // Does not belong to UI
+        mTeamStorage.getChosenTeam()
+                .first()
+                .observeOn(Schedulers.io())
+                .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
+                .toCompletable()
+                .subscribe(ErrorHandler::handleError, () -> {
+                });
+
+        mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
+        mNotificationManager.dismissNotification(channelId);
     }
 
     private List<Post> transform(PostResponse response, int offset) {

@@ -11,10 +11,6 @@ import com.applikey.mattermost.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class ChannelViewHolder extends RecyclerView.ViewHolder {
 
     private final View mRoot;

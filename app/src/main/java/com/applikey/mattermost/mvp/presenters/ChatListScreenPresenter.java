@@ -67,6 +67,42 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         App.getComponent().inject(this);
     }
 
+    public boolean shouldShowUnreadTab() {
+        return mSettingsManager.shouldShowUnreadMessages();
+    }
+
+    public void applyInitialViewState() {
+        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
+                getViewState().setToolbarTitle(team.getDisplayName()), ErrorHandler::handleError));
+    }
+
+    public void preloadChannel(String channelId) {
+        final Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
+                mTeamStorage.getChosenTeam()
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
+                                .subscribeOn(Schedulers.io())))
+                .observeOn(AndroidSchedulers.mainThread())
+                .first()
+                .subscribe(channel -> {
+                    getViewState().onChannelLoaded(channel);
+                }, ErrorHandler::handleError);
+
+        mSubscription.add(subscription);
+    }
+
+    public void initPages() {
+        mLastUnreadTabState = shouldShowUnreadTab();
+        getViewState().initViewPager(initTabs(mLastUnreadTabState));
+    }
+
+    public void checkSettingChanges() {
+        final boolean shouldShowUnreadTab = shouldShowUnreadTab();
+        if (mLastUnreadTabState != shouldShowUnreadTab) {
+            mLastUnreadTabState = shouldShowUnreadTab;
+            getViewState().initViewPager(initTabs(shouldShowUnreadTab));
+        }
+    }
+
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
@@ -89,13 +125,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(response -> mUserStorage.saveUsers(response.getDirectProfiles()))
-                .doOnNext(response -> mChannelStorage.saveChannelResponse(response.getChannelResponse(),
+                .doOnNext(response -> mChannelStorage.saveChannelResponse(
+                        response.getChannelResponse(),
                         response.getDirectProfiles()));
 
-    }
-
-    public boolean shouldShowUnreadTab() {
-        return mSettingsManager.shouldShowUnreadMessages();
     }
 
     private void fetchLastMessages(StartupFetchResult response) {
@@ -114,11 +147,12 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         final Set<String> keys = response.getDirectProfiles().keySet();
 
         // TODO: Remove v3.3 API support
-        mApi.getUserStatusesCompatible(keys.toArray(new String[]{}))
+        mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(userStatusResponse -> mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse))
+                .doOnNext(userStatusResponse -> mUserStorage.saveUsersStatuses(
+                        response.getDirectProfiles(), userStatusResponse))
                 .subscribe(v -> {
                 }, ErrorHandler::handleError);
     }
@@ -137,27 +171,8 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> contacts, String teamId) {
+            Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
-    }
-
-    public void applyInitialViewState() {
-        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
-                getViewState().setToolbarTitle(team.getDisplayName()), ErrorHandler::handleError));
-    }
-
-    public void preloadChannel(String channelId) {
-        final Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
-                mTeamStorage.getChosenTeam()
-                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
-                                .subscribeOn(Schedulers.io())))
-                .observeOn(AndroidSchedulers.mainThread())
-                .first()
-                .subscribe(channel -> {
-                    getViewState().onChannelLoaded(channel);
-                }, ErrorHandler::handleError);
-
-        mSubscription.add(subscription);
     }
 
     private List<Fragment> initTabs(boolean shouldShowUnreadTab) {
@@ -170,18 +185,5 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         tabs.add(GroupListFragment.newInstance());
         tabs.add(DirectChatListFragment.newInstance());
         return tabs;
-    }
-
-    public void initPages() {
-        mLastUnreadTabState = shouldShowUnreadTab();
-        getViewState().initViewPager(initTabs(mLastUnreadTabState));
-    }
-
-    public void checkSettingChanges() {
-        final boolean shouldShowUnreadTab = shouldShowUnreadTab();
-        if (mLastUnreadTabState != shouldShowUnreadTab) {
-            mLastUnreadTabState = shouldShowUnreadTab;
-            getViewState().initViewPager(initTabs(shouldShowUnreadTab));
-        }
     }
 }

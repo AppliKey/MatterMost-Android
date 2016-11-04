@@ -1,9 +1,5 @@
 package com.applikey.mattermost.events;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class SearchUserTextChanged extends SearchTextChanged {
 
 

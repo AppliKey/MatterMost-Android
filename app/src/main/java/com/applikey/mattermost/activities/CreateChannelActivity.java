@@ -34,37 +34,28 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
-
-    @Bind(R.id.et_channel_name)
-    EditText mEtChannelName;
-
-    @Bind(R.id.et_channel_description)
-    EditText mEtChannelDescription;
-
-    @Bind(R.id.et_search_people)
-    EditText mEtSearchPeople;
-
-    @Bind(R.id.rv_peoples)
-    RecyclerView mRvPeoples;
-
-    @Bind(R.id.added_people_layout)
-    AddedPeopleLayout mAddedPeopleLayout;
-
-    @Bind(R.id.channel_type_view)
-    ChannelTypeView mChannelTypeView;
-
-    @Bind(R.id.btn_add_all)
-    Button mBtnAddAll;
-
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
-
-    @InjectPresenter
-    CreateChannelPresenter mPresenter;
+public class CreateChannelActivity extends BaseMvpActivity
+        implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
 
     private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
-
+    @Bind(R.id.et_channel_name)
+    EditText mEtChannelName;
+    @Bind(R.id.et_channel_description)
+    EditText mEtChannelDescription;
+    @Bind(R.id.et_search_people)
+    EditText mEtSearchPeople;
+    @Bind(R.id.rv_peoples)
+    RecyclerView mRvPeoples;
+    @Bind(R.id.added_people_layout)
+    AddedPeopleLayout mAddedPeopleLayout;
+    @Bind(R.id.channel_type_view)
+    ChannelTypeView mChannelTypeView;
+    @Bind(R.id.btn_add_all)
+    Button mBtnAddAll;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+    @InjectPresenter
+    CreateChannelPresenter mPresenter;
     private PeopleToNewChannelAdapter mAdapter;
 
     public static Intent getIntent(Context context) {
@@ -84,7 +75,9 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         mRvPeoples.setAdapter(mAdapter);
         setTitle(getString(R.string.new_private_group));
         mChannelTypeView.setOnCheckedChangedListener((view, checked) -> {
-            @StringRes final int title = checked ? R.string.new_private_group : R.string.new_public_channel;
+            @StringRes final int title = checked
+                    ? R.string.new_private_group
+                    : R.string.new_public_channel;
             CreateChannelActivity.this.setTitle(getResources().getString(title));
         });
     }
@@ -111,13 +104,6 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         }
     }
 
-    private void createChannel() {
-        final String channelName = mEtChannelName.getText().toString().trim();
-        final String channelDescription = mEtChannelDescription.getText().toString().trim();
-        final boolean isPublicChannel = !mChannelTypeView.isChecked();
-        mPresenter.createChannel(channelName, channelDescription, isPublicChannel);
-    }
-
     @Override
     public void onChosen(User user, boolean isInvited) {
         if (isInvited) {
@@ -132,31 +118,14 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         mAdapter.addUsers(results);
     }
 
-    @OnClick(R.id.btn_add_all)
-    public void onBtnAddAllClick() {
-        mPresenter.addAllUsers();
-    }
-
     @Override
     public void showAddedUsers(List<User> users) {
         mAddedPeopleLayout.showUsers(users);
     }
 
-    @OnTextChanged(R.id.et_search_people)
-    public void onSearchFilterChanged(Editable editableString) {
-        final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
-        mPresenter.getUsersAndFilterByFullName(editableString.toString(), alreadyAddedUsers);
-    }
-
     @Override
-    public void addAllUsers(List<User> results) {
-        showAddedUsers(results);
-        mAdapter.setAllChecked(true);
-    }
-
-    @Override
-    public void successfulClose() {
-        finish();
+    public void showEmptyChannelNameError() {
+        showToast(getString(R.string.error_channel_name_empty));
     }
 
     @Override
@@ -165,8 +134,25 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     }
 
     @Override
-    public void showEmptyChannelNameError() {
-        showToast(getString(R.string.error_channel_name_empty));
+    public void successfulClose() {
+        finish();
+    }
+
+    @Override
+    public void addAllUsers(List<User> results) {
+        showAddedUsers(results);
+        mAdapter.setAllChecked(true);
+    }
+
+    @OnClick(R.id.btn_add_all)
+    public void onBtnAddAllClick() {
+        mPresenter.addAllUsers();
+    }
+
+    @OnTextChanged(R.id.et_search_people)
+    public void onSearchFilterChanged(Editable editableString) {
+        final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
+        mPresenter.getUsersAndFilterByFullName(editableString.toString(), alreadyAddedUsers);
     }
 
     @OnClick(R.id.added_people_layout)
@@ -174,7 +160,8 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
                 .map(User::getId)
                 .collect(Collectors.toList());
-        final Intent intent = AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds);
+        final Intent intent = AddedMembersActivity.getIntent(this,
+                (ArrayList<String>) alreadyAddedUsersIds);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
     }
 
@@ -183,12 +170,20 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         switch (requestCode) {
             case REQUEST_ADDED_MEMBERS_DIALOG: {
                 if (resultCode == RESULT_OK) {
-                    final ArrayList<String> addedUsersIds = data.getStringArrayListExtra(AddedMembersActivity.USERS_IDS_KEY);
+                    final ArrayList<String> addedUsersIds = data.getStringArrayListExtra(
+                            AddedMembersActivity.USERS_IDS_KEY);
                     mPresenter.showAlreadyAddedUsers(addedUsersIds);
                 }
             }
             break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void createChannel() {
+        final String channelName = mEtChannelName.getText().toString().trim();
+        final String channelDescription = mEtChannelDescription.getText().toString().trim();
+        final boolean isPublicChannel = !mChannelTypeView.isChecked();
+        mPresenter.createChannel(channelName, channelDescription, isPublicChannel);
     }
 }

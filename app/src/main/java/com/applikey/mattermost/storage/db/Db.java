@@ -18,7 +18,6 @@ import rx.functions.Func2;
 public class Db {
 
     // TODO Use server as realm identifier
-    private static final String REALM_NAME = "Test1.realm";
     private static final String TAG = Db.class.getSimpleName();
 
     private final Realm mRealm;
@@ -147,9 +146,9 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsExcluded(Class<T>
-                                                                                        tClass,
-                                                                                String fieldName,
-                                                                                String value) {
+            tClass,
+            String fieldName,
+            String value) {
         return mRealm
                 .where(tClass)
                 .notEqualTo(fieldName, value)
@@ -173,7 +172,8 @@ public class Db {
                 .map(mRealm::copyFromRealm);
     }
 
-    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(
+            Class<T> tClass,
             String fieldName,
             String value,
             String sortBy) {
@@ -186,7 +186,9 @@ public class Db {
                 .filter(o -> o.isLoaded() && o.isValid());
     }
 
-    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedExcept(Class<T> tClass,
+    public <T extends RealmObject> Observable<RealmResults<T>>
+    resultRealmObjectsFilteredSortedExcluded(
+            Class<T> tClass,
             String fieldName,
             String value,
             String exceptFieldName,
@@ -202,7 +204,8 @@ public class Db {
                 .filter(o -> o.isLoaded() && o.isValid());
     }
 
-    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(
+            Class<T> tClass,
             String fieldName,
             boolean value,
             String sortBy) {
@@ -274,11 +277,6 @@ public class Db {
         update.call(object, realmObject);
     }
 
-    void deleteDatabase() {
-        mRealm.beginTransaction();
-        mRealm.deleteAll();
-        mRealm.commitTransaction();
-    }
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
             String text,
             String[] fields) {
@@ -324,6 +322,12 @@ public class Db {
                     .map(realm::copyFromRealm);
         }
         return map.toSingle();
+    }
+
+    void deleteDatabase() {
+        mRealm.beginTransaction();
+        mRealm.deleteAll();
+        mRealm.commitTransaction();
     }
 
     private Realm getRealm() {

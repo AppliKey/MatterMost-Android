@@ -19,9 +19,6 @@ import javax.inject.Named;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * @author Anatoliy Chub
- */
 @InjectViewState
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
@@ -29,7 +26,6 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
     @Inject
     ChannelStorage mChannelStorage;
-
 
     @Inject
     Prefs mPrefs;
@@ -40,8 +36,6 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
-
-
 
     public SearchChannelPresenter() {
         App.getUserComponent().inject(this);
@@ -55,7 +49,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     }
 
     public void getData(String text) {
-        if(!mChannelsIsFetched){
+        if (!mChannelsIsFetched) {
             return;
         }
         final SearchChannelView view = getViewState();
@@ -79,7 +73,5 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
         view.clearData();
         getData(event.getText());
     }
-
-
 
 }

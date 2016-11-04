@@ -20,20 +20,22 @@ import java.util.List;
 public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = SearchAdapter.class.getSimpleName();
-
+    private final View.OnClickListener mOnClickListener = v -> {
+        final int position = (Integer) v.getTag();
+    };
     private List<SearchItem> mDataSet = new ArrayList<>();
     private ImageLoader mImageLoader;
     private ClickListener mClickListener = null;
+
+    public interface ClickListener {
+
+        void onItemClicked(Channel channel);
+    }
 
     public SearchAdapter(ImageLoader imageLoader) {
         super();
 
         mImageLoader = imageLoader;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return mDataSet.get(position).getSearchType();
     }
 
     @Override
@@ -70,7 +72,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             setMessage(viewHolder, data);
 
             viewHolder.getRoot().setTag(position);
-        } else if(searchType == SearchItem.USER){
+        } else if (searchType == SearchItem.USER) {
             final User data = (User) mDataSet.get(position);
             final UserViewHolder viewHolder = (UserViewHolder) vh;
 
@@ -81,6 +83,11 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             viewHolder.getRoot().setTag(position);
         }
 
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return mDataSet.get(position).getSearchType();
     }
 
     @Override
@@ -121,17 +128,6 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             vh.getTvMessage().setText(post.getMessage());
         }
     }
-
-    public interface ClickListener {
-
-        void onItemClicked(Channel channel);
-    }
-
-    private final View.OnClickListener mOnClickListener = v -> {
-        final int position = (Integer) v.getTag();
-
-
-    };
 
     /* package */
 

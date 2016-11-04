@@ -29,10 +29,6 @@ public class TeamStorage {
         return mDb.listRealmObjects(Team.class);
     }
 
-    public void setChosenTeam(Team team) {
-        mDb.saveTransactional(new DictionaryEntry(CHOSEN_TEAM_KEY, team.getId()));
-    }
-
     public Observable<Team> getChosenTeam() {
         final Observable<DictionaryEntry> dictionaryEntry =
                 mDb.getSingleDictionaryEntry(CHOSEN_TEAM_KEY);
@@ -40,5 +36,9 @@ public class TeamStorage {
             final String teamId = v.getValue();
             return mDb.listSingeRealmObject(Team.class, "id", teamId).first();
         });
+    }
+
+    public void setChosenTeam(Team team) {
+        mDb.saveTransactional(new DictionaryEntry(CHOSEN_TEAM_KEY, team.getId()));
     }
 }

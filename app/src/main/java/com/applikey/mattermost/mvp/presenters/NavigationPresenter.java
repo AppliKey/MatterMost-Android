@@ -23,11 +23,6 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
         App.getUserComponent().inject(this);
     }
 
-    @Override
-    protected void onFirstViewAttach() {
-        super.onFirstViewAttach();
-    }
-
     public void logout() {
         mPrefs.get().setAuthToken(null);
         mStorageDestroyer.get().deleteDatabase();
@@ -37,5 +32,10 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
 
     public void createNewChannel() {
         getViewState().startChannelCreating();
+    }
+
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
     }
 }

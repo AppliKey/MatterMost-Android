@@ -19,10 +19,6 @@ import java.util.List;
 
 import butterknife.Bind;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class SearchAllFragment extends SearchFragment implements SearchAllView,
         ChannelAdapter.ClickListener {
 
@@ -36,25 +32,16 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     private SearchAdapter mAdapter;
 
-
     public static SearchAllFragment newInstance() {
         return new SearchAllFragment();
     }
-
-
-
-    @Override
-    protected int getLayout() {
-        return R.layout.fragment_search_chat;
-    }
-
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-        getPresenter().requestNotJoinedChannels();
-        getPresenter().getData("");
+        mPresenter.requestNotJoinedChannels();
+        mPresenter.getData("");
     }
 
     @Override
@@ -63,18 +50,11 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     }
 
-    private void initView() {
-        mAdapter = new SearchAdapter(mImageLoader);
-//        mAdapter.setOnClickListener(this);
-        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecycleView.setAdapter(mAdapter);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        getPresenter().unSubscribe();
+        mPresenter.unSubscribe();
     }
 
     @Override
@@ -85,20 +65,24 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     @Override
     public void startChatActivity(SearchItem item) {
-
+        // TODO: 04.11.16 IMPLEMENT IT
     }
-
-    protected SearchAllPresenter getPresenter() {
-        if (mPresenter == null) {
-            throw new RuntimeException("Presenter is null");
-        }
-        return mPresenter;
-    }
-
 
     @Override
-    public void clearData(){
+    public void clearData() {
         mAdapter.clear();
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.fragment_search_chat;
+    }
+
+    private void initView() {
+        mAdapter = new SearchAdapter(mImageLoader);
+//        mAdapter.setOnClickListener(this);
+        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecycleView.setAdapter(mAdapter);
     }
 
 }

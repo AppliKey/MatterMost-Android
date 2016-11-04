@@ -51,7 +51,7 @@ public class ChannelStorage {
     }
 
     public Observable<RealmResults<Channel>> listUndirected(String name) {
-        return mDb.resultRealmObjectsFilteredSortedExcept(Channel.class, Channel.FIELD_NAME,
+        return mDb.resultRealmObjectsFilteredSortedExcluded(Channel.class, Channel.FIELD_NAME,
                 name,
                 Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.DIRECT.getRepresentation(),
@@ -123,7 +123,9 @@ public class ChannelStorage {
                     .findFirst();
 
             final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
-                    realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, realmPost.getRootId()).findFirst()
+                    realm.where(Post.class)
+                            .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                            .findFirst()
                     : null;
 
             realmPost.setAuthor(author);
@@ -168,6 +170,14 @@ public class ChannelStorage {
         mDb.saveTransactional(restoreChannels(channels));
     }
 
+    public Single<Channel> getChannel(String id) {
+        return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
+    }
+
+    public void saveChannel(Channel channel) {
+        mDb.saveTransactional(channel);
+    }
+
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
                 (channel, storedChannel) -> {
@@ -177,17 +187,9 @@ public class ChannelStorage {
                 });
     }
 
-    public Single<Channel> getChannel(String id) {
-        return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
-    }
-
-    public void saveChannel(Channel channel) {
-        mDb.saveTransactional(channel);
-    }
-
     private void updateDirectChannelData(Channel channel,
-                                         Map<String, User> contacts,
-                                         String currentUserId) {
+            Map<String, User> contacts,
+            String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

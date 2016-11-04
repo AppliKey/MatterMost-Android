@@ -9,11 +9,8 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import java.util.List;
 
-/**
- * @author Anatoliy Chub
- */
 @StateStrategyType(value = SingleStateStrategy.class)
-public interface SearchUserView extends MvpView{
+public interface SearchUserView extends MvpView {
 
     void displayData(List<User> users);
 

@@ -27,16 +27,27 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
     private static final int ITEM_LOGOUT = 3;
-
+    @InjectPresenter
+    NavigationPresenter mPresenter;
     private Drawer mDrawer;
-
     private PrimaryDrawerItem mItemAllChannels;
     private PrimaryDrawerItem mItemInviteNewMember;
     private PrimaryDrawerItem mItemSettings;
     private PrimaryDrawerItem mItemLogout;
 
-    @InjectPresenter
-    NavigationPresenter mPresenter;
+    @Override
+    public void onLogout() {
+        final Intent intent = new Intent(this, ChooseServerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        stopService(WebSocketService.getIntent(this));
+        startActivity(intent);
+    }
+
+    @Override
+    public void startChannelCreating() {
+        startActivity(CreateChannelActivity.getIntent(this));
+        closeDrawer();
+    }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +59,10 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
 
     protected boolean showHamburger() {
         return true;
+    }
+
+    protected void closeDrawer() {
+        mDrawer.closeDrawer();
     }
 
     private void initDrawer() {
@@ -107,10 +122,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         mPresenter.createNewChannel();
     }
 
-    protected void closeDrawer() {
-        mDrawer.closeDrawer();
-    }
-
     private void itemScreen(int id) {
         switch (id) {
             case ITEM_ALL_CHANNELS:
@@ -132,20 +143,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
 
     private void startSettings() {
         startActivity(SettingsActivity.getIntent(this));
-        closeDrawer();
-    }
-
-    @Override
-    public void onLogout() {
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        stopService(WebSocketService.getIntent(this));
-        startActivity(intent);
-    }
-
-    @Override
-    public void startChannelCreating() {
-        startActivity(CreateChannelActivity.getIntent(this));
         closeDrawer();
     }
 }

@@ -23,11 +23,44 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     EditText mEtServerUrl;
     @Bind(R.id.b_proceed)
     Button mBtnProceed;
+    private final TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            final String value = s.toString();
+
+            handleButtonVisibility(value);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
     @Bind(R.id.sp_http)
     Spinner mSpHttp;
-
     @InjectPresenter
     ChooseServerPresenter mPresenter;
+
+    @Override
+    public void showValidationError() {
+        hideLoadingDialog();
+        final String message = getResources().getString(R.string.invalid_server_url);
+        mEtServerUrl.setError(message);
+    }
+
+    @Override
+    public void onValidServerChosen() {
+        hideLoadingDialog();
+        startActivity(LogInActivity.getIntent(this));
+    }
+
+    @Override
+    public void showPresetServer(String url) {
+        mEtServerUrl.setText(url);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,24 +90,6 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         mPresenter.chooseServer(httpPrefix, serverUrl);
     }
 
-    @Override
-    public void showValidationError() {
-        hideLoadingDialog();
-        final String message = getResources().getString(R.string.invalid_server_url);
-        mEtServerUrl.setError(message);
-    }
-
-    @Override
-    public void onValidServerChosen() {
-        hideLoadingDialog();
-        startActivity(LogInActivity.getIntent(this));
-    }
-
-    @Override
-    public void showPresetServer(String url) {
-        mEtServerUrl.setText(url);
-    }
-
     private void disableButton() {
         mBtnProceed.setClickable(false);
         mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient_disabled);
@@ -92,21 +107,4 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
             enableButton();
         }
     }
-
-    private final TextWatcher mTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            final String value = s.toString();
-
-            handleButtonVisibility(value);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-    };
 }

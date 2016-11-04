@@ -21,6 +21,20 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
     private List<Channel> mDataSet = new ArrayList<>();
     private ImageLoader mImageLoader;
     private ClickListener mClickListener = null;
+    private final View.OnClickListener mOnClickListener = v -> {
+        final int position = (Integer) v.getTag();
+
+        final Channel channel = mDataSet.get(position);
+
+        if (mClickListener != null) {
+            mClickListener.onItemClicked(channel);
+        }
+    };
+
+    public interface ClickListener {
+
+        void onItemClicked(Channel channel);
+    }
 
     public ChannelAdapter(ImageLoader imageLoader) {
         super();
@@ -82,22 +96,6 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
             vh.getTvMessage().setText(post.getMessage());
         }
     }
-
-
-    public interface ClickListener {
-
-        void onItemClicked(Channel channel);
-    }
-
-    private final View.OnClickListener mOnClickListener = v -> {
-        final int position = (Integer) v.getTag();
-
-        final Channel channel = mDataSet.get(position);
-
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(channel);
-        }
-    };
 
     /* package */
 

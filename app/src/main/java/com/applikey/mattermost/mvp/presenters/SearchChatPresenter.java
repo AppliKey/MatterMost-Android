@@ -11,10 +11,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
-/**
- * @author Anatoliy Chub
- */
-
 @InjectViewState
 public class SearchChatPresenter extends BasePresenter<SearchChatView> {
 
@@ -25,17 +21,16 @@ public class SearchChatPresenter extends BasePresenter<SearchChatView> {
         App.getComponent().inject(this);
     }
 
-    public void handleUserTextChanges(String text){
+    public void handleUserTextChanges(String text) {
         mBus.post(new SearchUserTextChanged(text));
     }
 
-    public void handleChannelTextChanges(String text){
+    public void handleChannelTextChanges(String text) {
         mBus.post(new SearchChannelTextChanged(text));
     }
 
-    public void handleAllTextChanges(String text){
+    public void handleAllTextChanges(String text) {
         mBus.post(new SearchAllTextChanged(text));
     }
-
 
 }

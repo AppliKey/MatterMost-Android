@@ -17,23 +17,16 @@ import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
- * @author Anatoliy Chub
- */
-
 public abstract class SearchPresenter<T extends MvpView> extends BasePresenter<T> {
 
+    protected boolean mChannelsIsFetched = false;
+    protected List<Channel> mFetchedChannels = new ArrayList<>();
     @Inject
     TeamStorage mTeamStorage;
-
     @Inject
     Api mApi;
 
-    protected boolean mChannelsIsFetched = false;
-
-    protected List<Channel> mFetchedChannels = new ArrayList<>();
-
-    public void requestNotJoinedChannels(){
+    public void requestNotJoinedChannels() {
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .map(Team::getId)
                 .observeOn(Schedulers.io())
@@ -41,18 +34,18 @@ public abstract class SearchPresenter<T extends MvpView> extends BasePresenter<T
                         (id, channelResponse) -> channelResponse)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(channelResponse -> {
-                        mFetchedChannels = channelResponse.getChannels();
-                        mChannelsIsFetched = true;
-                        getData("");
+                    mFetchedChannels = channelResponse.getChannels();
+                    mChannelsIsFetched = true;
+                    getData("");
                 }, ErrorHandler::handleError));
     }
 
     public abstract void getData(String text);
 
-    public List<Channel> addFilterChannels(List<Channel> channels, String text){
-        for(Channel channel : mFetchedChannels){
+    public List<Channel> addFilterChannels(List<Channel> channels, String text) {
+        for (Channel channel : mFetchedChannels) {
             String name = channel.getName();
-            if(!TextUtils.isEmpty(name) && name.contains(text)){
+            if (!TextUtils.isEmpty(name) && name.contains(text)) {
                 channels.add(channel);
             }
         }

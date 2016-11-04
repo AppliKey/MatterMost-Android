@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.fragments.SearchAllFragment;
 import com.applikey.mattermost.fragments.SearchChannelFragment;
 import com.applikey.mattermost.fragments.SearchUserFragment;
@@ -42,6 +43,6 @@ public class SearchChatAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "";
+        return Constants.EMPTY_STRING;
     }
 }

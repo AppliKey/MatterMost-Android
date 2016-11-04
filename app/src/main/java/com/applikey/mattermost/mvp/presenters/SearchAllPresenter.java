@@ -25,9 +25,6 @@ import javax.inject.Named;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-/**
- * @author Anatoliy Chub
- */
 @InjectViewState
 public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
@@ -58,7 +55,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     }
 
     public void getData(String text) {
-        if(!mChannelsIsFetched){
+        if (!mChannelsIsFetched) {
             return;
         }
         final SearchAllView view = getViewState();
@@ -68,7 +65,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
                                 .doOnNext(channels -> addFilterChannels(channels, text)),
                         mUserStorage.searchUsers(text), (items, users) -> {
 
-                            List<SearchItem> searchItemList = new ArrayList<>();
+                            final List<SearchItem> searchItemList = new ArrayList<>();
 
                             for (int i = 0; i < items.size(); i++) {
                                 searchItemList.add(items.get(i));

@@ -6,19 +6,15 @@ import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-/**
- * @author Anatoliy Chub
- */
-
 public interface SearchItem {
-
-
-    @Retention(SOURCE)
-    @IntDef({CHANNEL, USER})
-    @interface Type {}
 
     int USER = 0;
     int CHANNEL = 1;
+    @Retention(SOURCE)
+    @IntDef({CHANNEL, USER})
+    @interface Type {
+
+    }
 
     @Type
     int getSearchType();

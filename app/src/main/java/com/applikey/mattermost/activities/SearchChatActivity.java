@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchChatAdapter;
 import com.applikey.mattermost.events.SearchTabIndicatorRequested;
@@ -36,10 +37,6 @@ import butterknife.OnTextChanged;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class SearchChatActivity extends BaseMvpActivity implements SearchChatView {
 
     private static final String TAG = SearchChatActivity.class.getSimpleName();
@@ -47,7 +44,8 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     private static final int ALL_FRAGMENT = 0;
     private static final int CHANNEL_FRAGMENT = 1;
     private static final int USER_FRAGMENT = 2;
-
+    private final TabIndicatorModel
+            mTabIndicatorModel = new TabIndicatorModel();
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
     @Bind(R.id.view_pager)
@@ -58,15 +56,11 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     RobotoEditText mEtSearch;
     @Bind(R.id.btn_clear_search)
     ImageButton mBtnClearSearch;
-
     @InjectPresenter
     SearchChatPresenter mSearchChatPresenter;
-
-    private String mSearchText = "";
-
-    private SearchChatAdapter mPagerAdapter;
-
-    private final ViewPager.OnPageChangeListener mOnPageChangeListener = new ViewPager.OnPageChangeListener() {
+    private String mSearchText = Constants.EMPTY_STRING;
+    private final ViewPager.OnPageChangeListener mOnPageChangeListener
+            = new ViewPager.OnPageChangeListener() {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -84,9 +78,10 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         }
 
     };
+    private SearchChatAdapter mPagerAdapter;
 
-    public static void startActivity(Context context) {
-        context.startActivity(new Intent(context, SearchChatActivity.class));
+    public static Intent getIntent(Context context) {
+        return new Intent(context, SearchChatActivity.class);
     }
 
     @Override
@@ -95,10 +90,27 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
 
         setContentView(R.layout.activity_search_chat);
 
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
         ButterKnife.bind(this);
 
         initView();
+    }
+
+    @Subscribe
+    public void on(SearchTabIndicatorRequested event) {
+        mTabIndicatorModel.handleEvent(event);
+    }
+
+    @OnTextChanged(R.id.et_search)
+    public void onTextChanged(CharSequence text) {
+        Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
+        mSearchText = text.toString();
+        onContentChanged(mSearchText, mTabLayout.getSelectedTabPosition());
+    }
+
+    @OnClick(R.id.btn_clear_search)
+    public void onClearSearchClicked() {
+        mEtSearch.setText(null);
     }
 
     private void initView() {
@@ -125,10 +137,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         }
 
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(v -> {
-            Log.d(TAG, "finish: ");
-            finish();
-        });
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         setTitle(null);
 
         final TabSelectedListener
@@ -138,35 +147,18 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         mViewPager.addOnPageChangeListener(mOnPageChangeListener);
     }
 
-    @Subscribe
-    public void on(SearchTabIndicatorRequested event) {
-        mTabIndicatorModel.handleEvent(event);
-    }
-
-    @OnTextChanged(R.id.et_search)
-    public void onTextChanged(CharSequence text){
-        Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
-        mSearchText = text.toString();
-        onContentChanged(mSearchText, mTabLayout.getSelectedTabPosition());
-    }
-
-    private void onContentChanged(String text, int tabPosition){
-        switch (tabPosition){
-            case USER_FRAGMENT :
+    private void onContentChanged(String text, int tabPosition) {
+        switch (tabPosition) {
+            case USER_FRAGMENT:
                 mSearchChatPresenter.handleUserTextChanges(text);
                 break;
-            case CHANNEL_FRAGMENT :
+            case CHANNEL_FRAGMENT:
                 mSearchChatPresenter.handleChannelTextChanges(text);
                 break;
             case ALL_FRAGMENT:
                 mSearchChatPresenter.handleAllTextChanges(text);
                 break;
         }
-    }
-
-    @OnClick(R.id.btn_clear_search)
-    public void onClearSearchClicked(){
-        mEtSearch.setText(null);
     }
 
     private class SearchTabSelectedListener extends TabSelectedListener {
@@ -193,6 +185,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         }
     }
 
+    // TODO: 04.11.16 REFACTOR AND EXTRACT IF POSSIBLE
     private class TabIndicatorModel {
 
         private final Object mutex = new Object();
@@ -224,8 +217,5 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
             }
         }
     }
-
-    private final TabIndicatorModel
-            mTabIndicatorModel = new TabIndicatorModel();
 
 }

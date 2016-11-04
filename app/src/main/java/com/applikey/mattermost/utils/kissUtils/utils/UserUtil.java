@@ -9,11 +9,10 @@ package com.applikey.mattermost.utils.kissUtils.utils;
 public class UserUtil {
 
     public static final String TAG = "UserUtil";
+    private static String userId;
 
     private UserUtil() {
     }
-
-    private static String userId;
 
     public static String getUserId() {
         return userId;

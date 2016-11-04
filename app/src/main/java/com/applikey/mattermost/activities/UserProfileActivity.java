@@ -65,15 +65,6 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_profile);
-        ButterKnife.bind(this);
-        initViews();
-        initParameters();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.NONE, MENU_ITEM_FAVORITE, Menu.NONE, R.string.make_favorite)
                 .setIcon(R.drawable.ic_favorite_uncheck)
@@ -93,6 +84,36 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         }
     }
 
+    @Override
+    public void showBaseDetails(User user) {
+        mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
+        mDisplayName.setText(user.toString());
+        mEmail.setText(User.getDisplayableName(user));
+        setStatusIcon(user);
+    }
+
+    @Override
+    public void onMakeChannelFavorite(boolean favorite) {
+        final int iconRes = favorite
+                ? R.drawable.ic_favorite_check
+                : R.drawable.ic_favorite_uncheck;
+        mMenu.getItem(0).setIcon(iconRes);
+    }
+
+    @Override
+    public void openDirectChannel(Channel channel) {
+        startActivity(ChatActivity.getIntent(this, channel));
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_profile);
+        ButterKnife.bind(this);
+        initViews();
+        initParameters();
+    }
+
     private void initViews() {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle(null);
@@ -105,27 +126,8 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         mPresenter.getInitialData(userId);
     }
 
-    @Override
-    public void showBaseDetails(User user) {
-        mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
-        mDisplayName.setText(user.toString());
-        mEmail.setText(User.getDisplayableName(user));
-        setStatusIcon(user);
-    }
-
     private void setStatusIcon(User user) {
         final User.Status status = User.Status.from(user.getStatus());
         mStatus.setImageResource(status.getDrawableId());
-    }
-
-    @Override
-    public void onMakeChannelFavorite(boolean favorite) {
-        final int iconRes = favorite ? R.drawable.ic_favorite_check : R.drawable.ic_favorite_uncheck;
-        mMenu.getItem(0).setIcon(iconRes);
-    }
-
-    @Override
-    public void openDirectChannel(Channel channel) {
-        startActivity(ChatActivity.getIntent(this, channel));
     }
 }

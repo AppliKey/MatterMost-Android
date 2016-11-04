@@ -1,6 +1,7 @@
 package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.activities.SearchChatActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelDetailsPresenter;
@@ -15,13 +16,21 @@ import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
-
 import com.applikey.mattermost.platform.WebSocketService;
+
 import dagger.Subcomponent;
 
 @PerUser
 @Subcomponent(modules = UserModule.class)
 public interface UserComponent {
+
+    @Subcomponent.Builder
+    interface Builder {
+
+        UserComponent.Builder userModule(UserModule userModule);
+
+        UserComponent build();
+    }
 
     void inject(ChatActivity activity);
 
@@ -51,14 +60,9 @@ public interface UserComponent {
 
     void inject(SearchUserPresenter searchUserPresenter);
 
-    @Subcomponent.Builder
-    interface Builder {
-        UserComponent.Builder userModule(UserModule userModule);
-
-        UserComponent build();
-    }
-
     void inject(SearchChannelPresenter searchChannelPresenter);
 
     void inject(SearchAllPresenter searchAllPresenter);
+
+    void inject(SearchChatActivity searchChatActivity);
 }

@@ -10,9 +10,6 @@ import com.applikey.mattermost.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * @author Anatoliy Chub
- */
 
 public class UserViewHolder extends RecyclerView.ViewHolder {
 

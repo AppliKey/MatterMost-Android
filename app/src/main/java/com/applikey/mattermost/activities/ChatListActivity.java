@@ -40,58 +40,30 @@ import static android.view.View.VISIBLE;
 
 public class ChatListActivity extends DrawerActivity implements ChatListScreenView {
 
+    private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
     @InjectPresenter
     ChatListScreenPresenter mPresenter;
-
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-
     @Bind(R.id.tabs)
     TabLayout mTabLayout;
-
     @Bind(R.id.vpChatList)
     ViewPager mViewPager;
-
     private ChatListPagerAdapter mChatListPagerAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_chat_list);
-        ButterKnife.bind(this);
-        initView();
-        mEventBus.register(this);
-
-        startService(WebSocketService.getIntent(this));
-        onNewIntent(getIntent());
+    public void setToolbarTitle(String title) {
+        mToolbar.setTitle(title);
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        final Bundle bundle = getIntent().getBundleExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY);
-        if (bundle != null) {
-            final String channelId = bundle.getString(NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
-            if (channelId != null) {
-                mPresenter.preloadChannel(channelId);
-            }
-        }
+    public void onChannelLoaded(Channel channel) {
+        startActivity(ChatActivity.getIntent(this, channel));
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (mChatListPagerAdapter == null) {
-            mPresenter.initPages();
-        } else {
-            mPresenter.checkSettingChanges();
-        }
-    }
-
-    @Override
-    protected Toolbar getToolbar() {
-        return mToolbar;
+    public void stopWebSocketService() {
+        stopService(WebSocketService.getIntent(this));
     }
 
     @Override
@@ -117,25 +89,11 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
                 }
             }
         }
-        final TabSelectedListener mOnTabSelectedListener = new ChatListTabSelectedListener(mViewPager);
+        final TabSelectedListener mOnTabSelectedListener = new ChatListTabSelectedListener(
+                mViewPager);
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
-    }
-
-    private void initView() {
-        mPresenter.applyInitialViewState();
-        setSupportActionBar(mToolbar);
-    }
-
-    @Override
-    public void setToolbarTitle(String title) {
-        mToolbar.setTitle(title);
-    }
-
-    @Override
-    public void onChannelLoaded(Channel channel) {
-        startActivity(ChatActivity.getIntent(this, channel));
     }
 
     @Override
@@ -146,28 +104,16 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_search:
                 SearchChatActivity.startActivity(this);
         }
         return false;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPresenter.unSubscribe();
-        mEventBus.unregister(this);
-    }
-
     @Subscribe
     public void on(TabIndicatorRequested event) {
         mTabIndicatorModel.handleEvent(event);
-    }
-
-    @Override
-    public void stopWebSocketService() {
-        stopService(WebSocketService.getIntent(this));
     }
 
     public static Intent getIntent(Context context) {
@@ -180,6 +126,60 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         final Intent intent = getIntent(context);
         intent.putExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY, bundle);
         return intent;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_chat_list);
+        ButterKnife.bind(this);
+        initView();
+        mEventBus.register(this);
+
+        startService(WebSocketService.getIntent(this));
+        onNewIntent(getIntent());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.unSubscribe();
+        mEventBus.unregister(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        final Bundle bundle = getIntent().getBundleExtra(
+                NotificationManager.NOTIFICATION_BUNDLE_KEY);
+        if (bundle != null) {
+            final String channelId = bundle.getString(
+                    NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
+            if (channelId != null) {
+                mPresenter.preloadChannel(channelId);
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mChatListPagerAdapter == null) {
+            mPresenter.initPages();
+        } else {
+            mPresenter.checkSettingChanges();
+        }
+    }
+
+    @Override
+    protected Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    private void initView() {
+        mPresenter.applyInitialViewState();
+        setSupportActionBar(mToolbar);
     }
 
     private class ChatListTabSelectedListener extends TabSelectedListener {
@@ -205,8 +205,6 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
             return unSelectedTabColor;
         }
     }
-
-    private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
 
     private class TabIndicatorModel {
 

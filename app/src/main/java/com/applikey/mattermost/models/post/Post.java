@@ -15,37 +15,29 @@ public class Post extends RealmObject {
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
-
+    public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
+            -> o2.getPriority() - o1.getPriority();
     @PrimaryKey
     @SerializedName("id")
     private String id;
-
     @SerializedName("channel_id")
     private String channelId;
-
     @Nullable
     @SerializedName("root_id")
     private String rootId;
-
     @Nullable
     private Post rootPost;
-
     @Nullable
     @SerializedName("parent_id")
     private String parentId;
-
     @SerializedName("create_at")
     private long createdAt;
-
     @SerializedName("user_id")
     private String userId;
-
     @SerializedName("message")
     private String message;
-
     // Application-specific fields
     private int priority;
-
     private User author;
 
     public String getId() {
@@ -114,9 +106,6 @@ public class Post extends RealmObject {
         this.rootId = rootId;
     }
 
-    public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
-            -> o2.getPriority() - o1.getPriority();
-
     public User getAuthor() {
         return author;
     }
@@ -132,6 +121,18 @@ public class Post extends RealmObject {
 
     public void setRootPost(@Nullable Post rootPost) {
         this.rootPost = rootPost;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getChannelId().hashCode();
+        result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
+        result = 31 * result + getUserId().hashCode();
+        result = 31 * result + getMessage().hashCode();
+        result = 31 * result + getPriority();
+        result = 31 * result + (getAuthor() != null ? getAuthor().hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -159,18 +160,8 @@ public class Post extends RealmObject {
             return false;
         if (!getMessage().equals(post.getMessage()))
             return false;
-        return getAuthor() != null ? getAuthor().equals(post.getAuthor()) : post.getAuthor() == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getId().hashCode();
-        result = 31 * result + getChannelId().hashCode();
-        result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
-        result = 31 * result + getUserId().hashCode();
-        result = 31 * result + getMessage().hashCode();
-        result = 31 * result + getPriority();
-        result = 31 * result + (getAuthor() != null ? getAuthor().hashCode() : 0);
-        return result;
+        return getAuthor() != null
+                ? getAuthor().equals(post.getAuthor())
+                : post.getAuthor() == null;
     }
 }

@@ -23,7 +23,8 @@ public class UserStorage {
         mDb.saveTransactional(directProfiles.values());
     }
 
-    public void saveUsersStatuses(Map<String, User> directProfiles, Map<String, String> userStatuses) {
+    public void saveUsersStatuses(Map<String, User> directProfiles,
+            Map<String, String> userStatuses) {
         addStatusData(directProfiles, userStatuses);
         mDb.saveTransactional(directProfiles.values());
     }
@@ -40,8 +41,15 @@ public class UserStorage {
         return mDb.getObjectQualified(User.class, User.FIELD_USERNAME, userName);
     }
 
-    public Observable<List<User>> searchUsers(String text){
-        return mDb.listRealmObjectsFiltered(User.class, text, new String[]{User.FIRST_NAME, User.LAST_NAME, User.USER_NAME});
+    public Observable<List<User>> searchUsers(String text) {
+        return mDb.listRealmObjectsFiltered(User.class, text,
+                new String[] {User.FIRST_NAME, User.LAST_NAME, User.USER_NAME});
+    }
+
+    public Observable<List<User>> findUsers(List<String> ids) {
+        String[] idsArray = new String[ids.size()];
+        idsArray = ids.toArray(idsArray);
+        return mDb.getObjectsQualifiedWithCopy(User.class, User.FIELD_NAME_ID, idsArray);
     }
 
     private void addImagePathInfo(Map<String, User> users) {
@@ -56,11 +64,5 @@ public class UserStorage {
             user.setStatus(status != null ? User.Status.from(status).ordinal() :
                     User.Status.OFFLINE.ordinal());
         }
-    }
-
-    public Observable<List<User>> findUsers(List<String> ids) {
-        String[] idsArray = new String[ids.size()];
-        idsArray = ids.toArray(idsArray);
-        return mDb.getObjectsQualifiedWithCopy(User.class, User.FIELD_NAME_ID, idsArray);
     }
 }

@@ -8,11 +8,8 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import java.util.List;
 
-/**
- * @author Anatoliy Chub
- */
 @StateStrategyType(value = SingleStateStrategy.class)
-public interface SearchAllView extends MvpView{
+public interface SearchAllView extends MvpView {
 
     void displayData(List<SearchItem> items);
 

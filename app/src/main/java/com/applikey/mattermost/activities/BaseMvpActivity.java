@@ -1,7 +1,6 @@
 package com.applikey.mattermost.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.arellomobile.mvp.MvpDelegate;
 
@@ -14,11 +13,25 @@ public abstract class BaseMvpActivity extends BaseActivity {
 
     private MvpDelegate<? extends BaseMvpActivity> mMvpDelegate;
 
+    public MvpDelegate getMvpDelegate() {
+        if (mMvpDelegate == null) {
+            mMvpDelegate = new MvpDelegate<>(this);
+        }
+        return mMvpDelegate;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getMvpDelegate().onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        getMvpDelegate().onAttach();
     }
 
     @Override
@@ -42,19 +55,5 @@ public abstract class BaseMvpActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
 
         getMvpDelegate().onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        getMvpDelegate().onAttach();
-    }
-
-    public MvpDelegate getMvpDelegate() {
-        if (mMvpDelegate == null) {
-            mMvpDelegate = new MvpDelegate<>(this);
-        }
-        return mMvpDelegate;
     }
 }

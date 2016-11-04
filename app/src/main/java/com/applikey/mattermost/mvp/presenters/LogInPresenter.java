@@ -104,7 +104,8 @@ public class LogInPresenter extends BasePresenter<LogInView> {
             mSubscription.add(mApi.attachDevice(request)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(result -> getViewState().onSuccessfulAuth(), ErrorHandler::handleError));
+                    .subscribe(result -> getViewState().onSuccessfulAuth(),
+                            ErrorHandler::handleError));
             return;
         }
 

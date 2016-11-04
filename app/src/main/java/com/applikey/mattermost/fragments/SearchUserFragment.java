@@ -14,10 +14,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.List;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class SearchUserFragment extends SearchFragment implements SearchUserView,
         UserAdapter.ClickListener {
 
@@ -32,38 +28,24 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
         return new SearchUserFragment();
     }
 
-
-    @Override
-    protected int getLayout() {
-        return R.layout.fragment_search_chat;
-    }
-
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-        getPresenter().getData("");
+        mPresenter.getData("");
     }
 
     @Override
     public void onItemClicked(User user) {
         Log.d(TAG, "onItemClicked: ");
-        getPresenter().handleUserClick(user);
-    }
-
-    private void initView() {
-        mUserAdapter = new UserAdapter(mImageLoader);
-        mUserAdapter.setOnClickListener(this);
-        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecycleView.setAdapter(mUserAdapter);
+        mPresenter.handleUserClick(user);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        getPresenter().unSubscribe();
+        mPresenter.unSubscribe();
     }
 
     @Override
@@ -72,17 +54,21 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
         mUserAdapter.setDataSet(users);
     }
 
-    protected SearchUserPresenter getPresenter() {
-        if (mPresenter == null) {
-            throw new RuntimeException("Presenter is null");
-        }
-        return mPresenter;
+    @Override
+    public void clearData() {
+        mUserAdapter.clear();
     }
 
-
     @Override
-    public void clearData(){
-        mUserAdapter.clear();
+    protected int getLayout() {
+        return R.layout.fragment_search_chat;
+    }
+
+    private void initView() {
+        mUserAdapter = new UserAdapter(mImageLoader);
+        mUserAdapter.setOnClickListener(this);
+        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecycleView.setAdapter(mUserAdapter);
     }
 
 }

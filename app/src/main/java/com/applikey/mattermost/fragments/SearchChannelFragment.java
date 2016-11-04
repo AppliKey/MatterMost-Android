@@ -17,10 +17,6 @@ import java.util.List;
 
 import butterknife.Bind;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class SearchChannelFragment extends SearchFragment implements SearchChannelView,
         ChannelAdapter.ClickListener {
 
@@ -38,41 +34,26 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
         return new SearchChannelFragment();
     }
 
-
-
-    @Override
-    protected int getLayout() {
-        return R.layout.fragment_search_chat;
-    }
-
-
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
         Log.d(TAG, "onViewCreated: ");
-        getPresenter().requestNotJoinedChannels();
-        getPresenter().getData("");
+        mPresenter.requestNotJoinedChannels();
+        mPresenter.getData("");
     }
 
     @Override
     public void onItemClicked(Channel channel) {
         Log.d(TAG, "onItemClicked: ");
-        getPresenter().handleChannelClick(channel);
-    }
-
-    private void initView() {
-        mChannelAdapter = new ChannelAdapter(mImageLoader);
-        mChannelAdapter.setOnClickListener(this);
-        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecycleView.setAdapter(mChannelAdapter);
+        mPresenter.handleChannelClick(channel);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        getPresenter().unSubscribe();
+        mPresenter.unSubscribe();
     }
 
     @Override
@@ -81,17 +62,21 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
         mChannelAdapter.setDataSet(channels);
     }
 
-    protected SearchChannelPresenter getPresenter() {
-        if (mPresenter == null) {
-            throw new RuntimeException("Presenter is null");
-        }
-        return mPresenter;
+    @Override
+    public void clearData() {
+        mChannelAdapter.clear();
     }
 
-
     @Override
-    public void clearData(){
-        mChannelAdapter.clear();
+    protected int getLayout() {
+        return R.layout.fragment_search_chat;
+    }
+
+    private void initView() {
+        mChannelAdapter = new ChannelAdapter(mImageLoader);
+        mChannelAdapter.setOnClickListener(this);
+        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecycleView.setAdapter(mChannelAdapter);
     }
 
 }
