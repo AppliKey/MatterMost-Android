@@ -10,6 +10,7 @@ import com.applikey.mattermost.adapters.viewholders.ChannelViewHolder;
 import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
 
@@ -66,6 +67,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             viewHolder.getChannelName().setText(data.getDisplayName());
 
             setChannelIcon(viewHolder, data);
+            setMessage(viewHolder, data);
 
             viewHolder.getRoot().setTag(position);
         } else if(searchType == SearchItem.USER){
@@ -110,6 +112,13 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final String previewImagePath = element.getProfileImage();
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
             mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
+        }
+    }
+
+    private void setMessage(ChannelViewHolder vh, Channel channel) {
+        final Post post = channel.getLastPost();
+        if (post != null) {
+            vh.getTvMessage().setText(post.getMessage());
         }
     }
 

@@ -69,4 +69,7 @@ public class ChannelViewHolder extends RecyclerView.ViewHolder {
         return mTvChannelName;
     }
 
+    public TextView getTvMessage() {
+        return mTvMessage;
+    }
 }

@@ -62,7 +62,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     @InjectPresenter
     SearchChatPresenter mSearchChatPresenter;
 
-    private String mSearchText;
+    private String mSearchText = "";
 
     private SearchChatAdapter mPagerAdapter;
 
@@ -82,6 +82,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         public void onPageScrollStateChanged(int state) {
 
         }
+
     };
 
     public static void startActivity(Context context) {

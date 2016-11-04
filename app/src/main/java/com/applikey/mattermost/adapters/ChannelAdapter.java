@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.viewholders.ChannelViewHolder;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
         vh.getChannelName().setText(data.getDisplayName());
 
         setChannelIcon(vh, data);
+        setMessage(vh, position);
 
         vh.getRoot().setTag(position);
     }
@@ -71,6 +73,14 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
 
     private void setChannelIcon(ChannelViewHolder viewHolder, Channel element) {
 
+    }
+
+    private void setMessage(ChannelViewHolder vh, int position) {
+        final Channel channel = mDataSet.get(position);
+        final Post post = channel.getLastPost();
+        if (post != null) {
+            vh.getTvMessage().setText(post.getMessage());
+        }
     }
 
 
