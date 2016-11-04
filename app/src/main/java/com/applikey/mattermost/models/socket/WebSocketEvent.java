@@ -17,6 +17,7 @@ public class WebSocketEvent {
     @SerializedName("event")
     private String event;
 
+    // Mattermost v3.2 backport
     @SerializedName("action")
     private String action;
 
@@ -25,6 +26,9 @@ public class WebSocketEvent {
      */
     @SerializedName("data")
     private JsonObject data;
+
+    @SerializedName("props")
+    private JsonObject props;
 
     public String getTeamId() {
         return teamId;
@@ -48,5 +52,9 @@ public class WebSocketEvent {
 
     public JsonObject getData() {
         return data;
+    }
+
+    public JsonObject getProps() {
+        return props;
     }
 }

@@ -12,6 +12,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
+import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
@@ -20,6 +21,7 @@ import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -169,8 +171,16 @@ public class WebSocketService extends Service {
     }
 
     private Post extractPostFromSocket(Gson gson, WebSocketEvent event) {
-        final MessagePostedEventData data = gson.fromJson(event.getData(), MessagePostedEventData.class);
-        final String postObject = data.getPostObject();
+        final JsonObject eventData = event.getData();
+        String postObject;
+        if (eventData != null) {
+            final MessagePostedEventData data = gson.fromJson(eventData, MessagePostedEventData.class);
+            postObject = data.getPostObject();
+        } else {
+            final JsonObject eventProps = event.getProps();
+            final Props props = gson.fromJson(eventProps, Props.class);
+            postObject = props.getPost();
+        }
         return gson.fromJson(postObject, Post.class);
     }
 
