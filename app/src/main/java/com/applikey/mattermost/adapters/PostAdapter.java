@@ -37,12 +37,12 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private int mNewMessageIndicatorPosition = -1;
 
     public PostAdapter(Context context,
-                       RealmResults<Post> posts,
-                       String currentUserId,
-                       ImageLoader imageLoader,
-                       Channel.ChannelType channelType,
-                       long lastViewed,
-                       OnLongClickListener onLongClickListener) {
+            RealmResults<Post> posts,
+            String currentUserId,
+            ImageLoader imageLoader,
+            Channel.ChannelType channelType,
+            long lastViewed,
+            OnLongClickListener onLongClickListener) {
         super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
@@ -175,7 +175,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         private void bind(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime) {
             mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
-            mTvName.setText(post.getAuthor().toString());
+            mTvName.setText(User.getDisplayableName(post.getAuthor()));
             mTvMessage.setText(post.getMessage());
 
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
@@ -196,7 +196,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
 
         void toggleDate(Post post) {
             final String time;
-            if (mTvTimestamp.length() > 8) {
+            if (mTvTimestamp.length() > TimeUtil.DEFAULT_FORMAT_TIME_ONLY.length()) {
                 time = TimeUtil.formatTimeOnly(post.getCreatedAt());
             } else {
                 time = TimeUtil.formatDateTime(post.getCreatedAt());
@@ -206,7 +206,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOwnPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
-                         OnLongClickListener onLongClickListener) {
+                OnLongClickListener onLongClickListener) {
             bind(channelType, post, showAuthor, showTime);
 
             itemView.setOnLongClickListener(v -> {
@@ -217,7 +217,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOtherPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
-                           ImageLoader imageLoader, OnLongClickListener onLongClickListener) {
+                ImageLoader imageLoader, OnLongClickListener onLongClickListener) {
             bind(channelType, post, showAuthor, showTime);
 
             final User author = post.getAuthor();
