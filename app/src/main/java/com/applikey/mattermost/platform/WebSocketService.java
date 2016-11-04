@@ -150,8 +150,7 @@ public class WebSocketService extends Service {
                 mHandler.post(() -> {
                     mPostStorage.save(post);
 
-                    mChannelStorage
-                            .findByIdAndCopy(post.getChannelId())
+                    mChannelStorage.findByIdAndCopy(post.getChannelId())
                             .first()
                             .doOnNext(channel -> {
                                 channel.setLastPost(post);
@@ -172,7 +171,7 @@ public class WebSocketService extends Service {
 
     private Post extractPostFromSocket(Gson gson, WebSocketEvent event) {
         final JsonObject eventData = event.getData();
-        String postObject;
+        final String postObject;
         if (eventData != null) {
             final MessagePostedEventData data = gson.fromJson(eventData, MessagePostedEventData.class);
             postObject = data.getPostObject();
