@@ -9,6 +9,7 @@ import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
+import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 
@@ -32,7 +33,9 @@ public interface UserComponent {
 
     void inject(BaseChatListFragment fragment);
 
-    void inject(CreateChannelPresenter createChannelPresenter);
+    void inject(CreateChannelPresenter presenter);
+
+    void inject(SettingsPresenter presenter);
 
     void inject(ChannelDetailsPresenter channelDetailsPresenter);
 

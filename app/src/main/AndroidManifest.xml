@@ -58,7 +58,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.AddedMembersActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.SettingsActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.ChannelDetailsActivity"
             android:launchMode="singleTask"

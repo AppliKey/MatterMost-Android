@@ -8,6 +8,7 @@
     <dimen name="text_welcome_heading_size">24sp</dimen>
     <dimen name="text_heading_padding">8dp</dimen>
     <dimen name="text_primary_button">16sp</dimen>
+    <dimen name="settings_element_text_size">18sp</dimen>
 
     <dimen name="edit_text_bottom_padding">20dp</dimen>
     <dimen name="edit_text_push_right">4dp</dimen>
@@ -87,4 +88,6 @@
     <!--drawer-->
     <dimen name="material_drawer_item_primary_text">@dimen/drawer_item_text_size</dimen>
 
+    <dimen name="settings_element_height">56dp</dimen>
+    <dimen name="margin_settings_elements">1dp</dimen>
 </resources>

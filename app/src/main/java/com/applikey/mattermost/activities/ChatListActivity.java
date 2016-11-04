@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +28,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -49,17 +51,15 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Bind(R.id.vpChatList)
     ViewPager mViewPager;
 
+    private ChatListPagerAdapter mChatListPagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
-
         ButterKnife.bind(this);
-
         initView();
-
         mEventBus.register(this);
-
         onNewIntent(getIntent());
     }
 
@@ -68,11 +68,20 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         super.onNewIntent(intent);
         final Bundle bundle = getIntent().getBundleExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY);
         if (bundle != null) {
-            String channelId = bundle.getString(NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
-
+            final String channelId = bundle.getString(NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
             if (channelId != null) {
                 mPresenter.preloadChannel(channelId);
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mChatListPagerAdapter == null) {
+            mPresenter.initPages();
+        } else {
+            mPresenter.checkSettingChanges();
         }
     }
 
@@ -81,33 +90,37 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         return mToolbar;
     }
 
-    private void initView() {
-        mPresenter.applyInitialViewState();
-
-        mViewPager.setAdapter(new ChatListPagerAdapter(getSupportFragmentManager()));
-
-        mTabLayout.setupWithViewPager(mViewPager);
+    @Override
+    public void initViewPager(List<Fragment> pages) {
+        mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), pages);
+        mViewPager.setAdapter(mChatListPagerAdapter);
+        mChatListPagerAdapter.notifyDataSetChanged();
+        mTabLayout.setupWithViewPager(mViewPager, false);
+        final int offset = mPresenter.shouldShowUnreadTab() ? 0 : 1;
         final int tabCount = mTabLayout.getTabCount();
         for (int i = 0; i < tabCount; i++) {
             final TabLayout.Tab tab = mTabLayout.getTabAt(i);
+            final int tabIconIndex = i + offset;
             if (tab != null) {
                 tab.setCustomView(R.layout.tab_chat_list);
-                tab.setIcon(TabBehavior.getItemBehavior(i).getIcon());
+                tab.setIcon(TabBehavior.getItemBehavior(tabIconIndex).getIcon());
 
                 final View customTab = tab.getCustomView();
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
-                    mTabIndicatorModel.register(TabBehavior.values()[i + 1],
+                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(tabIconIndex),
                             (ImageView) notificationIcon);
                 }
             }
         }
-
         final TabSelectedListener mOnTabSelectedListener = new TabSelectedListener(mViewPager);
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
-        mViewPager.setOffscreenPageLimit(tabCount - 1);
+        mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
+    }
 
+    private void initView() {
+        mPresenter.applyInitialViewState();
         setSupportActionBar(mToolbar);
     }
 
@@ -130,7 +143,6 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         mPresenter.unSubscribe();
         mEventBus.unregister(this);
     }
