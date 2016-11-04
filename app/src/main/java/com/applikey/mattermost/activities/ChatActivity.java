@@ -92,7 +92,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
-    private String mOriginalId;
+    private String mRootId;
 
     private String mChannelId;
     private String mChannelName;
@@ -207,10 +207,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @OnClick(R.id.iv_send_message)
     public void onSend() {
-        if (mOriginalId == null) {
+        if (mRootId == null) {
             mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
         } else {
-            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mOriginalId);
+            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
         }
     }
 
@@ -250,7 +250,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mLlReply.setVisibility(GONE);
         mViewReplySeparator.setVisibility(GONE);
         mTvReplyMessage.setText(null);
-        mOriginalId = null;
+        mRootId = null;
     }
 
     private void setToolbarText() {
@@ -317,7 +317,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private void replyMessage(Post post) {
         displayReply();
         mTvReplyMessage.setText(post.getMessage());
-        mOriginalId = post.getId();
+        mRootId = post.getId();
     }
 
     private void initParameters() {

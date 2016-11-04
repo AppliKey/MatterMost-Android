@@ -25,8 +25,8 @@ public class PendingPost {
     @SerializedName("pending_post_id")
     private String pendingPostId;
 
-    @SerializedName("original_id")
-    private String originalId;
+    @SerializedName("parent_id")
+    private String parentId;
 
     @SerializedName("root_id")
     private String rootId;
@@ -49,10 +49,10 @@ public class PendingPost {
     }
 
     public PendingPost(long createdAt, String userId, String channelId, String message, String type,
-                       String pendingPostId, String originalId) {
+                       String pendingPostId, String parentId, String rootId) {
         this(createdAt, userId, channelId, message, type, pendingPostId);
-        this.originalId = originalId;
-        this.rootId = originalId;
+        this.parentId = parentId;
+        this.rootId = rootId;
     }
 
     public void setId(String id) {
