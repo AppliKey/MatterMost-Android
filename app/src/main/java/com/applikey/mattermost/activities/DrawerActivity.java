@@ -12,6 +12,7 @@ import android.view.View;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
+import com.applikey.mattermost.platform.WebSocketService;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.util.RobotoTypefaceManager;
 import com.mikepenz.materialdrawer.Drawer;
@@ -126,6 +127,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     public void onLogout() {
         final Intent intent = new Intent(this, ChooseServerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        stopService(WebSocketService.getIntent(this));
         startActivity(intent);
     }
 

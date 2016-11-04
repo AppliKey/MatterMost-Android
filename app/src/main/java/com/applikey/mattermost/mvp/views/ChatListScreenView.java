@@ -14,8 +14,6 @@ public interface ChatListScreenView extends MvpView {
     @StateStrategyType(value = SkipStrategy.class)
     void onChannelLoaded(Channel channel);
 
-    void logout();
-
     /**
      * Platform-specific. We call it explicitly to separate this logic from logout.
      */
