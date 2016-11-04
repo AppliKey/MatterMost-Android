@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.post.Post;
@@ -24,8 +25,9 @@ import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
-import javax.inject.Inject;
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 public class WebSocketService extends Service {
 
@@ -140,7 +142,7 @@ public class WebSocketService extends Service {
                 Log.d(TAG, "Post message: " + post.getMessage());
 
                 mHandler.post(() -> {
-                    mPostStorage.update(post);
+                    mPostStorage.save(post);
 
                     mChannelStorage
                             .findByIdAndCopy(post.getChannelId())
