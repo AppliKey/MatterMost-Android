@@ -22,6 +22,7 @@ public class TimeUtil {
 
     public static final String DEFAULT_FORMAT_TIME_ONLY = "hh:mm aa";
     public static final String DEFAULT_FORMAT_DATE_ONLY = "dd, MMMM yyyy";
+    public static final String CHANNEL_DATE_FORMAT = "d.MM.yyyy";
     public static final String DEFAULT_FORMAT_DATE_TIME = "hh:mm aa, dd, MMMM yyyy";
     public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
@@ -37,7 +38,7 @@ public class TimeUtil {
         final SimpleDateFormat sdf = new SimpleDateFormat(format);
         long modified = 0;
         try {
-            Date date = sdf.parse(time);
+            final Date date = sdf.parse(time);
             modified = date.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
@@ -63,6 +64,12 @@ public class TimeUtil {
         return sdf.format(date);
     }
 
+    public static String formatDateOnlyChannel(long time) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(CHANNEL_DATE_FORMAT);
+        final Date date = new Date(time);
+        return sdf.format(date);
+    }
+
     public static String formatDateTime(long time) {
         final SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_FORMAT_DATE_TIME);
         final Date date = new Date(time);
@@ -79,6 +86,19 @@ public class TimeUtil {
             return formatTimeOnly(time);
         } else {
             return formatDateTime(time);
+        }
+    }
+
+    public static String formatTimeOrDateOnlyChannel(long time) {
+        final Date now = new Date();
+
+        final boolean sameDay = time / MILLISECONDS_IN_DAY ==
+                now.getTime() / MILLISECONDS_IN_DAY;
+
+        if (sameDay) {
+            return formatTimeOnly(time);
+        } else {
+            return formatDateOnlyChannel(time);
         }
     }
 
