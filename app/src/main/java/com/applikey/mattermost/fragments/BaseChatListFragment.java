@@ -32,7 +32,6 @@ import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.realm.OrderedRealmCollection;
 import io.realm.RealmResults;
 
 public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
@@ -65,6 +64,12 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
         App.getUserComponent().inject(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPresenter().displayData();
     }
 
     @Nullable
