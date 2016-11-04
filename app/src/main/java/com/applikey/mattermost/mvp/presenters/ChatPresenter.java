@@ -144,7 +144,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void sendMessage(String channelId, String message) {
-        if (TextUtils.isEmpty(message)) {
+        if (TextUtils.isEmpty(message.trim())) {
             return;
         }
         final String currentUserId = mPrefs.getCurrentUserId();
