@@ -154,7 +154,6 @@ public class WebSocketService extends Service {
                             .first()
                             .doOnNext(channel -> {
                                 channel.setLastPost(post);
-                                channel.setLastPostAt(post.getCreatedAt());
                                 mChannelStorage.updateLastPost(channel);
                             })
                             .subscribe(v -> {

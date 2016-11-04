@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.text.TextUtils;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.channel.Channel;
@@ -142,6 +144,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void sendMessage(String channelId, String message) {
+        if (TextUtils.isEmpty(message)) {
+            return;
+        }
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
