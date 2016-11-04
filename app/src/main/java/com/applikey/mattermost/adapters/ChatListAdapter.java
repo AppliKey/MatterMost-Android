@@ -153,7 +153,6 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         } else {
             vh.getNotificationIcon().setVisibility(View.GONE);
             vh.getContainer().setBackgroundResource(android.R.color.white);
-
         }
     }
 

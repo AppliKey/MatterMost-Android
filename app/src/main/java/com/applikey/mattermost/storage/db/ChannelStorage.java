@@ -27,8 +27,18 @@ public class ChannelStorage {
         mPrefs = prefs;
     }
 
+    // TODO Naming
     public Observable<Channel> channel(String channelId) {
         return mDb.getObjectWithCopy(Channel.class, channelId);
+    }
+
+    public Observable<Channel> findById(String id) {
+        return mDb.getObject(Channel.class, id);
+    }
+
+    // TODO Duplicate
+    public Observable<Channel> findByIdAndCopy(String id) {
+        return mDb.getObjectAndCopy(Channel.class, id);
     }
 
     public Observable<Channel> directChannel(String userId) {
@@ -57,6 +67,7 @@ public class ChannelStorage {
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
+    // TODO Duplicate
     public Observable<Channel> channelById(String id) {
         return mDb.getObject(Channel.class, id);
     }

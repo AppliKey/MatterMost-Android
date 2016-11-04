@@ -13,6 +13,7 @@ import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 
+import com.applikey.mattermost.platform.WebSocketService;
 import dagger.Subcomponent;
 
 @PerUser
@@ -37,6 +38,8 @@ public interface UserComponent {
 
     void inject(SettingsPresenter presenter);
 
+    void inject(WebSocketService service);
+
     void inject(ChannelDetailsPresenter channelDetailsPresenter);
 
     void inject(NavigationPresenter navigationPresenter);
@@ -48,6 +51,5 @@ public interface UserComponent {
         UserComponent.Builder userModule(UserModule userModule);
 
         UserComponent build();
-
     }
 }

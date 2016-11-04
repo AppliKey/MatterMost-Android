@@ -101,6 +101,10 @@
             </intent-filter>
         </service>
 
+        <service
+                android:name=".platform.WebSocketService"
+                android:exported="false"/>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0c7675012470bd5f6ee23c7d90806bb92d1c4bd8" />

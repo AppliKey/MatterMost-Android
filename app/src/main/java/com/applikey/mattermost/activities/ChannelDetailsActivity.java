@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.transition.TransitionManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -30,6 +30,7 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import com.transitionseverywhere.TransitionManager;
 
 public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDetailsView {
 
@@ -98,7 +99,13 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     private void initViews() {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(null);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_back);
+            actionBar.setTitle(null);
+        }
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mAddedPeopleLayout.setImageLoader(mImageLoader);
     }

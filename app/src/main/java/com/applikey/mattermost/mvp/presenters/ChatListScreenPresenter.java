@@ -142,9 +142,8 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public void applyInitialViewState() {
-        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team -> {
-            getViewState().setToolbarTitle(team.getDisplayName());
-        }, ErrorHandler::handleError));
+        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
+                getViewState().setToolbarTitle(team.getDisplayName()), ErrorHandler::handleError));
     }
 
     public void preloadChannel(String channelId) {

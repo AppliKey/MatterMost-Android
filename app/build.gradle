@@ -126,7 +126,7 @@ dependencies {
     // views
     compile 'com.tasomaniac:delayed-progress:0.3'
     compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
-    compile('com.mikepenz:materialdrawer:5.7.0@aar') {
+    compile('com.mikepenz:materialdrawer:5.6.0@aar') {
         transitive = true
     }
 
@@ -153,10 +153,15 @@ dependencies {
         transitive = true
     }
 
+    // lint
     compile 'nl.littlerobots.rxlint:rxlint:1.0'
 
+    // gcm
     compile 'com.google.android.gms:play-services-gcm:9.8.0'
 
     // animations
     compile "com.andkulikov:transitionseverywhere:1.6.9"
+
+    //sockets
+    compile 'com.neovisionaries:nv-websocket-client:1.30'
 }

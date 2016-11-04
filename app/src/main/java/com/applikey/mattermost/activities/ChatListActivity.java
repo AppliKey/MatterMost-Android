@@ -22,6 +22,7 @@ import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
+import com.applikey.mattermost.platform.WebSocketService;
 import com.applikey.mattermost.views.TabBehavior;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
@@ -56,10 +57,13 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_chat_list);
         ButterKnife.bind(this);
         initView();
         mEventBus.register(this);
+
+        startService(WebSocketService.getIntent(this));
         onNewIntent(getIntent());
     }
 
@@ -150,6 +154,11 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Subscribe
     public void on(TabIndicatorRequested event) {
         mTabIndicatorModel.handleEvent(event);
+    }
+
+    @Override
+    public void stopWebSocketService() {
+        stopService(WebSocketService.getIntent(this));
     }
 
     public static Intent getIntent(Context context) {

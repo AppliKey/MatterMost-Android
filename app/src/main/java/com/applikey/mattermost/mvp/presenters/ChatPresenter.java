@@ -82,13 +82,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     private void updateLastViewedAt(String channelId) {
-        mSubscription.add(mTeamStorage.getChosenTeam()
+        // Does not belong to UI
+        mTeamStorage.getChosenTeam()
                 .first()
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
                 .toCompletable()
                 .subscribe(ErrorHandler::handleError, () -> {
-                }));
+                });
 
         mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
         mNotificationManager.dismissNotification(channelId);
