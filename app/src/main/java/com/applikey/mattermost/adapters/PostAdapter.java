@@ -69,8 +69,12 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         final int layoutId = viewType == MY_POST_VIEW_TYPE
                 ? R.layout.list_item_post_my : R.layout.list_item_post_other;
 
-        final View v = inflater.inflate(layoutId, parent, false);
-        return new ViewHolder(v);
+        final View itemView = inflater.inflate(layoutId, parent, false);
+        final ViewHolder viewHolder = new ViewHolder(itemView);
+        viewHolder.mTvTimestamp.setOnClickListener(v -> {
+            viewHolder.toggleDate(getItem(viewHolder.getAdapterPosition()));
+        });
+        return viewHolder;
     }
 
     @Override
@@ -176,17 +180,17 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             if (channelType == Channel.ChannelType.DIRECT) {
                 mTvName.setVisibility(View.GONE);
             }
+        }
 
-            mTvTimestamp.setOnClickListener(v -> {
-                final String time;
-                if (mTvTimestamp.length() > 8) {
-                    time = TimeUtil.formatTimeOnly(post.getCreatedAt());
-                } else {
-                    time = TimeUtil.formatDateTime(post.getCreatedAt());
-                }
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-                mTvTimestamp.setText(time);
-            });
+        void toggleDate(Post post) {
+            final String time;
+            if (mTvTimestamp.length() > 8) {
+                time = TimeUtil.formatTimeOnly(post.getCreatedAt());
+            } else {
+                time = TimeUtil.formatDateTime(post.getCreatedAt());
+            }
+            TransitionManager.beginDelayedTransition((ViewGroup) itemView);
+            mTvTimestamp.setText(time);
         }
 
         void bindOwnPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
