@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Subscription;
 
 public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         implements ChatListPresenter, RealmChangeListener<RealmResults<Channel>> {
@@ -45,11 +46,13 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .subscribe(view::displayInitialData, ErrorHandler::handleError));
     }*/
 
+    @Override
     public void displayData() {
-        mSubscription.add(getInitData()
+        final Subscription subscription = getInitData()
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
-                .subscribe(getViewState()::displayInitialData, ErrorHandler::handleError));
+                .subscribe(getViewState()::displayInitialData, ErrorHandler::handleError);
+        mSubscription.add(subscription);
     }
 
     @Override

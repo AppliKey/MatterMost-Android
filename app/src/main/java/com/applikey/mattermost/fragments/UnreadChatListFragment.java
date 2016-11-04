@@ -34,12 +34,6 @@ public class UnreadChatListFragment extends BaseChatListFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.displayData();
-    }
-
-    @Override
     protected int getEmptyStateTextId() {
         return R.string.no_unread_chats_available;
     }

@@ -20,7 +20,6 @@ import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -53,9 +52,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     @Inject
     PostStorage mPostStorage;
-
-    @Inject
-    Prefs mPrefs;
 
     @Inject
     SettingsManager mSettingsManager;
@@ -140,7 +136,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public void preloadChannel(String channelId) {
-        Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
+        final Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
                 mTeamStorage.getChosenTeam()
                         .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
                                 .subscribeOn(Schedulers.io())))
@@ -153,7 +149,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         mSubscription.add(subscription);
     }
 
-    public List<Fragment> initTabs(boolean shouldShowUnreadTab) {
+    private List<Fragment> initTabs(boolean shouldShowUnreadTab) {
         final List<Fragment> tabs = new ArrayList<>();
         if (shouldShowUnreadTab) {
             tabs.add(UnreadChatListFragment.newInstance());

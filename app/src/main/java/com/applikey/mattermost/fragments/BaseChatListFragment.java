@@ -69,7 +69,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     @Override
     public void onResume() {
         super.onResume();
-
+        getPresenter().displayData();
     }
 
     @Nullable

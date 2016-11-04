@@ -33,12 +33,6 @@ public class ChannelListFragment extends BaseChatListFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.displayData();
-    }
-
-    @Override
     protected int getEmptyStateTextId() {
         return R.string.no_channels_available;
     }
