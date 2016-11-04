@@ -11,6 +11,7 @@ import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 
 import dagger.Subcomponent;
 
@@ -40,10 +41,12 @@ public interface UserComponent {
 
     void inject(NavigationPresenter navigationPresenter);
 
+    void inject(UserProfilePresenter userProfilePresenter);
+
     @Subcomponent.Builder
     interface Builder {
-
         UserComponent.Builder userModule(UserModule userModule);
+
         UserComponent build();
 
     }

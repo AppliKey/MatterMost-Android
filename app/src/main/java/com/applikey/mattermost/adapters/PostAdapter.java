@@ -17,6 +17,8 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
+import com.transitionseverywhere.TransitionManager;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.RealmRecyclerViewAdapter;
@@ -38,12 +40,12 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private int mNewMessageIndicatorPosition = -1;
 
     public PostAdapter(Context context,
-                       RealmResults<Post> posts,
-                       String currentUserId,
-                       ImageLoader imageLoader,
-                       Channel.ChannelType channelType,
-                       long lastViewed,
-                       OnLongClickListener onLongClickListener) {
+            RealmResults<Post> posts,
+            String currentUserId,
+            ImageLoader imageLoader,
+            Channel.ChannelType channelType,
+            long lastViewed,
+            OnLongClickListener onLongClickListener) {
         super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
@@ -70,8 +72,12 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         final int layoutId = viewType == MY_POST_VIEW_TYPE
                 ? R.layout.list_item_post_my : R.layout.list_item_post_other;
 
-        final View v = inflater.inflate(layoutId, parent, false);
-        return new ViewHolder(v);
+        final View itemView = inflater.inflate(layoutId, parent, false);
+        final ViewHolder viewHolder = new ViewHolder(itemView);
+        viewHolder.mTvTimestamp.setOnClickListener(v -> {
+            viewHolder.toggleDate(getItem(viewHolder.getAdapterPosition()));
+        });
+        return viewHolder;
     }
 
     @Override
@@ -115,7 +121,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         if (isMy(post)) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, showDate, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, post, showAuthor, showTime, showDate,
+            holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
                     mImageLoader, mOnLongClickListener);
         }
     }
@@ -191,9 +197,20 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             }
         }
 
-        void bindOwnPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime, boolean showDate,
-                         OnLongClickListener onLongClickListener) {
-            bind(channelType, post, showAuthor, showTime, showDate);
+        void toggleDate(Post post) {
+            final String time;
+            if (mTvTimestamp.length() > 8) {
+                time = TimeUtil.formatTimeOnly(post.getCreatedAt());
+            } else {
+                time = TimeUtil.formatDateTime(post.getCreatedAt());
+            }
+            TransitionManager.beginDelayedTransition((ViewGroup) itemView);
+            mTvTimestamp.setText(time);
+        }
+
+        void bindOwnPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
+                OnLongClickListener onLongClickListener) {
+            bind(channelType, post, showAuthor, showTime);
 
             itemView.setOnLongClickListener(v -> {
                 onLongClickListener.onLongClick(post, true);
@@ -203,7 +220,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOtherPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
-                           boolean showDate, ImageLoader imageLoader, OnLongClickListener onLongClickListener) {
+                           ImageLoader imageLoader, OnLongClickListener onLongClickListener) {
             bind(channelType, post, showAuthor, showTime, showDate);
 
             final User author = post.getAuthor();

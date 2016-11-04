@@ -11,6 +11,7 @@
         android:ellipsize="end"
         android:fontFamily="sans-serif-regular"
         android:maxLines="1"
+        tools:text="Name"
         android:textColor="@color/textListPrimary"
         android:textSize="@dimen/list_item_chat_text_size"
         tools:text="Name"/>

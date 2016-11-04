@@ -31,6 +31,10 @@ public class ChannelStorage {
         return mDb.getObjectWithCopy(Channel.class, channelId);
     }
 
+    public Observable<Channel> directChannel(String userId) {
+        return mDb.getObjectQualified(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
+    }
+
     public Observable<List<Channel>> list() {
         return mDb.listRealmObjects(Channel.class);
     }

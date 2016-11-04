@@ -94,5 +94,6 @@
     <string name="make_favorite">Make favorite</string>
     <string name="edit_profile">Edit profile</string>
     <string name="unread_messages">Unread messages</string>
+    <string name="direct_message">Direct message</string>
 
 </resources>

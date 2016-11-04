@@ -109,14 +109,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(CHANNEL_ID_KEY, channel.getId());
-        bundle.putString(CHANNEL_NAME_KEY, channel.getDisplayName());
-        bundle.putString(CHANNEL_TYPE_KEY, channel.getType());
-        bundle.putLong(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
-        intent.putExtras(bundle);
-
+        intent.putExtra(CHANNEL_ID_KEY, channel.getId());
+        intent.putExtra(CHANNEL_NAME_KEY, channel.getDisplayName());
+        intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
+        intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         return intent;
     }
 
@@ -360,6 +356,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void openUserProfile(User user) {
-
+        startActivity(UserProfileActivity.getIntent(this, user));
     }
 }

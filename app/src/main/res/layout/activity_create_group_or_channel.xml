@@ -98,15 +98,12 @@
                 android:id="@+id/btn_add_all"
                 style="@style/Button"
                 android:layout_width="180dp"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="13dp"
                 android:layout_marginTop="13dp"
                 android:gravity="center"
-                android:text="@string/button_add_all"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:visibility="visible" />
+                android:text="@string/button_add_all" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_peoples"
