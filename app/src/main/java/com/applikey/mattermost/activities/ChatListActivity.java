@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -27,11 +28,11 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -52,17 +53,13 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
 
     private ChatListPagerAdapter mChatListPagerAdapter;
 
-    private boolean mLastUnreadTabState;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
         ButterKnife.bind(this);
         initView();
-
         mEventBus.register(this);
-
         onNewIntent(getIntent());
     }
 
@@ -71,24 +68,20 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         super.onNewIntent(intent);
         final Bundle bundle = getIntent().getBundleExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY);
         if (bundle != null) {
-            String channelId = bundle.getString(NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
-
+            final String channelId = bundle.getString(NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
             if (channelId != null) {
                 mPresenter.preloadChannel(channelId);
             }
         }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         if (mChatListPagerAdapter == null) {
-            initViewPager();
-            mLastUnreadTabState = mPresenter.shouldShowUnreadTab();
+            mPresenter.initPages();
         } else {
-            if (mLastUnreadTabState != mPresenter.shouldShowUnreadTab()) {
-                Timber.d("recreating viewPager");
-                initViewPager();
-                mLastUnreadTabState = mPresenter.shouldShowUnreadTab();
-            }
+            mPresenter.checkSettingChanges();
         }
     }
 
@@ -97,14 +90,9 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         return mToolbar;
     }
 
-    private void initView() {
-        mPresenter.applyInitialViewState();
-
-        mViewPager.setAdapter(new ChatListPagerAdapter(getSupportFragmentManager()));
-
-        mTabLayout.setupWithViewPager(mViewPager);
-    private void initViewPager() {
-        mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), mPresenter.initTabs());
+    @Override
+    public void initViewPager(List<Fragment> pages) {
+        mChatListPagerAdapter = new ChatListPagerAdapter(getSupportFragmentManager(), pages);
         mViewPager.setAdapter(mChatListPagerAdapter);
         mChatListPagerAdapter.notifyDataSetChanged();
         mTabLayout.setupWithViewPager(mViewPager, false);
@@ -134,22 +122,6 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     private void initView() {
         mPresenter.applyInitialViewState();
         setSupportActionBar(mToolbar);
-        mToolbar.setNavigationOnClickListener(v -> mDrawerLayout.openDrawer(GravityCompat.START));
-
-        mNavigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.start_new_chat:
-                    return true; //TODO replace with start new chat logic
-                case R.id.create_channel:
-                    startActivity(CreateChannelActivity.getIntent(this));
-                    break;
-                case R.id.settings:
-                    startActivity(SettingsActivity.getIntent(this));
-                    break;
-            }
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-            return false;
-        });
     }
 
     @Override

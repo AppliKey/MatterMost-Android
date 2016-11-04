@@ -18,7 +18,6 @@ import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
-import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -63,6 +62,8 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     @Inject
     Api mApi;
+
+    private boolean mLastUnreadTabState;
 
     public ChatListScreenPresenter() {
         App.getComponent().inject(this);
@@ -116,9 +117,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(userStatusResponse -> {
-                    mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse);
-                })
+                .doOnNext(userStatusResponse -> mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse))
                 .subscribe(v -> {
                 }, ErrorHandler::handleError);
     }
@@ -154,14 +153,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         mSubscription.add(subscription);
     }
 
-    public void logout() {
-        mPrefs.setAuthToken(null);
-        App.releaseUserComponent();
-        mStorageDestroyer.get().deleteDatabase();
-        getViewState().logout();
-    public List<Fragment> initTabs() {
+    public List<Fragment> initTabs(boolean shouldShowUnreadTab) {
         final List<Fragment> tabs = new ArrayList<>();
-        if (shouldShowUnreadTab()) {
+        if (shouldShowUnreadTab) {
             tabs.add(UnreadChatListFragment.newInstance());
         }
         tabs.add(EmptyChatListFragment.newInstance());
@@ -169,5 +163,18 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         tabs.add(GroupListFragment.newInstance());
         tabs.add(DirectChatListFragment.newInstance());
         return tabs;
+    }
+
+    public void initPages() {
+        mLastUnreadTabState = shouldShowUnreadTab();
+        getViewState().initViewPager(initTabs(mLastUnreadTabState));
+    }
+
+    public void checkSettingChanges() {
+        final boolean shouldShowUnreadTab = shouldShowUnreadTab();
+        if (mLastUnreadTabState != shouldShowUnreadTab) {
+            mLastUnreadTabState = shouldShowUnreadTab;
+            getViewState().initViewPager(initTabs(shouldShowUnreadTab));
+        }
     }
 }
