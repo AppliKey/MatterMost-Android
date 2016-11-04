@@ -37,12 +37,12 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private int mNewMessageIndicatorPosition = -1;
 
     public PostAdapter(Context context,
-            RealmResults<Post> posts,
-            String currentUserId,
-            ImageLoader imageLoader,
-            Channel.ChannelType channelType,
-            long lastViewed,
-            OnLongClickListener onLongClickListener) {
+                       RealmResults<Post> posts,
+                       String currentUserId,
+                       ImageLoader imageLoader,
+                       Channel.ChannelType channelType,
+                       long lastViewed,
+                       OnLongClickListener onLongClickListener) {
         super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
@@ -118,7 +118,8 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         if (isMy(post)) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, post, showAuthor, showTime, mImageLoader);
+            holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
+                    mImageLoader, mOnLongClickListener);
         }
     }
 
@@ -157,6 +158,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         @Bind(R.id.tv_name)
         TextView mTvName;
 
+        @Bind(R.id.tv_reply_message)
+        TextView mTvReplyMessage;
+
         ViewHolder(View itemView) {
             super(itemView);
 
@@ -180,6 +184,14 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             if (channelType == Channel.ChannelType.DIRECT) {
                 mTvName.setVisibility(View.GONE);
             }
+
+            if (post.getRootPost() != null) {
+                mTvReplyMessage.setVisibility(View.VISIBLE);
+                mTvReplyMessage.setText(post.getRootPost().getMessage());
+            } else {
+                mTvReplyMessage.setVisibility(View.GONE);
+                mTvReplyMessage.setText(null);
+            }
         }
 
         void toggleDate(Post post) {
@@ -194,18 +206,18 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         }
 
         void bindOwnPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
-                OnLongClickListener onLongClickListener) {
+                         OnLongClickListener onLongClickListener) {
             bind(channelType, post, showAuthor, showTime);
 
             itemView.setOnLongClickListener(v -> {
-                onLongClickListener.onLongClick(post);
+                onLongClickListener.onLongClick(post, true);
                 return true;
             });
             mTvName.setText(R.string.you);
         }
 
         void bindOtherPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
-                ImageLoader imageLoader) {
+                           ImageLoader imageLoader, OnLongClickListener onLongClickListener) {
             bind(channelType, post, showAuthor, showTime);
 
             final User author = post.getAuthor();
@@ -218,6 +230,11 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
                 mIvStatus.setImageResource(User.Status.from(author.getStatus()).getDrawableId());
                 mIvPreviewImageLayout.setVisibility(showAuthor ? View.VISIBLE : View.INVISIBLE);
             }
+
+            itemView.setOnLongClickListener(v -> {
+                onLongClickListener.onLongClick(post, false);
+                return true;
+            });
 
             if (mIvPreviewImageLayout != null && channelType == Channel.ChannelType.DIRECT) {
                 mIvPreviewImageLayout.setVisibility(View.GONE);
@@ -253,6 +270,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     @FunctionalInterface
     public interface OnLongClickListener {
 
-        void onLongClick(Post post);
+        void onLongClick(Post post, boolean isPostOwner);
+
     }
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    tools:showIn="@layout/list_item_post_other">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              tools:showIn="@layout/list_item_post_other">
 
     <FrameLayout
         android:id="@+id/iv_preview_image_layout"
@@ -15,20 +15,20 @@
             android:id="@+id/iv_preview_image"
             android:layout_width="@dimen/list_item_image_chat"
             android:layout_height="@dimen/list_item_image_chat"
-            android:src="@drawable/no_resource" />
+            android:src="@drawable/no_resource"/>
 
         <ImageView
             android:id="@+id/iv_status_bg"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:src="@drawable/no_resource_round_background" />
+            android:src="@drawable/no_resource_round_background"/>
 
         <ImageView
             android:id="@+id/iv_status"
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_margin="2dp"
-            android:src="@drawable/no_resource_round" />
+            android:src="@drawable/no_resource_round"/>
 
     </FrameLayout>
 
@@ -50,22 +50,46 @@
             android:maxLines="1"
             android:textColor="@color/textListPrimary"
             android:textSize="@dimen/list_item_chat_text_size"
-            tools:text="Name" />
+            tools:text="Name"/>
 
-        <TextView
-            android:id="@+id/tv_message"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/list_item_chat_time_margin"
             android:layout_marginBottom="@dimen/list_item_chat_time_margin"
             android:background="@drawable/bg_post"
-            android:fontFamily="sans-serif-light"
+            android:orientation="vertical"
             android:paddingBottom="@dimen/list_item_chat_padding_timestamp"
             android:paddingEnd="@dimen/list_item_chat_padding"
             android:paddingStart="@dimen/list_item_chat_padding"
-            android:paddingTop="@dimen/list_item_chat_padding_timestamp"
-            android:textColor="@color/textListPrimary"
-            android:textSize="@dimen/list_item_chat_text_size"
-            tools:text="Some message" />
+            android:paddingTop="@dimen/list_item_chat_padding_timestamp">
+
+            <TextView
+                android:id="@+id/tv_reply_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/list_item_chat_time_margin"
+                android:drawablePadding="@dimen/small"
+                android:drawableStart="@drawable/line"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:maxLines="1"
+                android:textColor="@color/textListPrimary"
+                android:textSize="@dimen/text_primary_button"
+                android:visibility="gone"
+                tools:text="User Message"
+                tools:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/textListPrimary"
+                android:textSize="@dimen/list_item_chat_text_size"
+                tools:text="Some message"/>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tv_timestamp"
@@ -75,7 +99,7 @@
             android:fontFamily="sans-serif-light"
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_chat_date_size"
-            tools:text="11:12 AM" />
+            tools:text="11:12 AM"/>
 
     </LinearLayout>
 

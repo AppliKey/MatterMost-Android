@@ -145,11 +145,31 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
 
+        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
+                message, "", pendingId);
+
         final long lastViewedAt = System.currentTimeMillis();
         mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
 
+        mSubscription.add(mTeamStorage.getChosenTeam()
+                .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
+                        .subscribeOn(Schedulers.io()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannel.setLastPost(post))
+                .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
+                .subscribe(result -> getViewState().onMessageSent(lastViewedAt), ErrorHandler::handleError));
+    }
+
+    public void sendReplyMessage(String channelId, String message, String mRootId) {
+        final String currentUserId = mPrefs.getCurrentUserId();
+        final long createdAt = System.currentTimeMillis();
+        final String pendingId = currentUserId + ":" + createdAt;
+
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
-                message, "", pendingId);
+                message, "", pendingId, mRootId, mRootId);
+
+        final long lastViewedAt = System.currentTimeMillis();
+        mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
