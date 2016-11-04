@@ -28,13 +28,6 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
         super.onFirstViewAttach();
     }
 
-    public void logout() {
-        mPrefs.get().setAuthToken(null);
-        mStorageDestroyer.get().deleteDatabase();
-        App.releaseUserComponent();
-        getViewState().onLogout();
-    }
-
     public void createNewChannel() {
         getViewState().startChannelCreating();
     }

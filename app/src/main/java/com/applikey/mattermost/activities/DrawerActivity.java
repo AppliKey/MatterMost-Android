@@ -1,7 +1,6 @@
 package com.applikey.mattermost.activities;
 
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,14 +22,11 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private static final int ITEM_ALL_CHANNELS = 0;
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
-    private static final int ITEM_LOGOUT = 3;
-
     private Drawer mDrawer;
 
     private PrimaryDrawerItem mItemAllChannels;
     private PrimaryDrawerItem mItemInviteNewMember;
     private PrimaryDrawerItem mItemSettings;
-    private PrimaryDrawerItem mItemLogout;
 
     @InjectPresenter
     NavigationPresenter mPresenter;
@@ -60,9 +56,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         mItemSettings = new PrimaryDrawerItem().withName(R.string.settings)
                 .withIdentifier(ITEM_SETTINGS)
                 .withTypeface(typeface);
-        mItemLogout = new PrimaryDrawerItem().withName(R.string.logout)
-                .withIdentifier(ITEM_LOGOUT)
-                .withTypeface(typeface);
 
         mDrawer = new DrawerBuilder().withActivity(this)
                 .withToolbar(getToolbar())
@@ -71,8 +64,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                 .addDrawerItems(
                         mItemAllChannels,
                         mItemInviteNewMember,
-                        mItemSettings,
-                        mItemLogout
+                        mItemSettings
                 )
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     itemScreen((int) drawerItem.getIdentifier());
@@ -116,9 +108,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
             case ITEM_SETTINGS:
                 startSettings();
                 break;
-            case ITEM_LOGOUT:
-                mPresenter.logout();
-                break;
         }
         closeDrawer();
     }
@@ -126,13 +115,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private void startSettings() {
         startActivity(SettingsActivity.getIntent(this));
         closeDrawer();
-    }
-
-    @Override
-    public void onLogout() {
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
     }
 
     @Override
