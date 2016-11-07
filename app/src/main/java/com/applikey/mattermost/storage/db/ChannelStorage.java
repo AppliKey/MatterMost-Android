@@ -148,6 +148,14 @@ public class ChannelStorage {
         });
     }
 
+    public void setLastViewedAt(String id, long lastViewAt) {
+        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+            realmChannel.setHasUnreadMessages(false);
+            realmChannel.setLastViewedAt(lastViewAt);
+            return true;
+        });
+    }
+
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
         // Transform direct channels
 

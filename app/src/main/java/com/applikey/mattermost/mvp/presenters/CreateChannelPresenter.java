@@ -53,6 +53,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     UserStorage mUserStorage;
 
     @Inject
+    ErrorHandler mErrorHandler;
+
+    @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
@@ -215,7 +218,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                         user.getCreatedChannel().getChannel().getId(),
                         new RequestUserId(user.getUser().getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> getViewState().successfulClose(), ErrorHandler::handleError);
+                .subscribe(v -> getViewState().successfulClose(), mErrorHandler::handleError);
         mSubscription.add(subscription);
     }
 

@@ -41,6 +41,9 @@ public class LogInPresenter extends BasePresenter<LogInView> {
     @Inject
     TeamStorage mTeamStorage;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     public LogInPresenter() {
         App.getComponent().inject(this);
     }
@@ -54,7 +57,7 @@ public class LogInPresenter extends BasePresenter<LogInView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::handleSuccessfulResponse, throwable -> {
-                    ErrorHandler.handleError(context, throwable);
+                    mErrorHandler.handleError(throwable);
                     view.onUnsuccessfulAuth(throwable.getMessage());
                 });
 
@@ -104,8 +107,7 @@ public class LogInPresenter extends BasePresenter<LogInView> {
             mSubscription.add(mApi.attachDevice(request)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(result -> getViewState().onSuccessfulAuth(),
-                            ErrorHandler::handleError));
+                    .subscribe(result -> getViewState().onSuccessfulAuth(), mErrorHandler::handleError));
             return;
         }
 
@@ -114,9 +116,9 @@ public class LogInPresenter extends BasePresenter<LogInView> {
             final String message = RequestError.fromJson(response.errorBody().string())
                     .getMessage();
             getViewState().onUnsuccessfulAuth(message);
-            ErrorHandler.handleError(message);
+            mErrorHandler.handleError(message);
         } catch (IOException e) {
-            ErrorHandler.handleError(e);
+            mErrorHandler.handleError(e);
         }
     }
 

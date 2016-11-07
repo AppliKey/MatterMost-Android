@@ -56,6 +56,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     @Inject
     NotificationManager mNotificationManager;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private int mCurrentPage;
     private Channel mChannel;
 
@@ -68,10 +71,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         updateLastViewedAt(channelId);
         mSubscription.add(mChannelStorage.channel(channelId)
-                .subscribe(channel -> mChannel = channel, ErrorHandler::handleError));
+                .subscribe(channel -> mChannel = channel, mErrorHandler::handleError));
         mSubscription.add(mPostStorage.listByChannel(channelId)
                 .first()
-                .subscribe(view::onDataReady, view::onFailure));
+                .subscribe(view::onDataReady, mErrorHandler::handleError));
     }
 
     public void channelNameClick() {
@@ -90,7 +93,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
                 .toCompletable()
-                .subscribe(ErrorHandler::handleError, () -> {
+                .subscribe(mErrorHandler::handleError, () -> {
                 });
 
         mChannelStorage.updateLastViewedAt(channelId);
@@ -105,7 +108,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE,
                                 PAGE_SIZE)
                                 .subscribeOn(Schedulers.io())
-                                .doOnError(ErrorHandler::handleError)
+                                .doOnError(mErrorHandler::handleError)
                 )
                 .switchIfEmpty(Observable.empty())
                 .map(response -> transform(response, mCurrentPage * PAGE_SIZE))
@@ -120,7 +123,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         },
                         error -> {
                             getViewState().showProgress(false);
-                            ErrorHandler.handleError(error);
+                            mErrorHandler.handleError(error);
                         }));
     }
 
@@ -131,8 +134,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(posts -> mPostStorage.delete(post))
                 .doOnNext(posts -> mChannel.setLastPost(null))
-                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel),
-                        ErrorHandler::handleError));
+                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), mErrorHandler::handleError));
     }
 
     public void editMessage(String channelId, Post post, String newMessage) {
@@ -142,7 +144,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .flatMap(team -> mApi.updatePost(team.getId(), channelId, finalPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> mPostStorage.update(finalPost), ErrorHandler::handleError));
+                .subscribe(posts -> mPostStorage.update(finalPost), mErrorHandler::handleError));
     }
 
     public void sendMessage(String channelId, String message) {
@@ -156,16 +158,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId);
 
-        mChannelStorage.updateLastViewedAt(channelId);
-
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
-                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
-                .subscribe(result -> getViewState().onMessageSent(lastViewedAt),
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError));
                         ErrorHandler::handleError));
     }
 
@@ -177,16 +177,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId, mRootId, mRootId);
 
-        mChannelStorage.updateLastViewedAt(channelId);
-
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
-                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
-                .subscribe(result -> getViewState().onMessageSent(lastViewedAt),
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError));
                         ErrorHandler::handleError));
     }
 
@@ -197,7 +195,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
                 .toCompletable()
-                .subscribe(ErrorHandler::handleError, () -> {
+                .subscribe(mErrorHandler::handleError, () -> {
                 });
 
         mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());

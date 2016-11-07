@@ -29,6 +29,9 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView> {
     @Inject
     Api mApi;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private User mUser;
 
     //temp field, remove after implement Make favorite logic
@@ -43,7 +46,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView> {
 
         mSubscription.add(mUserStorage.getDirectProfile(userId)
                 .doOnNext(user -> mUser = user)
-                .subscribe(view::showBaseDetails, ErrorHandler::handleError));
+                .subscribe(view::showBaseDetails, mErrorHandler::handleError));
     }
 
     //TODO Implement favorite logic
@@ -55,7 +58,6 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView> {
     public void sendDirectMessage() {
         mSubscription.add(mChannelStorage.directChannel(mUser.getId())
                 .first()
-                .subscribe(channel -> getViewState().openDirectChannel(channel),
-                        ErrorHandler::handleError));
+                .subscribe(channel -> getViewState().openDirectChannel(channel), mErrorHandler::handleError));
     }
 }

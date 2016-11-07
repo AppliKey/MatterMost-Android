@@ -25,6 +25,9 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     @Inject
     UserStorage mUserStorage;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private List<String> mAddedUsersIds;
     private List<User> mResultingList = new ArrayList<>();
 
@@ -48,7 +51,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         users -> getViewState().showAddedMembers(users),
-                        ErrorHandler::handleError
+                        mErrorHandler::handleError
                 );
         mSubscription.add(subscription);
     }
@@ -72,7 +75,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         users -> getViewState().showAddedMembers(users),
-                        ErrorHandler::handleError
+                        mErrorHandler::handleError
                 );
         mSubscription.add(subscription);
     }

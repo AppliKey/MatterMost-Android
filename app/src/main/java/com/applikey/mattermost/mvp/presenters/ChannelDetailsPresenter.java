@@ -36,6 +36,9 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
     @Inject
     Api mApi;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private Channel mChannel;
 
     //temp field, remove after implement Make favorite logic
@@ -50,7 +53,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
 
         mSubscription.add(mChannelStorage.channel(channelId)
                 .doOnNext(channel -> mChannel = channel)
-                .subscribe(view::showBaseDetails, ErrorHandler::handleError));
+                .subscribe(view::showBaseDetails, mErrorHandler::handleError));
 
         mSubscription.add(
                 mTeamStorage.getChosenTeam()
@@ -64,7 +67,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
                         .toList()
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(ids -> mUserStorage.findUsers(ids))
-                        .subscribe(view::showMembers, ErrorHandler::handleError));
+                        .subscribe(view::showMembers, mErrorHandler::handleError));
     }
 
     //TODO Implement favorite logic
