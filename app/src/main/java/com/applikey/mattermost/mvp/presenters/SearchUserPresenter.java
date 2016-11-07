@@ -83,6 +83,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
         final SearchUserView view = getViewState();
         mSubscription.add(mChannelStorage.getChannel(user.getId())
                 .observeOn(AndroidSchedulers.mainThread())
+                // TODO CODE SMELLS
                 .doOnError(throwable -> {
                     if (throwable instanceof ObjectNotFoundException) {
                         createChannel(user);

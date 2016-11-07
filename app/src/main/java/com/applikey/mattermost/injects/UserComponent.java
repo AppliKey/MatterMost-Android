@@ -25,14 +25,6 @@ import dagger.Subcomponent;
 @Subcomponent(modules = UserModule.class)
 public interface UserComponent {
 
-    @Subcomponent.Builder
-    interface Builder {
-
-        UserComponent.Builder userModule(UserModule userModule);
-
-        UserComponent build();
-    }
-
     void inject(ChatActivity activity);
 
     void inject(BaseChatListPresenter presenter);
@@ -68,4 +60,12 @@ public interface UserComponent {
     void inject(SearchChatActivity searchChatActivity);
 
     void inject(SearchChatPresenter searchChatPresenter);
+
+    @Subcomponent.Builder
+    interface Builder {
+
+        UserComponent.Builder userModule(UserModule userModule);
+
+        UserComponent build();
+    }
 }

@@ -191,7 +191,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         }
     }
 
-    // TODO: 04.11.16 REFACTOR AND EXTRACT IF POSSIBLE
+    // TODO: REFACTOR AND EXTRACT
     private class TabIndicatorModel {
 
         private final Object mutex = new Object();

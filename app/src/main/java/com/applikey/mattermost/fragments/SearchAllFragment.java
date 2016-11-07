@@ -44,7 +44,7 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     @Override
     public void onItemClicked(Channel channel) {
-
+        // TODO: IMPLEMENT
     }
 
     @Override
