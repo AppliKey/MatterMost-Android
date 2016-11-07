@@ -2,10 +2,10 @@
 <resources>
     <color name="colorPrimary">#9E9E9E</color>
     <color name="colorPrimaryDark">#616161</color>
-    <color name="colorAccent">#00AC9D</color>
+    <color name="colorAccent">#64b0ff</color>
 
-    <color name="primaryStart">#2bce7c</color>
-    <color name="primaryEnd">#00AC9D</color>
+    <color name="primaryStart">#63cdff</color>
+    <color name="primaryEnd">#6794ff</color>
 
     <color name="background">#f1f2f5</color>
     <color name="unread_background">#f4f5f7</color>
@@ -25,7 +25,7 @@
     <color name="separator_light">#757575</color>
     <color name="separator_list">#edeff2</color>
 
-    <color name="tabSelected">#2bce7c</color>
+    <color name="tabSelected">#64b0ff</color>
     <color name="tabUnSelected">#c9cdd4</color>
 
     <color name="status_online">#2bce7c</color>
