@@ -154,12 +154,11 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId);
 
-        mChannelStorage.updateLastViewedAt(channelId);
-
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
@@ -173,12 +172,11 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId, mRootId, mRootId);
 
-        mChannelStorage.updateLastViewedAt(channelId);
-
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
