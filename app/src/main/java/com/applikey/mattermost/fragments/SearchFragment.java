@@ -18,8 +18,6 @@ import butterknife.ButterKnife;
 
 public abstract class SearchFragment extends BaseMvpFragment {
 
-    private static final String TAG = SearchFragment.class.getSimpleName();
-
     @Bind(R.id.rv_items)
     RecyclerView mRecycleView;
 
@@ -55,5 +53,4 @@ public abstract class SearchFragment extends BaseMvpFragment {
 
     @LayoutRes
     protected abstract int getLayout();
-
 }

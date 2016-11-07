@@ -3,7 +3,6 @@ package com.applikey.mattermost.fragments;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.R;
@@ -19,8 +18,6 @@ import butterknife.Bind;
 
 public class SearchChannelFragment extends SearchFragment implements SearchChannelView,
         ChannelAdapter.ClickListener {
-
-    private static final String TAG = SearchChannelFragment.class.getSimpleName();
 
     @InjectPresenter
     SearchChannelPresenter mPresenter;
@@ -38,14 +35,12 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-        Log.d(TAG, "onViewCreated: ");
         mPresenter.requestNotJoinedChannels();
         mPresenter.getData("");
     }
 
     @Override
     public void onItemClicked(Channel channel) {
-        Log.d(TAG, "onItemClicked: ");
         mPresenter.handleChannelClick(channel);
     }
 
@@ -58,13 +53,12 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
 
     @Override
     public void displayData(List<Channel> channels) {
-        Log.d(TAG, "displayData: ");
         mChannelAdapter.setDataSet(channels);
     }
 
     @Override
     public void startChatView(Channel channel) {
-        // TODO: 07.11.16 IMPLEMENT THIS
+        // TODO: IMPLEMENT
     }
 
     @Override
@@ -83,5 +77,4 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecycleView.setAdapter(mChannelAdapter);
     }
-
 }

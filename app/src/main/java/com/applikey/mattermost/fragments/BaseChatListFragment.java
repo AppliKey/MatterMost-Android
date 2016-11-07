@@ -37,11 +37,7 @@ import io.realm.RealmResults;
 public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
-    private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
-        final Activity activity = getActivity();
-        final Intent intent = ChatActivity.getIntent(activity, channel);
-        activity.startActivity(intent);
-    };
+
     @Bind(R.id.rv_channels)
     RecyclerView mRvChannels;
 
@@ -127,4 +123,10 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     protected abstract ChatListPresenter getPresenter();
 
     protected abstract int getEmptyStateTextId();
+
+    private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
+        final Activity activity = getActivity();
+        final Intent intent = ChatActivity.getIntent(activity, channel);
+        activity.startActivity(intent);
+    };
 }

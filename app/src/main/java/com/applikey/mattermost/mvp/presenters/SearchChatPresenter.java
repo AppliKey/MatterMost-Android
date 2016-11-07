@@ -32,5 +32,4 @@ public class SearchChatPresenter extends BasePresenter<SearchChatView> {
     public void handleAllTextChanges(String text) {
         mBus.post(new SearchAllTextChanged(text));
     }
-
 }

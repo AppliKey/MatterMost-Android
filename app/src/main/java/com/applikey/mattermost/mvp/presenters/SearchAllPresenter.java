@@ -1,12 +1,11 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
-
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchAllTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchAllView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -28,8 +27,6 @@ import rx.android.schedulers.AndroidSchedulers;
 @InjectViewState
 public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
-    private static final String TAG = SearchAllPresenter.class.getSimpleName();
-
     @Inject
     ChannelStorage mChannelStorage;
 
@@ -42,6 +39,9 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
+
+    @Inject
+    ErrorHandler mErrorHandler;
 
     public SearchAllPresenter() {
         App.getUserComponent().inject(this);
@@ -67,28 +67,23 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
                             final List<SearchItem> searchItemList = new ArrayList<>();
 
-                            for (int i = 0; i < items.size(); i++) {
-                                searchItemList.add(items.get(i));
+                            for (Channel item : items) {
+                                searchItemList.add(item);
                             }
-                            for (int i = 0; i < users.size(); i++) {
-                                searchItemList.add(users.get(i));
+                            for (User user : users) {
+                                searchItemList.add(user);
                             }
 
                             return searchItemList;
                         })
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(items -> {
-                            Log.d(TAG, "getData: " + items);
-                            view.displayData(items);
-                        }, ErrorHandler::handleError));
+                        .subscribe(view::displayData, mErrorHandler::handleError));
     }
 
-
     @Subscribe
-    public void onTextChanged(SearchAllTextChanged event) {
+    void on(SearchAllTextChanged event) {
         final SearchAllView view = getViewState();
         view.clearData();
         getData(event.getText());
     }
-
 }

@@ -31,8 +31,6 @@ import rx.schedulers.Schedulers;
 @InjectViewState
 public class SearchUserPresenter extends BasePresenter<SearchUserView> {
 
-    private static final String TAG = SearchUserPresenter.class.getSimpleName();
-
     @Inject
     UserStorage mUserStorage;
 
@@ -55,6 +53,9 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     public SearchUserPresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
@@ -75,12 +76,11 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                         .filter(user -> !TextUtils.equals(user.getId(), mCurrentUserId))
                         .toList()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, ErrorHandler::handleError));
+                        .subscribe(view::displayData, mErrorHandler::handleError));
     }
 
     public void handleUserClick(User user) {
         final SearchUserView view = getViewState();
-        Log.d(TAG, "handleUserClick: " + user.getId());
         mSubscription.add(mChannelStorage.getChannel(user.getId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> {
@@ -88,11 +88,11 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                         createChannel(user);
                     }
                 })
-                .subscribe(view::startChatView, ErrorHandler::handleError));
+                .subscribe(view::startChatView, mErrorHandler::handleError));
     }
 
     @Subscribe
-    public void onTextChanged(SearchUserTextChanged event) {
+    void on(SearchUserTextChanged event) {
         final SearchUserView view = getViewState();
         view.clearData();
         getData(event.getText());
@@ -111,12 +111,9 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                 .subscribe(channel -> {
                     view.startChatView(channel);
                     view.showLoading(false);
-                    Log.d(TAG, "createChannel: " + channel);
                 }, throwable -> {
                     throwable.printStackTrace();
                     view.showLoading(false);
                 });
-
     }
-
 }

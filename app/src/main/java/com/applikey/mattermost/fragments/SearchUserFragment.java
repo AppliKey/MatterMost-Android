@@ -2,7 +2,6 @@ package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.R;
@@ -16,8 +15,6 @@ import java.util.List;
 
 public class SearchUserFragment extends SearchFragment implements SearchUserView,
         UserAdapter.ClickListener {
-
-    private static final String TAG = SearchUserFragment.class.getSimpleName();
 
     @InjectPresenter
     SearchUserPresenter mPresenter;
@@ -37,7 +34,6 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
 
     @Override
     public void onItemClicked(User user) {
-        Log.d(TAG, "onItemClicked: ");
         mPresenter.handleUserClick(user);
     }
 
@@ -50,7 +46,6 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
 
     @Override
     public void displayData(List<User> users) {
-        Log.d(TAG, "displayData: ");
         mUserAdapter.setDataSet(users);
     }
 
@@ -70,5 +65,4 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecycleView.setAdapter(mUserAdapter);
     }
-
 }

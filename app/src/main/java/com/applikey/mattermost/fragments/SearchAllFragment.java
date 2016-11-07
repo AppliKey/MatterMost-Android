@@ -3,7 +3,6 @@ package com.applikey.mattermost.fragments;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.R;
@@ -19,10 +18,9 @@ import java.util.List;
 
 import butterknife.Bind;
 
+// TODO: Generify search fragments
 public class SearchAllFragment extends SearchFragment implements SearchAllView,
         ChannelAdapter.ClickListener {
-
-    private static final String TAG = SearchAllFragment.class.getSimpleName();
 
     @InjectPresenter
     SearchAllPresenter mPresenter;
@@ -46,7 +44,6 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     @Override
     public void onItemClicked(Channel channel) {
-        Log.d(TAG, "onItemClicked: ");
 
     }
 
@@ -59,13 +56,12 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     @Override
     public void displayData(List<SearchItem> channels) {
-        Log.d(TAG, "displayData: ");
         mAdapter.setDataSet(channels);
     }
 
     @Override
     public void startChatActivity(SearchItem item) {
-        // TODO: 04.11.16 IMPLEMENT IT
+        // TODO: IMPLEMENT
     }
 
     @Override
@@ -84,5 +80,4 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecycleView.setAdapter(mAdapter);
     }
-
 }

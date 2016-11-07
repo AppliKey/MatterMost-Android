@@ -31,8 +31,6 @@ import timber.log.Timber;
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
 
-    private static final String TAG = ChatPresenter.class.getSimpleName();
-
     private static final int PAGE_SIZE = 60;
 
     @Inject

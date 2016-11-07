@@ -22,8 +22,6 @@ import rx.schedulers.Schedulers;
 @InjectViewState
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
-    private static final String TAG = SearchChannelPresenter.class.getSimpleName();
-
     @Inject
     ChannelStorage mChannelStorage;
 
@@ -36,6 +34,9 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
+
+    @Inject
+    ErrorHandler mErrorHandler;
 
     public SearchChannelPresenter() {
         App.getUserComponent().inject(this);
@@ -59,7 +60,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
                         .observeOn(Schedulers.io())
                         .doOnNext(channels -> addFilterChannels(channels, text))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, ErrorHandler::handleError));
+                        .subscribe(view::displayData, mErrorHandler::handleError));
     }
 
     public void handleChannelClick(Channel channel) {
@@ -68,10 +69,9 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     }
 
     @Subscribe
-    public void onTextChanged(SearchChannelTextChanged event) {
+    void on(SearchChannelTextChanged event) {
         final SearchChannelView view = getViewState();
         view.clearData();
         getData(event.getText());
     }
-
 }
