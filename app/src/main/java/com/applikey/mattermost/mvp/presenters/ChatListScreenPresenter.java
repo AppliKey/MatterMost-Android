@@ -2,21 +2,15 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.support.v4.app.Fragment;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.DirectChatListFragment;
 import com.applikey.mattermost.fragments.EmptyChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.UnreadChatListFragment;
-import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
-import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.models.web.LastPostResult;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -76,7 +70,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(team -> view.setToolbarTitle(team.getDisplayName()))
                 .map(Team::getId)
                 .flatMap(this::fetchStartup)
-                .doOnNext(this::fetchLastMessages)
                 .doOnNext(this::fetchUserStatus)
                 .subscribe(v -> {
                 }, ErrorHandler::handleError);
@@ -98,18 +91,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         return mSettingsManager.shouldShowUnreadMessages();
     }
 
-    private void fetchLastMessages(StartupFetchResult response) {
-        Observable.from(response.getChannelResponse().getChannels())
-                .flatMap(channel -> mApi.getLastPost(response.getTeamId(), channel.getId())
-                        .onErrorResumeNext(throwable -> null), this::transform)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(lastPostResult -> {
-                    mPostStorage.saveAll(lastPostResult.getPosts());
-                    mChannelStorage.updateLastPost(lastPostResult.getChannel());
-                }, ErrorHandler::handleError);
-    }
-
     private void fetchUserStatus(StartupFetchResult response) {
         final Set<String> keys = response.getDirectProfiles().keySet();
 
@@ -121,19 +102,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(userStatusResponse -> mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse))
                 .subscribe(v -> {
                 }, ErrorHandler::handleError);
-    }
-
-    private LastPostResult transform(Channel channel, PostResponse postResponse) {
-
-        final List<Post> posts = Stream.of(postResponse.getPosts())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-
-        if (!posts.isEmpty()) {
-            channel.setLastPost(posts.get(posts.size() - 1));
-        }
-
-        return new LastPostResult(channel, posts);
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,

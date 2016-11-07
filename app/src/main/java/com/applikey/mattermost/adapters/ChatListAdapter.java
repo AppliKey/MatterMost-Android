@@ -28,10 +28,10 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     private final ImageLoader mImageLoader;
     private final String mCurrentUserId;
 
-    private ClickListener mClickListener = null;
+    private ChannelListener mChannelListener;
 
     // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
-    private Context mContext;
+    private final Context mContext;
 
     public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
             ImageLoader imageLoader, String currentUserId) {
@@ -85,6 +85,10 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         setUnreadStatus(vh, channel);
 
         vh.getRoot().setTag(position);
+
+        if (mChannelListener != null) {
+            mChannelListener.onLoadAdditionalData(channel);
+        }
     }
 
     private String getMessagePreview(Channel channel, Context context) {
@@ -105,8 +109,8 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         return messagePreview;
     }
 
-    public void setOnClickListener(ClickListener listener) {
-        this.mClickListener = listener;
+    public void setChannelListener(ChannelListener channelListener) {
+        mChannelListener = channelListener;
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
@@ -160,9 +164,11 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         return post.getUserId().equals(mCurrentUserId);
     }
 
-    public interface ClickListener {
+    public interface ChannelListener {
 
         void onItemClicked(Channel channel);
+
+        void onLoadAdditionalData(Channel channel);
     }
 
     private final View.OnClickListener mOnClickListener = v -> {
@@ -174,8 +180,8 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
         final Channel team = data.get(position);
 
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(team);
+        if (mChannelListener != null) {
+            mChannelListener.onItemClicked(team);
         }
     };
 

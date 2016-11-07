@@ -139,9 +139,9 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsExcluded(Class<T>
-                                                                                        tClass,
-                                                                                String fieldName,
-                                                                                String value) {
+            tClass,
+            String fieldName,
+            String value) {
         return mRealm
                 .where(tClass)
                 .notEqualTo(fieldName, value)
@@ -175,7 +175,7 @@ public class Db {
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
-                .filter(o -> o.isLoaded() && o.isValid());
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(Class<T> tClass,
@@ -187,7 +187,7 @@ public class Db {
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
-                .filter(o -> o.isLoaded() && o.isValid());
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,

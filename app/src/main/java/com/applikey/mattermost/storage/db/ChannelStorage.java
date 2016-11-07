@@ -93,13 +93,18 @@ public class ChannelStorage {
 
     public void updateLastPost(Channel channel) {
         final Post lastPost = channel.getLastPost();
+        setLastPost(channel, lastPost);
+    }
+
+    public void setLastPost(Channel channel, Post lastPost) {
+        final String channelId = channel.getId();
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
             final Post realmPost;
 
             //If last post null, find last post
             if (lastPost == null) {
                 final RealmResults<Post> result = realm.where(Post.class)
-                        .equalTo(Post.FIELD_NAME_CHANNEL_ID, channel.getId())
+                        .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
                         .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING);
                 if (result.size() > 0) {
                     realmPost = result.first();
@@ -122,6 +127,7 @@ public class ChannelStorage {
             return true;
         });
     }
+
 
     public void updateLastViewedAt(String id) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {

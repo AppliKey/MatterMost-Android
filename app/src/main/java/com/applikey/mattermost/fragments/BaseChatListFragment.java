@@ -34,7 +34,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
-public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
+public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView, ChatListAdapter.ChannelListener {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
     private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
@@ -107,16 +107,23 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
         final ChatListAdapter adapter = new ChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
-        adapter.setOnClickListener(mChatClickListener);
-        mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
+        adapter.setChannelListener(this);
+        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mRvChannels.setLayoutManager(layoutManager);
         mRvChannels.setAdapter(adapter);
     }
 
-    private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
+    @Override
+    public void onItemClicked(Channel channel) {
         final Activity activity = getActivity();
         final Intent intent = ChatActivity.getIntent(activity, channel);
         activity.startActivity(intent);
-    };
+    }
+
+    @Override
+    public void onLoadAdditionalData(Channel channel) {
+        getPresenter().getLastPost(channel);
+    }
 
     protected abstract ChatListPresenter getPresenter();
 
