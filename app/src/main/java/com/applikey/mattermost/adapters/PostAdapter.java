@@ -114,8 +114,8 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         final boolean mNewMessageIndicatorShowed = mNewMessageIndicatorPosition != -1;
         final boolean showNewMessageIndicator = (!mNewMessageIndicatorShowed &&
                 mLastViewed < post.getCreatedAt() &&
-                !isLastPost && nextPost.getCreatedAt() < mLastViewed) ||
-                mNewMessageIndicatorPosition == holder.getAdapterPosition();
+                !isLastPost && nextPost.getCreatedAt() < mLastViewed) /*||
+                mNewMessageIndicatorPosition == holder.getAdapterPosition()*/;
 
         if (showNewMessageIndicator) {
             mNewMessageIndicatorPosition = holder.getAdapterPosition();

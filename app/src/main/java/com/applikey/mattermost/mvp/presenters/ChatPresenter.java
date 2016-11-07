@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.text.TextUtils;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.channel.Channel;
@@ -81,6 +83,20 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         }
     }
 
+    private void updateLastViewedAt(String channelId) {
+        // Does not belong to UI
+        mTeamStorage.getChosenTeam()
+                .first()
+                .observeOn(Schedulers.io())
+                .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
+                .toCompletable()
+                .subscribe(ErrorHandler::handleError, () -> {
+                });
+
+        mChannelStorage.updateLastViewedAt(channelId);
+        mNotificationManager.dismissNotification(channelId);
+    }
+
     public void fetchData(String channelId) {
         getViewState().showProgress(true);
         Timber.d("fetching data");
@@ -130,6 +146,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void sendMessage(String channelId, String message) {
+        if (TextUtils.isEmpty(message.trim())) {
+            return;
+        }
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
@@ -137,8 +156,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId);
 
-        final long lastViewedAt = System.currentTimeMillis();
-        mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
+        mChannelStorage.updateLastViewedAt(channelId);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
@@ -146,6 +164,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
                 .subscribe(result -> getViewState().onMessageSent(lastViewedAt),
                         ErrorHandler::handleError));
     }
@@ -158,8 +177,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                 message, "", pendingId, mRootId, mRootId);
 
-        final long lastViewedAt = System.currentTimeMillis();
-        mChannelStorage.updateLastViewedAt(channelId, lastViewedAt);
+        mChannelStorage.updateLastViewedAt(channelId);
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team -> mApi.createPost(team.getId(), channelId, pendingPost)
@@ -167,6 +185,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), ErrorHandler::handleError));
                 .subscribe(result -> getViewState().onMessageSent(lastViewedAt),
                         ErrorHandler::handleError));
     }
