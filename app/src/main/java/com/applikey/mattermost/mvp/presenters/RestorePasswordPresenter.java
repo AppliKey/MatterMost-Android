@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import dagger.Lazy;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView> {
@@ -35,6 +36,7 @@ public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView>
         }
 
         mSubscription.add(mApi.sendPasswordReset(email)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(v -> view.onPasswordRestoreSent(), throwable -> {
                     mErrorHandler.get().handleError(throwable);

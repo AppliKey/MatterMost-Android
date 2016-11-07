@@ -85,7 +85,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response> sendPasswordReset(@Field("email") String email) {
+    public Observable<Response<Void>> sendPasswordReset(@Field("email") String email) {
         return getRealApi().sendPasswordReset(email);
     }
 
