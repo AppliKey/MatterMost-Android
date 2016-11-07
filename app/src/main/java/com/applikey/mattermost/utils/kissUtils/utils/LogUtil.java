@@ -89,7 +89,7 @@ public class LogUtil {
     }
 
     private static void log(int priority, Throwable ex, String tag,
-                            String message) {
+            String message) {
         if (priority < mLogPriority) {
             return;
         }

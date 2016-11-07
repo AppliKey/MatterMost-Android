@@ -37,7 +37,6 @@ import io.realm.RealmResults;
 public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView, ChatListAdapter.ChannelListener {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
-    private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
 
     @Bind(R.id.rv_channels)
     RecyclerView mRvChannels;
@@ -55,6 +54,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
+    private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,22 +68,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        getPresenter().displayData();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
-
-        ButterKnife.bind(this, view);
-
-        return view;
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
         mTvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
@@ -92,6 +77,24 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     public void onDestroy() {
         super.onDestroy();
         getPresenter().unSubscribe();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getPresenter().displayData();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
+
+        ButterKnife.bind(this, view);
+
+        return view;
     }
 
     @Override
@@ -112,6 +115,17 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         mRvChannels.setLayoutManager(layoutManager);
         mRvChannels.setAdapter(adapter);
     }
+
+    @Override
+    public void onItemClicked(Channel channel) {
+    @Override
+    public void showUnreadIndicator(boolean showIndicator) {
+        mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
+    }
+
+    protected abstract ChatListPresenter getPresenter();
+
+    protected abstract int getEmptyStateTextId();
 
     @Override
     public void onItemClicked(Channel channel) {

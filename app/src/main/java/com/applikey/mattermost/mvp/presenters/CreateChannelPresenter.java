@@ -53,6 +53,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     UserStorage mUserStorage;
 
     @Inject
+    ErrorHandler mErrorHandler;
+
+    @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
@@ -117,7 +120,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     }
 
 
-    public void createChannel(String channelName, String channelDescription, boolean isPublicChannel) {
+    public void createChannel(String channelName,
+            String channelDescription,
+            boolean isPublicChannel) {
         if (TextUtils.isEmpty(channelName)) {
             getViewState().showEmptyChannelNameError();
             return;
@@ -127,8 +132,56 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 ? Channel.ChannelType.PUBLIC.getRepresentation()
                 : Channel.ChannelType.PRIVATE.getRepresentation();
 
-        final ChannelRequest channelRequest = new ChannelRequest(channelName, channelDescription, channelType);
+        final ChannelRequest channelRequest = new ChannelRequest(channelName, channelDescription,
+                channelType);
         createChannelWithRequest(channelRequest);
+    }
+
+    /**
+     * How it works:
+     * <li>1. All team members are fetched from data source</li>
+     * <li>2. Fetched members are sorted by comparator {@link User#compareTo(User)}</li>
+     * <li>3. User list is iterated and filtered by comparing ids with every id in
+     * <code>addedUsersIds</code>. Thus we get the list of already added users</li>
+     * <li>4. The list of already added users is shown in
+     * {@link AddedPeopleLayout}</li>
+     * <li>5. The initial list of users is converted to {@link UserPendingInvitation}</li>
+     * <li>6. The {@link UserPendingInvitation} list is shown in RecyclerView</li>
+     *
+     * @param addedUsersIds the list of already added users' ids
+     */
+    public void showAlreadyAddedUsers(List<String> addedUsersIds) {
+
+        final Subscription subscription = mUserStorage.listDirectProfiles()
+                .first()                                                               //
+                // Start of Section 1
+                .flatMap(Observable::from)                                             //
+                .filter(user -> !user.getId()
+                        .equals(mCurrentUserId))                  //      End of Section 1
+                .toSortedList()                                                        //
+                // Section 2
+                .map(users -> {                                                        //
+                    // Start of Section 3
+                    final List<User> alreadyAddedUsers = Stream.of(users)              //
+                            .filter(user ->                                            //
+                                    Stream.of(addedUsersIds)                           //
+                                            .anyMatch(id -> user.getId().equals(id)))  //
+                            .collect(
+                                    Collectors.toList());                             //      End
+                    // of Section 3
+                    mInvitedUsers = alreadyAddedUsers;
+                    getViewState().showAddedUsers(
+                            mInvitedUsers);                      //      Section 4
+                    return convertToPendingUsers(users,
+                            alreadyAddedUsers);            //      Section 5
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        results -> getViewState().showUsers(results),
+                        //      Section 6
+                        error -> Timber.e("", error)
+                );
+        mSubscription.add(subscription);
     }
 
     private boolean isUserPassesFilter(User user, String filterString) {
@@ -136,13 +189,15 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         final String firstName = user.getFirstName();
         final String lastName = user.getLastName();
         final String userEmail = user.getEmail();
-        if (firstName.contains(filterString) || lastName.contains(filterString) || userEmail.contains(filterString)) {
+        if (firstName.contains(filterString) || lastName.contains(filterString)
+                || userEmail.contains(filterString)) {
             result = true;
         }
         return result;
     }
 
-    private List<UserPendingInvitation> filterUserListByFullName(List<UserPendingInvitation> source, String filter) {
+    private List<UserPendingInvitation> filterUserListByFullName(List<UserPendingInvitation> source,
+            String filter) {
         return Stream.of(source)
                 .filter(user -> isUserPassesFilter(user.getUser(), filter))
                 .collect(Collectors.toList());
@@ -163,7 +218,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                         user.getCreatedChannel().getChannel().getId(),
                         new RequestUserId(user.getUser().getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> getViewState().successfulClose(), ErrorHandler::handleError);
+                .subscribe(v -> getViewState().successfulClose(), mErrorHandler::handleError);
         mSubscription.add(subscription);
     }
 
@@ -173,7 +228,8 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
                 .collect(Collectors.toList());
     }
 
-    private List<UserPendingInvitation> convertToPendingUsers(List<User> users, List<User> alreadyAddedUsers) {
+    private List<UserPendingInvitation> convertToPendingUsers(List<User> users,
+            List<User> alreadyAddedUsers) {
         final List<UserPendingInvitation> pendingUsers = new ArrayList<>(users.size());
         Stream.of(users).forEach(user -> {
             final boolean isAlreadyAdded =
@@ -185,44 +241,6 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
             pendingUsers.add(new UserPendingInvitation(user, isAlreadyAdded));
         });
         return pendingUsers;
-    }
-
-    /**
-     * How it works:
-     * <li>1. All team members are fetched from data source</li>
-     * <li>2. Fetched members are sorted by comparator {@link User#compareTo(User)}</li>
-     * <li>3. User list is iterated and filtered by comparing ids with every id in
-     * <code>addedUsersIds</code>. Thus we get the list of already added users</li>
-     * <li>4. The list of already added users is shown in
-     * {@link AddedPeopleLayout}</li>
-     * <li>5. The initial list of users is converted to {@link UserPendingInvitation}</li>
-     * <li>6. The {@link UserPendingInvitation} list is shown in RecyclerView</li>
-     *
-     * @param addedUsersIds the list of already added users' ids
-     */
-    public void showAlreadyAddedUsers(List<String> addedUsersIds) {
-
-        final Subscription subscription = mUserStorage.listDirectProfiles()
-                .first()                                                               //      Start of Section 1
-                .flatMap(Observable::from)                                             //
-                .filter(user -> !user.getId().equals(mCurrentUserId))                  //      End of Section 1
-                .toSortedList()                                                        //      Section 2
-                .map(users -> {                                                        //      Start of Section 3
-                    final List<User> alreadyAddedUsers = Stream.of(users)              //
-                            .filter(user ->                                            //
-                                    Stream.of(addedUsersIds)                           //
-                                            .anyMatch(id -> user.getId().equals(id)))  //
-                            .collect(Collectors.toList());                             //      End of Section 3
-                    mInvitedUsers = alreadyAddedUsers;
-                    getViewState().showAddedUsers(mInvitedUsers);                      //      Section 4
-                    return convertToPendingUsers(users, alreadyAddedUsers);            //      Section 5
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        results -> getViewState().showUsers(results),                  //      Section 6
-                        error -> Timber.e("", error)
-                );
-        mSubscription.add(subscription);
     }
 }
 

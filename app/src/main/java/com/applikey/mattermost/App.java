@@ -19,12 +19,10 @@ import timber.log.Timber;
 
 public class App extends Application {
 
+    private static ApplicationComponent mComponent;
+    private static UserComponent mUserComponent;
     @Inject
     ImageLoader imageLoader;
-
-    private static ApplicationComponent mComponent;
-
-    private static UserComponent mUserComponent;
 
     @Override
     public void onCreate() {
@@ -45,6 +43,12 @@ public class App extends Application {
                         .build());
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        imageLoader.dropMemoryCache();
+    }
+
     public static ApplicationComponent getComponent() {
         return mComponent;
     }
@@ -58,11 +62,5 @@ public class App extends Application {
 
     public static void releaseUserComponent() {
         mUserComponent = null;
-    }
-
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-        imageLoader.dropMemoryCache();
     }
 }

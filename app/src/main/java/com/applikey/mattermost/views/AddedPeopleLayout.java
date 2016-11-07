@@ -23,7 +23,8 @@ public class AddedPeopleLayout extends LinearLayout {
     private static final int MAX_VISIBLE_AVATARS = 6;
     private static final int VISIBLE_AVATARS_WITH_COUNTER = MAX_VISIBLE_AVATARS - 1;
 
-    @Bind({R.id.first_added, R.id.second_added, R.id.third_added, R.id.fourth_added, R.id.fifth_added, R.id.sixth_added})
+    @Bind({R.id.first_added, R.id.second_added, R.id.third_added, R.id.fourth_added,
+            R.id.fifth_added, R.id.sixth_added})
     ImageView[] mAddedUserAvatars;
 
     @Bind(R.id.added_people_excess_count)
@@ -59,12 +60,25 @@ public class AddedPeopleLayout extends LinearLayout {
         removeUnnecessaryViews(activatedViewsCount);
     }
 
+    public void setImageLoader(ImageLoader imageLoader) {
+        mImageLoader = imageLoader;
+    }
+
+    public ImageView getLastUserAvatar() {
+        return mAddedUserAvatars[mAddedUserAvatars.length - 1];
+    }
+
+    public List<User> getUsers() {
+        return mUsers;
+    }
+
     private void displayUserAvatarsInActivatedViews(List<User> users, int activatedViewsCount) {
         Stream.range(0, activatedViewsCount)
                 .forEach(index -> {
                     final ImageView imageView = mAddedUserAvatars[index];
                     imageView.setVisibility(VISIBLE);
-                    mImageLoader.displayCircularImage(users.get(index).getProfileImage(), imageView);
+                    mImageLoader.displayCircularImage(users.get(index).getProfileImage(),
+                            imageView);
                 });
     }
 
@@ -80,7 +94,8 @@ public class AddedPeopleLayout extends LinearLayout {
         if (isNeedToShowCounter) {
             getLastUserAvatar().setVisibility(GONE);
             mAddedPeopleExcessCount.setVisibility(VISIBLE);
-            mAddedPeopleExcessCount.setText(getContext().getString(R.string.added_people_count, totalUsersCount - VISIBLE_AVATARS_WITH_COUNTER));
+            mAddedPeopleExcessCount.setText(getContext().getString(R.string.added_people_count,
+                    totalUsersCount - VISIBLE_AVATARS_WITH_COUNTER));
         } else {
             getLastUserAvatar().setVisibility(VISIBLE);
             mAddedPeopleExcessCount.setVisibility(GONE);
@@ -97,23 +112,11 @@ public class AddedPeopleLayout extends LinearLayout {
         return dataSize > MAX_VISIBLE_AVATARS;
     }
 
-    public void setImageLoader(ImageLoader imageLoader) {
-        mImageLoader = imageLoader;
-    }
-
-    public ImageView getLastUserAvatar() {
-        return mAddedUserAvatars[mAddedUserAvatars.length - 1];
-    }
-
     private void setVisible(boolean isActive) {
         this.setVisibility(isActive ? VISIBLE : GONE);
     }
 
     private boolean isNeedToBeShown(int dataSize) {
         return dataSize != 0;
-    }
-
-    public List<User> getUsers() {
-        return mUsers;
     }
 }

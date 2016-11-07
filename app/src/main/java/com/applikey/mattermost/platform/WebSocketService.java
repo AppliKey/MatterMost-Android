@@ -51,6 +51,9 @@ public class WebSocketService extends Service {
     @Inject
     ChannelStorage mChannelStorage;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private WebSocket mWebSocket;
     private Handler mHandler;
 
@@ -93,6 +96,10 @@ public class WebSocketService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, WebSocketService.class);
     }
 
     private void openSocket() throws IOException, WebSocketException {
@@ -157,7 +164,7 @@ public class WebSocketService extends Service {
                                 mChannelStorage.updateLastPost(channel);
                             })
                             .subscribe(v -> {
-                            }, ErrorHandler::handleError);
+                            }, mErrorHandler::handleError);
                 });
             }
         }
@@ -172,7 +179,8 @@ public class WebSocketService extends Service {
         final JsonObject eventData = event.getData();
         final String postObject;
         if (eventData != null) {
-            final MessagePostedEventData data = gson.fromJson(eventData, MessagePostedEventData.class);
+            final MessagePostedEventData data = gson.fromJson(eventData,
+                    MessagePostedEventData.class);
             postObject = data.getPostObject();
         } else {
             final JsonObject eventProps = event.getProps();
@@ -180,9 +188,5 @@ public class WebSocketService extends Service {
             postObject = props.getPost();
         }
         return gson.fromJson(postObject, Post.class);
-    }
-
-    public static Intent getIntent(Context context) {
-        return new Intent(context, WebSocketService.class);
     }
 }

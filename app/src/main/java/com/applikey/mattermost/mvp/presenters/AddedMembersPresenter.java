@@ -25,6 +25,9 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     @Inject
     UserStorage mUserStorage;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private List<String> mAddedUsersIds;
     private List<User> mResultingList = new ArrayList<>();
 
@@ -39,12 +42,16 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .filter(user -> Stream.of(usersIds).anyMatch(id -> user.getId().equals(id)))
                 .toSortedList()
                 .doOnNext(users -> mResultingList = users)
-                .doOnNext(users -> mAddedUsersIds = Stream.of(users).map(User::getId).collect(Collectors.toList()))
-                .map(users -> Stream.of(users).map(user -> new UserPendingInvitation(user, true)).collect(Collectors.toList()))
+                .doOnNext(users -> mAddedUsersIds = Stream.of(users)
+                        .map(User::getId)
+                        .collect(Collectors.toList()))
+                .map(users -> Stream.of(users)
+                        .map(user -> new UserPendingInvitation(user, true))
+                        .collect(Collectors.toList()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         users -> getViewState().showAddedMembers(users),
-                        ErrorHandler::handleError
+                        mErrorHandler::handleError
                 );
         mSubscription.add(subscription);
     }
@@ -68,7 +75,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         users -> getViewState().showAddedMembers(users),
-                        ErrorHandler::handleError
+                        mErrorHandler::handleError
                 );
         mSubscription.add(subscription);
     }
@@ -77,7 +84,8 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
         return mResultingList;
     }
 
-    private List<UserPendingInvitation> convertToPendingUsers(List<User> users, List<User> alreadyAddedUsers) {
+    private List<UserPendingInvitation> convertToPendingUsers(List<User> users,
+            List<User> alreadyAddedUsers) {
         final List<UserPendingInvitation> pendingUsers = new ArrayList<>(users.size());
         Stream.of(users).forEach(user -> {
             final boolean isAlreadyAdded =

@@ -22,7 +22,9 @@ public class PrimitiveConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+    public Converter<ResponseBody, ?> responseBodyConverter(Type type,
+            Annotation[] annotations,
+            Retrofit retrofit) {
         if (type == String.class) {
             return ResponseBody::string;
         } else if (type == Integer.class) {

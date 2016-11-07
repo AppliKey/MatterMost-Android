@@ -45,10 +45,10 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     ChannelStorage mChannelStorage;
 
     @Inject
-    TeamStorage mTeamStorage;
+    PostStorage mPostStorage;
 
     @Inject
-    PostStorage mPostStorage;
+    ErrorHandler mErrorHandler;
 
     private RealmResults<Channel> mChannels;
 
@@ -72,7 +72,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .first()
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
-                .subscribe(getViewState()::displayInitialData, ErrorHandler::handleError);
+                .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
         mSubscription.add(subscription);
     }
 

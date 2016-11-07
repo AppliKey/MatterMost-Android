@@ -1,5 +1,7 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -21,16 +23,26 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
     @Bind(R.id.et_server)
     EditText mEtServerUrl;
+
     @Bind(R.id.b_proceed)
     Button mBtnProceed;
+
     @Bind(R.id.sp_http)
     Spinner mSpHttp;
 
     @InjectPresenter
     ChooseServerPresenter mPresenter;
 
+    public static Intent getIntent(Context context, boolean clearBackstack) {
+        final Intent intent = new Intent(context, ChooseServerActivity.class);
+        if (clearBackstack) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
+        return intent;
+    }
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_choose_server);
@@ -42,19 +54,10 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
 
         mPresenter.getInitialData();
-    }
-
-    @OnClick(R.id.b_proceed)
-    void onProceed() {
-        final String httpPrefix = mSpHttp.getSelectedItem().toString();
-        final String serverUrl = mEtServerUrl.getText().toString();
-
-        showLoadingDialog();
-        mPresenter.chooseServer(httpPrefix, serverUrl);
     }
 
     @Override
@@ -73,6 +76,15 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     @Override
     public void showPresetServer(String url) {
         mEtServerUrl.setText(url);
+    }
+
+    @OnClick(R.id.b_proceed)
+    void onProceed() {
+        final String httpPrefix = mSpHttp.getSelectedItem().toString();
+        final String serverUrl = mEtServerUrl.getText().toString();
+
+        showLoadingDialog();
+        mPresenter.chooseServer(httpPrefix, serverUrl);
     }
 
     private void disableButton() {

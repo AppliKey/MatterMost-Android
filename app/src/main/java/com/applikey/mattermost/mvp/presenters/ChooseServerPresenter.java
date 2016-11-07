@@ -11,14 +11,13 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
 import okhttp3.HttpUrl;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
-
-    private static final String TAG = ChooseServerPresenter.class.getSimpleName();
 
     private static final String HTTP_PREFIX = "http://";
     private static final String HTTPS_PREFIX = "https://";
@@ -32,6 +31,9 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
     @Inject
     TeamStorage teamStorage;
+
+    @Inject
+    Lazy<ErrorHandler> mErrorHandler;
 
     public ChooseServerPresenter() {
         App.getComponent().inject(this);
@@ -71,10 +73,8 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
         mSubscription.add(mApi.ping()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pingResponse -> {
-                    view.onValidServerChosen();
-                }, throwable -> {
-                    ErrorHandler.handleError(throwable);
+                .subscribe(pingResponse -> view.onValidServerChosen(), throwable -> {
+                    mErrorHandler.get().handleError(throwable);
                     view.showValidationError();
                 }));
     }

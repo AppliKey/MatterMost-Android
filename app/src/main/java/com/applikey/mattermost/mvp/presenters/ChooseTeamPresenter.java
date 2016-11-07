@@ -12,6 +12,8 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
+
 @InjectViewState
 public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
 
@@ -27,6 +29,9 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
     @Inject
     ImagePathHelper mImagePathHelper;
 
+    @Inject
+    Lazy<ErrorHandler> mErrorHandler;
+
     public ChooseTeamPresenter() {
         App.getComponent().inject(this);
     }
@@ -35,7 +40,7 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
         final ChooseTeamView view = getViewState();
         mSubscription.add(mTeamStorage.listAll()
                 .subscribe(view::displayTeams, throwable -> {
-                    ErrorHandler.handleError(throwable);
+                    mErrorHandler.get().handleError(throwable);
                     getViewState().onFailure(throwable.getMessage());
                 }));
     }

@@ -4,8 +4,8 @@ import javax.inject.Inject;
 
 public class SettingsManager {
 
-    private final Prefs mPrefs;
     private static final String KEY_UNREAD_TABS = "unread-tabs";
+    private final Prefs mPrefs;
 
     @Inject
     public SettingsManager(Prefs prefs) {

@@ -11,6 +11,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.injects.ApplicationComponent;
 import com.applikey.mattermost.utils.kissUtils.utils.ToastUtil;
+import com.applikey.mattermost.web.images.ImageLoader;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,6 +24,9 @@ public abstract class BaseFragment extends RxFragment {
 
     @Inject
     EventBus mEventBus;
+
+    @Inject
+    ImageLoader mImageLoader;
 
     private ProgressDialog mProgressDialog;
 
