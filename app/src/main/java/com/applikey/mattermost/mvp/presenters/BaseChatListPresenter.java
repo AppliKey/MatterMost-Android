@@ -11,7 +11,6 @@ import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
-import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -54,7 +53,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
 
     private String mTeamId;
 
-    private final Set<String> moLoadedChannels = new HashSet<>();
+    private final Set<String> mLoadedChannels = new HashSet<>();
 
     /* package */ BaseChatListPresenter() {
         App.getUserComponent().inject(this);
@@ -78,18 +77,16 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
 
     @Override
     public void getLastPost(Channel channel) {
-        if (moLoadedChannels.contains(channel.getId())) {
+        if (mLoadedChannels.contains(channel.getId())) {
             return;
         }
         Log.d(TAG, "getLastPost for " + channel.getDisplayName());
-        moLoadedChannels.add(channel.getId());
+        mLoadedChannels.add(channel.getId());
         mSubscription.add(mApi.getLastPost(mTeamId, channel.getId())
                 .map(this::transform)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(post -> {
-                    mChannelStorage.setLastPost(channel, post);
-                }, ErrorHandler::handleError));
+                .subscribe(post -> mChannelStorage.setLastPost(channel, post), mErrorHandler::handleError));
     }
 
     private Post transform(PostResponse postResponse) {
@@ -120,7 +117,9 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     @Override
     public void unSubscribe() {
         super.unSubscribe();
-        mChannels.removeChangeListener(this);
+        if (mChannels != null) {
+            mChannels.removeChangeListener(this);
+        }
     }
 }
 

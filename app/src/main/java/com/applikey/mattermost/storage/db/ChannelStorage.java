@@ -171,6 +171,7 @@ public class ChannelStorage {
         final List<Channel> channels = response.getChannels();
 
         Stream.of(channels).forEach(channel -> {
+            channel.updateLastActivityTime();
             if (channel.getType().equals(directChannelType)) {
                 updateDirectChannelData(channel, userProfiles, currentUserId);
             }

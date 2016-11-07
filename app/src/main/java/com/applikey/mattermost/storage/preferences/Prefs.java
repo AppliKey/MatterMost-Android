@@ -38,7 +38,7 @@ public class Prefs {
         return mSharedPreferences.getString(KEY_TEAM_ID, null);
     }
 
-    public void setCurrentTeamrId(@Nullable String id) {
+    public void setCurrentTeamId(@Nullable String id) {
         mSharedPreferences.edit().putString(KEY_TEAM_ID, id).apply();
     }
 

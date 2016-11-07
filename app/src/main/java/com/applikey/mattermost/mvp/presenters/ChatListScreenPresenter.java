@@ -64,10 +64,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         App.getComponent().inject(this);
     }
 
-    public boolean shouldShowUnreadTab() {
-        return mSettingsManager.shouldShowUnreadMessages();
-    }
-
     public void applyInitialViewState() {
         mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
                 getViewState().setToolbarTitle(team.getDisplayName()), mErrorHandler::handleError));
@@ -124,7 +120,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(response -> mChannelStorage.saveChannelResponse(
                         response.getChannelResponse(),
                         response.getDirectProfiles()));
-
     }
 
     public boolean shouldShowUnreadTab() {
@@ -135,7 +130,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         final Set<String> keys = response.getDirectProfiles().keySet();
 
         // TODO: Remove v3.3 API support
-        mApi.getUserStatusesCompatible(keys.toArray(new String[]{}))
+        mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -146,7 +141,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> contacts, String teamId) {
+            Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 

@@ -3,14 +3,16 @@ package com.applikey.mattermost.models.web;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 
+import java.util.List;
+
 public class LastPostResult {
 
     private Channel channel;
-    private Post lastPost;
+    private List<Post> posts;
 
-    public LastPostResult(Channel channel, Post post) {
+    public LastPostResult(Channel channel, List<Post> posts) {
         this.channel = channel;
-        this.lastPost = post;
+        this.posts = posts;
     }
 
     public Channel getChannel() {
@@ -21,11 +23,11 @@ public class LastPostResult {
         this.channel = channel;
     }
 
-    public Post getLastPost() {
-        return lastPost;
+    public List<Post> getPosts() {
+        return posts;
     }
 
-    public void setLastPost(Post lastPost) {
-        this.lastPost = lastPost;
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
     }
 }

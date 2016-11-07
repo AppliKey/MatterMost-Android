@@ -34,7 +34,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
-public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView, ChatListAdapter.ChannelListener {
+public abstract class BaseChatListFragment extends BaseMvpFragment
+        implements ChatListView, ChatListAdapter.ChannelListener {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
 
@@ -115,17 +116,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         mRvChannels.setLayoutManager(layoutManager);
         mRvChannels.setAdapter(adapter);
     }
-
-    @Override
-    public void onItemClicked(Channel channel) {
-    @Override
-    public void showUnreadIndicator(boolean showIndicator) {
-        mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
-    }
-
-    protected abstract ChatListPresenter getPresenter();
-
-    protected abstract int getEmptyStateTextId();
 
     @Override
     public void onItemClicked(Channel channel) {
