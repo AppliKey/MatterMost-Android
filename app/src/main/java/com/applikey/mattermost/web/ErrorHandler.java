@@ -47,7 +47,7 @@ public final class ErrorHandler {
 
     private boolean handleApiException(Throwable throwable) {
         if (throwable instanceof HttpException) {
-            HttpException exception = (HttpException) throwable;
+            final HttpException exception = (HttpException) throwable;
             if (exception.code() == HttpCode.UNAUTHORIZED) {
                 handleUnauthorizedException();
                 return true;
@@ -57,7 +57,7 @@ public final class ErrorHandler {
     }
 
     private void handleUnauthorizedException() {
-        Toast.makeText(mContext, R.string.your_session_has_been_expired, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, R.string.your_session_has_expired, Toast.LENGTH_SHORT).show();
 
         mSettingsManager.deleteUserSession();
         mStorageDestroyer.deleteDatabase();

@@ -2,7 +2,7 @@
     <string name="app_name">Mattermost Native Client</string>
 
     <string name="please_wait">Please wait…</string>
-    <string name="your_session_has_been_expired">Your session has been expired</string>
+    <string name="your_session_has_expired">Your session has expired</string>
     <string name="example_server">http://server.com/</string>
     <string name="proceed">Proceed</string>
     <string name="enter_mattermost_server_url">Enter Mattermost Server URL</string>
