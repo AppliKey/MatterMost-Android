@@ -196,11 +196,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
     }
 
-    @Override
-    public void onFailure(Throwable cause) {
-        ErrorHandler.handleError(cause);
-    }
-
     @OnClick(R.id.iv_send_message)
     public void onSend() {
         if (mRootId == null) {

@@ -9,6 +9,7 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
+import dagger.Lazy;
 import rx.android.schedulers.AndroidSchedulers;
 
 @InjectViewState
@@ -18,6 +19,9 @@ public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView>
 
     @Inject
     Api mApi;
+
+    @Inject
+    Lazy<ErrorHandler> mErrorHandler;
 
     public RestorePasswordPresenter() {
         App.getComponent().inject(this);
@@ -35,7 +39,7 @@ public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView>
                 .subscribe(v -> {
                     view.onPasswordRestoreSent();
                 }, throwable -> {
-                    ErrorHandler.handleError(throwable);
+                    mErrorHandler.get().handleError(throwable);
                     view.onFailure(throwable.getMessage());
                 }));
     }

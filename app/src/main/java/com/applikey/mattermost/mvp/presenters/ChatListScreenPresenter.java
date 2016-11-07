@@ -61,6 +61,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     @Inject
     Api mApi;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private boolean mLastUnreadTabState;
 
     public ChatListScreenPresenter() {
@@ -79,7 +82,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(this::fetchLastMessages)
                 .doOnNext(this::fetchUserStatus)
                 .subscribe(v -> {
-                }, ErrorHandler::handleError);
+                }, mErrorHandler::handleError);
         mSubscription.add(subscription);
     }
 
@@ -107,7 +110,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribe(lastPostResult -> {
                     mPostStorage.saveAll(lastPostResult.getPosts());
                     mChannelStorage.updateLastPost(lastPostResult.getChannel());
-                }, ErrorHandler::handleError);
+                }, mErrorHandler::handleError);
     }
 
     private void fetchUserStatus(StartupFetchResult response) {
@@ -120,7 +123,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(userStatusResponse -> mUserStorage.saveUsersStatuses(response.getDirectProfiles(), userStatusResponse))
                 .subscribe(v -> {
-                }, ErrorHandler::handleError);
+                }, mErrorHandler::handleError);
     }
 
     private LastPostResult transform(Channel channel, PostResponse postResponse) {
@@ -143,7 +146,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     public void applyInitialViewState() {
         mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
-                getViewState().setToolbarTitle(team.getDisplayName()), ErrorHandler::handleError));
+                getViewState().setToolbarTitle(team.getDisplayName()), mErrorHandler::handleError));
     }
 
     public void preloadChannel(String channelId) {
@@ -155,7 +158,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .first()
                 .subscribe(channel -> {
                     getViewState().onChannelLoaded(channel);
-                }, ErrorHandler::handleError);
+                }, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }

@@ -27,6 +27,9 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     @Inject
     ChannelStorage mChannelStorage;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private RealmResults<Channel> mChannels;
 
     /* package */ BaseChatListPresenter() {
@@ -51,7 +54,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         final Subscription subscription = getInitData()
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
-                .subscribe(getViewState()::displayInitialData, ErrorHandler::handleError);
+                .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
         mSubscription.add(subscription);
     }
 
