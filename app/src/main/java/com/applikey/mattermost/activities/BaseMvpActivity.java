@@ -9,11 +9,9 @@ import com.arellomobile.mvp.MvpDelegate;
  */
 public abstract class BaseMvpActivity extends BaseActivity {
 
-    private static final String TAG = BaseMvpActivity.class.getSimpleName();
-
     private MvpDelegate<? extends BaseMvpActivity> mMvpDelegate;
 
-    public MvpDelegate getMvpDelegate() {
+    private MvpDelegate getMvpDelegate() {
         if (mMvpDelegate == null) {
             mMvpDelegate = new MvpDelegate<>(this);
         }

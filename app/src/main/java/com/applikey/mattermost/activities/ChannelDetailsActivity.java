@@ -63,9 +63,13 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         return intent;
     }
 
-    //TODO Implement Invite members logic
-    @OnClick(R.id.b_invite_member)
-    public void onInviteMemberClick() {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_channel_details);
+        ButterKnife.bind(this);
+        initViews();
+        initParameters();
     }
 
     @Override
@@ -86,15 +90,6 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
             default:
                 return false;
         }
-    }
-
-    @OnClick(R.id.added_people_layout)
-    public void onAddedUsersPanelClick() {
-        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
-                .map(User::getId)
-                .collect(Collectors.toList());
-        startActivity(
-                AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds));
     }
 
     @Override
@@ -121,13 +116,18 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         mMenu.getItem(0).setIcon(iconRes);
     }
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_channel_details);
-        ButterKnife.bind(this);
-        initViews();
-        initParameters();
+    @OnClick(R.id.added_people_layout)
+    void onAddedUsersPanelClick() {
+        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
+                .map(User::getId)
+                .collect(Collectors.toList());
+        startActivity(
+                AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds));
+    }
+
+    @OnClick(R.id.b_invite_member)
+    void onInviteMemberClick() {
+        //TODO Implement Invite members logic
     }
 
     private void initViews() {
