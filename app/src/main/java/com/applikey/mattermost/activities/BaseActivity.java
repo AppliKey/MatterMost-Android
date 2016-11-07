@@ -31,6 +31,7 @@ import rx.subjects.BehaviorSubject;
 public abstract class BaseActivity extends AppCompatActivity implements ActivityLifecycleProvider {
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
+
     @Inject
     EventBus mEventBus;
 
@@ -68,22 +69,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     @Override
     public final <T> Observable.Transformer<T, T> bindToLifecycle() {
         return RxLifecycle.bindActivity(lifecycleSubject);
-    }
-
-    public void showLoadingDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.show();
-            return;
-        }
-
-        mProgressDialog = ProgressDialog.show(this, null, getString(R.string.please_wait), true,
-                false);
-    }
-
-    public void hideLoadingDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-        }
     }
 
     @Override
@@ -126,5 +111,21 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     protected void onResume() {
         super.onResume();
         lifecycleSubject.onNext(ActivityEvent.RESUME);
+    }
+
+    public void showLoadingDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.show();
+            return;
+        }
+
+        mProgressDialog = ProgressDialog.show(this, null, getString(R.string.please_wait), true,
+                false);
+    }
+
+    public void hideLoadingDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
     }
 }
