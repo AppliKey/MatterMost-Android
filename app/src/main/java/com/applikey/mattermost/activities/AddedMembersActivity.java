@@ -25,9 +25,11 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class AddedMembersActivity extends BaseMvpActivity implements AddedMembersView, PeopleToNewChannelAdapter.OnUserChosenListener, SearchView.OnQueryTextListener {
+public class AddedMembersActivity extends BaseMvpActivity
+        implements AddedMembersView, PeopleToNewChannelAdapter.OnUserChosenListener,
+        SearchView.OnQueryTextListener {
 
-    public static final String USERS_IDS_KEY = "USERS_IDS_KEY";
+    /* package */ static final String USERS_IDS_KEY = "USERS_IDS_KEY";
 
     @InjectPresenter
     AddedMembersPresenter mPresenter;
@@ -37,8 +39,6 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-
-    private SearchView mSearchView;
 
     private PeopleToNewChannelAdapter mAdapter;
 
@@ -51,7 +51,7 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_added_people);
         ButterKnife.bind(this);
@@ -70,17 +70,11 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     }
 
     @Override
-    public void showAddedMembers(List<UserPendingInvitation> users) {
-        mAdapter.addUsers(users);
-    }
-
-    @Override
-    public void onChosen(User user, boolean isInvited) {
-        if (isInvited) {
-            mPresenter.addUser(user);
-        } else {
-            mPresenter.removeUser(user);
-        }
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final MenuItem searchViewMenuItem = menu.findItem(R.id.action_search_added_members);
+        final SearchView mSearchView = (SearchView) searchViewMenuItem.getActionView();
+        mSearchView.setOnQueryTextListener(this);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -95,11 +89,17 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        final MenuItem searchViewMenuItem = menu.findItem(R.id.action_search_added_members);
-        mSearchView = (SearchView) searchViewMenuItem.getActionView();
-        mSearchView.setOnQueryTextListener(this);
-        return super.onPrepareOptionsMenu(menu);
+    public void showAddedMembers(List<UserPendingInvitation> users) {
+        mAdapter.addUsers(users);
+    }
+
+    @Override
+    public void onChosen(User user, boolean isInvited) {
+        if (isInvited) {
+            mPresenter.addUser(user);
+        } else {
+            mPresenter.removeUser(user);
+        }
     }
 
     @Override

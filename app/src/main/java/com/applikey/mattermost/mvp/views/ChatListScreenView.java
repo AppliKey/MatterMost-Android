@@ -12,6 +12,7 @@ import java.util.List;
 
 @StateStrategyType(value = SingleStateStrategy.class)
 public interface ChatListScreenView extends MvpView {
+
     void setToolbarTitle(String title);
 
     @StateStrategyType(value = SkipStrategy.class)

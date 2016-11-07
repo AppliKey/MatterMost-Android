@@ -23,6 +23,7 @@ import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.widget.RobotoTextView;
+import com.transitionseverywhere.TransitionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.transitionseverywhere.TransitionManager;
 
 public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDetailsView {
 
@@ -63,13 +63,8 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         return intent;
     }
 
-    //TODO Implement Invite members logic
-    @OnClick(R.id.b_invite_member)
-    public void onInviteMemberClick() {
-    }
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_details);
         ButterKnife.bind(this);
@@ -97,6 +92,44 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         }
     }
 
+    @Override
+    public void showBaseDetails(Channel channel) {
+        mChannelName.setText(
+                getString(R.string.channel_display_name_format, channel.getDisplayName()));
+        mChannelDescription.setText(channel.getPurpose());
+        if (TextUtils.isEmpty(channel.getPurpose())) {
+            mChannelDescription.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void showMembers(List<User> users) {
+        TransitionManager.beginDelayedTransition(mContainer);
+        mAddedPeopleLayout.showUsers(users);
+    }
+
+    @Override
+    public void onMakeChannelFavorite(boolean favorite) {
+        final int iconRes = favorite
+                ? R.drawable.ic_favorite_check
+                : R.drawable.ic_favorite_uncheck;
+        mMenu.getItem(0).setIcon(iconRes);
+    }
+
+    @OnClick(R.id.added_people_layout)
+    void onAddedUsersPanelClick() {
+        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
+                .map(User::getId)
+                .collect(Collectors.toList());
+        startActivity(
+                AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds));
+    }
+
+    @OnClick(R.id.b_invite_member)
+    void onInviteMemberClick() {
+        //TODO Implement Invite members logic
+    }
+
     private void initViews() {
         setSupportActionBar(mToolbar);
         final ActionBar actionBar = getSupportActionBar();
@@ -114,34 +147,5 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         final Bundle extras = getIntent().getExtras();
         final String channelId = extras.getString(CHANNEL_ID_KEY);
         mPresenter.getInitialData(channelId);
-    }
-
-    @OnClick(R.id.added_people_layout)
-    public void onAddedUsersPanelClick() {
-        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
-                .map(User::getId)
-                .collect(Collectors.toList());
-        startActivity(AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds));
-    }
-
-    @Override
-    public void showBaseDetails(Channel channel) {
-        mChannelName.setText(getString(R.string.channel_display_name_format, channel.getDisplayName()));
-        mChannelDescription.setText(channel.getPurpose());
-        if (TextUtils.isEmpty(channel.getPurpose())) {
-            mChannelDescription.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public void showMembers(List<User> users) {
-        TransitionManager.beginDelayedTransition(mContainer);
-        mAddedPeopleLayout.showUsers(users);
-    }
-
-    @Override
-    public void onMakeChannelFavorite(boolean favorite) {
-        final int iconRes = favorite ? R.drawable.ic_favorite_check : R.drawable.ic_favorite_uncheck;
-        mMenu.getItem(0).setIcon(iconRes);
     }
 }

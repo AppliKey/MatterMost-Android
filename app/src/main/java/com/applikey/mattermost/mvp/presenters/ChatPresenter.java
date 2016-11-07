@@ -31,8 +31,6 @@ import timber.log.Timber;
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
 
-    private static final String TAG = ChatPresenter.class.getSimpleName();
-
     private static final int PAGE_SIZE = 60;
 
     @Inject
@@ -105,7 +103,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         Timber.d("fetching data");
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .flatMap(team ->
-                        mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE, PAGE_SIZE)
+                        mApi.getPostsPage(team.getId(), channelId, mCurrentPage * PAGE_SIZE,
+                                PAGE_SIZE)
                                 .subscribeOn(Schedulers.io())
                                 .doOnError(mErrorHandler::handleError)
                 )

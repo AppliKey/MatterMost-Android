@@ -98,6 +98,10 @@ public class WebSocketService extends Service {
         return null;
     }
 
+    public static Intent getIntent(Context context) {
+        return new Intent(context, WebSocketService.class);
+    }
+
     private void openSocket() throws IOException, WebSocketException {
         Log.d(TAG, "Opening socket");
 
@@ -175,7 +179,8 @@ public class WebSocketService extends Service {
         final JsonObject eventData = event.getData();
         final String postObject;
         if (eventData != null) {
-            final MessagePostedEventData data = gson.fromJson(eventData, MessagePostedEventData.class);
+            final MessagePostedEventData data = gson.fromJson(eventData,
+                    MessagePostedEventData.class);
             postObject = data.getPostObject();
         } else {
             final JsonObject eventProps = event.getProps();
@@ -183,9 +188,5 @@ public class WebSocketService extends Service {
             postObject = props.getPost();
         }
         return gson.fromJson(postObject, Post.class);
-    }
-
-    public static Intent getIntent(Context context) {
-        return new Intent(context, WebSocketService.class);
     }
 }

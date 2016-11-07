@@ -37,7 +37,6 @@ import io.realm.RealmResults;
 public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
-    private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
 
     @Bind(R.id.rv_channels)
     RecyclerView mRvChannels;
@@ -54,6 +53,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
+    private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,22 +64,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
         App.getUserComponent().inject(this);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getPresenter().displayData();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
-
-        ButterKnife.bind(this, view);
-
-        return view;
     }
 
     @Override
@@ -95,6 +79,24 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getPresenter().displayData();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
+
+        ButterKnife.bind(this, view);
+
+        return view;
+    }
+
+    @Override
     public void displayInitialData(RealmResults<Channel> channels) {
         Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed " + channels.size());
 
@@ -106,24 +108,25 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
-        final ChatListAdapter adapter = new ChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
+        final ChatListAdapter adapter = new ChatListAdapter(getContext(), channels, mImageLoader,
+                mCurrentUserId);
         adapter.setOnClickListener(mChatClickListener);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
     }
+
+    @Override
+    public void showUnreadIndicator(boolean showIndicator) {
+        mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
+    }
+
+    protected abstract ChatListPresenter getPresenter();
+
+    protected abstract int getEmptyStateTextId();
 
     private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
         final Activity activity = getActivity();
         final Intent intent = ChatActivity.getIntent(activity, channel);
         activity.startActivity(intent);
     };
-
-    protected abstract ChatListPresenter getPresenter();
-
-    protected abstract int getEmptyStateTextId();
-
-    @Override
-    public void showUnreadIndicator(boolean showIndicator) {
-        mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
-    }
 }

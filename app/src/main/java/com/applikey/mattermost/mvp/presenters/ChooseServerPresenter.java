@@ -19,8 +19,6 @@ import rx.schedulers.Schedulers;
 @InjectViewState
 public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
-    private static final String TAG = ChooseServerPresenter.class.getSimpleName();
-
     private static final String HTTP_PREFIX = "http://";
     private static final String HTTPS_PREFIX = "https://";
     private static final String URL_END_DELIMITER = "/";
@@ -75,9 +73,7 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
         mSubscription.add(mApi.ping()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pingResponse -> {
-                    view.onValidServerChosen();
-                }, throwable -> {
+                .subscribe(pingResponse -> view.onValidServerChosen(), throwable -> {
                     mErrorHandler.get().handleError(throwable);
                     view.showValidationError();
                 }));

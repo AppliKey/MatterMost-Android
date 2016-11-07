@@ -11,7 +11,9 @@ public class StartupFetchResult {
     private Map<String, User> directProfiles;
     private String teamId;
 
-    public StartupFetchResult(ChannelResponse channelResponse, Map<String, User> directProfiles, String teamId) {
+    public StartupFetchResult(ChannelResponse channelResponse,
+            Map<String, User> directProfiles,
+            String teamId) {
         this.channelResponse = channelResponse;
         this.directProfiles = directProfiles;
         this.teamId = teamId;

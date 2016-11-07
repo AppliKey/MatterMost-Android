@@ -29,12 +29,30 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     private final String mCurrentUserId;
 
     private ClickListener mClickListener = null;
+    private final View.OnClickListener mOnClickListener = v -> {
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
+            return;
+        }
+        final int position = (Integer) v.getTag();
 
-    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
+        final Channel team = data.get(position);
+
+        if (mClickListener != null) {
+            mClickListener.onItemClicked(team);
+        }
+    };
+    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid
+    // misunderstanding as we use hungarian notation.
     private Context mContext;
 
+    public interface ClickListener {
+
+        void onItemClicked(Channel channel);
+    }
+
     public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-            ImageLoader imageLoader, String currentUserId) {
+                           ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
         mContext = context;
         mImageLoader = imageLoader;
@@ -52,13 +70,6 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
         return vh;
     }
-
-    @Override
-    public long getItemId(int index) {
-        final Channel item = getItem(index);
-        return item != null ? item.hashCode() : 0;
-    }
-
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
@@ -87,6 +98,16 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         vh.getRoot().setTag(position);
     }
 
+    @Override
+    public long getItemId(int index) {
+        final Channel item = getItem(index);
+        return item != null ? item.hashCode() : 0;
+    }
+
+    public void setOnClickListener(ClickListener listener) {
+        this.mClickListener = listener;
+    }
+
     private String getMessagePreview(Channel channel, Context context) {
         final Post lastPost = channel.getLastPost();
         final String messagePreview;
@@ -96,17 +117,17 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
             messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
                     channel.getLastPost().getMessage();
         } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
-            final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
-            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor) +
-                    channel.getLastPost().getMessage();
+            if (lastPost != null) {
+                final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
+                messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
+                        + channel.getLastPost().getMessage();
+            } else {
+                messagePreview = context.getString(R.string.loading);
+            }
         } else {
             messagePreview = channel.getLastPost().getMessage();
         }
         return messagePreview;
-    }
-
-    public void setOnClickListener(ClickListener listener) {
-        this.mClickListener = listener;
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
@@ -159,25 +180,6 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
     }
-
-    public interface ClickListener {
-
-        void onItemClicked(Channel channel);
-    }
-
-    private final View.OnClickListener mOnClickListener = v -> {
-        final OrderedRealmCollection<Channel> data = getData();
-        if (data == null) {
-            return;
-        }
-        final int position = (Integer) v.getTag();
-
-        final Channel team = data.get(position);
-
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(team);
-        }
-    };
 
     /* package */
     class ViewHolder extends RecyclerView.ViewHolder {

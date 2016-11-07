@@ -3,8 +3,6 @@ package com.applikey.mattermost.mvp.presenters;
 import com.arellomobile.mvp.MvpPresenter;
 import com.arellomobile.mvp.MvpView;
 
-import java.util.Set;
-
 import rx.subscriptions.CompositeSubscription;
 
 /**

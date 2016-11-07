@@ -21,6 +21,26 @@ public class NetworkUtil {
     public static final String TAG = "NetworkHelper";
     private NetworkType type;
     private NetworkListener listener;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateNetwork();
+        }
+    };
+
+    public enum NetworkType {
+        WIFI_FAST,
+        MOBILE_FAST,
+        MOBILE_MIDDLE,
+        MOBILE_SLOW,
+        NONE,
+    }
+
+    public interface NetworkListener {
+
+        void onNetworkChanged(NetworkType ot, NetworkType nt);
+    }
 
     private NetworkUtil() {
         type = NetworkType.NONE;
@@ -94,25 +114,5 @@ public class NetworkUtil {
         }
 
         return NetworkType.NONE;
-    }
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateNetwork();
-        }
-    };
-
-    public enum NetworkType {
-        WIFI_FAST,
-        MOBILE_FAST,
-        MOBILE_MIDDLE,
-        MOBILE_SLOW,
-        NONE,
-    }
-
-    public interface NetworkListener {
-        void onNetworkChanged(NetworkType ot, NetworkType nt);
     }
 }

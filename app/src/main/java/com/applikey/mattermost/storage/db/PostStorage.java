@@ -29,10 +29,14 @@ public class PostStorage {
     public void saveAll(List<Post> posts) {
         mDb.doTransactional(realm -> {
             for (Post post : posts) {
-                final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, post.getUserId()).findFirst();
+                final User author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                        .findFirst();
 
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
-                        realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, post.getRootId()).findFirst()
+                        realm.where(Post.class)
+                                .equalTo(Post.FIELD_NAME_ID, post.getRootId())
+                                .findFirst()
                         : null;
 
                 final Post realmPost = realm.copyToRealmOrUpdate(post);
@@ -45,10 +49,14 @@ public class PostStorage {
 
     public void save(Post post) {
         mDb.doTransactional(realm -> {
-            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, post.getUserId()).findFirst();
+            final User author = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                    .findFirst();
 
             final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
-                    realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, post.getRootId()).findFirst()
+                    realm.where(Post.class)
+                            .equalTo(Post.FIELD_NAME_ID, post.getRootId())
+                            .findFirst()
                     : null;
 
             final Post realmPost = realm.copyToRealmOrUpdate(post);
