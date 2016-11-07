@@ -20,14 +20,20 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
+import com.neovisionaries.ws.client.WebSocketFrame;
+import com.neovisionaries.ws.client.WebSocketListener;
+import com.neovisionaries.ws.client.WebSocketState;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -56,6 +62,137 @@ public class WebSocketService extends Service {
 
     private WebSocket mWebSocket;
     private Handler mHandler;
+    private final WebSocketListener mWebSocketAdapter = new WebSocketListener() {
+
+        @Override
+        public void onStateChanged(WebSocket websocket, WebSocketState newState) throws Exception {
+            Log.d(TAG, "onStateChanged: ");
+        }
+
+        @Override
+        public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
+            Log.d(TAG, "onConnected: socket connected!");
+        }
+
+        @Override
+        public void onTextMessage(WebSocket websocket, String text) throws Exception {
+            Log.d(TAG, text);
+            handleMessage(text);
+        }
+
+        @Override
+        public void onBinaryMessage(WebSocket websocket, byte[] binary) throws Exception {
+            Log.d(TAG, "onBinaryMessage: ");
+        }
+
+        @Override
+        public void onSendingFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onSendingFrame: ");
+        }
+
+        @Override
+        public void onFrameSent(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onFrameSent: ");
+        }
+
+        @Override
+        public void onFrameUnsent(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onFrameUnsent: ");
+        }
+
+        @Override
+        public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
+            Log.e(TAG, "onError: ", cause);
+        }
+
+        @Override
+        public void onFrameError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception {
+            Log.e(TAG, "onFrameError: ", cause);
+        }
+
+        @Override
+        public void onMessageError(WebSocket websocket, WebSocketException cause, List<WebSocketFrame> frames) throws Exception {
+            Log.e(TAG, "onMessageError: ", cause);
+        }
+
+        @Override
+        public void onMessageDecompressionError(WebSocket websocket, WebSocketException cause, byte[] compressed) throws Exception {
+            Log.e(TAG, "onMessageDecompressionError: ", cause);
+        }
+
+        @Override
+        public void onTextMessageError(WebSocket websocket, WebSocketException cause, byte[] data) throws Exception {
+            Log.e(TAG, "onTextMessageError: ", cause);
+        }
+
+        @Override
+        public void onSendError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception {
+            Log.e(TAG, "onSendError: ", cause);
+        }
+
+        @Override
+        public void onUnexpectedError(WebSocket websocket, WebSocketException cause) throws Exception {
+            Log.e(TAG, "onUnexpectedError: ", cause);
+        }
+
+        @Override
+        public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception {
+            Log.e(TAG, "handleCallbackError: ", cause);
+        }
+
+        @Override
+        public void onSendingHandshake(WebSocket websocket, String requestLine, List<String[]> headers) throws Exception {
+            Log.d(TAG, "onSendingHandshake: ");
+        }
+
+        @Override
+        public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
+                throws Exception {
+            Log.d(TAG, "onDisconnected: ");
+            mWebSocket = mWebSocket.recreate().connectAsynchronously();
+        }
+
+        @Override
+        public void onFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onFrame: ");
+        }
+
+        @Override
+        public void onContinuationFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onContinuationFrame: ");
+        }
+
+        @Override
+        public void onTextFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onTextFrame: ");
+        }
+
+        @Override
+        public void onBinaryFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onBinaryFrame: ");
+        }
+
+        @Override
+        public void onCloseFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onCloseFrame: ");
+        }
+
+        @Override
+        public void onPingFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onPingFrame: ");
+        }
+
+        @Override
+        public void onPongFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
+            Log.d(TAG, "onPongFrame: ");
+        }
+
+        @Override
+        public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception {
+            Log.e(TAG, "onConnectError: ", exception);
+
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -64,7 +201,6 @@ public class WebSocketService extends Service {
         App.getUserComponent().inject(this);
 
         mHandler = new Handler(Looper.getMainLooper());
-
         try {
             openSocket();
         } catch (IOException | WebSocketException e) {
@@ -74,13 +210,6 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        try {
-            openSocket();
-        } catch (IOException | WebSocketException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
         return START_REDELIVER_INTENT;
     }
 
@@ -114,25 +243,13 @@ public class WebSocketService extends Service {
                 .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
                 .createSocket(baseUrl);
 
-        final Gson gson = new Gson();
-
-        mWebSocket.addListener(new WebSocketAdapter() {
-            @Override
-            public void onTextMessage(WebSocket websocket, String text) throws Exception {
-                super.onTextMessage(websocket, text);
-                Log.d(TAG, text);
-
-                handleMessage(gson, text);
-            }
-        });
-
+        mWebSocket.addListener(mWebSocketAdapter);
         mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mTokenFactory.getBearerTokenString());
-
         mWebSocket.connectAsynchronously();
-        Log.d(TAG, "Socket opened");
     }
 
-    private void handleMessage(Gson gson, String message) {
+    private void handleMessage(String message) {
+        final Gson gson = GsonFactory.INSTANCE.getGson();
         final WebSocketEvent event = gson.fromJson(message, WebSocketEvent.class);
 
         String eventType = event.getEvent();
@@ -152,21 +269,17 @@ public class WebSocketService extends Service {
 
                 mHandler.post(() -> {
                     mPostStorage.save(post);
-
                     mChannelStorage.findByIdAndCopy(post.getChannelId())
                             .first()
-                            .doOnNext(channel -> {
-                                channel.setLastPost(post);
-                                mChannelStorage.updateLastPost(channel);
-                            })
-                            .subscribe(v -> {
-                            }, mErrorHandler::handleError);
+                            .doOnNext(channel -> channel.setLastPost(post))
+                            .subscribe(mChannelStorage::updateLastPost, mErrorHandler::handleError);
                 });
             }
         }
     }
 
     private void closeSocket() {
+        mWebSocket.removeListener(mWebSocketAdapter);
         mWebSocket.sendClose();
         mWebSocket.disconnect();
     }
