@@ -126,7 +126,7 @@ public class ChannelStorage {
     public void updateLastViewedAt(String id) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
             realmChannel.setHasUnreadMessages(false);
-            realmChannel.setLastViewedAt(realmChannel.getLastViewedAt());
+            realmChannel.setLastViewedAt(realmChannel.getLastActivityTime());
             return true;
         });
     }
