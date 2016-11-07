@@ -51,6 +51,9 @@ public class WebSocketService extends Service {
     @Inject
     ChannelStorage mChannelStorage;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private WebSocket mWebSocket;
     private Handler mHandler;
 
@@ -157,7 +160,7 @@ public class WebSocketService extends Service {
                                 mChannelStorage.updateLastPost(channel);
                             })
                             .subscribe(v -> {
-                            }, ErrorHandler::handleError);
+                            }, mErrorHandler::handleError);
                 });
             }
         }

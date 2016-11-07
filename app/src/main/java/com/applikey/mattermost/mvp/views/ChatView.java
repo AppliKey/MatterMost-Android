@@ -18,8 +18,6 @@ public interface ChatView extends MvpView {
 
     void showProgress(boolean enabled);
 
-    void onFailure(Throwable cause);
-
     void onMessageSent(long createdAt);
 
     void openChannelDetails(Channel channel);

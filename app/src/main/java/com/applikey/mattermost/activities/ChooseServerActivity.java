@@ -1,5 +1,7 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -39,6 +41,14 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
         mEtServerUrl.addTextChangedListener(mTextWatcher);
         disableButton();
+    }
+
+    public static Intent getIntent(Context context, boolean clearBackstack) {
+        final Intent intent = new Intent(context, ChooseServerActivity.class);
+        if (clearBackstack) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
+        return intent;
     }
 
     @Override
