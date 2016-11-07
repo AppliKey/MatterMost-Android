@@ -15,25 +15,10 @@ import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
 
-    private static final String TAG = UserAdapter.class.getSimpleName();
 
     private List<User> mDataSet = new ArrayList<>();
     private ImageLoader mImageLoader;
     private ClickListener mClickListener = null;
-    private final View.OnClickListener mOnClickListener = v -> {
-        final int position = (Integer) v.getTag();
-
-        final User user = mDataSet.get(position);
-
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(user);
-        }
-    };
-
-    public interface ClickListener {
-
-        void onItemClicked(User user);
-    }
 
     public UserAdapter(ImageLoader imageLoader) {
         super();
@@ -90,6 +75,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
         }
     }
 
-    /* package */
+    private final View.OnClickListener mOnClickListener = v -> {
+        final int position = (Integer) v.getTag();
 
+        final User user = mDataSet.get(position);
+
+        if (mClickListener != null) {
+            mClickListener.onItemClicked(user);
+        }
+    };
+
+    public interface ClickListener {
+
+        void onItemClicked(User user);
+    }
 }

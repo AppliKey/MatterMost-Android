@@ -16,8 +16,6 @@ import java.util.List;
 
 public class ChannelAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
 
-    private static final String TAG = ChannelAdapter.class.getSimpleName();
-
     private List<Channel> mDataSet = new ArrayList<>();
     private ImageLoader mImageLoader;
     private ClickListener mClickListener = null;
@@ -96,7 +94,4 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelViewHolder> {
             vh.getTvMessage().setText(post.getMessage());
         }
     }
-
-    /* package */
-
 }

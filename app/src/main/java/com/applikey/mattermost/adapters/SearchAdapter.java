@@ -19,18 +19,9 @@ import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = SearchAdapter.class.getSimpleName();
-    private final View.OnClickListener mOnClickListener = v -> {
-        final int position = (Integer) v.getTag();
-    };
     private List<SearchItem> mDataSet = new ArrayList<>();
     private ImageLoader mImageLoader;
     private ClickListener mClickListener = null;
-
-    public interface ClickListener {
-
-        void onItemClicked(Channel channel);
-    }
 
     public SearchAdapter(ImageLoader imageLoader) {
         super();
@@ -129,6 +120,11 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    /* package */
+    private final View.OnClickListener mOnClickListener = v -> {
+        final int position = (Integer) v.getTag();
+    };
 
+    public interface ClickListener {
+        void onItemClicked(Channel channel);
+    }
 }

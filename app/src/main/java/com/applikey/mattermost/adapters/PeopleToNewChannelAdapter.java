@@ -25,31 +25,9 @@ public class PeopleToNewChannelAdapter
     private final OnUserChosenListener mChosenListener;
     private List<UserPendingInvitation> mUsers;
 
-    public interface OnUserChosenListener {
-
-        void onChosen(User user, boolean isInvited);
-    }
-
     public PeopleToNewChannelAdapter(OnUserChosenListener listener, ImageLoader imageLoader) {
         mImageLoader = imageLoader;
         mChosenListener = listener;
-    }
-
-    public void addUsers(List<UserPendingInvitation> users) {
-        mUsers = users;
-        notifyDataSetChanged();
-    }
-
-    public void setAllChecked(boolean checked) {
-        for (UserPendingInvitation user : mUsers) {
-            user.setInvited(checked);
-        }
-        notifyDataSetChanged();
-    }
-
-    public void clear() {
-        mUsers.clear();
-        notifyDataSetChanged();
     }
 
     @Override
@@ -82,6 +60,27 @@ public class PeopleToNewChannelAdapter
     @Override
     public int getItemCount() {
         return mUsers == null ? 0 : mUsers.size();
+    }
+
+    public void addUsers(List<UserPendingInvitation> users) {
+        mUsers = users;
+        notifyDataSetChanged();
+    }
+
+    public void setAllChecked(boolean checked) {
+        for (UserPendingInvitation user : mUsers) {
+            user.setInvited(checked);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        mUsers.clear();
+        notifyDataSetChanged();
+    }
+
+    public interface OnUserChosenListener {
+        void onChosen(User user, boolean isInvited);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

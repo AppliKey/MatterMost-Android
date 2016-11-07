@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.List;
 
+import static com.applikey.mattermost.Constants.EMPTY_STRING;
+
 public class ChatListPagerAdapter extends FragmentStatePagerAdapter {
 
     private final List<Fragment> mPagerTabs;
@@ -28,6 +30,6 @@ public class ChatListPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "";
+        return EMPTY_STRING;
     }
 }

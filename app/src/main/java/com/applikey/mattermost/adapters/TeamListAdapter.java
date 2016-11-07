@@ -19,20 +19,6 @@ public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHo
 
     private List<Team> mDataSet = null;
     private TeamClickListener mTeamClickListener = null;
-    private final View.OnClickListener mOnClickListener = v -> {
-        final int position = (Integer) v.getTag();
-
-        final Team team = mDataSet.get(position);
-
-        if (mTeamClickListener != null) {
-            mTeamClickListener.onTeamClicked(team);
-        }
-    };
-
-    public interface TeamClickListener {
-
-        void onTeamClicked(Team team);
-    }
 
     public TeamListAdapter(List<Team> dataSet) {
         super();
@@ -68,6 +54,10 @@ public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHo
         return mDataSet.size();
     }
 
+    public interface TeamClickListener {
+        void onTeamClicked(Team team);
+    }
+
     /* package */
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -92,4 +82,14 @@ public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHo
             return mRoot;
         }
     }
+
+    private final View.OnClickListener mOnClickListener = v -> {
+        final int position = (Integer) v.getTag();
+
+        final Team team = mDataSet.get(position);
+
+        if (mTeamClickListener != null) {
+            mTeamClickListener.onTeamClicked(team);
+        }
+    };
 }
