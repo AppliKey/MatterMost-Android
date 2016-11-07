@@ -166,7 +166,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError));
-                        ErrorHandler::handleError));
     }
 
     public void sendReplyMessage(String channelId, String message, String mRootId) {
@@ -185,21 +184,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .doOnNext(post -> mChannel.setLastPost(post))
                 .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError));
-                        ErrorHandler::handleError));
-    }
-
-    private void updateLastViewedAt(String channelId) {
-        // Does not belong to UI
-        mTeamStorage.getChosenTeam()
-                .first()
-                .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
-                .toCompletable()
-                .subscribe(mErrorHandler::handleError, () -> {
-                });
-
-        mChannelStorage.updateLastViewedAt(channelId, System.currentTimeMillis());
-        mNotificationManager.dismissNotification(channelId);
     }
 
     private List<Post> transform(PostResponse response, int offset) {

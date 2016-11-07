@@ -40,8 +40,6 @@ public class AddedMembersActivity extends BaseMvpActivity
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
-    private SearchView mSearchView;
-
     private PeopleToNewChannelAdapter mAdapter;
 
     public static Intent getIntent(Context context, ArrayList<String> usersIds) {
@@ -53,6 +51,19 @@ public class AddedMembersActivity extends BaseMvpActivity
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_added_people);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
+        final List<String> usersIds = getIntent().getStringArrayListExtra(USERS_IDS_KEY);
+        mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
+        mRvAddedMembers.setAdapter(mAdapter);
+        mPresenter.getUsersByIds(usersIds);
+        setTitle(R.string.added_members_title);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_added_members, menu);
         return true;
@@ -61,7 +72,7 @@ public class AddedMembersActivity extends BaseMvpActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         final MenuItem searchViewMenuItem = menu.findItem(R.id.action_search_added_members);
-        mSearchView = (SearchView) searchViewMenuItem.getActionView();
+        final SearchView mSearchView = (SearchView) searchViewMenuItem.getActionView();
         mSearchView.setOnQueryTextListener(this);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -111,18 +122,5 @@ public class AddedMembersActivity extends BaseMvpActivity
     public boolean onQueryTextChange(String newText) {
         mPresenter.getUsersAndFilterByFullName(newText);
         return true;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_added_people);
-        ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
-        final List<String> usersIds = getIntent().getStringArrayListExtra(USERS_IDS_KEY);
-        mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
-        mRvAddedMembers.setAdapter(mAdapter);
-        mPresenter.getUsersByIds(usersIds);
-        setTitle(R.string.added_members_title);
     }
 }

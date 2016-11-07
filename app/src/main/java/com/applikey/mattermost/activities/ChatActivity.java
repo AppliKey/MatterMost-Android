@@ -218,11 +218,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    public void onFailure(Throwable cause) {
-        ErrorHandler.handleError(cause);
-    }
-
-    @Override
     public void onMessageSent(long createdAt) {
         mEtMessage.setText(null);
         mAdapter.setLastViewed(createdAt);
