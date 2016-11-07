@@ -64,7 +64,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
     public void handleChannelClick(Channel channel) {
         final SearchChannelView view = getViewState();
-        view.startChatActivity(channel);
+        view.startChatView(channel);
     }
 
     @Subscribe

@@ -25,7 +25,7 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
     @InjectPresenter
     SearchChannelPresenter mPresenter;
 
-    @Bind(R.id.recycle_view)
+    @Bind(R.id.rv_items)
     RecyclerView mRecycleView;
 
     private ChannelAdapter mChannelAdapter;
@@ -60,6 +60,11 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
     public void displayData(List<Channel> channels) {
         Log.d(TAG, "displayData: ");
         mChannelAdapter.setDataSet(channels);
+    }
+
+    @Override
+    public void startChatView(Channel channel) {
+        // TODO: 07.11.16 IMPLEMENT THIS
     }
 
     @Override

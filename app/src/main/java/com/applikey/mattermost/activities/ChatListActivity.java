@@ -106,7 +106,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-                SearchChatActivity.startActivity(this);
+                startActivity(SearchChatActivity.getIntent(this));
         }
         return false;
     }

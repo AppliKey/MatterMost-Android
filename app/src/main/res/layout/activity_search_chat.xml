@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             app:typeface="roboto_regular"
             android:textSize="@dimen/search_chat_toolbar_text_size"
-            android:hint="@string/activity.search.chat.search"
+            android:hint="@string/search_with_ellipsis"
             android:textColorHint="@color/tabUnSelected"
             android:layout_gravity="start"
             android:background="@null"/>

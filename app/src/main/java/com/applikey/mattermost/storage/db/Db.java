@@ -277,9 +277,10 @@ public class Db {
         update.call(object, realmObject);
     }
 
-    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
+    public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T> tClass,
             String text,
-            String[] fields) {
+            String[] fields,
+            String sortedField) {
         final Realm realm = getRealm();
 
         RealmQuery<T> query = realm
@@ -294,12 +295,11 @@ public class Db {
         }
         query.endGroup();
 
-        return query.findAllAsync()
+        return query.findAllSortedAsync(sortedField)
                 .asObservable()
                 .filter(response -> !response.isEmpty())
                 .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
-
     }
 
     public <T extends RealmObject> Single<T> getObject(Class<T> tClass, String field, String id) {

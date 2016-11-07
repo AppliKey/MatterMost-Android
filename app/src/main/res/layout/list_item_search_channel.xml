@@ -15,7 +15,7 @@
         android:paddingBottom="@dimen/user_item_top_padding">
 
         <TableLayout
-            android:id="@+id/table"
+            android:id="@+id/tb_icons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/list_item_margin"
@@ -26,12 +26,12 @@
                 android:divider="@drawable/table_divider"
                 android:showDividers="middle">
                 <ImageView
-                    android:id="@+id/iv_preview_image1"
+                    android:id="@+id/iv_start_top_image"
                     android:layout_width="@dimen/list_item_mini_image_chat"
                     android:layout_height="@dimen/list_item_mini_image_chat"
                     android:src="@drawable/no_resource" />
                 <ImageView
-                    android:id="@+id/iv_preview_image2"
+                    android:id="@+id/iv_end_top_image"
                     android:layout_width="@dimen/list_item_mini_image_chat"
                     android:layout_height="@dimen/list_item_mini_image_chat"
                     android:src="@drawable/no_resource" />
@@ -40,23 +40,18 @@
                 android:divider="@drawable/table_divider"
                 android:showDividers="middle">
             <ImageView
-                android:id="@+id/iv_preview_image3"
+                android:id="@+id/iv_start_bot_image"
                 android:layout_width="@dimen/list_item_mini_image_chat"
                 android:layout_height="@dimen/list_item_mini_image_chat"
                 android:src="@drawable/no_resource" />
             <ImageView
-                android:id="@+id/iv_preview_image4"
+                android:id="@+id/iv_end_bot_image"
                 android:layout_width="@dimen/list_item_mini_image_chat"
                 android:layout_height="@dimen/list_item_mini_image_chat"
                 android:src="@drawable/no_resource" />
 
-
             </TableRow>
         </TableLayout>
-
-
-
-
 
         <com.devspark.robototextview.widget.RobotoTextView
             android:id="@+id/tv_message"
@@ -66,7 +61,7 @@
             android:layout_marginStart="@dimen/user_avatar_right_margin"
             android:layout_marginEnd="@dimen/margin_3x"
             android:layout_below="@+id/tv_channel_name"
-            android:layout_toEndOf="@+id/table"
+            android:layout_toEndOf="@+id/tb_icons"
             android:layout_marginTop="@dimen/search_channel_message_top_margin"
             android:maxLines="2"
             android:ellipsize="end"
@@ -82,7 +77,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/user_avatar_right_margin"
             android:layout_marginStart="@dimen/user_avatar_right_margin"
-            android:singleLine="true"
+            android:lines="1"
             android:maxLines="1"
             android:textColor="@color/textlink_disabled"
             app:typeface="roboto_regular"
@@ -95,9 +90,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/user_avatar_right_margin"
-            android:layout_toEndOf="@+id/table"
+            android:layout_toEndOf="@+id/tb_icons"
             android:layout_toStartOf="@+id/tv_date"
-            android:singleLine="true"
+            android:lines="1"
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="@color/textListPrimary"
@@ -111,7 +106,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_size"
         android:layout_gravity="bottom"
-
         android:background="@color/switch_track_color"/>
 
 </FrameLayout>

@@ -27,7 +27,7 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
     @InjectPresenter
     SearchAllPresenter mPresenter;
 
-    @Bind(R.id.recycle_view)
+    @Bind(R.id.rv_items)
     RecyclerView mRecycleView;
 
     private SearchAdapter mAdapter;

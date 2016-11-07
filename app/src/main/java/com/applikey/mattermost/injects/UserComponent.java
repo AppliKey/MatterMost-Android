@@ -12,6 +12,7 @@ import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchAllPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
+import com.applikey.mattermost.mvp.presenters.SearchChatPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
@@ -65,4 +66,6 @@ public interface UserComponent {
     void inject(SearchAllPresenter searchAllPresenter);
 
     void inject(SearchChatActivity searchChatActivity);
+
+    void inject(SearchChatPresenter searchChatPresenter);
 }

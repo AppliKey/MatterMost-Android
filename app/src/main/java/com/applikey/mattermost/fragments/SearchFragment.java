@@ -20,7 +20,7 @@ public abstract class SearchFragment extends BaseMvpFragment {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
-    @Bind(R.id.recycle_view)
+    @Bind(R.id.rv_items)
     RecyclerView mRecycleView;
 
     @Nullable
@@ -41,7 +41,7 @@ public abstract class SearchFragment extends BaseMvpFragment {
         ButterKnife.unbind(this);
     }
 
-    public void startChatActivity(Channel channel) {
+    public void startChatView(Channel channel) {
         getActivity().startActivity(ChatActivity.getIntent(getContext(), channel));
     }
 

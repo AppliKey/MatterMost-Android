@@ -73,12 +73,9 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                         .first()
                         .flatMap(Observable::from)
                         .filter(user -> !TextUtils.equals(user.getId(), mCurrentUserId))
-                        .toSortedList()
+                        .toList()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((users) -> {
-                            Log.d(TAG, "getData: " + users);
-                            view.displayData(users);
-                        }, ErrorHandler::handleError));
+                        .subscribe(view::displayData, ErrorHandler::handleError));
     }
 
     public void handleUserClick(User user) {
@@ -86,12 +83,12 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
         Log.d(TAG, "handleUserClick: " + user.getId());
         mSubscription.add(mChannelStorage.getChannel(user.getId())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::startChatActivity, throwable -> {
+                .doOnError(throwable -> {
                     if (throwable instanceof ObjectNotFoundException) {
-                        Log.d(TAG, "handleUserClick: object not find");
                         createChannel(user);
                     }
-                }));
+                })
+                .subscribe(view::startChatView, ErrorHandler::handleError));
     }
 
     @Subscribe
@@ -112,7 +109,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
                 .subscribe(channel -> {
-                    view.startChatActivity(channel);
+                    view.startChatView(channel);
                     view.showLoading(false);
                     Log.d(TAG, "createChannel: " + channel);
                 }, throwable -> {

@@ -15,7 +15,7 @@ public interface SearchUserView extends MvpView {
     void displayData(List<User> users);
 
     @StateStrategyType(value = SkipStrategy.class)
-    void startChatActivity(Channel channel);
+    void startChatView(Channel channel);
 
     void showLoading(boolean show);
 

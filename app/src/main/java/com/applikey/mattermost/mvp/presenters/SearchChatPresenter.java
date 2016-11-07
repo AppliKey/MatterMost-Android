@@ -18,7 +18,7 @@ public class SearchChatPresenter extends BasePresenter<SearchChatView> {
     EventBus mBus;
 
     public SearchChatPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void handleUserTextChanges(String text) {

@@ -15,15 +15,15 @@ public class ChannelViewHolder extends RecyclerView.ViewHolder {
 
     private final View mRoot;
 
-    @Bind(R.id.iv_preview_image1)
+    @Bind(R.id.iv_start_top_image)
     ImageView mIvPreviewImage1;
-    @Bind(R.id.iv_preview_image2)
+    @Bind(R.id.iv_end_top_image)
     ImageView mIvPreviewImage2;
-    @Bind(R.id.iv_preview_image3)
+    @Bind(R.id.iv_start_bot_image)
     ImageView mIvPreviewImage3;
-    @Bind(R.id.iv_preview_image4)
+    @Bind(R.id.iv_end_bot_image)
     ImageView mIvPreviewImage4;
-    @Bind(R.id.table)
+    @Bind(R.id.tb_icons)
     TableLayout mTable;
     @Bind(R.id.tv_message)
     TextView mTvMessage;
