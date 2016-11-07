@@ -38,24 +38,34 @@ public class CreateChannelActivity extends BaseMvpActivity
         implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
 
     private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
+
     @Bind(R.id.et_channel_name)
     EditText mEtChannelName;
+
     @Bind(R.id.et_channel_description)
     EditText mEtChannelDescription;
+
     @Bind(R.id.et_search_people)
     EditText mEtSearchPeople;
+
     @Bind(R.id.rv_peoples)
     RecyclerView mRvPeoples;
+
     @Bind(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
+
     @Bind(R.id.channel_type_view)
     ChannelTypeView mChannelTypeView;
+
     @Bind(R.id.btn_add_all)
     Button mBtnAddAll;
+
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
     @InjectPresenter
     CreateChannelPresenter mPresenter;
+
     private PeopleToNewChannelAdapter mAdapter;
 
     public static Intent getIntent(Context context) {
@@ -86,6 +96,21 @@ public class CreateChannelActivity extends BaseMvpActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_create_channel, menu);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_ADDED_MEMBERS_DIALOG: {
+                if (resultCode == RESULT_OK) {
+                    final ArrayList<String> addedUsersIds = data.getStringArrayListExtra(
+                            AddedMembersActivity.USERS_IDS_KEY);
+                    mPresenter.showAlreadyAddedUsers(addedUsersIds);
+                }
+            }
+            break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -145,39 +170,24 @@ public class CreateChannelActivity extends BaseMvpActivity
     }
 
     @OnClick(R.id.btn_add_all)
-    public void onBtnAddAllClick() {
+    void onBtnAddAllClick() {
         mPresenter.addAllUsers();
     }
 
     @OnTextChanged(R.id.et_search_people)
-    public void onSearchFilterChanged(Editable editableString) {
+    void onSearchFilterChanged(Editable editableString) {
         final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
         mPresenter.getUsersAndFilterByFullName(editableString.toString(), alreadyAddedUsers);
     }
 
     @OnClick(R.id.added_people_layout)
-    public void onAddedUsersPanelClick() {
+    void onAddedUsersPanelClick() {
         final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
                 .map(User::getId)
                 .collect(Collectors.toList());
         final Intent intent = AddedMembersActivity.getIntent(this,
                 (ArrayList<String>) alreadyAddedUsersIds);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_ADDED_MEMBERS_DIALOG: {
-                if (resultCode == RESULT_OK) {
-                    final ArrayList<String> addedUsersIds = data.getStringArrayListExtra(
-                            AddedMembersActivity.USERS_IDS_KEY);
-                    mPresenter.showAlreadyAddedUsers(addedUsersIds);
-                }
-            }
-            break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void createChannel() {

@@ -72,7 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lifecycleSubject.onNext(ActivityEvent.CREATE);
         getComponent().inject(this);
@@ -80,35 +80,35 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
 
     @Override
     @CallSuper
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         lifecycleSubject.onNext(ActivityEvent.START);
     }
 
     @Override
     @CallSuper
-    protected void onStop() {
+    public void onStop() {
         lifecycleSubject.onNext(ActivityEvent.STOP);
         super.onStop();
     }
 
     @Override
     @CallSuper
-    protected void onDestroy() {
+    public void onDestroy() {
         lifecycleSubject.onNext(ActivityEvent.DESTROY);
         super.onDestroy();
     }
 
     @Override
     @CallSuper
-    protected void onPause() {
+    public void onPause() {
         lifecycleSubject.onNext(ActivityEvent.PAUSE);
         super.onPause();
     }
 
     @Override
     @CallSuper
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         lifecycleSubject.onNext(ActivityEvent.RESUME);
     }

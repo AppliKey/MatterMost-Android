@@ -19,28 +19,28 @@ public abstract class BaseMvpActivity extends BaseActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getMvpDelegate().onCreate(savedInstanceState);
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
 
         getMvpDelegate().onAttach();
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
 
         getMvpDelegate().onDetach();
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (isFinishing()) {
             getMvpDelegate().onDestroy();
         }

@@ -34,15 +34,12 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     }
 
     @Override
-    public void logout() {
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
-
-    @Override
-    public void setInitialViewState(SettingsPresenter.SettingDataHolder settingDataHolder) {
-        mSwitchShowUnreadMessages.setChecked(settingDataHolder.isUnreadTabEnabled());
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
+        setTitle(R.string.settings);
     }
 
     @Override
@@ -56,27 +53,30 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void logout() {
+        final Intent intent = new Intent(this, ChooseServerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    @Override
+    public void setInitialViewState(SettingsPresenter.SettingDataHolder settingDataHolder) {
+        mSwitchShowUnreadMessages.setChecked(settingDataHolder.isUnreadTabEnabled());
+    }
+
     @OnCheckedChanged(R.id.sw_show_unread_messages)
-    public void onSwitchUnreadTabCheckedChanged(boolean isChecked) {
+    void onSwitchUnreadTabCheckedChanged(boolean isChecked) {
         mPresenter.setUnreadTabEnabled(isChecked);
     }
 
     @OnClick(R.id.btn_setting_logout)
-    public void onClickLogout() {
+    void onClickLogout() {
         mPresenter.logout();
     }
 
     @OnClick(R.id.btn_edit_profile)
-    public void onClickEditProfile() {
+    void onClickEditProfile() {
         Toast.makeText(this, "Edit profile not implemented yet", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        ButterKnife.bind(this);
-        setSupportActionBar(mToolbar);
-        setTitle(R.string.settings);
     }
 }

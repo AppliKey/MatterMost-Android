@@ -27,8 +27,10 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @Bind(R.id.et_login)
     EditText mEtLogin;
+
     @Bind(R.id.et_password)
     EditText mEtPassword;
+
     @Bind(R.id.b_authorize)
     Button mBtnAuthorize;
 
@@ -37,6 +39,35 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @InjectPresenter
     LogInPresenter mPresenter;
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, LogInActivity.class);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_log_in);
+
+        ButterKnife.bind(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        mPresenter.unSubscribe();
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Log.d(TAG, "onStart");
+        mPresenter.getInitialData();
+    }
+
 
     @Override
     public void showLoading() {
@@ -83,33 +114,6 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         mEtPassword.setText(password);
     }
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, LogInActivity.class);
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_log_in);
-
-        ButterKnife.bind(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.unSubscribe();
-
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        Log.d(TAG, "onStart");
-        mPresenter.getInitialData();
-    }
 
     @OnClick(R.id.b_authorize)
     void onAuthorize() {

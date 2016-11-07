@@ -41,15 +41,68 @@ import static android.view.View.VISIBLE;
 public class ChatListActivity extends DrawerActivity implements ChatListScreenView {
 
     private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
+
     @InjectPresenter
     ChatListScreenPresenter mPresenter;
+
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
     @Bind(R.id.tabs)
     TabLayout mTabLayout;
+
     @Bind(R.id.vpChatList)
     ViewPager mViewPager;
+
     private ChatListPagerAdapter mChatListPagerAdapter;
+
+    public static Intent getIntent(Context context) {
+        final Intent intent = new Intent(context, ChatListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return intent;
+    }
+
+    public static Intent getIntent(Context context, Bundle bundle) {
+        final Intent intent = getIntent(context);
+        intent.putExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY, bundle);
+        return intent;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_chat_list);
+        ButterKnife.bind(this);
+        initView();
+        mEventBus.register(this);
+
+        startService(WebSocketService.getIntent(this));
+        onNewIntent(getIntent());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.unSubscribe();
+        mEventBus.unregister(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mChatListPagerAdapter == null) {
+            mPresenter.initPages();
+        } else {
+            mPresenter.checkSettingChanges();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
 
     @Override
     public void setToolbarTitle(String title) {
@@ -97,55 +150,12 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
                 startActivity(SearchChatActivity.getIntent(this));
         }
         return false;
-    }
-
-    @Subscribe
-    public void on(TabIndicatorRequested event) {
-        mTabIndicatorModel.handleEvent(event);
-    }
-
-    public static Intent getIntent(Context context) {
-        final Intent intent = new Intent(context, ChatListActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        return intent;
-    }
-
-    public static Intent getIntent(Context context, Bundle bundle) {
-        final Intent intent = getIntent(context);
-        intent.putExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY, bundle);
-        return intent;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_chat_list);
-        ButterKnife.bind(this);
-        initView();
-        mEventBus.register(this);
-
-        startService(WebSocketService.getIntent(this));
-        onNewIntent(getIntent());
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPresenter.unSubscribe();
-        mEventBus.unregister(this);
     }
 
     @Override
@@ -163,18 +173,13 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (mChatListPagerAdapter == null) {
-            mPresenter.initPages();
-        } else {
-            mPresenter.checkSettingChanges();
-        }
-    }
-
-    @Override
     protected Toolbar getToolbar() {
         return mToolbar;
+    }
+
+    @Subscribe
+    public void on(TabIndicatorRequested event) {
+        mTabIndicatorModel.handleEvent(event);
     }
 
     private void initView() {
@@ -184,8 +189,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
 
     private class ChatListTabSelectedListener extends TabSelectedListener {
 
-
-        protected ChatListTabSelectedListener(ViewPager viewPager) {
+        ChatListTabSelectedListener(ViewPager viewPager) {
             super(viewPager);
         }
 

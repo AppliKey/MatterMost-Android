@@ -121,13 +121,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mPresenter.getInitialData(mChannelId);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
         setToolbarText();

@@ -22,15 +22,23 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
     @InjectPresenter
     RestorePasswordPresenter mPresenter;
 
-    @OnClick(R.id.back)
-    public void onBack() {
-        finish();
+    public static Intent getIntent(Context context) {
+        return new Intent(context, RestorePasswordActivity.class);
     }
 
-    @OnClick(R.id.b_restore_password)
-    public void onRestoreClicked() {
-        showLoadingDialog();
-        mPresenter.sendRestorePasswordRequest(mEtLogin.getText().toString());
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_restore_password);
+
+        ButterKnife.bind(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mPresenter.unSubscribe();
     }
 
     @Override
@@ -45,22 +53,14 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
         mEtLogin.setError(message);
     }
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, RestorePasswordActivity.class);
+    @OnClick(R.id.back)
+    void onBack() {
+        finish();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_restore_password);
-
-        ButterKnife.bind(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
+    @OnClick(R.id.b_restore_password)
+    void onRestoreClicked() {
+        showLoadingDialog();
+        mPresenter.sendRestorePasswordRequest(mEtLogin.getText().toString());
     }
 }

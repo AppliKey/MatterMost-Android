@@ -22,6 +22,15 @@ public class SplashActivity extends BaseMvpActivity implements SplashView {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        startService(RegistrationIntentService.getIntent(this));
+
+        mPresenter.isSessionExist();
+    }
+
+    @Override
     public void isSessionExist(boolean exist) {
         final Intent intent;
         if (exist) {
@@ -31,14 +40,5 @@ public class SplashActivity extends BaseMvpActivity implements SplashView {
             intent = new Intent(this, ChooseServerActivity.class);
         }
         startActivity(intent);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        startService(RegistrationIntentService.getIntent(this));
-
-        mPresenter.isSessionExist();
     }
 }

@@ -31,10 +31,33 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
 
     @InjectPresenter
     ChooseTeamPresenter mPresenter;
-    private final TeamListAdapter.TeamClickListener mTeamClickListener = team -> {
-        showLoadingDialog();
-        mPresenter.chooseTeam(team);
-    };
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, ChooseTeamActivity.class);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_choose_team);
+
+        ButterKnife.bind(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mPresenter.getInitialData();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        hideLoadingDialog();
+        mPresenter.unSubscribe();
+    }
 
     @Override
     public void displayTeams(List<Team> teams) {
@@ -60,34 +83,12 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     }
 
     @OnClick(R.id.back)
-    public void onBack() {
+    void onBack() {
         finish();
     }
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, ChooseTeamActivity.class);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_team);
-
-        ButterKnife.bind(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        mPresenter.getInitialData();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        hideLoadingDialog();
-        mPresenter.unSubscribe();
-    }
+    private final TeamListAdapter.TeamClickListener mTeamClickListener = team -> {
+        showLoadingDialog();
+        mPresenter.chooseTeam(team);
+    };
 }
