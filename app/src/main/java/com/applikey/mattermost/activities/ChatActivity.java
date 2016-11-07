@@ -28,7 +28,6 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
@@ -54,7 +53,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private static final String DIRECT_PREFIX = "";
 
     private static final int MENU_ITEM_SEARCH = Menu.FIRST;
-    private static final String TAG = ChatActivity.class.getSimpleName();
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -94,46 +92,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     ImageLoader mImageLoader;
 
     private String mRootId;
-
     private String mChannelId;
-    private final RecyclerView.OnScrollListener mPaginationListener
-            = new PaginationScrollListener() {
-        @Override
-        public void onLoad() {
-            mPresenter.fetchData(mChannelId);
-        }
-    };
-    private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        if (isOwner) {
-            dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
-                switch (which) {
-                    case 0:
-                        deleteMessage(mChannelId, post);
-                        break;
-                    case 1:
-                        editMessage(mChannelId, post);
-                        break;
-                    case 2:
-                        replyMessage(post);
-                        break;
-                    default:
-                        throw new RuntimeException("Not implemented feature");
-                }
-            });
-        } else {
-            dialogBuilder.setItems(R.array.post_opinion_array, (dialog, which) -> {
-                switch (which) {
-                    case 0:
-                        replyMessage(post);
-                        break;
-                    default:
-                        throw new RuntimeException("Not implemented feature");
-                }
-            });
-        }
-        dialogBuilder.show();
-    };
     private String mChannelName;
     private String mChannelType;
     private long mChannelLastViewed;
@@ -165,6 +124,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     protected void onStart() {
         super.onStart();
         mPresenter.getInitialData(mChannelId);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setToolbarText();
     }
 
     @Override
@@ -235,15 +201,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         startActivity(UserProfileActivity.getIntent(this, user));
     }
 
-    @OnClick(R.id.iv_send_message)
-    public void onSend() {
-        if (mRootId == null) {
-            mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
-        } else {
-            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
-        }
-    }
-
     @Override
     protected Toolbar getToolbar() {
         return mToolbar;
@@ -254,11 +211,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         return false;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        setToolbarText();
+    @OnClick(R.id.iv_send_message)
+    void onSend() {
+        if (mRootId == null) {
+            mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+        } else {
+            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
+        }
     }
 
     private void scrollToStart() {
@@ -310,9 +269,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         builder.setView(input)
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save, (dialog, which) -> {
-                    mPresenter.editMessage(channelId, post, input.getText().toString());
-                })
+                .setPositiveButton(R.string.save, (dialog, which) ->
+                        mPresenter.editMessage(channelId, post, input.getText().toString()))
                 .show();
     }
 
@@ -338,9 +296,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-            mToolbar.setOnClickListener(v -> {
-                mPresenter.channelNameClick();
-            });
+            mToolbar.setOnClickListener(v -> mPresenter.channelNameClick());
         }
         mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -354,4 +310,44 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         mIvReplyClose.setOnClickListener(v -> hideReply());
     }
+
+    private final RecyclerView.OnScrollListener mPaginationListener
+            = new PaginationScrollListener() {
+        @Override
+        public void onLoad() {
+            mPresenter.fetchData(mChannelId);
+        }
+    };
+
+    private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        if (isOwner) {
+            dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        deleteMessage(mChannelId, post);
+                        break;
+                    case 1:
+                        editMessage(mChannelId, post);
+                        break;
+                    case 2:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        } else {
+            dialogBuilder.setItems(R.array.post_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        }
+        dialogBuilder.show();
+    };
 }
