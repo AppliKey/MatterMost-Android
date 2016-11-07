@@ -7,7 +7,7 @@ package com.applikey.mattermost.storage.db;
 public class ObjectNotFoundException extends RuntimeException {
 
     public ObjectNotFoundException() {
-        super("Object Not Find");
+        super("Object not found");
     }
 
     public ObjectNotFoundException(String detailMessage) {

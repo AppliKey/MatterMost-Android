@@ -5,14 +5,10 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 
-/**
- * @author Anatoliy Chub
- */
-
 public abstract class TabSelectedListener extends TabLayout.ViewPagerOnTabSelectedListener {
 
-    protected int selectedTabColor = -1;
-    protected int unSelectedTabColor = -1;
+    protected int mSelectedTabColor = -1;
+    protected int mUnSelectedTabColor = -1;
 
     protected TabSelectedListener(ViewPager viewPager) {
         super(viewPager);

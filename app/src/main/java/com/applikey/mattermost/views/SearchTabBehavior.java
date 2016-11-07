@@ -4,6 +4,7 @@ import android.support.annotation.DrawableRes;
 
 import com.applikey.mattermost.R;
 
+// TODO: 07.11.16 NEED REFACTORING
 public enum SearchTabBehavior {
 
     UNDEFINED {

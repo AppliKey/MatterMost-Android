@@ -331,6 +331,6 @@ public class Db {
     }
 
     private Realm getRealm() {
-        return Realm.getDefaultInstance();
+        return mRealm;
     }
 }

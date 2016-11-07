@@ -19,7 +19,6 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
 
     public static final String FIELD_USERNAME = "username";
 
-    public static final String USER_NAME = "username";
     public static final String FIRST_NAME = "firstName";
     public static final String LAST_NAME = "lastName";
 

@@ -169,19 +169,19 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         }
 
         protected int getSelectedTabColor() {
-            if (selectedTabColor == -1) {
-                selectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
+            if (mSelectedTabColor == -1) {
+                mSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
                         R.color.tabSelected);
             }
-            return selectedTabColor;
+            return mSelectedTabColor;
         }
 
         protected int getUnSelectedTabColor() {
-            if (unSelectedTabColor == -1) {
-                unSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
+            if (mUnSelectedTabColor == -1) {
+                mUnSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
                         R.color.tabUnSelected);
             }
-            return unSelectedTabColor;
+            return mUnSelectedTabColor;
         }
     }
 

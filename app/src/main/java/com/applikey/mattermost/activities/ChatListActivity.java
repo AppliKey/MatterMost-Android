@@ -190,19 +190,19 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         }
 
         protected int getSelectedTabColor() {
-            if (selectedTabColor == -1) {
-                selectedTabColor = ContextCompat.getColor(ChatListActivity.this,
+            if (mSelectedTabColor == -1) {
+                mSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
                         R.color.tabSelected);
             }
-            return selectedTabColor;
+            return mSelectedTabColor;
         }
 
         protected int getUnSelectedTabColor() {
-            if (unSelectedTabColor == -1) {
-                unSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
+            if (mUnSelectedTabColor == -1) {
+                mUnSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
                         R.color.tabUnSelected);
             }
-            return unSelectedTabColor;
+            return mUnSelectedTabColor;
         }
     }
 

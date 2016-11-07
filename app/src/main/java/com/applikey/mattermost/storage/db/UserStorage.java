@@ -43,7 +43,7 @@ public class UserStorage {
 
     public Observable<List<User>> searchUsers(String text) {
         return mDb.listRealmObjectsFilteredSorted(User.class, text,
-                new String[] {User.FIRST_NAME, User.LAST_NAME, User.USER_NAME}, User.USER_NAME);
+                new String[] {User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME}, User.FIELD_USERNAME);
     }
 
     public Observable<List<User>> findUsers(List<String> ids) {
