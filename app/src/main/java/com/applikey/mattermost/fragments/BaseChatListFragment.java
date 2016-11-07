@@ -16,7 +16,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChatActivity;
-import com.applikey.mattermost.adapters.ChatListAdapter;
+import com.applikey.mattermost.adapters.BaseChatListAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
@@ -106,13 +106,13 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
 
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
-        final ChatListAdapter adapter = new ChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
+        final BaseChatListAdapter adapter = getAdapter(channels);
         adapter.setOnClickListener(mChatClickListener);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
     }
 
-    private final ChatListAdapter.ClickListener mChatClickListener = channel -> {
+    private final BaseChatListAdapter.ClickListener mChatClickListener = channel -> {
         final Activity activity = getActivity();
         final Intent intent = ChatActivity.getIntent(activity, channel);
         activity.startActivity(intent);
@@ -121,6 +121,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     protected abstract ChatListPresenter getPresenter();
 
     protected abstract int getEmptyStateTextId();
+
+    protected abstract BaseChatListAdapter getAdapter(RealmResults<Channel> channels);
 
     @Override
     public void showUnreadIndicator(boolean showIndicator) {
