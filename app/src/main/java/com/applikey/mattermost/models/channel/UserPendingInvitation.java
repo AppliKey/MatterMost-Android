@@ -2,7 +2,7 @@ package com.applikey.mattermost.models.channel;
 
 import com.applikey.mattermost.models.user.User;
 
-public class UserPendingInvitation {
+public class UserPendingInvitation implements Comparable<UserPendingInvitation> {
 
     private User user;
     private boolean isInvited;
@@ -28,4 +28,8 @@ public class UserPendingInvitation {
         isInvited = invited;
     }
 
+    @Override
+    public int compareTo(UserPendingInvitation o) {
+        return this.user.compareTo(o.getUser());
+    }
 }

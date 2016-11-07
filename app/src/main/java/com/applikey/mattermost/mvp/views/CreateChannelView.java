@@ -17,8 +17,6 @@ public interface CreateChannelView extends MvpView {
 
     void showEmptyChannelNameError();
 
-/*    void setAddAllButtonEnabled(boolean enabled);*/
-
     void successfulClose();
 
     void addAllUsers(List<User> results);

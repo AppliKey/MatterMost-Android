@@ -10,22 +10,18 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
-import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
-import com.applikey.mattermost.mvp.views.CreateChannelView;
+import com.applikey.mattermost.mvp.views.CreateChannelView_;
 import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.applikey.mattermost.views.ChannelTypeView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -33,7 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
+public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView_, PeopleToNewChannelAdapter.OnUserChosenListener {
 
     @Bind(R.id.et_channel_name)
     EditText mEtChannelName;
@@ -54,7 +50,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     ChannelTypeView mChannelTypeView;
 
     @Bind(R.id.btn_add_all)
-    Button mBtnAddAll;
+    CheckedTextView mChBtnAddAll;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -115,59 +111,17 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         final String channelDescription = mEtChannelDescription.getText().toString().trim();
         final boolean isPublicChannel = !mChannelTypeView.isChecked();
         mPresenter.createChannel(channelName, channelDescription, isPublicChannel);
+
     }
 
     @Override
-    public void onChosen(User user, boolean isInvited) {
-        if (isInvited) {
-            mPresenter.addUser(user);
-        } else {
-            mPresenter.removeUser(user);
-        }
-    }
-
-    @Override
-    public void setAddAllButtonState(boolean isNeedToCancel) {
-        if (isNeedToCancel) {
-            mBtnAddAll.setText(R.string.button_add_all);
-            mBtnAddAll.setBackgroundResource(R.drawable.round_button_gradient);
-        } else {
-            mBtnAddAll.setText(R.string.button_clear);
-            mBtnAddAll.setBackgroundResource(R.drawable.round_button_gray);
-        }
-    }
-
-    @Override
-    public void showUsers(List<UserPendingInvitation> results) {
-        mAdapter.addUsers(results);
-    }
-
-    @OnClick(R.id.btn_add_all)
-    public void onBtnAddAllClick(Button view) {
-        if (mPresenter.hasUsersInvitedAutomatically()) {
-            mPresenter.removeAutomaticallyAddedUsers();
-            setAddAllButtonState(true);
-        } else {
-            mPresenter.addAllUsers();
-            setAddAllButtonState(false);
-        }
-    }
-
-    @Override
-    public void showAddedUsers(List<User> users) {
-        mAddedPeopleLayout.showUsers(users);
+    public void onChosen(User user) {
+        mPresenter.operateWithUser(user);
     }
 
     @OnTextChanged(R.id.et_search_people)
     public void onSearchFilterChanged(Editable editableString) {
-        final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
-        mPresenter.getUsersAndFilterByFullName(editableString.toString(), alreadyAddedUsers);
-    }
-
-    @Override
-    public void addAllUsers(List<User> results) {
-        showAddedUsers(results);
-        mAdapter.setAllChecked(true);
+        mPresenter.filterByFullName(editableString.toString());
     }
 
     @Override
@@ -180,16 +134,51 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         showToast(getString(R.string.error_channel_name_empty));
     }
 
-    @OnClick(R.id.added_people_layout)
+    @Override
+    public void showAddedUser(User user) {
+        mAddedPeopleLayout.addUser(user);
+        mAdapter.addAlreadyAddedUser(user);
+    }
+
+    @Override
+    public void showAddedUsers(List<User> users) {
+        mAddedPeopleLayout.showUsers(users);
+        mAdapter.addAlreadyAddedUsers(users);
+    }
+
+    @Override
+    public void removeUser(User user) {
+        mAddedPeopleLayout.removeUser(user);
+        mAdapter.removeAlreadyAddedUser(user);
+    }
+
+    @Override
+    public void showAllUsers(List<User> allUsers) {
+        mAdapter.addUsers(allUsers);
+    }
+
+    @OnClick(R.id.btn_add_all)
+    public void onClickButtonAddAll(CheckedTextView chBtnAddAll) {
+        if (chBtnAddAll.isChecked()) {
+            chBtnAddAll.setText(R.string.cancel);
+            mPresenter.inviteAll();
+        } else {
+            chBtnAddAll.setText(R.string.button_add_all);
+            mPresenter.revertInviteAll();
+        }
+        chBtnAddAll.setChecked(!chBtnAddAll.isChecked());
+    }
+
+    /*    @OnClick(R.id.added_people_layout)
     public void onAddedUsersPanelClick() {
         final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
                 .map(User::getId)
                 .collect(Collectors.toList());
         final Intent intent = AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
-    }
+    }*/
 
-    @Override
+/*    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_ADDED_MEMBERS_DIALOG: {
@@ -201,5 +190,5 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
             break;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
+    }*/
 }

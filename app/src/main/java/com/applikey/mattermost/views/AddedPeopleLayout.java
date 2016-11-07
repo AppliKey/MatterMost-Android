@@ -16,6 +16,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 
 public class AddedPeopleLayout extends LinearLayout {
@@ -47,16 +48,22 @@ public class AddedPeopleLayout extends LinearLayout {
         setVisibility(GONE);
     }
 
+    public void addUser(User user) {
+        mUsers.add(user);
+        notifyChange();
+    }
+
+    public void removeUser(User user) {
+        mUsers.remove(user);
+        notifyChange();
+    }
+
     public void showUsers(List<User> users) {
-        if (mImageLoader == null) {
-            throw new RuntimeException("Please initialize ImageLoader");
-        }
-        mUsers = users;
-        setVisible(isNeedToBeShown(users.size()));
-        showCounterIfNeeded(isCounterVisible(users.size()), users.size());
-        final int activatedViewsCount = getCountOfActivatedViews(users.size());
-        displayUserAvatarsInActivatedViews(users, activatedViewsCount);
-        removeUnnecessaryViews(activatedViewsCount);
+        mUsers.clear();
+        mUsers.addAll(users);
+        Stream.of(users).forEach(user -> Timber.d(user.toString()));
+        Timber.d("%d", users.size());
+        notifyChange();
     }
 
     private void displayUserAvatarsInActivatedViews(List<User> users, int activatedViewsCount) {
@@ -115,5 +122,16 @@ public class AddedPeopleLayout extends LinearLayout {
 
     public List<User> getUsers() {
         return mUsers;
+    }
+
+    private void notifyChange() {
+        if (mImageLoader == null) {
+            throw new RuntimeException("Please initialize ImageLoader");
+        }
+        setVisible(isNeedToBeShown(mUsers.size()));
+        showCounterIfNeeded(isCounterVisible(mUsers.size()), mUsers.size());
+        final int activatedViewsCount = getCountOfActivatedViews(mUsers.size());
+        displayUserAvatarsInActivatedViews(mUsers, activatedViewsCount);
+        removeUnnecessaryViews(activatedViewsCount);
     }
 }

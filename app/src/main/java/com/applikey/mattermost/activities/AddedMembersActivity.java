@@ -71,16 +71,22 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
 
     @Override
     public void showAddedMembers(List<UserPendingInvitation> users) {
-        mAdapter.addUsers(users);
+        //TODO mAdapter.addUsers(users);
     }
 
-    @Override
+/*    @Override
     public void onChosen(User user, boolean isInvited) {
         if (isInvited) {
             mPresenter.addUser(user);
         } else {
             mPresenter.removeUser(user);
         }
+    }*/
+
+    @Override
+    public void onChosen(User user) {
+        //TODO
+
     }
 
     @Override
