@@ -37,6 +37,7 @@
     <dimen name="small_icon_size">24dp</dimen>
 
     <dimen name="list_item_margin">20dp</dimen>
+    <dimen name="list_item_group_margin">16dp</dimen>
     <dimen name="list_item_margin_double">40dp</dimen>
     <dimen name="list_item_image">60dp</dimen>
     <dimen name="list_item_image_chat">40dp</dimen>
@@ -80,6 +81,8 @@
     <dimen name="pending_people_item_bottom_margin">10dp</dimen>
     <dimen name="added_people_rv_margin">20dp</dimen>
     <dimen name="drawer_item_text_size">18sp</dimen>
+
+    <dimen name="chat_group_list_photo_padding">4dp</dimen>
 
     <dimen name="status_indicator_size">12dp</dimen>
     <dimen name="avatar_large_size">100dp</dimen>

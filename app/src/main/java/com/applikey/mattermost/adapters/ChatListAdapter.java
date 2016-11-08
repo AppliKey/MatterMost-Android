@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -73,24 +72,6 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
         vh.getRoot().setTag(position);
     }
 
-    private String getMessagePreview(Channel channel, Context context) {
-        final Post lastPost = channel.getLastPost();
-        final String messagePreview;
-        if (channel.getLastPost() == null) {
-            messagePreview = context.getString(R.string.channel_preview_message_placeholder);
-        } else if (isMy(lastPost)) {
-            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
-                    channel.getLastPost().getMessage();
-        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
-            final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
-            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor) +
-                    channel.getLastPost().getMessage();
-        } else {
-            messagePreview = channel.getLastPost().getMessage();
-        }
-        return messagePreview;
-    }
-
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
         final User member = element.getDirectCollocutor();
         final String previewImagePath = member != null ?
@@ -138,13 +119,7 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
         }
     }
 
-    private boolean isMy(Post post) {
-        return post.getUserId().equals(mCurrentUserId);
-    }
-
     class ViewHolder extends RecyclerView.ViewHolder {
-
-        private final View mRoot;
 
         @Bind(R.id.iv_preview_image)
         ImageView mPreviewImage;
@@ -176,13 +151,11 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
         ViewHolder(View itemView) {
             super(itemView);
 
-            mRoot = itemView;
-
             ButterKnife.bind(this, itemView);
         }
 
         View getRoot() {
-            return mRoot;
+            return itemView;
         }
 
         ImageView getPreviewImage() {

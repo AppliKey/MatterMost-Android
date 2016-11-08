@@ -6,7 +6,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.annimon.stream.function.FunctionalInterface;
+import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import io.realm.OrderedRealmCollection;
@@ -17,9 +20,9 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder> ext
 
     private ClickListener mClickListener = null;
 
-    protected final ImageLoader mImageLoader;
-    protected final String mCurrentUserId;
-    protected final Context mContext;
+    final ImageLoader mImageLoader;
+    final String mCurrentUserId;
+    final Context mContext;
 
     public BaseChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
                                ImageLoader imageLoader, String currentUserId) {
@@ -45,7 +48,7 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder> ext
         this.mClickListener = listener;
     }
 
-    protected final View.OnClickListener mOnClickListener = v -> {
+    final View.OnClickListener mOnClickListener = v -> {
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;
@@ -58,5 +61,28 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder> ext
             mClickListener.onItemClicked(team);
         }
     };
+
+    String getMessagePreview(Channel channel, Context context) {
+        final Post lastPost = channel.getLastPost();
+        final String messagePreview;
+        if (channel.getLastPost() == null) {
+            messagePreview = context.getString(R.string.channel_preview_message_placeholder);
+        } else if (isMy(lastPost)) {
+            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
+                    channel.getLastPost().getMessage();
+        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
+            final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
+            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor) +
+                    channel.getLastPost().getMessage();
+        } else {
+            messagePreview = channel.getLastPost().getMessage();
+        }
+        return messagePreview;
+    }
+
+    private boolean isMy(Post post) {
+        return post.getUserId().equals(mCurrentUserId);
+    }
+
 }
 
