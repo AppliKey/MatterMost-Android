@@ -9,6 +9,7 @@ import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.storage.preferences.RetainPrefs;
 
 import java.util.List;
 import java.util.Map;
@@ -22,10 +23,12 @@ public class ChannelStorage {
 
     private final Db mDb;
     private final Prefs mPrefs;
+    private final RetainPrefs mRetainPrefs;
 
-    public ChannelStorage(final Db db, final Prefs prefs) {
+    public ChannelStorage(final Db db, final Prefs prefs, final RetainPrefs retainPrefs) {
         mDb = db;
         mPrefs = prefs;
+        mRetainPrefs = retainPrefs;
     }
 
     // TODO Naming
@@ -141,7 +144,6 @@ public class ChannelStorage {
         });
     }
 
-
     public void updateLastViewedAt(String id) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
             if (realmChannel != null) {
@@ -191,6 +193,16 @@ public class ChannelStorage {
 
     public void saveChannel(Channel channel) {
         mDb.saveTransactional(channel);
+    }
+
+    public Observable<Boolean> setFavorite(Channel channel, boolean isFavorite) {
+        return isFavorite ? mRetainPrefs.addFavoriteChannel(channel.getId()) :
+                mRetainPrefs.removeFavoriteChannel(channel.getId());
+    }
+
+    public Observable<Boolean> isFavorite(Channel channel) {
+        return mRetainPrefs.getFavoritesChannels()
+                .map(ids -> ids.contains(channel.getId()));
     }
 
     private List<Channel> restoreChannels(List<Channel> channels) {

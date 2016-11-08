@@ -108,6 +108,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         }
         if (channels.size() == 0) {
             view.showUnreadIndicator(false);
+            view.showEmpty();
         } else {
             view.showUnreadIndicator(channels.sort(Channel.FIELD_UNREAD_TYPE, Sort.DESCENDING)
                     .first().hasUnreadMessages());

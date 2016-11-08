@@ -11,6 +11,7 @@ import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.storage.preferences.RetainPrefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
@@ -72,6 +73,12 @@ public class GlobalModule {
     @PerApp
     Prefs providePrefs() {
         return new Prefs(mApplicationContext);
+    }
+
+    @Provides
+    @PerApp
+    RetainPrefs provideRetainPrefs() {
+        return new RetainPrefs(mApplicationContext);
     }
 
     @Provides
@@ -142,8 +149,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    ChannelStorage provideChannelStorage(Db db, Prefs prefs) {
-        return new ChannelStorage(db, prefs);
+    ChannelStorage provideChannelStorage(Db db, Prefs prefs, RetainPrefs retainPrefs) {
+        return new ChannelStorage(db, prefs, retainPrefs);
     }
 
     @Provides

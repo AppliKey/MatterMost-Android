@@ -48,30 +48,39 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
         App.getUserComponent().inject(this);
     }
 
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+    }
+
     public void getInitialData(String channelId) {
         final ChannelDetailsView view = getViewState();
 
         mSubscription.add(mChannelStorage.channel(channelId)
                 .doOnNext(channel -> mChannel = channel)
-                .subscribe(view::showBaseDetails, mErrorHandler::handleError));
+                .doOnNext(view::showBaseDetails)
+                .flatMap(channel -> mChannelStorage.isFavorite(channel).subscribeOn(Schedulers.io()))
+                .doOnNext(favorite -> mIsFavorite = favorite)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::onMakeChannelFavorite, mErrorHandler::handleError));
 
-        mSubscription.add(
-                mTeamStorage.getChosenTeam()
-                        .first()
-                        .map(Team::getId)
-                        .flatMap(teamId -> mApi.getChannelExtra(teamId, channelId)
-                                .subscribeOn(Schedulers.io()))
-                        .map(ExtraInfo::getMembers)
-                        .flatMap(Observable::from)
-                        .map(MemberInfo::getId)
-                        .toList()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(ids -> mUserStorage.findUsers(ids))
-                        .subscribe(view::showMembers, mErrorHandler::handleError));
+        mSubscription.add(mTeamStorage.getChosenTeam()
+                .first()
+                .map(Team::getId)
+                .flatMap(teamId -> mApi.getChannelExtra(teamId, channelId)
+                        .subscribeOn(Schedulers.io()))
+                .map(ExtraInfo::getMembers)
+                .flatMap(Observable::from)
+                .map(MemberInfo::getId)
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(ids -> mUserStorage.findUsers(ids))
+                .subscribe(view::showMembers, mErrorHandler::handleError));
     }
 
-    //TODO Implement favorite logic
     public void toggleChannelFavorite() {
-        getViewState().onMakeChannelFavorite(mIsFavorite = !mIsFavorite);
+        mChannelStorage.setFavorite(mChannel, !mIsFavorite)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
     }
 }

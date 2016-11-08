@@ -91,8 +91,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.updateLastViewedAt(team.getId(), channelId))
                 .toCompletable()
-                .subscribe(mErrorHandler::handleError, () -> {
-                });
+                .subscribe(() -> {
+                }, mErrorHandler::handleError);
 
         mChannelStorage.updateLastViewedAt(channelId);
         mNotificationManager.dismissNotification(channelId);
