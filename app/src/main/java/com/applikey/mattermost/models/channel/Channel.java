@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
@@ -74,6 +75,8 @@ public class Channel extends RealmObject implements SearchItem {
     // Index field, which contains the time of the last message or creation time. Used by Realm,
     // as it can not compare multiple fields
     private long lastActivityTime;
+
+    private RealmList<User> users;
 
     public enum ChannelType {
         PUBLIC("O"),
