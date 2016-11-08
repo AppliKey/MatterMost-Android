@@ -155,5 +155,10 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView_> im
             mInvitedUsersManager.setAlreadyInvitedUsers(data);
         }
     }
+
+    @Override
+    public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
+        getViewState().setButtonAddAllState(isAllAlreadyInvited);
+    }
 }
 

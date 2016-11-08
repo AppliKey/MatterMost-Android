@@ -8,6 +8,8 @@ import com.applikey.mattermost.mvp.views.AddedMembersView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.arellomobile.mvp.InjectViewState;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -19,6 +21,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     UserStorage mUserStorage;
 
     private List<User> mAlreadyAddedUsers;
+    private List<User> mPendingUsers;
 
     public AddedMembersPresenter() {
         App.getComponent().inject(this);
@@ -26,20 +29,25 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
 
     public void setData(List<User> alreadyAddedUsers) {
         mAlreadyAddedUsers = alreadyAddedUsers;
+        mPendingUsers = new ArrayList<>(mAlreadyAddedUsers);
     }
 
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
+        Collections.sort(mAlreadyAddedUsers);
+        getViewState().showUsers(mAlreadyAddedUsers);
         getViewState().showAddedMembers(mAlreadyAddedUsers);
     }
 
     private void addUser(User user) {
         mAlreadyAddedUsers.add(user);
+        getViewState().addInvitedUser(user);
     }
 
     private void removeUser(User user) {
         mAlreadyAddedUsers.remove(user);
+        getViewState().removeInvitedUser(user);
     }
 
     public List<User> getInvitedUsers() {
@@ -47,10 +55,11 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     }
 
     public void filterByFullName(String filter) {
-        final List<User> filteredUsers = Stream.of(mAlreadyAddedUsers)
+        final List<User> filteredUsers = Stream.of(mPendingUsers)
                 .filter(user -> user.search(filter))
+                .sorted()
                 .collect(Collectors.toList());
-        getViewState().showAddedMembers(filteredUsers);
+        getViewState().showUsers(filteredUsers);
     }
 
     public void handleUser(User user) {

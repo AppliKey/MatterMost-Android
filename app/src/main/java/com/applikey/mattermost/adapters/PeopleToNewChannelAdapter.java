@@ -4,8 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.user.User;
@@ -35,7 +36,7 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     }
 
     public void addUsers(List<User> users) {
-        mUsers = users;
+        mUsers = new ArrayList<>(users);
         notifyDataSetChanged();
     }
 
@@ -60,7 +61,7 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         final View view = layoutInflater.inflate(R.layout.people_new_channel_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         viewHolder.itemView.setOnClickListener(button -> {
-            viewHolder.mTvAddedMember.setChecked(!viewHolder.mTvAddedMember.isChecked());
+            viewHolder.mCbIsMemberAdded.setChecked(!viewHolder.mCbIsMemberAdded.isChecked());
             final int adapterPosition = viewHolder.getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
                 mChosenListener.onChosen(mUsers.get(adapterPosition));
@@ -79,7 +80,7 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         final User user = mUsers.get(position);
         final boolean isUserAlreadyAdded = mAlreadyAddedUsers.contains(user);
         Timber.d("is already added: %b", isUserAlreadyAdded);
-        holder.mTvAddedMember.setChecked(isUserAlreadyAdded);
+        holder.mCbIsMemberAdded.setChecked(isUserAlreadyAdded);
         holder.mTvAddedMember.setText(User.getDisplayableName(user));
         mImageLoader.displayCircularImage(user.getProfileImage(), holder.mAddedPeopleAvatar);
     }
@@ -90,7 +91,10 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         ImageView mAddedPeopleAvatar;
 
         @Bind(R.id.tv_added_member)
-        CheckedTextView mTvAddedMember;
+        TextView mTvAddedMember;
+
+        @Bind(R.id.cb_is_member_added)
+        CheckBox mCbIsMemberAdded;
 
         public ViewHolder(View itemView) {
             super(itemView);

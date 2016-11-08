@@ -28,6 +28,8 @@ public class InvitedUsersManager {
         void onRevertedAll(List<User> users);
 
         void onRevertInvite(User user);
+
+        void onAllAlreadyInvited(boolean isAllAlreadyInvited);
     }
 
     public InvitedUsersManager(OnInvitedListener listener, List<User> teamMembers) {
@@ -39,11 +41,16 @@ public class InvitedUsersManager {
     private void invite(User user) {
         mInvitedUsers.add(user);
         mOnInvitedListener.onInvited(user);
+        if (mInvitedUsers.size() == mTeamMembers.size()) {
+            mOnInvitedListener.onAllAlreadyInvited(true);
+        }
+
     }
 
     private void revertInvite(User user) {
         mInvitedUsers.remove(user);
         mOnInvitedListener.onRevertInvite(user);
+        mOnInvitedListener.onAllAlreadyInvited(false);
     }
 
     public void inviteAll() {
@@ -70,5 +77,10 @@ public class InvitedUsersManager {
     public void setAlreadyInvitedUsers(List<User> alreadyInvitedUsers) {
         mInvitedUsers = alreadyInvitedUsers;
         mOnInvitedListener.onInvitedAll(mInvitedUsers);
+        if (alreadyInvitedUsers.size() == mTeamMembers.size()) {
+            mOnInvitedListener.onAllAlreadyInvited(true);
+        } else {
+            mOnInvitedListener.onAllAlreadyInvited(false);
+        }
     }
 }

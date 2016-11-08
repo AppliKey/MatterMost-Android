@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 
@@ -175,6 +176,17 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         final List<User> invitedUsers = mPresenter.getInvitedUsers();
         final Intent intent = AddedMembersActivity.getIntent(this, invitedUsers);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
+    }
+
+    @Override
+    public void setButtonAddAllState(boolean isAllAlreadyInvited) {
+        if (isAllAlreadyInvited) {
+            mChBtnAddAll.setVisibility(View.GONE);
+        } else {
+            mChBtnAddAll.setVisibility(View.VISIBLE);
+            mChBtnAddAll.setChecked(true);
+            mChBtnAddAll.setText(R.string.button_add_all);
+        }
     }
 
     @Override

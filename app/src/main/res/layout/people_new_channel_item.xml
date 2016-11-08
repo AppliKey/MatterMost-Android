@@ -15,15 +15,25 @@
         android:layout_width="@dimen/pending_people_avatar_width"
         android:layout_height="@dimen/pending_people_avatar_height"
         android:layout_marginEnd="@dimen/normal"
+        tools:background="#AA45CB"
         android:layout_gravity="start" />
 
-    <CheckedTextView
+    <com.devspark.robototextview.widget.RobotoTextView
         android:id="@+id/tv_added_member"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         tools:text = "Denis Nikiforov"
-        android:drawableEnd="@drawable/bg_pending_member_item"
         android:textSize="@dimen/settings_element_text_size" />
+
+    <CheckBox
+        android:id="@+id/cb_is_member_added"
+        android:clickable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@null"
+        android:button="@drawable/bg_pending_member_item"
+        />
 </LinearLayout>

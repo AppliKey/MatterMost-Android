@@ -1,5 +1,6 @@
 package com.applikey.mattermost.views;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -44,6 +45,7 @@ public class AddedPeopleLayout extends LinearLayout {
     public AddedPeopleLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflate(context, R.layout.added_people_layout, this);
+        setLayoutTransition(new LayoutTransition());
         ButterKnife.bind(this);
         setVisibility(GONE);
     }

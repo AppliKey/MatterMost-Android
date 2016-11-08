@@ -66,8 +66,12 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
 
     @Override
     public void showAddedMembers(List<User> users) {
-        mAdapter.addUsers(users);
         mAdapter.addAlreadyAddedUsers(users);
+    }
+
+    @Override
+    public void showUsers(List<User> users) {
+        mAdapter.addUsers(users);
     }
 
     @Override
@@ -112,5 +116,15 @@ public class AddedMembersActivity extends BaseMvpActivity implements AddedMember
     public boolean onQueryTextChange(String newText) {
         mPresenter.filterByFullName(newText);
         return true;
+    }
+
+    @Override
+    public void addInvitedUser(User user) {
+        mAdapter.addAlreadyAddedUser(user);
+    }
+
+    @Override
+    public void removeInvitedUser(User user) {
+        mAdapter.removeAlreadyAddedUser(user);
     }
 }
