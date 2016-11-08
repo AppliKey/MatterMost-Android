@@ -3,6 +3,7 @@ package com.applikey.mattermost.fragments;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,11 @@ import android.view.ViewGroup;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.adapters.SearchAdapter;
+import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -20,6 +25,8 @@ public abstract class SearchFragment extends BaseMvpFragment {
 
     @Bind(R.id.rv_items)
     RecyclerView mRecycleView;
+
+    protected SearchAdapter mAdapter;
 
     @Nullable
     @Override
@@ -31,6 +38,11 @@ public abstract class SearchFragment extends BaseMvpFragment {
         ButterKnife.bind(this, view);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -51,6 +63,24 @@ public abstract class SearchFragment extends BaseMvpFragment {
         }
     }
 
+    protected void initView(SearchAdapter.ClickListener clickListener) {
+        mAdapter = new SearchAdapter(mImageLoader);
+        mAdapter.setOnClickListener(clickListener);
+        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecycleView.setAdapter(mAdapter);
+    }
+
     @LayoutRes
     protected abstract int getLayout();
+
+
+    public void displayData(List<SearchItem> items) {
+        mAdapter.setDataSet(items);
+    }
+
+
+    public void clearData() {
+        mAdapter.clear();
+    }
+
 }

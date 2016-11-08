@@ -88,7 +88,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setDataSet(List<SearchItem> dataSet) {
         mDataSet.clear();
-        mDataSet.addAll(dataSet);
+        for(SearchItem searchItem : dataSet) {
+            mDataSet.add(searchItem);
+        }
         notifyDataSetChanged();
     }
 
@@ -125,6 +127,6 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     };
 
     public interface ClickListener {
-        void onItemClicked(Channel channel);
+        void onItemClicked(SearchItem searchItem);
     }
 }

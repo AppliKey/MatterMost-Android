@@ -13,6 +13,8 @@ import com.arellomobile.mvp.InjectViewState;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -60,7 +62,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
                         .observeOn(Schedulers.io())
                         .doOnNext(channels -> addFilterChannels(channels, text))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, mErrorHandler::handleError));
+                        .subscribe(channels -> view.displayData(new ArrayList<>(channels)), mErrorHandler::handleError));
     }
 
     public void handleChannelClick(Channel channel) {
@@ -69,7 +71,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     }
 
     @Subscribe
-    void on(SearchChannelTextChanged event) {
+    public void on(SearchChannelTextChanged event) {
         final SearchChannelView view = getViewState();
         view.clearData();
         getData(event.getText());

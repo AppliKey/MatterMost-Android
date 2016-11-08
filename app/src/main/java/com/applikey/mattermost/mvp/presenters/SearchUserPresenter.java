@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -21,6 +20,8 @@ import com.arellomobile.mvp.InjectViewState;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -29,7 +30,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @InjectViewState
-public class SearchUserPresenter extends BasePresenter<SearchUserView> {
+public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
 
     @Inject
     UserStorage mUserStorage;
@@ -76,7 +77,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                         .filter(user -> !TextUtils.equals(user.getId(), mCurrentUserId))
                         .toList()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, mErrorHandler::handleError));
+                        .subscribe(users ->  view.displayData(new ArrayList<>(users)), mErrorHandler::handleError));
     }
 
     public void handleUserClick(User user) {
@@ -93,7 +94,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     }
 
     @Subscribe
-    void on(SearchUserTextChanged event) {
+    public void on(SearchUserTextChanged event) {
         final SearchUserView view = getViewState();
         view.clearData();
         getData(event.getText());
