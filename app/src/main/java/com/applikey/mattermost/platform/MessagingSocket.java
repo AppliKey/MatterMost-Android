@@ -63,7 +63,7 @@ public class MessagingSocket implements Socket {
                         if (mIsDisconnectingFired) {
                             emitter.onCompleted();
                         } else {
-                            mWebSocket.recreate().connectAsynchronously();
+                            emitter.onError(new WebSocketException(WebSocketError.SOCKET_CONNECT_ERROR));
                         }
                     }
 

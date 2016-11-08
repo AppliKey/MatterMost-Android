@@ -20,6 +20,8 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.ConnectivityUtils;
 import com.applikey.mattermost.utils.kissUtils.utils.NetworkUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
+import com.applikey.mattermost.utils.rx.RetrySocketConnection;
+import com.applikey.mattermost.utils.rx.RetryWhenNetwork;
 import com.applikey.mattermost.utils.rx.RetryWithDelay;
 import com.applikey.mattermost.utils.rx.RxUtils;
 import com.applikey.mattermost.web.BearerTokenFactory;
@@ -72,136 +74,6 @@ public class WebSocketService extends Service {
 
     private WebSocket mWebSocket;
     private Handler mHandler;
-    private final WebSocketListener mWebSocketAdapter = new WebSocketListener() {
-
-        @Override
-        public void onStateChanged(WebSocket websocket, WebSocketState newState) throws Exception {
-            Log.d(TAG, "onStateChanged: ");
-        }
-
-        @Override
-        public void onConnected(WebSocket websocket, Map<String, List<String>> headers) throws Exception {
-            Log.d(TAG, "onConnected: socket connected!");
-        }
-
-        @Override
-        public void onTextMessage(WebSocket websocket, String text) throws Exception {
-            Log.d(TAG, text);
-            handleMessage(text);
-        }
-
-        @Override
-        public void onBinaryMessage(WebSocket websocket, byte[] binary) throws Exception {
-            Log.d(TAG, "onBinaryMessage: ");
-        }
-
-        @Override
-        public void onSendingFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onSendingFrame: ");
-        }
-
-        @Override
-        public void onFrameSent(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onFrameSent: ");
-        }
-
-        @Override
-        public void onFrameUnsent(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onFrameUnsent: ");
-        }
-
-        @Override
-        public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-            Log.e(TAG, "onError: ", cause);
-        }
-
-        @Override
-        public void onFrameError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception {
-            Log.e(TAG, "onFrameError: ", cause);
-        }
-
-        @Override
-        public void onMessageError(WebSocket websocket, WebSocketException cause, List<WebSocketFrame> frames) throws Exception {
-            Log.e(TAG, "onMessageError: ", cause);
-        }
-
-        @Override
-        public void onMessageDecompressionError(WebSocket websocket, WebSocketException cause, byte[] compressed) throws Exception {
-            Log.e(TAG, "onMessageDecompressionError: ", cause);
-        }
-
-        @Override
-        public void onTextMessageError(WebSocket websocket, WebSocketException cause, byte[] data) throws Exception {
-            Log.e(TAG, "onTextMessageError: ", cause);
-        }
-
-        @Override
-        public void onSendError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception {
-            Log.e(TAG, "onSendError: ", cause);
-        }
-
-        @Override
-        public void onUnexpectedError(WebSocket websocket, WebSocketException cause) throws Exception {
-            Log.e(TAG, "onUnexpectedError: ", cause);
-        }
-
-        @Override
-        public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception {
-            Log.e(TAG, "handleCallbackError: ", cause);
-        }
-
-        @Override
-        public void onSendingHandshake(WebSocket websocket, String requestLine, List<String[]> headers) throws Exception {
-            Log.d(TAG, "onSendingHandshake: ");
-        }
-
-        @Override
-        public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
-                throws Exception {
-            Log.d(TAG, "onDisconnected: ");
-            mWebSocket = mWebSocket.recreate().connectAsynchronously();
-        }
-
-        @Override
-        public void onFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onFrame: ");
-        }
-
-        @Override
-        public void onContinuationFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onContinuationFrame: ");
-        }
-
-        @Override
-        public void onTextFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onTextFrame: ");
-        }
-
-        @Override
-        public void onBinaryFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onBinaryFrame: ");
-        }
-
-        @Override
-        public void onCloseFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onCloseFrame: ");
-        }
-
-        @Override
-        public void onPingFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onPingFrame: ");
-        }
-
-        @Override
-        public void onPongFrame(WebSocket websocket, WebSocketFrame frame) throws Exception {
-            Log.d(TAG, "onPongFrame: ");
-        }
-
-        @Override
-        public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception {
-            Log.e(TAG, "onConnectError: ", exception);
-        }
-    };
     private MessagingSocket mMessagingSocket;
 
     @Override
@@ -211,24 +83,16 @@ public class WebSocketService extends Service {
         App.getUserComponent().inject(this);
 
         mHandler = new Handler(Looper.getMainLooper());
-//        try {
-//            openSocket();
-//        } catch (IOException | WebSocketException e) {
-//            Log.e(TAG, e.getMessage());
-//        }
 
         String baseUrl = mPrefs.getCurrentServerUrl();
         baseUrl = UrlUtil.removeProtocol(baseUrl);
         baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
         baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
 
-        final Context context = getApplicationContext();
-
         mMessagingSocket = new MessagingSocket(mTokenFactory);
         mMessagingSocket.listen(baseUrl)
-                .retryWhen(attempt -> attempt.flatMap(error -> ConnectivityUtils.getConnectivityObservable(context).takeFirst(status -> status)))
-                .subscribe(webSocketEvent -> {
-                }, Throwable::printStackTrace);
+                .retryWhen(new RetrySocketConnection(this))
+                .subscribe(this::handleSocketEvent, mErrorHandler::handleError);
     }
 
     @Override
@@ -241,9 +105,7 @@ public class WebSocketService extends Service {
         super.onDestroy();
 
         Log.d(TAG, "closing socket");
-
         disconnectSocket();
-//        closeSocket();
     }
 
     private void disconnectSocket() {
@@ -257,31 +119,7 @@ public class WebSocketService extends Service {
         return null;
     }
 
-    private void openSocket() throws IOException, WebSocketException {
-        Log.d(TAG, "Opening socket");
-
-        if (mWebSocket != null) {
-            mWebSocket.disconnect();
-        }
-
-        String baseUrl = mPrefs.getCurrentServerUrl();
-        baseUrl = UrlUtil.removeProtocol(baseUrl);
-        baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
-        baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
-
-        mWebSocket = new WebSocketFactory()
-                .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
-                .createSocket(baseUrl);
-
-        mWebSocket.addListener(mWebSocketAdapter);
-        mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mTokenFactory.getBearerTokenString());
-        mWebSocket.connectAsynchronously();
-    }
-
-    private void handleMessage(String message) {
-        final Gson gson = GsonFactory.INSTANCE.getGson();
-        final WebSocketEvent event = gson.fromJson(message, WebSocketEvent.class);
-
+    private void handleSocketEvent(WebSocketEvent event) {
         String eventType = event.getEvent();
         // Mattermost Old API fix
         if (eventType == null) {
@@ -294,7 +132,7 @@ public class WebSocketService extends Service {
             case EVENT_MESSAGE_POSTED: {
                 Log.d(TAG, "Extracting message");
 
-                final Post post = extractPostFromSocket(gson, event);
+                final Post post = extractPostFromSocket(event);
                 Log.d(TAG, "Post message: " + post.getMessage());
 
                 mHandler.post(() -> {
@@ -308,13 +146,8 @@ public class WebSocketService extends Service {
         }
     }
 
-    private void closeSocket() {
-        mWebSocket.removeListener(mWebSocketAdapter);
-        mWebSocket.sendClose();
-        mWebSocket.disconnect();
-    }
-
-    private Post extractPostFromSocket(Gson gson, WebSocketEvent event) {
+    private Post extractPostFromSocket(WebSocketEvent event) {
+        final Gson gson = GsonFactory.INSTANCE.getGson();
         final JsonObject eventData = event.getData();
         final String postObject;
         if (eventData != null) {
