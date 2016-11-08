@@ -16,6 +16,7 @@ import android.widget.EditText;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.user.UserListParcelableWrapper;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.views.CreateChannelView_;
 import com.applikey.mattermost.views.AddedPeopleLayout;
@@ -169,26 +170,24 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         chBtnAddAll.setChecked(!chBtnAddAll.isChecked());
     }
 
-    /*    @OnClick(R.id.added_people_layout)
+    @OnClick(R.id.added_people_layout)
     public void onAddedUsersPanelClick() {
-        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
-                .map(User::getId)
-                .collect(Collectors.toList());
-        final Intent intent = AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds);
+        final List<User> invitedUsers = mPresenter.getInvitedUsers();
+        final Intent intent = AddedMembersActivity.getIntent(this, invitedUsers);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
-    }*/
+    }
 
-/*    @Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_ADDED_MEMBERS_DIALOG: {
                 if (resultCode == RESULT_OK) {
-                    final ArrayList<String> addedUsersIds = data.getStringArrayListExtra(AddedMembersActivity.USERS_IDS_KEY);
-                    mPresenter.showAlreadyAddedUsers(addedUsersIds);
+                    final UserListParcelableWrapper wrapper = data.getParcelableExtra(AddedMembersActivity.USERS_IDS_KEY);
+                    mPresenter.setAlreadyAddedUsers(wrapper.getData());
                 }
             }
             break;
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }*/
+    }
 }

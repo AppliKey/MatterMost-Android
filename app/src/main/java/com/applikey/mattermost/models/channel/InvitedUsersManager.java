@@ -8,7 +8,7 @@ import java.util.List;
 public class InvitedUsersManager {
 
     private final List<User> mTeamMembers;
-    private final List<User> mInvitedUsers;
+    private List<User> mInvitedUsers;
     private Command mInviteAllCommand;
     private final OnInvitedListener mOnInvitedListener;
 
@@ -53,8 +53,10 @@ public class InvitedUsersManager {
     }
 
     public void revertInvitingAll() {
-        mInviteAllCommand.revert();
-        mOnInvitedListener.onRevertedAll(mInvitedUsers);
+        if (mInviteAllCommand != null) {
+            mInviteAllCommand.revert();
+            mOnInvitedListener.onRevertedAll(mInvitedUsers);
+        }
     }
 
     public List<User> getInvitedUsers() {
@@ -63,5 +65,10 @@ public class InvitedUsersManager {
 
     public List<User> getTeamMembers() {
         return mTeamMembers;
+    }
+
+    public void setAlreadyInvitedUsers(List<User> alreadyInvitedUsers) {
+        mInvitedUsers = alreadyInvitedUsers;
+        mOnInvitedListener.onInvitedAll(mInvitedUsers);
     }
 }

@@ -3,21 +3,14 @@ package com.applikey.mattermost.mvp.presenters;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.AddedMembersView;
 import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 
 @InjectViewState
 public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
@@ -25,69 +18,46 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     @Inject
     UserStorage mUserStorage;
 
-    private List<String> mAddedUsersIds;
-    private List<User> mResultingList = new ArrayList<>();
+    private List<User> mAlreadyAddedUsers;
 
     public AddedMembersPresenter() {
         App.getComponent().inject(this);
     }
 
-    public void getUsersByIds(List<String> usersIds) {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
-                .first()
-                .flatMap(Observable::from)
-                .filter(user -> Stream.of(usersIds).anyMatch(id -> user.getId().equals(id)))
-                .toSortedList()
-                .doOnNext(users -> mResultingList = users)
-                .doOnNext(users -> mAddedUsersIds = Stream.of(users).map(User::getId).collect(Collectors.toList()))
-                .map(users -> Stream.of(users).map(user -> new UserPendingInvitation(user, true)).collect(Collectors.toList()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        users -> getViewState().showAddedMembers(users),
-                        ErrorHandler::handleError
-                );
-        mSubscription.add(subscription);
+    public void setData(List<User> alreadyAddedUsers) {
+        mAlreadyAddedUsers = alreadyAddedUsers;
     }
 
-    public void addUser(User user) {
-        mResultingList.add(user);
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        getViewState().showAddedMembers(mAlreadyAddedUsers);
     }
 
-    public void removeUser(User user) {
-        mResultingList.remove(user);
+    private void addUser(User user) {
+        mAlreadyAddedUsers.add(user);
     }
 
-    public void getUsersAndFilterByFullName(String filter) {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
-                .first()
-                .flatMap(Observable::from)
-                .filter(user -> Stream.of(mAddedUsersIds).anyMatch(id -> user.getId().equals(id)))
+    private void removeUser(User user) {
+        mAlreadyAddedUsers.remove(user);
+    }
+
+    public List<User> getInvitedUsers() {
+        return mAlreadyAddedUsers;
+    }
+
+    public void filterByFullName(String filter) {
+        final List<User> filteredUsers = Stream.of(mAlreadyAddedUsers)
                 .filter(user -> user.search(filter))
-                .toSortedList()
-                .map(users -> convertToPendingUsers(users, mResultingList))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        users -> getViewState().showAddedMembers(users),
-                        ErrorHandler::handleError
-                );
-        mSubscription.add(subscription);
+                .collect(Collectors.toList());
+        getViewState().showAddedMembers(filteredUsers);
     }
 
-    public List<User> getResultingList() {
-        return mResultingList;
-    }
-
-    private List<UserPendingInvitation> convertToPendingUsers(List<User> users, List<User> alreadyAddedUsers) {
-        final List<UserPendingInvitation> pendingUsers = new ArrayList<>(users.size());
-        Stream.of(users).forEach(user -> {
-            final boolean isAlreadyAdded =
-                    Stream.of(alreadyAddedUsers)
-                            .map(user::equals)
-                            .filter(isAdded -> isAdded)
-                            .findFirst()
-                            .orElse(false);
-            pendingUsers.add(new UserPendingInvitation(user, isAlreadyAdded));
-        });
-        return pendingUsers;
+    public void handleUser(User user) {
+        if (mAlreadyAddedUsers.contains(user)) {
+            removeUser(user);
+        } else {
+            addUser(user);
+        }
     }
 }

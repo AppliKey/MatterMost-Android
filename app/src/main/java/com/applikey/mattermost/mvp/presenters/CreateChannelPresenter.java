@@ -145,5 +145,15 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView_> im
                 .collect(Collectors.toList());
         getViewState().showAllUsers(foundedUsers);
     }
+
+    public List<User> getInvitedUsers() {
+        return mInvitedUsersManager.getInvitedUsers();
+    }
+
+    public void setAlreadyAddedUsers(List<User> data) {
+        if (mInvitedUsersManager != null) {
+            mInvitedUsersManager.setAlreadyInvitedUsers(data);
+        }
+    }
 }
 

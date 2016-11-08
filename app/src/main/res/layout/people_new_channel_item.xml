@@ -14,16 +14,15 @@
         android:id="@+id/iv_pending_people_avatar"
         android:layout_width="@dimen/pending_people_avatar_width"
         android:layout_height="@dimen/pending_people_avatar_height"
+        android:layout_marginEnd="@dimen/normal"
         android:layout_gravity="start" />
 
-    <com.devspark.robototextview.widget.RobotoCheckedTextView
+    <CheckedTextView
         android:id="@+id/tv_added_member"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/more"
         android:layout_gravity="center"
-        app:typeface="roboto_light"
         tools:text = "Denis Nikiforov"
         android:drawableEnd="@drawable/bg_pending_member_item"
         android:textSize="@dimen/settings_element_text_size" />

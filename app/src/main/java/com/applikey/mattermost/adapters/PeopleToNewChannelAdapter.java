@@ -1,6 +1,5 @@
 package com.applikey.mattermost.adapters;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewChannelAdapter.ViewHolder> {
 
@@ -39,29 +39,34 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         notifyDataSetChanged();
     }
 
-    public void addAlreadyAddedUsers(@Nullable List<User> alreadyAddedUsers) {
-        mAlreadyAddedUsers = alreadyAddedUsers;
+    public void addAlreadyAddedUsers(List<User> alreadyAddedUsers) {
+        mAlreadyAddedUsers = new ArrayList<>(alreadyAddedUsers);
         notifyDataSetChanged();
     }
 
     public void addAlreadyAddedUser(User alreadyAddedUser) {
         mAlreadyAddedUsers.add(alreadyAddedUser);
+        notifyItemChanged(mUsers.indexOf(alreadyAddedUser));
     }
 
     public void removeAlreadyAddedUser(User removedUser) {
         mAlreadyAddedUsers.remove(removedUser);
-    }
-
-    public void clear() {
-        mUsers.clear();
-        notifyDataSetChanged();
+        notifyItemChanged(mUsers.indexOf(removedUser));
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         final View view = layoutInflater.inflate(R.layout.people_new_channel_item, parent, false);
-        return new ViewHolder(view);
+        ViewHolder viewHolder = new ViewHolder(view);
+        viewHolder.itemView.setOnClickListener(button -> {
+            viewHolder.mTvAddedMember.setChecked(!viewHolder.mTvAddedMember.isChecked());
+            final int adapterPosition = viewHolder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                mChosenListener.onChosen(mUsers.get(adapterPosition));
+            }
+        });
+        return viewHolder;
     }
 
     @Override
@@ -72,14 +77,11 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final User user = mUsers.get(position);
-        final boolean isUserAlreadyAdded = !(mAlreadyAddedUsers == null || mAlreadyAddedUsers.size() == 0 || !mAlreadyAddedUsers.contains(user));
+        final boolean isUserAlreadyAdded = mAlreadyAddedUsers.contains(user);
+        Timber.d("is already added: %b", isUserAlreadyAdded);
         holder.mTvAddedMember.setChecked(isUserAlreadyAdded);
         holder.mTvAddedMember.setText(User.getDisplayableName(user));
         mImageLoader.displayCircularImage(user.getProfileImage(), holder.mAddedPeopleAvatar);
-        holder.itemView.setOnClickListener(button -> {
-            holder.mTvAddedMember.setChecked(!holder.mTvAddedMember.isChecked());
-            mChosenListener.onChosen(user);
-        });
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
