@@ -55,6 +55,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
                 .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
+
         mSubscription.add(subscription);
     }
 
