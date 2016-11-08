@@ -57,7 +57,7 @@ public interface Api {
 
     @POST("/api/v3/users/send_password_reset")
     @FormUrlEncoded
-    Observable<Response> sendPasswordReset(@Field("email") String email);
+    Observable<Response<Void>> sendPasswordReset(@Field("email") String email);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
     Observable<Void> deletePost(@Path("teamId") String teamId,
@@ -129,5 +129,4 @@ public interface Api {
 
     @GET("api/v3/teams/{team_id}/channels/more")
     Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
-
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 
+import android.widget.Toast;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.views.RestorePasswordView;
@@ -43,6 +44,8 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
 
     @Override
     public void onPasswordRestoreSent() {
+        Toast.makeText(this, getString(R.string.password_request_sent), Toast.LENGTH_SHORT).show();
+
         hideLoadingDialog();
         finish();
     }
