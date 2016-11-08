@@ -6,12 +6,11 @@ import java.util.Comparator;
 
 public class PostDto {
 
+    public static final Comparator<PostDto> COMPARATOR_BY_POST_TIMESTAMP = (o1, o2)
+            -> (int) (o1.getPost().getCreatedAt() - o2.getPost().getCreatedAt());
     private Post post;
-
     private String authorName;
-
     private String authorAvatar;
-
     private User.Status status;
 
     public PostDto(Post post,
@@ -55,7 +54,4 @@ public class PostDto {
     public void setStatus(User.Status status) {
         this.status = status;
     }
-
-    public static final Comparator<PostDto> COMPARATOR_BY_POST_TIMESTAMP = (o1, o2)
-            -> (int) (o1.getPost().getCreatedAt() - o2.getPost().getCreatedAt());
 }

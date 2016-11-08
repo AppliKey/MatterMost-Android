@@ -3,6 +3,7 @@ package com.applikey.mattermost.models.channel;
 import com.applikey.mattermost.models.user.User;
 
 public class AddedUser {
+
     private CreatedChannel createdChannel;
     private User user;
 

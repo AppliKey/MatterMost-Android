@@ -18,19 +18,48 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewChannelAdapter.ViewHolder> {
+public class PeopleToNewChannelAdapter
+        extends RecyclerView.Adapter<PeopleToNewChannelAdapter.ViewHolder> {
 
     private final ImageLoader mImageLoader;
-    private List<UserPendingInvitation> mUsers;
     private final OnUserChosenListener mChosenListener;
-
-    public interface OnUserChosenListener {
-        void onChosen(User user, boolean isInvited);
-    }
+    private List<UserPendingInvitation> mUsers;
 
     public PeopleToNewChannelAdapter(OnUserChosenListener listener, ImageLoader imageLoader) {
         mImageLoader = imageLoader;
         mChosenListener = listener;
+    }
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        final View view = layoutInflater.inflate(R.layout.people_new_channel_item, parent, false);
+        return new ViewHolder(view);
+
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        final UserPendingInvitation user = mUsers.get(position);
+        holder.mAddedPeopleName.setText(User.getDisplayableName(user.getUser()));
+        @DrawableRes final int iconRes = user.isInvited() ? R.drawable.ic_check : R.drawable.ic_add;
+        holder.mAddPeopleImage.setBackgroundResource(iconRes);
+        mImageLoader.displayCircularImage(user.getUser().getProfileImage(),
+                holder.mAddedPeopleAvatar);
+        holder.rootView.setOnClickListener(button -> {
+            final boolean isUserInvited = user.isInvited();
+            user.setInvited(!isUserInvited);
+            @DrawableRes final int userButtonDrawableRes = isUserInvited
+                    ? R.drawable.ic_add
+                    : R.drawable.ic_check;
+            holder.mAddPeopleImage.setBackgroundResource(userButtonDrawableRes);
+            mChosenListener.onChosen(user.getUser(), user.isInvited());
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return mUsers == null ? 0 : mUsers.size();
     }
 
     public void addUsers(List<UserPendingInvitation> users) {
@@ -50,33 +79,8 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         notifyDataSetChanged();
     }
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        final View view = layoutInflater.inflate(R.layout.people_new_channel_item, parent, false);
-        return new ViewHolder(view);
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return mUsers == null ? 0 : mUsers.size();
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        final UserPendingInvitation user = mUsers.get(position);
-        holder.mAddedPeopleName.setText(User.getDisplayableName(user.getUser()));
-        @DrawableRes final int iconRes = user.isInvited() ? R.drawable.ic_check : R.drawable.ic_add;
-        holder.mAddPeopleImage.setBackgroundResource(iconRes);
-        mImageLoader.displayCircularImage(user.getUser().getProfileImage(), holder.mAddedPeopleAvatar);
-        holder.rootView.setOnClickListener(button -> {
-            final boolean isUserInvited = user.isInvited();
-            user.setInvited(!isUserInvited);
-            @DrawableRes final int userButtonDrawableRes = isUserInvited ?  R.drawable.ic_add :R.drawable.ic_check;
-            holder.mAddPeopleImage.setBackgroundResource(userButtonDrawableRes);
-            mChosenListener.onChosen(user.getUser(), user.isInvited());
-        });
+    public interface OnUserChosenListener {
+        void onChosen(User user, boolean isInvited);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

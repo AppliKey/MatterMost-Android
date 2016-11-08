@@ -36,9 +36,7 @@ public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView>
 
         mSubscription.add(mApi.sendPasswordReset(email)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> {
-                    view.onPasswordRestoreSent();
-                }, throwable -> {
+                .subscribe(v -> view.onPasswordRestoreSent(), throwable -> {
                     mErrorHandler.get().handleError(throwable);
                     view.onFailure(throwable.getMessage());
                 }));

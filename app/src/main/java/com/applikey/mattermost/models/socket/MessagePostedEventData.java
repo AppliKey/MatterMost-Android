@@ -1,7 +1,5 @@
 package com.applikey.mattermost.models.socket;
 
-import com.applikey.mattermost.models.post.Post;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 public class MessagePostedEventData {

@@ -9,11 +9,11 @@ import java.io.OutputStream;
 
 public class IoUtil {
 
-    private IoUtil() {
-    }
-
     // 4k buffer
     private static final int BUFFER_SIZE = 4096;
+
+    private IoUtil() {
+    }
 
     public static boolean copy(InputStream is, OutputStream os) {
         final byte[] buffer = new byte[BUFFER_SIZE];

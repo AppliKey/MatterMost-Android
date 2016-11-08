@@ -37,7 +37,6 @@ import io.realm.RealmResults;
 public abstract class BaseChatListFragment extends BaseMvpFragment implements ChatListView {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
-    private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
 
     @Bind(R.id.rv_channels)
     RecyclerView mRvChannels;
@@ -54,6 +53,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
+    private TabBehavior mTabBehavior = TabBehavior.UNDEFINED;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,18 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
         App.getUserComponent().inject(this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mTvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getPresenter().unSubscribe();
     }
 
     @Override
@@ -80,18 +92,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment implements Ch
         ButterKnife.bind(this, view);
 
         return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mTvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getPresenter().unSubscribe();
     }
 
     @Override

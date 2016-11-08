@@ -19,17 +19,17 @@ public class BaseMvpFragment extends BaseFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        getMvpDelegate().onAttach();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
 
         getMvpDelegate().onDetach();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        getMvpDelegate().onAttach();
     }
 
     @Override

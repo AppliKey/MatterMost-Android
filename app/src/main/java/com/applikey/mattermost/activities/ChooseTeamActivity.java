@@ -32,8 +32,12 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     @InjectPresenter
     ChooseTeamPresenter mPresenter;
 
+    public static Intent getIntent(Context context) {
+        return new Intent(context, ChooseTeamActivity.class);
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_team);
 
@@ -41,10 +45,18 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
 
         mPresenter.getInitialData();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        hideLoadingDialog();
+        mPresenter.unSubscribe();
     }
 
     @Override
@@ -70,16 +82,8 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
                 Snackbar.LENGTH_INDEFINITE).show();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        hideLoadingDialog();
-        mPresenter.unSubscribe();
-    }
-
     @OnClick(R.id.back)
-    public void onBack() {
+    void onBack() {
         finish();
     }
 
@@ -87,8 +91,4 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
         showLoadingDialog();
         mPresenter.chooseTeam(team);
     };
-
-    public static Intent getIntent(Context context) {
-        return new Intent(context, ChooseTeamActivity.class);
-    }
 }

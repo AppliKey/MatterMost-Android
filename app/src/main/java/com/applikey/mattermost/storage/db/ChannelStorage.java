@@ -16,6 +16,7 @@ import java.util.Map;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
+import rx.Single;
 
 public class ChannelStorage {
 
@@ -47,6 +48,14 @@ public class ChannelStorage {
 
     public Observable<List<Channel>> list() {
         return mDb.listRealmObjects(Channel.class);
+    }
+
+    public Observable<RealmResults<Channel>> listUndirected(String name) {
+        return mDb.resultRealmObjectsFilteredSortedExcluded(Channel.class, Channel.FIELD_NAME,
+                name,
+                Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.DIRECT.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
@@ -109,10 +118,14 @@ public class ChannelStorage {
             } else {
                 realmPost = realm.copyToRealmOrUpdate(lastPost);
             }
-            final User author = realm.where(User.class).equalTo(User.FIELD_NAME_ID, realmPost.getUserId()).findFirst();
+            final User author = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                    .findFirst();
 
             final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
-                    realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, realmPost.getRootId()).findFirst()
+                    realm.where(Post.class)
+                            .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                            .findFirst()
                     : null;
 
             realmPost.setAuthor(author);
@@ -125,8 +138,10 @@ public class ChannelStorage {
 
     public void updateLastViewedAt(String id) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
-            realmChannel.setHasUnreadMessages(false);
-            realmChannel.setLastViewedAt(realmChannel.getLastActivityTime());
+            if (realmChannel != null) {
+                realmChannel.setHasUnreadMessages(false);
+                realmChannel.setLastViewedAt(realmChannel.getLastActivityTime());
+            }
             return true;
         });
     }
@@ -163,12 +178,21 @@ public class ChannelStorage {
         mDb.saveTransactional(restoreChannels(channels));
     }
 
+    public Single<Channel> getChannel(String id) {
+        return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
+    }
+
+    public void saveChannel(Channel channel) {
+        mDb.saveTransactional(channel);
+    }
+
     private List<Channel> restoreChannels(List<Channel> channels) {
-        return mDb.restoreIfExist(channels, Channel.class, Channel::getId, (channel, storedChannel) -> {
-            channel.setLastPost(storedChannel.getLastPost());
-            channel.updateLastActivityTime();
-            return true;
-        });
+        return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
+                (channel, storedChannel) -> {
+                    channel.setLastPost(storedChannel.getLastPost());
+                    channel.updateLastActivityTime();
+                    return true;
+                });
     }
 
     private void updateDirectChannelData(Channel channel,

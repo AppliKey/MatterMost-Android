@@ -1,21 +1,28 @@
 package com.applikey.mattermost.models.channel;
 
+import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
 import io.realm.RealmObject;
+import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
+import rx.Observable;
 
-public class Channel extends RealmObject {
+
+public class Channel extends RealmObject implements SearchItem {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
     public static final String FIELD_NAME_TYPE = "type";
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
+    public static final String FIELD_NAME = "name";
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
@@ -46,20 +53,60 @@ public class Channel extends RealmObject {
     @SerializedName("create_at")
     private long createdAt;
 
+    // TODO: 04.11.16 NEED DETAILED REVIEW
+    // Application-specific fields
+    private String previewImagePath;
+
     // Only available for direct channels
-    // Another collocutor of a direct chat. This field is used for determining another person in direct chat (except current user)
+    // Another collocutor of a direct chat. This field is used for determining another person in
+    // direct chat (except current user)
     private User directCollocutor;
 
     // Migrated from channel membership
     private long lastViewedAt;
 
-    // Field, which represents the comparison of two fields. Please see https://github.com/realm/realm-java/issues/1615
+    // Field, which represents the comparison of two fields. Please see https://github
+    // .com/realm/realm-java/issues/1615
     private boolean hasUnreadMessages;
 
     private Post lastPost;
 
-    // Index field, which contains the time of the last message or creation time. Used by Realm, as it can not compare multiple fields
+    // Index field, which contains the time of the last message or creation time. Used by Realm,
+    // as it can not compare multiple fields
     private long lastActivityTime;
+
+    public enum ChannelType {
+        PUBLIC("O"),
+        PRIVATE("P"),
+        DIRECT("D");
+
+        private final String representation;
+
+        ChannelType(String representation) {
+            this.representation = representation;
+        }
+
+        public String getRepresentation() {
+            return representation;
+        }
+
+        public static ChannelType fromRepresentation(String representation) {
+            switch (representation) {
+                case "O": {
+                    return PUBLIC;
+                }
+                case "P": {
+                    return PRIVATE;
+                }
+                case "D": {
+                    return DIRECT;
+                }
+                default: {
+                    throw new IllegalArgumentException("Wrong channel type");
+                }
+            }
+        }
+    }
 
     public long getLastActivityTime() {
         return lastActivityTime;
@@ -151,6 +198,10 @@ public class Channel extends RealmObject {
         this.createdAt = createdAt;
     }
 
+    public String getPreviewImagePath() {
+        return previewImagePath;
+    }
+
     public long getLastViewedAt() {
         return lastViewedAt;
     }
@@ -178,61 +229,29 @@ public class Channel extends RealmObject {
         this.lastPost = lastPost;
     }
 
-    private void rebuildHasUnreadMessages() {
-        final long lastViewedAt = getLastViewedAt();
-        final long lastPostAt = getLastPostAt();
-
-        hasUnreadMessages = lastPostAt > lastViewedAt;
+    @Override
+    public int getSearchType() {
+        return CHANNEL;
     }
 
-    public enum ChannelType {
-        PUBLIC("O"),
-        PRIVATE("P"),
-        DIRECT("D");
-
-        private final String representation;
-
-        ChannelType(String representation) {
-            this.representation = representation;
-        }
-
-        public String getRepresentation() {
-            return representation;
-        }
-
-        public static ChannelType fromRepresentation(String representation) {
-            switch (representation) {
-                case "O": {
-                    return PUBLIC;
-                }
-                case "P": {
-                    return PRIVATE;
-                }
-                case "D": {
-                    return DIRECT;
-                }
-                default: {
-                    throw new IllegalArgumentException("Wrong channel type");
-                }
-            }
-        }
-    }
-
-    private static class ComparatorByDate implements Comparator<Channel> {
-
-        @Override
-        public int compare(Channel o1, Channel o2) {
-            final long o1time = o1.getLastPostAt() != 0 ? o1.getLastPostAt() : o1.getCreatedAt();
-            final long o2time = o2.getLastPostAt() != 0 ? o2.getLastPostAt() : o2.getCreatedAt();
-
-            if (o1time > o2time) {
-                return -1;
-            }
-            if (o1time == o2time) {
-                return 0;
-            }
-            return 1;
-        }
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getType().hashCode();
+        result = 31 * result + (getDisplayName() != null ? getDisplayName().hashCode() : 0);
+        result = 31 * result + getName().hashCode();
+        result = 31 * result + getHeader().hashCode();
+        result = 31 * result + getPurpose().hashCode();
+        result = 31 * result + (int) (getLastPostAt() ^ (getLastPostAt() >>> 32));
+        result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
+        result = 31 * result + (getDirectCollocutor() != null
+                ? getDirectCollocutor().hashCode()
+                : 0);
+        result = 31 * result + (int) (getLastViewedAt() ^ (getLastViewedAt() >>> 32));
+        result = 31 * result + (hasUnreadMessages() ? 1 : 0);
+        result = 31 * result + (getLastPost() != null ? getLastPost().hashCode() : 0);
+        result = 31 * result + (int) (getLastActivityTime() ^ (getLastActivityTime() >>> 32));
+        return result;
     }
 
     @Override
@@ -258,7 +277,9 @@ public class Channel extends RealmObject {
             return false;
         if (!getType().equals(channel.getType()))
             return false;
-        if (getDisplayName() != null ? !getDisplayName().equals(channel.getDisplayName()) : channel.getDisplayName() != null)
+        if (getDisplayName() != null
+                ? !getDisplayName().equals(channel.getDisplayName())
+                : channel.getDisplayName() != null)
             return false;
         if (!getName().equals(channel.getName()))
             return false;
@@ -266,27 +287,26 @@ public class Channel extends RealmObject {
             return false;
         if (!getPurpose().equals(channel.getPurpose()))
             return false;
-        if (getDirectCollocutor() != null ? !getDirectCollocutor().equals(channel.getDirectCollocutor()) : channel.getDirectCollocutor() != null)
+        if (getDirectCollocutor() != null ? !getDirectCollocutor().equals(
+                channel.getDirectCollocutor()) : channel.getDirectCollocutor() != null)
             return false;
-        return getLastPost() != null ? !getLastPost().equals(channel.getLastPost()) : channel.getLastPost() != null;
+        return getLastPost() != null
+                ? !getLastPost().equals(channel.getLastPost())
+                : channel.getLastPost() != null;
     }
 
-    @Override
-    public int hashCode() {
-        int result = getId().hashCode();
-        result = 31 * result + getType().hashCode();
-        result = 31 * result + (getDisplayName() != null ? getDisplayName().hashCode() : 0);
-        result = 31 * result + getName().hashCode();
-        result = 31 * result + getHeader().hashCode();
-        result = 31 * result + getPurpose().hashCode();
-        result = 31 * result + (int) (getLastPostAt() ^ (getLastPostAt() >>> 32));
-        result = 31 * result + (int) (getCreatedAt() ^ (getCreatedAt() >>> 32));
-        result = 31 * result + (getDirectCollocutor() != null ? getDirectCollocutor().hashCode() : 0);
-        result = 31 * result + (int) (getLastViewedAt() ^ (getLastViewedAt() >>> 32));
-        result = 31 * result + (hasUnreadMessages() ? 1 : 0);
-        result = 31 * result + (getLastPost() != null ? getLastPost().hashCode() : 0);
-        result = 31 * result + (int) (getLastActivityTime() ^ (getLastActivityTime() >>> 32));
-        return result;
+    public static Observable<List<Channel>> getList(Observable<RealmResults<Channel>> observable) {
+        return observable.map(Channel::getList);
+    }
+
+    public static List<Channel> getList(RealmResults<Channel> realmResults) {
+
+        final List<Channel> channelList = new ArrayList<>();
+        for (Channel channel : realmResults) {
+            channelList.add(channel);
+        }
+        return channelList;
+
     }
 
 /*    @Override
@@ -307,4 +327,29 @@ public class Channel extends RealmObject {
                 ", lastActivityTime=" + getLastActivityTime() +
                 '}';
     }*/
+
+    private void rebuildHasUnreadMessages() {
+        final long lastViewedAt = getLastViewedAt();
+        final long lastPostAt = getLastPostAt();
+
+        hasUnreadMessages = lastPostAt > lastViewedAt;
+    }
+
+    private static class ComparatorByDate implements Comparator<Channel> {
+
+        @Override
+        public int compare(Channel o1, Channel o2) {
+            final long o1time = o1.getLastPostAt() != 0 ? o1.getLastPostAt() : o1.getCreatedAt();
+            final long o2time = o2.getLastPostAt() != 0 ? o2.getLastPostAt() : o2.getCreatedAt();
+
+            if (o1time > o2time) {
+                return -1;
+            }
+            if (o1time == o2time) {
+                return 0;
+            }
+            return 1;
+        }
+    }
+
 }

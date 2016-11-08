@@ -31,6 +31,7 @@ import rx.subjects.BehaviorSubject;
 public abstract class BaseActivity extends AppCompatActivity implements ActivityLifecycleProvider {
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
+
     @Inject
     EventBus mEventBus;
 
@@ -70,6 +71,48 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
         return RxLifecycle.bindActivity(lifecycleSubject);
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        lifecycleSubject.onNext(ActivityEvent.CREATE);
+        getComponent().inject(this);
+    }
+
+    @Override
+    @CallSuper
+    public void onStart() {
+        super.onStart();
+        lifecycleSubject.onNext(ActivityEvent.START);
+    }
+
+    @Override
+    @CallSuper
+    public void onStop() {
+        lifecycleSubject.onNext(ActivityEvent.STOP);
+        super.onStop();
+    }
+
+    @Override
+    @CallSuper
+    public void onDestroy() {
+        lifecycleSubject.onNext(ActivityEvent.DESTROY);
+        super.onDestroy();
+    }
+
+    @Override
+    @CallSuper
+    public void onPause() {
+        lifecycleSubject.onNext(ActivityEvent.PAUSE);
+        super.onPause();
+    }
+
+    @Override
+    @CallSuper
+    public void onResume() {
+        super.onResume();
+        lifecycleSubject.onNext(ActivityEvent.RESUME);
+    }
+
     public void showLoadingDialog() {
         if (mProgressDialog != null) {
             mProgressDialog.show();
@@ -84,47 +127,5 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        lifecycleSubject.onNext(ActivityEvent.CREATE);
-        getComponent().inject(this);
-    }
-
-    @Override
-    @CallSuper
-    protected void onStop() {
-        lifecycleSubject.onNext(ActivityEvent.STOP);
-        super.onStop();
-    }
-
-    @Override
-    @CallSuper
-    protected void onDestroy() {
-        lifecycleSubject.onNext(ActivityEvent.DESTROY);
-        super.onDestroy();
-    }
-
-    @Override
-    @CallSuper
-    protected void onPause() {
-        lifecycleSubject.onNext(ActivityEvent.PAUSE);
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-        lifecycleSubject.onNext(ActivityEvent.RESUME);
-    }
-
-    @Override
-    @CallSuper
-    protected void onStart() {
-        super.onStart();
-        lifecycleSubject.onNext(ActivityEvent.START);
     }
 }

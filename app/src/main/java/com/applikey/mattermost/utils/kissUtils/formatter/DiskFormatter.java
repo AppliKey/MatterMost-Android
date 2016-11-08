@@ -4,21 +4,17 @@
 
 package com.applikey.mattermost.utils.kissUtils.formatter;
 
-import android.support.annotation.Nullable;
-
 import java.text.DecimalFormat;
 
 public class DiskFormatter {
-
-    private static final int UNIT = 1024;
-    private static final String FORMAT = "#.00";
 
     public static final String B = "B";
     public static final String KB = "KB";
     public static final String MB = "MB";
     public static final String GB = "GB";
     public static final String TB = "TB";
-
+    private static final int UNIT = 1024;
+    private static final String FORMAT = "#.00";
     private double kbUnit;
     private double mbUnit;
     private double gbUnit;

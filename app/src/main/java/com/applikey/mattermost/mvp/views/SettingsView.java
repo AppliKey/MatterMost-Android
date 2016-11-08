@@ -7,6 +7,7 @@ import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 public interface SettingsView extends MvpView {
+
     @StateStrategyType(SkipStrategy.class)
     void logout();
 
