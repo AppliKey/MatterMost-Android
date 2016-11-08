@@ -89,17 +89,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .subscribe(post -> mChannelStorage.setLastPost(channel, post), mErrorHandler::handleError));
     }
 
-    private Post transform(PostResponse postResponse) {
-        final List<Post> posts = Stream.of(postResponse.getPosts())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-        Post lastPost = null;
-        if (!posts.isEmpty()) {
-            lastPost = posts.get(posts.size() - 1);
-        }
-        return lastPost;
-    }
-
     @Override
     public void onChange(RealmResults<Channel> channels) {
         final ChatListView view = getViewState();
@@ -120,6 +109,17 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         if (mChannels != null) {
             mChannels.removeChangeListener(this);
         }
+    }
+
+    private Post transform(PostResponse postResponse) {
+        final List<Post> posts = Stream.of(postResponse.getPosts())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+        Post lastPost = null;
+        if (!posts.isEmpty()) {
+            lastPost = posts.get(posts.size() - 1);
+        }
+        return lastPost;
     }
 }
 
