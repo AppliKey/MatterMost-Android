@@ -17,10 +17,16 @@ import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.ConnectivityUtils;
+import com.applikey.mattermost.utils.kissUtils.utils.NetworkUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
+import com.applikey.mattermost.utils.rx.RetryWithDelay;
+import com.applikey.mattermost.utils.rx.RxUtils;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.GsonFactory;
+import com.github.pwittchen.reactivenetwork.library.ConnectivityStatus;
+import com.github.pwittchen.reactivenetwork.library.ReactiveNetwork;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.neovisionaries.ws.client.WebSocket;
@@ -36,6 +42,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class WebSocketService extends Service {
 
@@ -190,9 +200,9 @@ public class WebSocketService extends Service {
         @Override
         public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception {
             Log.e(TAG, "onConnectError: ", exception);
-
         }
     };
+    private MessagingSocket mMessagingSocket;
 
     @Override
     public void onCreate() {
@@ -201,11 +211,24 @@ public class WebSocketService extends Service {
         App.getUserComponent().inject(this);
 
         mHandler = new Handler(Looper.getMainLooper());
-        try {
-            openSocket();
-        } catch (IOException | WebSocketException e) {
-            Log.e(TAG, e.getMessage());
-        }
+//        try {
+//            openSocket();
+//        } catch (IOException | WebSocketException e) {
+//            Log.e(TAG, e.getMessage());
+//        }
+
+        String baseUrl = mPrefs.getCurrentServerUrl();
+        baseUrl = UrlUtil.removeProtocol(baseUrl);
+        baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
+        baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
+
+        final Context context = getApplicationContext();
+
+        mMessagingSocket = new MessagingSocket(mTokenFactory);
+        mMessagingSocket.listen(baseUrl)
+                .retryWhen(attempt -> attempt.flatMap(error -> ConnectivityUtils.getConnectivityObservable(context).takeFirst(status -> status)))
+                .subscribe(webSocketEvent -> {
+                }, Throwable::printStackTrace);
     }
 
     @Override
@@ -219,7 +242,14 @@ public class WebSocketService extends Service {
 
         Log.d(TAG, "closing socket");
 
-        closeSocket();
+        disconnectSocket();
+//        closeSocket();
+    }
+
+    private void disconnectSocket() {
+        if (mMessagingSocket.isConnected()) {
+            mMessagingSocket.disconnect();
+        }
     }
 
     @Override
