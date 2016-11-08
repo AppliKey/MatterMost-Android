@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.util.Log;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ExtraInfo;
@@ -20,7 +22,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @InjectViewState
-public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
+public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
+        implements FavoriteablePresenter {
 
     private static final String TAG = ChannelDetailsPresenter.class.getSimpleName();
 
@@ -41,16 +44,10 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
 
     private Channel mChannel;
 
-    //temp field, remove after implement Make favorite logic
     private boolean mIsFavorite;
 
     public ChannelDetailsPresenter() {
         App.getUserComponent().inject(this);
-    }
-
-    @Override
-    protected void onFirstViewAttach() {
-        super.onFirstViewAttach();
     }
 
     public void getInitialData(String channelId) {
@@ -59,10 +56,11 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
         mSubscription.add(mChannelStorage.channel(channelId)
                 .doOnNext(channel -> mChannel = channel)
                 .doOnNext(view::showBaseDetails)
-                .flatMap(channel -> mChannelStorage.isFavorite(channel).subscribeOn(Schedulers.io()))
+                .flatMap(channel -> mChannelStorage.isFavorite(channel)
+                        .subscribeOn(Schedulers.io()))
                 .doOnNext(favorite -> mIsFavorite = favorite)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onMakeChannelFavorite, mErrorHandler::handleError));
+                .subscribe(view::onMakeFavorite, mErrorHandler::handleError));
 
         mSubscription.add(mTeamStorage.getChosenTeam()
                 .first()
@@ -78,7 +76,9 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
                 .subscribe(view::showMembers, mErrorHandler::handleError));
     }
 
-    public void toggleChannelFavorite() {
+    @Override
+    public void toggleFavorite() {
+        Log.d(TAG, "toggleFavorite: ");
         mChannelStorage.setFavorite(mChannel, !mIsFavorite)
                 .subscribeOn(Schedulers.io())
                 .subscribe();

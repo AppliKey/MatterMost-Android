@@ -7,11 +7,11 @@ import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 @StateStrategyType(value = SingleStateStrategy.class)
-public interface UserProfileView extends MvpView {
+public interface UserProfileView extends MvpView, FavoriteableView {
 
     void showBaseDetails(User user);
 
-    void onMakeChannelFavorite(boolean favorite);
+    void onMakeFavorite(boolean favorite);
 
     void openDirectChannel(Channel channel);
 }

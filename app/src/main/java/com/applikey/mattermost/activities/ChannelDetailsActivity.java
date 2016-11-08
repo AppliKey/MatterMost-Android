@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDetailsView {
+
+    private static final String TAG = "ChannelDetailsActivity";
 
     private static final String CHANNEL_ID_KEY = "channel-id";
     private static final int MENU_ITEM_FAVORITE = Menu.FIRST;
@@ -85,7 +88,7 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ITEM_FAVORITE:
-                mPresenter.toggleChannelFavorite();
+                mPresenter.toggleFavorite();
                 return true;
             default:
                 return false;
@@ -109,7 +112,8 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
     }
 
     @Override
-    public void onMakeChannelFavorite(boolean favorite) {
+    public void onMakeFavorite(boolean favorite) {
+        Log.d(TAG, "onMakeFavorite: " + favorite);
         final int iconRes = favorite
                 ? R.drawable.ic_favorite_check
                 : R.drawable.ic_favorite_uncheck;
