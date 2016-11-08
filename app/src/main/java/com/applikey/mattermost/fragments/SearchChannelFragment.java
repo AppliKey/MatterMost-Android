@@ -52,9 +52,4 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
         // TODO: IMPLEMENT
     }
 
-    @Override
-    protected int getLayout() {
-        return R.layout.fragment_search_chat;
-    }
-
 }

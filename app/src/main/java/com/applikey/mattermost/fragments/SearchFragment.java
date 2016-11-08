@@ -71,7 +71,9 @@ public abstract class SearchFragment extends BaseMvpFragment {
     }
 
     @LayoutRes
-    protected abstract int getLayout();
+    protected int getLayout() {
+        return R.layout.fragment_search_chat;
+    }
 
 
     public void displayData(List<SearchItem> items) {
