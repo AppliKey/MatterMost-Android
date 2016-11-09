@@ -137,8 +137,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
                         user.getCreatedChannel().getChannel().getId(),
                         new RequestUserId(user.getUser().getId())))
+                .toCompletable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> {}, mErrorHandler::handleError, () -> getViewState().onChannelCreated());
+                .subscribe(mErrorHandler::handleError, () -> getViewState().onChannelCreated());
         mSubscription.add(subscription);
     }
 
