@@ -47,7 +47,7 @@ public class AddedMembersActivity extends BaseMvpActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_added_people);
         ButterKnife.bind(this);

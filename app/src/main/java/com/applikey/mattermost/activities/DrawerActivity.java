@@ -12,7 +12,6 @@ import android.view.View;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
-import com.applikey.mattermost.platform.WebSocketService;
 import com.applikey.mattermost.utils.kissUtils.utils.SystemUtil;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.util.RobotoTypefaceManager;
@@ -33,12 +32,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         initDrawer();
-    }
-
-    @Override
-    public void startChannelCreating() {
-        startActivity(CreateChannelActivity.getIntent(this));
-        closeDrawer();
     }
 
     protected boolean showHamburger() {

@@ -52,6 +52,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private InvitedUsersManager mInvitedUsersManager;
 
     public CreateChannelPresenter() {
@@ -135,7 +138,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
                         user.getCreatedChannel().getChannel().getId(),
                         new RequestUserId(user.getUser().getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> getViewState().successfulClose(), ErrorHandler::handleError);
+                .subscribe(v -> getViewState().successfulClose(), mErrorHandler::handleError);
         mSubscription.add(subscription);
     }
 
