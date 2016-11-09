@@ -25,7 +25,15 @@ import io.realm.RealmResults;
 
 public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListAdapter.ViewHolder> {
 
+    public interface ChannelListener {
+
+        void onItemClicked(Channel channel);
+
+        void onLoadAdditionalData(Channel channel);
+    }
+
     private final ImageLoader mImageLoader;
+
     private final String mCurrentUserId;
 
     private ChannelListener mChannelListener;
@@ -59,7 +67,6 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         return item != null ? item.hashCode() : 0;
     }
 
-
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
         final OrderedRealmCollection<Channel> data = getData();
@@ -91,6 +98,10 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         }
     }
 
+    public void setChannelListener(ChannelListener channelListener) {
+        mChannelListener = channelListener;
+    }
+
     private String getMessagePreview(Channel channel, Context context) {
         final Post lastPost = channel.getLastPost();
         final String messagePreview;
@@ -111,10 +122,6 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
             messagePreview = channel.getLastPost().getMessage();
         }
         return messagePreview;
-    }
-
-    public void setChannelListener(ChannelListener channelListener) {
-        mChannelListener = channelListener;
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
@@ -166,13 +173,6 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
-    }
-
-    public interface ChannelListener {
-
-        void onItemClicked(Channel channel);
-
-        void onLoadAdditionalData(Channel channel);
     }
 
     private final View.OnClickListener mOnClickListener = v -> {

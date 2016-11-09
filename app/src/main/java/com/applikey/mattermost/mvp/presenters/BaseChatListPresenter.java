@@ -72,6 +72,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
                 .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
+
         mSubscription.add(subscription);
     }
 
@@ -87,17 +88,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(post -> mChannelStorage.setLastPost(channel, post), mErrorHandler::handleError));
-    }
-
-    private Post transform(PostResponse postResponse) {
-        final List<Post> posts = Stream.of(postResponse.getPosts())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-        Post lastPost = null;
-        if (!posts.isEmpty()) {
-            lastPost = posts.get(posts.size() - 1);
-        }
-        return lastPost;
     }
 
     @Override
@@ -121,6 +111,17 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         if (mChannels != null) {
             mChannels.removeChangeListener(this);
         }
+    }
+
+    private Post transform(PostResponse postResponse) {
+        final List<Post> posts = Stream.of(postResponse.getPosts())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+        Post lastPost = null;
+        if (!posts.isEmpty()) {
+            lastPost = posts.get(posts.size() - 1);
+        }
+        return lastPost;
     }
 }
 

@@ -64,19 +64,22 @@ public class ChannelStorage {
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.PUBLIC.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                .first();
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.PRIVATE.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                .first();
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.DIRECT.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                .first();
     }
 
     // TODO Duplicate
@@ -91,7 +94,8 @@ public class ChannelStorage {
     public Observable<RealmResults<Channel>> listUnread() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
                 true,
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                .first();
     }
 
     //TODO Save channel after create
@@ -215,8 +219,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

@@ -123,10 +123,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         getPresenter().getLastPost(channel);
     }
 
-    protected abstract ChatListPresenter getPresenter();
-
-    protected abstract int getEmptyStateTextId();
-
     @Override
     public void showUnreadIndicator(boolean showIndicator) {
         mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
@@ -137,4 +133,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         mTvEmptyState.setVisibility(View.VISIBLE);
         mRvChannels.setVisibility(View.GONE);
     }
+
+    protected abstract ChatListPresenter getPresenter();
+
+    protected abstract int getEmptyStateTextId();
 }
