@@ -27,6 +27,8 @@
     <string name="reply">Reply</string>
     <string name="new_message_received">New message received"</string>
 
+    <string name="password_request_sent">Password reset request has been sent</string>
+
     <string name="edit_message">Edit Message</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
