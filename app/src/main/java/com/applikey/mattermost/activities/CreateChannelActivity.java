@@ -82,7 +82,9 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
         setTitle(getString(R.string.new_private_group));
         mChannelTypeView.setOnCheckedChangedListener((view, checked) -> {
             @StringRes final int title = checked ? R.string.new_private_group : R.string.new_public_channel;
+            @StringRes final int purposeHint = checked ? R.string.create_private_group_description_hint : R.string.create_public_channel_description_hint;
             CreateChannelActivity.this.setTitle(getResources().getString(title));
+            mEtChannelDescription.setHint(purposeHint);
         });
     }
 

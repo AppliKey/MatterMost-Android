@@ -71,6 +71,7 @@ public class AddedPeopleLayout extends LinearLayout {
         mMaxViewCount = viewCount;
         if (mUserAvatars == null) {
             initAvatarViews(mMaxViewCount);
+            setVisibility(GONE);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }

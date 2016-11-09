@@ -70,7 +70,8 @@
     <string name="new_message">New Message</string>
     <string name="search">Search</string>
     <string name="create_chat_hint_name">Example: Project Name, Bugs, Sales</string>
-    <string name="create_channel_description_hint">What are you going to discuss in this group</string>
+    <string name="create_private_group_description_hint">What are you going to discuss in this group</string>
+    <string name="create_public_channel_description_hint">What are you going to discuss in this channel</string>
     <string name="added_members_title">Added members</string>
     <string name="settings_unread_tabs_content">Enable unread tabs</string>
     <string name="settings_unread_tabs_title">Unread tabs</string>
