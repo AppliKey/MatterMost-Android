@@ -55,11 +55,10 @@ public class MessagingSocket implements Socket {
                         Log.e(TAG, "WebSocket Error: ", cause);
                         switch (cause.getError()) {
                             case SOCKET_CONNECT_ERROR:
-//                                emitter.onError(new SocketConnectionException());
-                                emitter.onError(new RuntimeException("Unable to establish connection"));
+                                emitter.onError(new SocketConnectionException("Unable to establish connection"));
                                 break;
                             default:
-                                emitter.onError(new RuntimeException("Socket exception"));
+                                emitter.onError(new SocketException("Unexpected socket exception"));
                         }
                     }
 

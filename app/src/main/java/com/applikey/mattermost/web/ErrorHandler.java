@@ -2,6 +2,7 @@ package com.applikey.mattermost.web;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.applikey.mattermost.App;
@@ -22,11 +23,13 @@ import javax.inject.Inject;
 
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 @PerApp
 public final class ErrorHandler {
 
     private static final String TAG = ErrorHandler.class.getSimpleName();
+    private static final int MAX_ATTEMPT_NUMBER = 5;
 
     private final Context mContext;
     private final SettingsManager mSettingsManager;
@@ -57,12 +60,10 @@ public final class ErrorHandler {
             if (throwable instanceof SocketConnectionException) {
                 return ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status);
             } else {
-                return attempt.zipWith(Observable.range(1, 5), (o, integer) -> integer).doOnNext(i ->
-                        Log.d(TAG, "tryReconnectSocket: attempt number = " + i))
-                        .flatMap(i -> i == 3 ? Observable.error(throwable) : Observable.timer(2 * i, TimeUnit.SECONDS).doOnNext(delay ->
-                                Log.d(TAG, "tryReconnectSocket: attempt delay = " + delay)));
+                return Observable.range(1, MAX_ATTEMPT_NUMBER).flatMap(i -> i == MAX_ATTEMPT_NUMBER
+                        ? Observable.error(throwable)
+                        : Observable.timer(2 << i, TimeUnit.SECONDS, Schedulers.immediate()));
             }
-
         });
     }
 
