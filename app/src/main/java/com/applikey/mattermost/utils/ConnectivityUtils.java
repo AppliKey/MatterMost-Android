@@ -19,10 +19,8 @@ public class ConnectivityUtils {
                 .enableInternetCheck()
                 .observeConnectivity(context)
                 .subscribeOn(Schedulers.io())
-                .map(connectivityStatus ->
-                        ConnectivityStatus.MOBILE_CONNECTED.equals(connectivityStatus) ||
-                                ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET.equals(
-                                        connectivityStatus))
+                .map(connectivityStatus -> ConnectivityStatus.MOBILE_CONNECTED.equals(connectivityStatus)
+                        || ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET.equals(connectivityStatus))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

@@ -9,12 +9,19 @@ import com.applikey.mattermost.HttpCode;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.injects.PerApp;
+import com.applikey.mattermost.platform.SocketConnectionException;
 import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
+import com.applikey.mattermost.utils.ConnectivityUtils;
+import com.applikey.mattermost.utils.rx.RetryWhenNetwork;
+import com.applikey.mattermost.utils.rx.RetryWithDelay;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import retrofit2.adapter.rxjava.HttpException;
+import rx.Observable;
 
 @PerApp
 public final class ErrorHandler {
@@ -27,7 +34,7 @@ public final class ErrorHandler {
 
     @Inject
     public ErrorHandler(Context context, SettingsManager settingsManager,
-                        StorageDestroyer storageDestroyer) {
+            StorageDestroyer storageDestroyer) {
         this.mContext = context;
         this.mSettingsManager = settingsManager;
         this.mStorageDestroyer = storageDestroyer;
@@ -43,6 +50,20 @@ public final class ErrorHandler {
 
     public void handleError(String message) {
         Log.e(TAG, message);
+    }
+
+    public Observable<?> tryReconnectSocket(Observable<? extends Throwable> attempt) {
+        return attempt.flatMap(throwable -> {
+            if (throwable instanceof SocketConnectionException) {
+                return ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status);
+            } else {
+                return attempt.zipWith(Observable.range(1, 5), (o, integer) -> integer).doOnNext(i ->
+                        Log.d(TAG, "tryReconnectSocket: attempt number = " + i))
+                        .flatMap(i -> i == 3 ? Observable.error(throwable) : Observable.timer(2 * i, TimeUnit.SECONDS).doOnNext(delay ->
+                                Log.d(TAG, "tryReconnectSocket: attempt delay = " + delay)));
+            }
+
+        });
     }
 
     private boolean handleApiException(Throwable throwable) {

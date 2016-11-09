@@ -7,10 +7,10 @@ import rx.Observable;
 
 public interface Socket {
 
-    Observable<WebSocketEvent> listen(String url);
+    Observable<WebSocketEvent> listen();
 
-    boolean isConnected();
+    boolean isOpen();
 
-    void disconnect();
+    void close();
 
 }

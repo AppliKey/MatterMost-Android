@@ -1,20 +1,22 @@
 package com.applikey.mattermost.platform;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.web.BearerTokenFactory;
-import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
-import com.neovisionaries.ws.client.WebSocketError;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.URI;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Emitter;
 import rx.Observable;
@@ -26,31 +28,39 @@ public class MessagingSocket implements Socket {
 
     private final BearerTokenFactory mBearerTokenFactory;
     private final Gson mGson;
+    private final URI mURI;
     private WebSocket mWebSocket;
-    private boolean mIsDisconnectingFired;
+    private AtomicBoolean mIsDisconnectingFired = new AtomicBoolean(false);
 
-    public MessagingSocket(BearerTokenFactory bearerTokenFactory) {
+    public MessagingSocket(BearerTokenFactory bearerTokenFactory, Gson gson, Uri endpoint) {
         mBearerTokenFactory = bearerTokenFactory;
-        mGson = GsonFactory.INSTANCE.getGson();
+        mGson = gson;
+        mURI = URI.create(endpoint.toString());
     }
 
     @Override
-    public Observable<WebSocketEvent> listen(String url) {
+    public Observable<WebSocketEvent> listen() {
         return Observable.fromEmitter(emitter -> {
-            mIsDisconnectingFired = false;
+            mIsDisconnectingFired.set(false);
             try {
                 final WebSocketAdapter socketListener = new WebSocketAdapter() {
 
                     @Override
                     public void onTextMessage(WebSocket websocket, String text) throws Exception {
-                        Log.d(TAG, "onTextMessage: ");
                         emitter.onNext(mGson.fromJson(text, WebSocketEvent.class));
                     }
 
                     @Override
                     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-                        Log.e(TAG, "onError: ", cause);
-                        emitter.onError(cause);
+                        Log.e(TAG, "WebSocket Error: ", cause);
+                        switch (cause.getError()) {
+                            case SOCKET_CONNECT_ERROR:
+//                                emitter.onError(new SocketConnectionException());
+                                emitter.onError(new RuntimeException("Unable to establish connection"));
+                                break;
+                            default:
+                                emitter.onError(new RuntimeException("Socket exception"));
+                        }
                     }
 
                     @Override
@@ -59,23 +69,18 @@ public class MessagingSocket implements Socket {
                             WebSocketFrame clientCloseFrame,
                             boolean closedByServer)
                             throws Exception {
-                        Log.d(TAG, "onDisconnected: isForceDisconnect: " + mIsDisconnectingFired);
-                        if (mIsDisconnectingFired) {
+                        if (mIsDisconnectingFired.get()) {
+                            Log.d(TAG, "Socket disconnected!");
                             emitter.onCompleted();
                         } else {
-                            emitter.onError(new WebSocketException(WebSocketError.SOCKET_CONNECT_ERROR));
+                            Log.w(TAG, "Socket connection interrupted. Trying to reconnect...");
+                            mWebSocket.recreate().connectAsynchronously();
                         }
-                    }
-
-                    @Override
-                    public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception {
-                        Log.e(TAG, "onConnectError: ", exception);
-                        emitter.onError(exception);
                     }
                 };
                 mWebSocket = new WebSocketFactory()
                         .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
-                        .createSocket(url);
+                        .createSocket(mURI);
                 mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mBearerTokenFactory.getBearerTokenString());
                 mWebSocket.addListener(socketListener);
                 mWebSocket.connectAsynchronously();
@@ -87,13 +92,13 @@ public class MessagingSocket implements Socket {
     }
 
     @Override
-    public boolean isConnected() {
-        return mWebSocket != null && mWebSocket.isOpen() && !mIsDisconnectingFired;
+    public boolean isOpen() {
+        return mWebSocket != null && mWebSocket.isOpen() && !mIsDisconnectingFired.get();
     }
 
     @Override
-    public void disconnect() {
-        mIsDisconnectingFired = true;
+    public void close() {
+        mIsDisconnectingFired.set(true);
         mWebSocket.sendClose();
         mWebSocket.disconnect();
     }
