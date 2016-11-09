@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <declare-styleable name="AddedPeopleLayout">
+        <attr name="min_item_right_margin" format="dimension" />
+    </declare-styleable>
 
 </resources>
