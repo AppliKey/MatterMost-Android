@@ -3,9 +3,12 @@ package com.applikey.mattermost.injects;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.activities.SearchChatActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
+import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelDetailsPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
+import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
+import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
@@ -61,11 +64,18 @@ public interface UserComponent {
 
     void inject(SearchChatPresenter searchChatPresenter);
 
+    void inject(ChatListScreenPresenter chatListScreenPresenter);
+
+    void inject(ChatPresenter chatPresenter);
+
+    void inject(AddedMembersPresenter addedMembersPresenter);
+
     @Subcomponent.Builder
     interface Builder {
 
         UserComponent.Builder userModule(UserModule userModule);
 
         UserComponent build();
+
     }
 }

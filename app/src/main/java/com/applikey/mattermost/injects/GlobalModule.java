@@ -5,13 +5,9 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
-import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
-import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.storage.preferences.RetainPrefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
@@ -20,6 +16,7 @@ import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -73,12 +70,6 @@ public class GlobalModule {
     @PerApp
     Prefs providePrefs() {
         return new Prefs(mApplicationContext);
-    }
-
-    @Provides
-    @PerApp
-    RetainPrefs provideRetainPrefs() {
-        return new RetainPrefs(mApplicationContext);
     }
 
     @Provides
@@ -149,26 +140,14 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    ChannelStorage provideChannelStorage(Db db, Prefs prefs, RetainPrefs retainPrefs) {
-        return new ChannelStorage(db, prefs, retainPrefs);
-    }
-
-    @Provides
-    @PerApp
-    UserStorage provideUserStorage(Db db, ImagePathHelper imagePathHelper) {
-        return new UserStorage(db, imagePathHelper);
-    }
-
-    @Provides
-    @PerApp
     ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory) {
         return new ImagePathHelper(serverUrlFactory);
     }
 
     @Provides
     @PerApp
-    PostStorage providePostStorage(Db db) {
-        return new PostStorage(db);
+    Gson provideGson() {
+        return new Gson();
     }
 
     @Provides

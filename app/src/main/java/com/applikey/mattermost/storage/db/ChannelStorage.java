@@ -8,8 +8,8 @@ import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.storage.preferences.PersistencePrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.storage.preferences.RetainPrefs;
 
 import java.util.List;
 import java.util.Map;
@@ -26,12 +26,12 @@ public class ChannelStorage {
 
     private final Db mDb;
     private final Prefs mPrefs;
-    private final RetainPrefs mRetainPrefs;
+    private final PersistencePrefs mPersistencePrefs;
 
-    public ChannelStorage(final Db db, final Prefs prefs, final RetainPrefs retainPrefs) {
+    public ChannelStorage(final Db db, final Prefs prefs, final PersistencePrefs persistencePrefs) {
         mDb = db;
         mPrefs = prefs;
-        mRetainPrefs = retainPrefs;
+        mPersistencePrefs = persistencePrefs;
     }
 
     public Observable<Channel> findById(String id) {
@@ -81,7 +81,7 @@ public class ChannelStorage {
     }
 
     public Observable<RealmResults<Channel>> listFavorite() {
-        return mRetainPrefs.getFavoritesChannels()
+        return mPersistencePrefs.getFavoritesChannels()
                 .subscribeOn(Schedulers.io())
                 .map(ids -> ids.toArray(new String[ids.size()]))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -208,13 +208,13 @@ public class ChannelStorage {
 
     public Completable setFavorite(String channelId, boolean isFavorite) {
         final Completable action;
-        action = isFavorite ? mRetainPrefs.addFavoriteChannel(channelId) :
-                mRetainPrefs.removeFavoriteChannel(channelId);
+        action = isFavorite ? mPersistencePrefs.addFavoriteChannel(channelId) :
+                mPersistencePrefs.removeFavoriteChannel(channelId);
         return action.subscribeOn(Schedulers.io());
     }
 
     public Observable<Boolean> isFavorite(String channelId) {
-        return mRetainPrefs.getFavoritesChannels()
+        return mPersistencePrefs.getFavoritesChannels()
                 .subscribeOn(Schedulers.io())
                 .map(ids -> ids.contains(channelId));
     }

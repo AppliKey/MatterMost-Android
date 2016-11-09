@@ -6,9 +6,6 @@ import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.fragments.BaseFragment;
 import com.applikey.mattermost.gcm.GcmMessageHandler;
 import com.applikey.mattermost.gcm.RegistrationIntentService;
-import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
-import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
-import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
@@ -43,12 +40,6 @@ public interface ApplicationComponent {
     void inject(ChooseTeamPresenter presenter);
 
     void inject(RestorePasswordPresenter presenter);
-
-    void inject(ChatListScreenPresenter presenter);
-
-    void inject(ChatPresenter presenter);
-
-    void inject(AddedMembersPresenter presenter);
 
     // Services
     void inject(RegistrationIntentService service);

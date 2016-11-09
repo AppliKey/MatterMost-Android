@@ -61,7 +61,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private Channel mChannel;
 
     public ChatPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void getInitialData(String channelId) {

@@ -32,7 +32,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     private List<User> mResultingList = new ArrayList<>();
 
     public AddedMembersPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void getUsersByIds(List<String> usersIds) {

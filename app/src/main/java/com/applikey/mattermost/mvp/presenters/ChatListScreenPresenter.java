@@ -61,7 +61,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     private boolean mLastUnreadTabState;
 
     public ChatListScreenPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void applyInitialViewState() {
