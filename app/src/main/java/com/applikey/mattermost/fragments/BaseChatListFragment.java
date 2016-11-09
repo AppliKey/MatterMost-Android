@@ -82,12 +82,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         getPresenter().unSubscribe();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getPresenter().displayData();
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -98,6 +92,12 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         ButterKnife.bind(this, view);
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getPresenter().displayData();
     }
 
     @Override
