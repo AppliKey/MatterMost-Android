@@ -2,7 +2,6 @@ package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.SettingsView;
-import com.applikey.mattermost.platform.WebSocketService;
 import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
@@ -29,9 +28,10 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void logout() {
-        mSettingsManager.deleteUserSession();
         getViewState().logout();
+        mSettingsManager.deleteUserSession();
         mStorageDestroyer.get().deleteDatabase();
+        mPrefs.clear();
         App.releaseUserComponent();
     }
 

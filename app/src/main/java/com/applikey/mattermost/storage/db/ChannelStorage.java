@@ -19,6 +19,7 @@ import io.realm.Sort;
 import rx.Completable;
 import rx.Observable;
 import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class ChannelStorage {
@@ -31,11 +32,6 @@ public class ChannelStorage {
         mDb = db;
         mPrefs = prefs;
         mRetainPrefs = retainPrefs;
-    }
-
-    // TODO Naming
-    public Observable<Channel> channel(String channelId) {
-        return mDb.getObjectWithCopy(Channel.class, channelId);
     }
 
     public Observable<Channel> findById(String id) {
@@ -84,7 +80,16 @@ public class ChannelStorage {
                 .first();
     }
 
-    // TODO Duplicate
+    public Observable<RealmResults<Channel>> listFavorite() {
+        return mRetainPrefs.getFavoritesChannels()
+                .subscribeOn(Schedulers.io())
+                .map(ids -> ids.toArray(new String[ids.size()]))
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
+                        ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME))
+                .first();
+    }
+
     public Observable<Channel> channelById(String id) {
         return mDb.getObject(Channel.class, id);
     }

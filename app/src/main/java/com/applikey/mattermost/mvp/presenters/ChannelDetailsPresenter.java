@@ -52,7 +52,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     public void getInitialData(String channelId) {
         final ChannelDetailsView view = getViewState();
 
-        mSubscription.add(mChannelStorage.channel(channelId)
+        mSubscription.add(mChannelStorage.channelById(channelId)
                 .doOnNext(channel -> mChannel = channel)
                 .subscribe(view::showBaseDetails, mErrorHandler::handleError));
 

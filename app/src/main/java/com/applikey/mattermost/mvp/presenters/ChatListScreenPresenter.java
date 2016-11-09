@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.DirectChatListFragment;
-import com.applikey.mattermost.fragments.EmptyChatListFragment;
+import com.applikey.mattermost.fragments.FavoriteChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.UnreadChatListFragment;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -150,7 +150,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         if (shouldShowUnreadTab) {
             tabs.add(UnreadChatListFragment.newInstance());
         }
-        tabs.add(EmptyChatListFragment.newInstance());
+        tabs.add(FavoriteChatListFragment.newInstance());
         tabs.add(ChannelListFragment.newInstance());
         tabs.add(GroupListFragment.newInstance());
         tabs.add(DirectChatListFragment.newInstance());
