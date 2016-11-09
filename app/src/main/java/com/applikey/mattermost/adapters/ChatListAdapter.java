@@ -40,12 +40,6 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
     }
 
     @Override
-    public long getItemId(int index) {
-        final Channel item = getItem(index);
-        return item != null ? item.hashCode() : 0;
-    }
-
-    @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
@@ -70,6 +64,37 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
         setUnreadStatus(vh, channel);
 
         vh.getRoot().setTag(position);
+
+    @Override
+    public long getItemId(int index) {
+        final Channel item = getItem(index);
+        return item != null ? item.hashCode() : 0;
+    }
+
+    public void setOnClickListener(ClickListener listener) {
+        this.mClickListener = listener;
+    }
+
+    private String getMessagePreview(Channel channel, Context context) {
+        final Post lastPost = channel.getLastPost();
+        final String messagePreview;
+        if (channel.getLastPost() == null) {
+            messagePreview = context.getString(R.string.channel_preview_message_placeholder);
+        } else if (isMy(lastPost)) {
+            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
+                    channel.getLastPost().getMessage();
+        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
+            if (lastPost != null) {
+                final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
+                messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
+                        + channel.getLastPost().getMessage();
+            } else {
+                messagePreview = context.getString(R.string.loading);
+            }
+        } else {
+            messagePreview = channel.getLastPost().getMessage();
+        }
+        return messagePreview;
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {

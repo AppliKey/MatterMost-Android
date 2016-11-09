@@ -2,15 +2,12 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.support.v4.app.Fragment;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.DirectChatListFragment;
 import com.applikey.mattermost.fragments.EmptyChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.UnreadChatListFragment;
-import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.MemberInfo;
@@ -74,28 +71,16 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         App.getComponent().inject(this);
     }
 
-    public boolean shouldShowUnreadTab() {
-        return mSettingsManager.shouldShowUnreadMessages();
-    }
-
     public void applyInitialViewState() {
         mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
-                                                                         getViewState()
-                                                                                 .setToolbarTitle(
-                                                                                         team.getDisplayName()),
-                                                                 mErrorHandler::handleError));
+                getViewState().setToolbarTitle(team.getDisplayName()), mErrorHandler::handleError));
     }
 
     public void preloadChannel(String channelId) {
         final Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
-                                                         mTeamStorage.getChosenTeam()
-                                                                 .flatMap(
-                                                                         team -> mApi
-                                                                                 .getChannelById(
-                                                                                         team.getId(),
-                                                                                         channelId)
-                                                                                 .subscribeOn(
-                                                                                         Schedulers.io())))
+                mTeamStorage.getChosenTeam()
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId)
+                                .subscribeOn(Schedulers.io())))
                 .observeOn(AndroidSchedulers.mainThread())
                 .first()
                 .subscribe(channel -> {
@@ -137,17 +122,17 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     private Observable<StartupFetchResult> fetchStartup(String teamId) {
         return Observable.zip(mApi.listChannels(teamId), mApi.getTeamProfiles(teamId),
-                              (channelResponse, contacts) -> transform(channelResponse, contacts,
-                                                                       teamId))
+                (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(response -> mUserStorage.saveUsers(response.getDirectProfiles()))
                 .doOnNext(response -> mChannelStorage.saveChannelResponse(
                         response.getChannelResponse(),
                         response.getDirectProfiles()));
-
     }
 
+    public boolean shouldShowUnreadTab() {
+        return mSettingsManager.shouldShowUnreadMessages();
     private void fetchChannelExtra(StartupFetchResult startupFetchResult) {
         final Subscription subscription =
                 Observable.from(startupFetchResult.getChannelResponse().getChannels())
@@ -196,21 +181,8 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 }, mErrorHandler::handleError);
     }
 
-    private LastPostResult transform(Channel channel, PostResponse postResponse) {
-
-        final List<Post> posts = Stream.of(postResponse.getPosts())
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-
-        if (!posts.isEmpty()) {
-            channel.setLastPost(posts.get(posts.size() - 1));
-        }
-
-        return new LastPostResult(channel, posts);
-    }
-
     private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> contacts, String teamId) {
+            Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 

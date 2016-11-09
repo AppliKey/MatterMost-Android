@@ -186,7 +186,7 @@ public class Db {
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
-                .filter(o -> o.isLoaded() && o.isValid());
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>>
@@ -217,7 +217,7 @@ public class Db {
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
-                .filter(o -> o.isLoaded() && o.isValid());
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFiltered(Class<T> tClass,
