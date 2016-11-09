@@ -119,6 +119,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
                                 .collect(Collectors.toList())), this::transform)
+                .first()
                 .subscribe(channelWithUsers -> {
                     mChannelStorage.setUsers(channelWithUsers.getChannel().getId(),
                                              channelWithUsers.getUsers());
