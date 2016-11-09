@@ -43,6 +43,7 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
 
     @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
+        super.onBindViewHolder(vh, position);
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;

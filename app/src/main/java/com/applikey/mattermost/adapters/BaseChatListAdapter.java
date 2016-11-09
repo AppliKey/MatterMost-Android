@@ -1,6 +1,7 @@
 package com.applikey.mattermost.adapters;
 
 import android.content.Context;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,8 +11,6 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
-
-import java.util.List;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
@@ -44,9 +43,8 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(T holder, int position, List<Object> payloads) {
-        super.onBindViewHolder(holder, position, payloads);
-
+    @CallSuper
+    public void onBindViewHolder(T holder, int position) {
         if (mChannelListener != null) {
             mChannelListener.onLoadAdditionalData(getItem(position));
         }

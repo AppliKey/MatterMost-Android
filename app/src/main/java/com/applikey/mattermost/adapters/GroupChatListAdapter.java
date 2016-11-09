@@ -43,6 +43,8 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListAdapt
 
     @Override
     public void onBindViewHolder(GroupChatListAdapter.ViewHolder vh, int position) { //TODO
+        super.onBindViewHolder(vh, position);
+
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;

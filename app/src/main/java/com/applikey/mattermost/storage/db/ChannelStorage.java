@@ -210,6 +210,7 @@ public class ChannelStorage {
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
                                   (channel, storedChannel) -> {
+                                      channel.setUsers(storedChannel.getUsers());
                                       channel.setLastPost(storedChannel.getLastPost());
                                       channel.updateLastActivityTime();
                                       return true;

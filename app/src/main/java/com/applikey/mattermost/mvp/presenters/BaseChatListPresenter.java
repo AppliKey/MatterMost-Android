@@ -64,7 +64,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     private String mTeamId;
 
     private final Set<String> mPreviewLoadedChannels = new HashSet<>();
-
     private final Set<String> mUsersLoadedChannels = new HashSet<>();
 
     /* package */ BaseChatListPresenter() {
@@ -108,7 +107,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         if (mUsersLoadedChannels.contains(channel.getId())) {
             return;
         }
-        Log.d(TAG, "getLastPost for " + channel.getDisplayName());
+        Log.d(TAG, "getUsers for " + channel.getDisplayName());
         mUsersLoadedChannels.add(channel.getId());
 
         Subscription subscription = Observable.just(channel)
@@ -121,8 +120,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                                 .collect(Collectors.toList())), this::transform)
                 .first()
                 .subscribe(channelWithUsers -> {
-                    mChannelStorage.setUsers(channelWithUsers.getChannel().getId(),
-                                             channelWithUsers.getUsers());
+                    mChannelStorage.setUsers(channelWithUsers.getChannel().getId(), channelWithUsers.getUsers());
                 }, mErrorHandler::handleError);
 
         mSubscription.add(subscription);

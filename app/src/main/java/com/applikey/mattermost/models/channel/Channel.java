@@ -243,6 +243,7 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     public void setUsers(List<User> users) {
+        mUsers.clear();
         mUsers.addAll(users);
     }
 
