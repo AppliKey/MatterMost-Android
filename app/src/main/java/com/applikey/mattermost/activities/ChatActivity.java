@@ -263,7 +263,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     private void deleteMessage(String channelId, Post post) {
-        mPresenter.deleteMessage(channelId, post);
+        showDeletionDialog(channelId, post);
     }
 
     private void editMessage(String channelId, Post post) {
@@ -282,16 +282,20 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                     if (input.getText().length() > 0) {
                         mPresenter.editMessage(channelId, post, input.getText().toString());
                     } else {
-                        new AlertDialog.Builder(this)
-                                .setTitle(R.string.post_delete)
-                                .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
-                                .setNegativeButton(R.string.cancel, null)
-                                .setPositiveButton(R.string.delete,
-                                                   (dialog1, which1) -> mPresenter.deleteMessage(
-                                                           channelId, post))
-                                .show();
+                        showDeletionDialog(channelId, post);
                     }
                 })
+                .show();
+    }
+
+    private void showDeletionDialog(String channelId, Post post) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.post_delete)
+                .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.delete,
+                                   (dialog1, which1) -> mPresenter.deleteMessage(
+                                           channelId, post))
                 .show();
     }
 
