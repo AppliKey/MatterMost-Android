@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -20,34 +19,15 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.OrderedRealmCollection;
-import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
-public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListAdapter.ViewHolder> {
+public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHolder> {
 
-    public interface ChannelListener {
-
-        void onItemClicked(Channel channel);
-
-        void onLoadAdditionalData(Channel channel);
-    }
-
-    private final ImageLoader mImageLoader;
-
-    private final String mCurrentUserId;
-
-    private ChannelListener mChannelListener;
-
-    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
-    private final Context mContext;
-
-    public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-            ImageLoader imageLoader, String currentUserId) {
-        super(context, data, true);
-        mContext = context;
-        mImageLoader = imageLoader;
-        mCurrentUserId = currentUserId;
-        setHasStableIds(true);
+    public ChatListAdapter(@NonNull Context context,
+                           RealmResults<Channel> data,
+                           ImageLoader imageLoader,
+                           String currentUserId) {
+        super(context, data, imageLoader, currentUserId);
     }
 
     @Override
@@ -62,13 +42,8 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     }
 
     @Override
-    public long getItemId(int index) {
-        final Channel item = getItem(index);
-        return item != null ? item.hashCode() : 0;
-    }
-
-    @Override
     public void onBindViewHolder(ChatListAdapter.ViewHolder vh, int position) {
+        super.onBindViewHolder(vh, position);
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;
@@ -92,36 +67,12 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         setUnreadStatus(vh, channel);
 
         vh.getRoot().setTag(position);
-
-        if (mChannelListener != null) {
-            mChannelListener.onLoadAdditionalData(channel);
-        }
     }
 
-    public void setChannelListener(ChannelListener channelListener) {
-        mChannelListener = channelListener;
-    }
-
-    private String getMessagePreview(Channel channel, Context context) {
-        final Post lastPost = channel.getLastPost();
-        final String messagePreview;
-        if (channel.getLastPost() == null) {
-            messagePreview = context.getString(R.string.channel_preview_message_placeholder);
-        } else if (isMy(lastPost)) {
-            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
-                    channel.getLastPost().getMessage();
-        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
-            if (lastPost != null) {
-                final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
-                messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
-                        + channel.getLastPost().getMessage();
-            } else {
-                messagePreview = context.getString(R.string.loading);
-            }
-        } else {
-            messagePreview = channel.getLastPost().getMessage();
-        }
-        return messagePreview;
+    @Override
+    public long getItemId(int index) {
+        final Channel item = getItem(index);
+        return item != null ? item.hashCode() : 0;
     }
 
     private void setChannelIcon(ViewHolder viewHolder, Channel element) {
@@ -171,28 +122,7 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         }
     }
 
-    private boolean isMy(Post post) {
-        return post.getUserId().equals(mCurrentUserId);
-    }
-
-    private final View.OnClickListener mOnClickListener = v -> {
-        final OrderedRealmCollection<Channel> data = getData();
-        if (data == null) {
-            return;
-        }
-        final int position = (Integer) v.getTag();
-
-        final Channel team = data.get(position);
-
-        if (mChannelListener != null) {
-            mChannelListener.onItemClicked(team);
-        }
-    };
-
-    /* package */
     class ViewHolder extends RecyclerView.ViewHolder {
-
-        private final View mRoot;
 
         @Bind(R.id.iv_preview_image)
         ImageView mPreviewImage;
@@ -224,13 +154,11 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         ViewHolder(View itemView) {
             super(itemView);
 
-            mRoot = itemView;
-
             ButterKnife.bind(this, itemView);
         }
 
         View getRoot() {
-            return mRoot;
+            return itemView;
         }
 
         ImageView getPreviewImage() {

@@ -17,4 +17,5 @@ public class GroupListPresenter extends BaseChatListPresenter {
     public Observable<RealmResults<Channel>> getInitData() {
         return mChannelStorage.listClosed();
     }
+
 }
