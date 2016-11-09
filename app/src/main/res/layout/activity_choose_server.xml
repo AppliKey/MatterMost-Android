@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/activity_horizontal_margin_fixed_text"
+    android:paddingEnd="@dimen/activity_horizontal_margin_fixed_text"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activities.ChooseServerActivity">
 
@@ -37,7 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_subheading"
-        android:paddingStart="@dimen/activity_choose_server_et_url_padding_start"
+        android:paddingStart="@dimen/edit_text_align"
+        android:paddingEnd="@dimen/edit_text_align"
         android:text="@string/enter_server_url_capt" />
 
     <Spinner
@@ -64,7 +65,8 @@
     <com.applikey.mattermost.views.SafeButton
         android:id="@+id/b_proceed"
         style="@style/Button"
-        android:padding = "@dimen/button_padding"
+        android:layout_marginStart="@dimen/edit_text_align"
+        android:layout_marginEnd="@dimen/edit_text_align"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
