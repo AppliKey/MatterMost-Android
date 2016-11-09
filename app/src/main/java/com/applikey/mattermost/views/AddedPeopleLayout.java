@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,17 +17,13 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 
 public class AddedPeopleLayout extends LinearLayout {
-
-    private static final int MAX_VISIBLE_AVATARS = 6;
-    private static final int VISIBLE_AVATARS_WITH_COUNTER = MAX_VISIBLE_AVATARS - 1;
-
     private ImageLoader mImageLoader;
 
     private int mItemWidth;
@@ -34,9 +31,9 @@ public class AddedPeopleLayout extends LinearLayout {
     private int mMinMargin;
     private int mActualMargin;
     private int mMaxViewCount;
-    private int mCurrentlyAddedItems;
-    private boolean mAddMoreMode;
     private TextView mCounter;
+    private ImageView[] mUserAvatars;
+    private final List<User> mUsers = new ArrayList<>();
 
     public AddedPeopleLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -57,7 +54,7 @@ public class AddedPeopleLayout extends LinearLayout {
         ButterKnife.bind(this);
         setVisibility(VISIBLE);
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.AddedPeopleLayout);
-        mMinMargin = typedArray.getDimensionPixelSize(R.styleable.AddedPeopleLayout_min_item_right_margin, 20);
+        mMinMargin = typedArray.getDimensionPixelSize(R.styleable.AddedPeopleLayout_min_item_right_margin, 0);
         typedArray.recycle();
     }
 
@@ -72,53 +69,140 @@ public class AddedPeopleLayout extends LinearLayout {
         final int additionalMargin = freeSpace / viewCount;
         mActualMargin = mMinMargin + additionalMargin;
         mMaxViewCount = viewCount;
+        if (mUserAvatars == null) {
+            initAvatarViews(mMaxViewCount);
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    private void initAvatarViews(int mMaxViewCount) {
+        mUserAvatars = new ImageView[mMaxViewCount];
+        final int lastAvatarIndex = mMaxViewCount - 1;
+        for (int i = 0; i < mMaxViewCount; i++) {
+            mUserAvatars[i] = initSingleAvatar();
+            if (i < lastAvatarIndex) {
+                this.addView(mUserAvatars[i]);
+            }
+        }
+        mCounter = initCounter();
+        final ImageView lastAvatar = mUserAvatars[lastAvatarIndex];
+
+        final FrameLayout frameLayout = new FrameLayout(getContext());
+        final LinearLayout.LayoutParams frameLayoutParams = new LayoutParams(mItemWidth, mItemHeight);
+        frameLayout.setLayoutParams(frameLayoutParams);
+        frameLayout.addView(lastAvatar);
+        frameLayout.addView(mCounter);
+        this.addView(frameLayout);
+    }
+
+    private TextView initCounter() {
+        final TextView textView = new TextView(getContext());
+        final LinearLayout.LayoutParams layoutParams = new LayoutParams(mItemWidth, mItemHeight);
+        mCounter.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
+        mCounter.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.added_people_count_textsize));
+        mCounter.setLayoutParams(layoutParams);
+        mCounter.setGravity(Gravity.CENTER);
+        mCounter.setVisibility(GONE);
+        mCounter.setBackgroundResource(R.drawable.bg_added_people_count);
+        return textView;
+    }
+
+    private ImageView initSingleAvatar() {
+        final ImageView userAvatar = new ImageView(getContext());
+        final LinearLayout.LayoutParams layoutParams = new LayoutParams(mItemWidth, mItemHeight);
+        layoutParams.setMarginEnd(mActualMargin);
+        userAvatar.setLayoutParams(layoutParams);
+        return userAvatar;
+    }
+
     public void addUser(User user) {
-        addView(user.getProfileImage());
+        mUsers.add(user);
+        notifyChange();
     }
 
     public void removeUser(User user) {
-
+        mUsers.remove(user);
+        notifyChange();
     }
 
-    private void addView(String imageUrl) {
-        mCurrentlyAddedItems ++;
-        if (mCurrentlyAddedItems <= mMaxViewCount) {
-            final ImageView imageView = new ImageView(getContext());
-            final LinearLayout.LayoutParams layoutParams = new LayoutParams(mItemWidth, mItemHeight);
-            layoutParams.setMarginEnd(mActualMargin);
-            imageView.setLayoutParams(layoutParams);
-            mImageLoader.displayCircularImage(imageUrl, imageView);
-            this.addView(imageView);
-        } else if (!mAddMoreMode) {
-            this.removeViewAt(getChildCount() - 1);
-            mAddMoreMode = true;
-            final TextView addMoreCounter = new TextView(getContext());
-            final LinearLayout.LayoutParams layoutParams = new LayoutParams(mItemWidth, mItemHeight);
-            addMoreCounter.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
-            addMoreCounter.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.added_people_count_textsize));
-            addMoreCounter.setLayoutParams(layoutParams);
-            addMoreCounter.setGravity(Gravity.CENTER);
-            mCounter = addMoreCounter;
-            final int currentlyAddedMembersDisplayable = mCurrentlyAddedItems - mMaxViewCount + 1;
-            addMoreCounter.setText(getContext().getString(R.string.added_people_count, currentlyAddedMembersDisplayable));
-            addMoreCounter.setBackgroundResource(R.drawable.bg_added_people_count);
-            this.addView(addMoreCounter);
-        } else {
-            final int currentlyAddedMembersDisplayable = mCurrentlyAddedItems - mMaxViewCount + 1;
-            mCounter.setText(getContext().getString(R.string.added_people_count, currentlyAddedMembersDisplayable));
-        }
+    private int getDisplayableCounterValue(int totalAddedItems, int maxVisibleItems) {
+        return totalAddedItems - maxVisibleItems + 1;
     }
 
     public void showUsers(List<User> users) {
-        Stream.of(users).forEach(user -> Timber.d(user.toString()));
-        Timber.d("%d", users.size());
-       // notifyChange();
+        mUsers.clear();
+        mUsers.addAll(users);
+        notifyChange();
+    }
+
+    private void displayUserAvatarsInActivatedViews(List<User> users, int activatedViewsCount) {
+        Stream.range(0, activatedViewsCount)
+                .forEach(index -> {
+                    final ImageView imageView = mUserAvatars[index];
+                    imageView.setVisibility(VISIBLE);
+                    mImageLoader.displayCircularImage(users.get(index).getProfileImage(), imageView);
+                });
+    }
+
+    private int getCountOfActivatedViews(int dataSize) {
+        int count = dataSize < mUserAvatars.length ? dataSize : mUserAvatars.length;
+        if (isCounterVisible(dataSize)) {
+            count--;
+        }
+        return count;
+    }
+
+    private void showCounterIfNeeded(boolean isNeedToShowCounter, int totalUsersCount) {
+        if (isNeedToShowCounter) {
+            if (mCounter.getVisibility() != VISIBLE) {
+                mCounter.setVisibility(VISIBLE);
+            }
+            mCounter.setText(getContext().getString(R.string.added_people_count,
+                    getDisplayableCounterValue(totalUsersCount, mUserAvatars.length)));
+        } else {
+            getLastUserAvatar().setVisibility(VISIBLE);
+            mCounter.setVisibility(GONE);
+        }
+    }
+
+    private void removeUnnecessaryViews(int lastVisibleViewIndex) {
+        for (int i = lastVisibleViewIndex; i < mUserAvatars.length; i++) {
+            mUserAvatars[i].setVisibility(INVISIBLE);
+        }
+    }
+
+    private boolean isCounterVisible(int dataSize) {
+        return dataSize > mUserAvatars.length;
     }
 
     public void setImageLoader(ImageLoader imageLoader) {
         mImageLoader = imageLoader;
+    }
+
+    public ImageView getLastUserAvatar() {
+        return mUserAvatars[mUserAvatars.length - 1];
+    }
+
+    private void setVisible(boolean isActive) {
+        this.setVisibility(isActive ? VISIBLE : GONE);
+    }
+
+    private boolean isNeedToBeShown(int dataSize) {
+        return dataSize != 0;
+    }
+
+    public List<User> getUsers() {
+        return mUsers;
+    }
+
+    private void notifyChange() {
+        if (mImageLoader == null) {
+            throw new RuntimeException("Please initialize ImageLoader");
+        }
+        setVisible(isNeedToBeShown(mUsers.size()));
+        showCounterIfNeeded(isCounterVisible(mUsers.size()), mUsers.size());
+        final int activatedViewsCount = getCountOfActivatedViews(mUsers.size());
+        displayUserAvatarsInActivatedViews(mUsers, activatedViewsCount);
+        removeUnnecessaryViews(activatedViewsCount);
     }
 }
