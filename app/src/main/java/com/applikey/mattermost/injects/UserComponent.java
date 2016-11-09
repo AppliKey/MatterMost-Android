@@ -13,7 +13,7 @@ import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 
-import com.applikey.mattermost.platform.WebSocketService;
+import com.applikey.mattermost.platform.socket.WebSocketService;
 import dagger.Subcomponent;
 
 @PerUser

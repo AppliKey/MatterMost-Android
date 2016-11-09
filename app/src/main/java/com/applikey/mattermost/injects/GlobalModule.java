@@ -19,6 +19,7 @@ import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -159,6 +160,12 @@ public class GlobalModule {
     @PerApp
     PostStorage providePostStorage(Db db) {
         return new PostStorage(db);
+    }
+
+    @Provides
+    @PerApp
+    Gson provideGson() {
+        return new Gson();
     }
 
     @Provides

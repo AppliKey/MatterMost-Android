@@ -2,7 +2,6 @@ package com.applikey.mattermost.web;
 
 import android.content.Context;
 import android.util.Log;
-import android.util.Pair;
 import android.widget.Toast;
 
 import com.applikey.mattermost.App;
@@ -10,12 +9,10 @@ import com.applikey.mattermost.HttpCode;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.injects.PerApp;
-import com.applikey.mattermost.platform.SocketConnectionException;
+import com.applikey.mattermost.platform.socket.SocketConnectionException;
 import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
 import com.applikey.mattermost.utils.ConnectivityUtils;
-import com.applikey.mattermost.utils.rx.RetryWhenNetwork;
-import com.applikey.mattermost.utils.rx.RetryWithDelay;
 
 import java.util.concurrent.TimeUnit;
 

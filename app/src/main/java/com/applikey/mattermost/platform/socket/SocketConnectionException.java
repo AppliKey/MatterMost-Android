@@ -1,4 +1,4 @@
-package com.applikey.mattermost.platform;
+package com.applikey.mattermost.platform.socket;
 
 public class SocketConnectionException extends Throwable {
 

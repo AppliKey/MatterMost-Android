@@ -1,4 +1,4 @@
-package com.applikey.mattermost.platform;
+package com.applikey.mattermost.platform.socket;
 
 import android.app.Service;
 import android.content.Context;
@@ -15,8 +15,6 @@ import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
-import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;

@@ -1,4 +1,4 @@
-package com.applikey.mattermost.platform;
+package com.applikey.mattermost.platform.socket;
 
 import android.net.Uri;
 import android.util.Log;
