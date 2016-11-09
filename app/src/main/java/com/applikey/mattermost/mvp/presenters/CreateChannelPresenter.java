@@ -14,7 +14,7 @@ import com.applikey.mattermost.models.channel.InvitedUsersManager;
 import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.mvp.views.CreateChannelView_;
+import com.applikey.mattermost.mvp.views.CreateChannelView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -34,7 +34,7 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 @InjectViewState
-public class CreateChannelPresenter extends BasePresenter<CreateChannelView_> implements InvitedUsersManager.OnInvitedListener {
+public class CreateChannelPresenter extends BasePresenter<CreateChannelView> implements InvitedUsersManager.OnInvitedListener {
 
     @Inject
     Api mApi;

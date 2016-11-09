@@ -19,7 +19,7 @@ import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.user.UserListParcelableWrapper;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
-import com.applikey.mattermost.mvp.views.CreateChannelView_;
+import com.applikey.mattermost.mvp.views.CreateChannelView;
 import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.applikey.mattermost.views.ChannelTypeView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView_, PeopleToNewChannelAdapter.OnUserChosenListener {
+public class CreateChannelActivity extends BaseMvpActivity implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
 
     @Bind(R.id.et_channel_name)
     EditText mEtChannelName;
