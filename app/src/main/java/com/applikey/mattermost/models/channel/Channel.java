@@ -84,39 +84,6 @@ public class Channel extends RealmObject implements SearchItem {
 
     private RealmList<User> mUsers = new RealmList<>();
 
-    public enum ChannelType {
-        PUBLIC("O"),
-        PRIVATE("P"),
-        DIRECT("D");
-
-        private final String representation;
-
-        ChannelType(String representation) {
-            this.representation = representation;
-        }
-
-        public String getRepresentation() {
-            return representation;
-        }
-
-        public static ChannelType fromRepresentation(String representation) {
-            switch (representation) {
-                case "O": {
-                    return PUBLIC;
-                }
-                case "P": {
-                    return PRIVATE;
-                }
-                case "D": {
-                    return DIRECT;
-                }
-                default: {
-                    throw new IllegalArgumentException("Wrong channel type");
-                }
-            }
-        }
-    }
-
     public long getLastActivityTime() {
         return lastActivityTime;
     }
@@ -381,6 +348,39 @@ public class Channel extends RealmObject implements SearchItem {
                 return 0;
             }
             return 1;
+        }
+    }
+
+    public enum ChannelType {
+        PUBLIC("O"),
+        PRIVATE("P"),
+        DIRECT("D");
+
+        private final String representation;
+
+        ChannelType(String representation) {
+            this.representation = representation;
+        }
+
+        public String getRepresentation() {
+            return representation;
+        }
+
+        public static ChannelType fromRepresentation(String representation) {
+            switch (representation) {
+                case "O": {
+                    return PUBLIC;
+                }
+                case "P": {
+                    return PRIVATE;
+                }
+                case "D": {
+                    return DIRECT;
+                }
+                default: {
+                    throw new IllegalArgumentException("Wrong channel type");
+                }
+            }
         }
     }
 

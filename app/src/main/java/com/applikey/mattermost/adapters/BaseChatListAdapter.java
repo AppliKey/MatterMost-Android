@@ -50,14 +50,6 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder>
         }
     }
 
-    public interface ChannelListener {
-
-        void onItemClicked(Channel channel);
-
-        void onLoadAdditionalData(Channel channel);
-
-    }
-
     public void setOnClickListener(ChannelListener listener) {
         this.mChannelListener = listener;
     }
@@ -99,5 +91,12 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder>
         return post.getUserId().equals(mCurrentUserId);
     }
 
+    public interface ChannelListener {
+
+        void onItemClicked(Channel channel);
+
+        void onLoadAdditionalData(Channel channel);
+
+    }
 }
 

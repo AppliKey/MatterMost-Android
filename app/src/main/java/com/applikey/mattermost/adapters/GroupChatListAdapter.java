@@ -63,7 +63,7 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListAdapt
                         channel.getCreatedAt()));
 
         //TODO replace to some base adapter for unread/group chats
-        Iterator<User> iterator = channel.getUsers().iterator();
+        final Iterator<User> iterator = channel.getUsers().iterator();
 
         setGroupImage(iterator, vh.mIvFirst);
         setGroupImage(iterator, vh.mIvSecond);

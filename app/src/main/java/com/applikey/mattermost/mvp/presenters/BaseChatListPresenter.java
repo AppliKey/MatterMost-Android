@@ -110,7 +110,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         Log.d(TAG, "getUsers for " + channel.getDisplayName());
         mUsersLoadedChannels.add(channel.getId());
 
-        Subscription subscription = Observable.just(channel)
+        final Subscription subscription = Observable.just(channel)
                 .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
                         .subscribeOn(Schedulers.io()), this::transform)
                 .observeOn(AndroidSchedulers.mainThread())
