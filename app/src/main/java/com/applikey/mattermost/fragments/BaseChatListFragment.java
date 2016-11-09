@@ -3,6 +3,7 @@ package com.applikey.mattermost.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.BaseChatListAdapter;
+import com.applikey.mattermost.adapters.ChatListAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
@@ -88,7 +90,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
         ButterKnife.bind(this, view);
@@ -109,12 +113,20 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
         final BaseChatListAdapter adapter = getAdapter(channels);
-        adapter.setOnClickListener(mChatClickListener);
+        adapter.setOnClickListener(this);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
     }
 
     @Override
+    public void onItemClicked(Channel channel) {
+        final Activity activity = getActivity();
+        final Intent intent = ChatActivity.getIntent(activity, channel);
+        activity.startActivity(intent);
+    }
+
+    @Override
+    @CallSuper
     public void onLoadAdditionalData(Channel channel) {
         getPresenter().getLastPost(channel);
     }
@@ -123,12 +135,6 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     public void showUnreadIndicator(boolean showIndicator) {
         mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
     }
-
-    private final BaseChatListAdapter.ClickListener mChatClickListener = channel -> {
-        final Activity activity = getActivity();
-        final Intent intent = ChatActivity.getIntent(activity, channel);
-        activity.startActivity(intent);
-    };
 
     protected abstract ChatListPresenter getPresenter();
 

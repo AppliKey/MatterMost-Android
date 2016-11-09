@@ -47,4 +47,10 @@ public class GroupListFragment extends BaseChatListFragment {
     protected int getEmptyStateTextId() {
         return R.string.no_groups_available;
     }
+
+    @Override
+    public void onLoadAdditionalData(Channel channel) {
+        super.onLoadAdditionalData(channel);
+        getPresenter().getChatUsers(channel);
+    }
 }

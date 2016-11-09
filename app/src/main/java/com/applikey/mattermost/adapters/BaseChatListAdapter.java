@@ -5,23 +5,27 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.annimon.stream.function.FunctionalInterface;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
 
+import java.util.List;
+
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
-public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder> extends RealmRecyclerViewAdapter<Channel, T> {
+public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder>
+        extends RealmRecyclerViewAdapter<Channel, T> {
 
-    private ClickListener mClickListener = null;
+    private ChannelListener mChannelListener = null;
 
     final ImageLoader mImageLoader;
+
     final String mCurrentUserId;
+
     final Context mContext;
 
     public BaseChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
@@ -39,13 +43,25 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder> ext
         return item != null ? item.hashCode() : 0;
     }
 
-    @FunctionalInterface
-    public interface ClickListener {
-        void onItemClicked(Channel channel);
+    @Override
+    public void onBindViewHolder(T holder, int position, List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+
+        if (mChannelListener != null) {
+            mChannelListener.onLoadAdditionalData(getItem(position));
+        }
     }
 
-    public void setOnClickListener(ClickListener listener) {
-        this.mClickListener = listener;
+    public interface ChannelListener {
+
+        void onItemClicked(Channel channel);
+
+        void onLoadAdditionalData(Channel channel);
+
+    }
+
+    public void setOnClickListener(ChannelListener listener) {
+        this.mChannelListener = listener;
     }
 
     final View.OnClickListener mOnClickListener = v -> {
@@ -57,8 +73,8 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder> ext
 
         final Channel team = data.get(position);
 
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(team);
+        if (mChannelListener != null) {
+            mChannelListener.onItemClicked(team);
         }
     };
 
@@ -72,7 +88,8 @@ public abstract class BaseChatListAdapter<T extends RecyclerView.ViewHolder> ext
                     channel.getLastPost().getMessage();
         } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
             final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
-            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor) +
+            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
+                    +
                     channel.getLastPost().getMessage();
         } else {
             messagePreview = channel.getLastPost().getMessage();

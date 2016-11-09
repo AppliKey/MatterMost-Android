@@ -6,11 +6,17 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ExtraInfo;
+import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
+import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.web.ChannelExtraResult;
+import com.applikey.mattermost.models.web.ChannelWithUsers;
 import com.applikey.mattermost.mvp.views.ChatListView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
+import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -25,6 +31,7 @@ import javax.inject.Inject;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -47,13 +54,18 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     PostStorage mPostStorage;
 
     @Inject
+    UserStorage mUserStorage;
+
+    @Inject
     ErrorHandler mErrorHandler;
 
     private RealmResults<Channel> mChannels;
 
     private String mTeamId;
 
-    private final Set<String> mLoadedChannels = new HashSet<>();
+    private final Set<String> mPreviewLoadedChannels = new HashSet<>();
+
+    private final Set<String> mUsersLoadedChannels = new HashSet<>();
 
     /* package */ BaseChatListPresenter() {
         App.getUserComponent().inject(this);
@@ -78,16 +90,41 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
 
     @Override
     public void getLastPost(Channel channel) {
-        if (mLoadedChannels.contains(channel.getId())) {
+        if (mPreviewLoadedChannels.contains(channel.getId())) {
             return;
         }
         Log.d(TAG, "getLastPost for " + channel.getDisplayName());
-        mLoadedChannels.add(channel.getId());
+        mPreviewLoadedChannels.add(channel.getId());
         mSubscription.add(mApi.getLastPost(mTeamId, channel.getId())
-                .map(this::transform)
-                .subscribeOn(Schedulers.io())
+                                  .map(this::transform)
+                                  .subscribeOn(Schedulers.io())
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .subscribe(post -> mChannelStorage.setLastPost(channel, post),
+                                             mErrorHandler::handleError));
+    }
+
+    @Override
+    public void getChatUsers(Channel channel) {
+        if (mUsersLoadedChannels.contains(channel.getId())) {
+            return;
+        }
+        Log.d(TAG, "getLastPost for " + channel.getDisplayName());
+        mUsersLoadedChannels.add(channel.getId());
+
+        Subscription subscription = Observable.just(channel)
+                .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
+                        .subscribeOn(Schedulers.io()), this::transform)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(post -> mChannelStorage.setLastPost(channel, post), mErrorHandler::handleError));
+                .flatMap(channelExtraResult -> mUserStorage.findUsers(
+                        Stream.of(channelExtraResult.getExtraInfo().getMembers())
+                                .map(MemberInfo::getId)
+                                .collect(Collectors.toList())), this::transform)
+                .subscribe(channelWithUsers -> {
+                    mChannelStorage.setUsers(channelWithUsers.getChannel().getId(),
+                                             channelWithUsers.getUsers());
+                }, mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
     }
 
     @Override
@@ -100,7 +137,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
             view.showUnreadIndicator(false);
         } else {
             view.showUnreadIndicator(channels.sort(Channel.FIELD_UNREAD_TYPE, Sort.DESCENDING)
-                    .first().hasUnreadMessages());
+                                             .first().hasUnreadMessages());
         }
     }
 
@@ -121,6 +158,14 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
             lastPost = posts.get(posts.size() - 1);
         }
         return lastPost;
+    }
+
+    private ChannelExtraResult transform(Channel channel, ExtraInfo extraInfo) {
+        return new ChannelExtraResult(channel, extraInfo);
+    }
+
+    private ChannelWithUsers transform(ChannelExtraResult channelExtraResult, List<User> users) {
+        return new ChannelWithUsers(channelExtraResult.getChannel(), users);
     }
 }
 

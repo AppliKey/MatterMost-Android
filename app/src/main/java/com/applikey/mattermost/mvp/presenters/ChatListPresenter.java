@@ -12,4 +12,6 @@ public interface ChatListPresenter extends UnsubscribeablePresenter {
     void displayData();
 
     void getLastPost(Channel channel);
+
+    void getChatUsers(Channel channel);
 }

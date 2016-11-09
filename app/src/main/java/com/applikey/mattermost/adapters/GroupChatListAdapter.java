@@ -60,6 +60,7 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListAdapt
                 TimeUtil.formatTimeOrDateOnlyChannel(lastPostAt != 0 ? lastPostAt :
                         channel.getCreatedAt()));
 
+        //TODO replace to some base adapter for unread/group chats
         Iterator<User> iterator = channel.getUsers().iterator();
 
         setGroupImage(iterator, vh.mIvFirst);
