@@ -168,8 +168,10 @@ public class ChannelStorage {
 
     public void setUsers(String id, List<User> users) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
-            realmChannel.setUsers(users);
-            realm.copyToRealmOrUpdate(realmChannel);
+            if (realmChannel != null) {
+                realmChannel.setUsers(users);
+                realm.copyToRealmOrUpdate(realmChannel);
+            }
             return true;
         });
     }
