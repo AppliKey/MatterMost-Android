@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.views.SettingsView;
+import com.applikey.mattermost.platform.WebSocketService;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.Bind;
@@ -34,19 +35,12 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         setTitle(R.string.settings);
-    }
-
-    @Override
-    public void logout() {
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
     }
 
     @Override
@@ -60,23 +54,31 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnCheckedChanged(R.id.sw_show_unread_messages)
-    public void onSwitchUnreadTabCheckedChanged(boolean isChecked) {
-        mPresenter.setUnreadTabEnabled(isChecked);
-    }
-
-    @OnClick(R.id.btn_setting_logout)
-    public void onClickLogout() {
-        mPresenter.logout();
-    }
-
-    @OnClick(R.id.btn_edit_profile)
-    public void onClickEditProfile() {
-        Toast.makeText(this, "Edit profile not implemented yet", Toast.LENGTH_SHORT).show();
+    @Override
+    public void logout() {
+        stopService(WebSocketService.getIntent(this));
+        final Intent intent = new Intent(this, ChooseServerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override
     public void setInitialViewState(SettingsPresenter.SettingDataHolder settingDataHolder) {
         mSwitchShowUnreadMessages.setChecked(settingDataHolder.isUnreadTabEnabled());
+    }
+
+    @OnCheckedChanged(R.id.sw_show_unread_messages)
+    void onSwitchUnreadTabCheckedChanged(boolean isChecked) {
+        mPresenter.setUnreadTabEnabled(isChecked);
+    }
+
+    @OnClick(R.id.btn_setting_logout)
+    void onClickLogout() {
+        mPresenter.logout();
+    }
+
+    @OnClick(R.id.btn_edit_profile)
+    void onClickEditProfile() {
+        Toast.makeText(this, "Edit profile not implemented yet", Toast.LENGTH_SHORT).show();
     }
 }

@@ -27,8 +27,10 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     @Bind(R.id.et_login)
     EditText mEtLogin;
+
     @Bind(R.id.et_password)
     EditText mEtPassword;
+
     @Bind(R.id.b_authorize)
     Button mBtnAuthorize;
 
@@ -38,8 +40,12 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     @InjectPresenter
     LogInPresenter mPresenter;
 
+    public static Intent getIntent(Context context) {
+        return new Intent(context, LogInActivity.class);
+    }
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_log_in);
@@ -48,38 +54,20 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     }
 
     @Override
-    protected void onStart() {
+    public void onDestroy() {
+        mPresenter.unSubscribe();
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
         super.onStart();
 
         Log.d(TAG, "onStart");
         mPresenter.getInitialData();
     }
 
-    @Override
-    protected void onDestroy() {
-        mPresenter.unSubscribe();
-
-        super.onDestroy();
-    }
-
-    @OnClick(R.id.b_authorize)
-    void onAuthorize() {
-        showLoading();
-        final String login = mEtLogin.getText().toString();
-        final String password = mEtPassword.getText().toString();
-
-        mPresenter.authorize(this, login, password);
-    }
-
-    @OnClick(R.id.back)
-    void onBack() {
-        finish();
-    }
-
-    @OnClick(R.id.b_restore_password)
-    void onRestoreClicked() {
-        startActivity(RestorePasswordActivity.getIntent(this));
-    }
 
     @Override
     public void showLoading() {
@@ -103,12 +91,6 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     }
 
     @Override
-    public void showPresetCredentials(String userName, String password) {
-        mEtLogin.setText(userName);
-        mEtPassword.setText(password);
-    }
-
-    @Override
     public void onTeamsRetrieved(Map<String, Team> teams) {
         hideLoading();
 
@@ -126,11 +108,33 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
         mEtLogin.setError(cause.getMessage());
     }
 
-    private void loadTeams() {
-        mPresenter.loadTeams();
+    @Override
+    public void showPresetCredentials(String userName, String password) {
+        mEtLogin.setText(userName);
+        mEtPassword.setText(password);
     }
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, LogInActivity.class);
+
+    @OnClick(R.id.b_authorize)
+    void onAuthorize() {
+        showLoading();
+        final String login = mEtLogin.getText().toString();
+        final String password = mEtPassword.getText().toString();
+
+        mPresenter.authorize(this, login, password);
+    }
+
+    @OnClick(R.id.back)
+    void onBack() {
+        finish();
+    }
+
+    @OnClick(R.id.b_restore_password)
+    void onRestoreClicked() {
+        startActivity(RestorePasswordActivity.getIntent(this));
+    }
+
+    private void loadTeams() {
+        mPresenter.loadTeams();
     }
 }

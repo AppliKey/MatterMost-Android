@@ -22,9 +22,11 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class AddedMembersActivity extends BaseMvpActivity implements AddedMembersView, PeopleToNewChannelAdapter.OnUserChosenListener, SearchView.OnQueryTextListener {
+public class AddedMembersActivity extends BaseMvpActivity
+        implements AddedMembersView, PeopleToNewChannelAdapter.OnUserChosenListener,
+        SearchView.OnQueryTextListener {
 
-    public static final String USERS_IDS_KEY = "USERS_IDS_KEY";
+    /* package */ static final String USERS_IDS_KEY = "USERS_IDS_KEY";
 
     @InjectPresenter
     AddedMembersPresenter mPresenter;

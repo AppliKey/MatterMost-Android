@@ -3,7 +3,6 @@ package com.applikey.mattermost.adapters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,7 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
-
-import java.util.List;
+import com.transitionseverywhere.TransitionManager;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,12 +37,12 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private int mNewMessageIndicatorPosition = -1;
 
     public PostAdapter(Context context,
-            RealmResults<Post> posts,
-            String currentUserId,
-            ImageLoader imageLoader,
-            Channel.ChannelType channelType,
-            long lastViewed,
-            OnLongClickListener onLongClickListener) {
+                       RealmResults<Post> posts,
+                       String currentUserId,
+                       ImageLoader imageLoader,
+                       Channel.ChannelType channelType,
+                       long lastViewed,
+                       OnLongClickListener onLongClickListener) {
         super(context, posts, true);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
@@ -71,8 +69,11 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         final int layoutId = viewType == MY_POST_VIEW_TYPE
                 ? R.layout.list_item_post_my : R.layout.list_item_post_other;
 
-        final View v = inflater.inflate(layoutId, parent, false);
-        return new ViewHolder(v);
+        final View itemView = inflater.inflate(layoutId, parent, false);
+        final ViewHolder viewHolder = new ViewHolder(itemView);
+        viewHolder.mTvTimestamp.setOnClickListener(v ->
+                viewHolder.toggleDate(getItem(viewHolder.getAdapterPosition())));
+        return viewHolder;
     }
 
     @Override
@@ -99,13 +100,14 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
 
         final boolean showDate = isLastPost || !isPostsSameDate(post, nextPost);
         final boolean showAuthor = isLastPost || showDate || !isPostsSameAuthor(nextPost, post);
-        final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost) || !isPostsSameAuthor(post, previousPost);
+        final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost)
+                || !isPostsSameAuthor(post, previousPost);
 
         final boolean mNewMessageIndicatorShowed = mNewMessageIndicatorPosition != -1;
         final boolean showNewMessageIndicator = (!mNewMessageIndicatorShowed &&
                 mLastViewed < post.getCreatedAt() &&
-                !isLastPost && nextPost.getCreatedAt() < mLastViewed) ||
-                mNewMessageIndicatorPosition == holder.getAdapterPosition();
+                !isLastPost && nextPost.getCreatedAt() < mLastViewed) /*||
+                mNewMessageIndicatorPosition == holder.getAdapterPosition()*/;
 
         if (showNewMessageIndicator) {
             mNewMessageIndicatorPosition = holder.getAdapterPosition();
@@ -114,9 +116,10 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         holder.bindHeader(showNewMessageIndicator, showDate);
 
         if (isMy(post)) {
-            holder.bindOwnPost(mChannelType, post, showAuthor, showTime, showDate, mOnLongClickListener);
+            holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, post, showAuthor, showTime, showDate, mImageLoader);
+            holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
+                    mImageLoader, mOnLongClickListener);
         }
     }
 
@@ -124,6 +127,30 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     public int getItemViewType(int position) {
         final Post post = getItem(position);
         return isMy(post) ? MY_POST_VIEW_TYPE : OTHERS_POST_VIEW_TYPE;
+    }
+
+    private boolean isMy(Post post) {
+        return post.getUserId().equals(mCurrentUserId);
+    }
+
+    private boolean isPostsSameAuthor(Post post, Post nextPost) {
+        return !(post == null || nextPost == null)
+                && post.getUserId().equals(nextPost.getUserId());
+    }
+
+    private boolean isPostsSameSecond(Post post, Post nextPost) {
+        return !(post == null || nextPost == null)
+                && TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
+    }
+
+    private boolean isPostsSameDate(Post post, Post nextPost) {
+        return !(post == null || nextPost == null)
+                && TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
+    }
+
+    @FunctionalInterface
+    public interface OnLongClickListener {
+        void onLongClick(Post post, boolean isPostOwner);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -155,45 +182,47 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         @Bind(R.id.tv_name)
         TextView mTvName;
 
+        @Bind(R.id.tv_reply_message)
+        TextView mTvReplyMessage;
+
         ViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
         }
 
-        private void bindHeader(boolean showNewMessageIndicator, boolean showDate) {
-            mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
-            mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
-        }
-
-        private void bind(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime, boolean showDate) {
-            mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
-            mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
-            mTvName.setText(post.getAuthor().toString());
-            mTvMessage.setText(post.getMessage());
-
-            mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
-            mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
-
-            if (channelType == Channel.ChannelType.DIRECT) {
-                mTvName.setVisibility(View.GONE);
+        void toggleDate(Post post) {
+            final String time;
+            if (mTvTimestamp.length() > TimeUtil.DEFAULT_FORMAT_TIME_ONLY.length()) {
+                time = TimeUtil.formatTimeOnly(post.getCreatedAt());
+            } else {
+                time = TimeUtil.formatDateTime(post.getCreatedAt());
             }
+            TransitionManager.beginDelayedTransition((ViewGroup) itemView);
+            mTvTimestamp.setText(time);
         }
 
-        void bindOwnPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime, boolean showDate,
-                OnLongClickListener onLongClickListener) {
-            bind(channelType, post, showAuthor, showTime, showDate);
+        void bindOwnPost(Channel.ChannelType channelType,
+                         Post post,
+                         boolean showAuthor,
+                         boolean showTime,
+                         OnLongClickListener onLongClickListener) {
+            bind(channelType, post, showAuthor, showTime);
 
             itemView.setOnLongClickListener(v -> {
-                onLongClickListener.onLongClick(post);
+                onLongClickListener.onLongClick(post, true);
                 return true;
             });
             mTvName.setText(R.string.you);
         }
 
-        void bindOtherPost(Channel.ChannelType channelType, Post post, boolean showAuthor, boolean showTime,
-                boolean showDate, ImageLoader imageLoader) {
-            bind(channelType, post, showAuthor, showTime, showDate);
+        void bindOtherPost(Channel.ChannelType channelType,
+                           Post post,
+                           boolean showAuthor,
+                           boolean showTime,
+                           ImageLoader imageLoader,
+                           OnLongClickListener onLongClickListener) {
+            bind(channelType, post, showAuthor, showTime);
 
             final User author = post.getAuthor();
 
@@ -206,40 +235,44 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
                 mIvPreviewImageLayout.setVisibility(showAuthor ? View.VISIBLE : View.INVISIBLE);
             }
 
+            itemView.setOnLongClickListener(v -> {
+                onLongClickListener.onLongClick(post, false);
+                return true;
+            });
+
             if (mIvPreviewImageLayout != null && channelType == Channel.ChannelType.DIRECT) {
                 mIvPreviewImageLayout.setVisibility(View.GONE);
             }
         }
-    }
 
-    private boolean isMy(Post post) {
-        return post.getUserId().equals(mCurrentUserId);
-    }
-
-    private boolean isPostsSameAuthor(Post post, Post nextPost) {
-        if (post == null || nextPost == null) {
-            return false;
+        private void bindHeader(boolean showNewMessageIndicator, boolean showDate) {
+            mTvDate.setVisibility(showDate ? View.VISIBLE : View.GONE);
+            mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
-        return post.getUserId().equals(nextPost.getUserId());
-    }
 
-    private boolean isPostsSameSecond(Post post, Post nextPost) {
-        if (post == null || nextPost == null) {
-            return false;
+        private void bind(Channel.ChannelType channelType,
+                          Post post,
+                          boolean showAuthor,
+                          boolean showTime) {
+            mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
+            mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
+            mTvName.setText(User.getDisplayableName(post.getAuthor()));
+            mTvMessage.setText(post.getMessage());
+
+            mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
+            mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
+
+            if (channelType == Channel.ChannelType.DIRECT) {
+                mTvName.setVisibility(View.GONE);
+            }
+
+            if (post.getRootPost() != null) {
+                mTvReplyMessage.setVisibility(View.VISIBLE);
+                mTvReplyMessage.setText(post.getRootPost().getMessage());
+            } else {
+                mTvReplyMessage.setVisibility(View.GONE);
+                mTvReplyMessage.setText(null);
+            }
         }
-        return TimeUtil.sameTime(post.getCreatedAt(), nextPost.getCreatedAt());
-    }
-
-    private boolean isPostsSameDate(Post post, Post nextPost) {
-        if (post == null || nextPost == null) {
-            return false;
-        }
-        return TimeUtil.sameDate(post.getCreatedAt(), nextPost.getCreatedAt());
-    }
-
-    @FunctionalInterface
-    public interface OnLongClickListener {
-
-        void onLongClick(Post post);
     }
 }

@@ -26,14 +26,14 @@ public class RegistrationIntentService extends IntentService {
     @Inject
     Prefs mPrefs;
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, RegistrationIntentService.class);
-    }
-
     public RegistrationIntentService() {
         super(TAG);
 
         App.getComponent().inject(this);
+    }
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, RegistrationIntentService.class);
     }
 
     @Override

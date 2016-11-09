@@ -12,7 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,7 +28,6 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
@@ -68,6 +69,18 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Bind(R.id.et_message)
     EditText mEtMessage;
 
+    @Bind(R.id.ll_reply)
+    LinearLayout mLlReply;
+
+    @Bind(R.id.view_reply_separator)
+    View mViewReplySeparator;
+
+    @Bind(R.id.iv_reply_close)
+    ImageView mIvReplyClose;
+
+    @Bind(R.id.tv_reply_message)
+    TextView mTvReplyMessage;
+
     @InjectPresenter
     ChatPresenter mPresenter;
 
@@ -78,40 +91,20 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
+    private String mRootId;
     private String mChannelId;
     private String mChannelName;
     private String mChannelType;
     private long mChannelLastViewed;
     private PostAdapter mAdapter;
 
-    private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
-        @Override
-        public void onLoad() {
-            mPresenter.fetchData(mChannelId);
-        }
-    };
-
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(CHANNEL_ID_KEY, channel.getId());
-        bundle.putString(CHANNEL_NAME_KEY, channel.getDisplayName());
-        bundle.putString(CHANNEL_TYPE_KEY, channel.getType());
-        bundle.putLong(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
-        intent.putExtras(bundle);
-
+        intent.putExtra(CHANNEL_ID_KEY, channel.getId());
+        intent.putExtra(CHANNEL_NAME_KEY, channel.getDisplayName());
+        intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
+        intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         return intent;
-    }
-
-    @Override
-    protected Toolbar getToolbar() {
-        return mToolbar;
-    }
-
-    @Override
-    protected boolean showHamburger() {
-        return false;
     }
 
     @Override
@@ -128,13 +121,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mPresenter.getInitialData(mChannelId);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
         setToolbarText();
@@ -161,13 +154,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onDataReady(RealmResults<Post> posts) {
-        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
+                mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
                 channelType, mChannelLastViewed, onPostLongClick);
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
-        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
+        mRvMessages.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
 
@@ -184,20 +179,45 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    public void onFailure(Throwable cause) {
-        ErrorHandler.handleError(cause);
-    }
-
-    @OnClick(R.id.iv_send_message)
-    public void onSend() {
-        mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+    public void showProgress(boolean enabled) {
+        mSrlChat.setRefreshing(enabled);
     }
 
     @Override
     public void onMessageSent(long createdAt) {
-        mEtMessage.setText("");
+        mEtMessage.setText(null);
         mAdapter.setLastViewed(createdAt);
         scrollToStart();
+        hideReply();
+    }
+
+    @Override
+    public void openChannelDetails(Channel channel) {
+        startActivity(ChannelDetailsActivity.getIntent(this, channel));
+    }
+
+    @Override
+    public void openUserProfile(User user) {
+        startActivity(UserProfileActivity.getIntent(this, user));
+    }
+
+    @Override
+    protected Toolbar getToolbar() {
+        return mToolbar;
+    }
+
+    @Override
+    protected boolean showHamburger() {
+        return false;
+    }
+
+    @OnClick(R.id.iv_send_message)
+    void onSend() {
+        if (mRootId == null) {
+            mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
+        } else {
+            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
+        }
     }
 
     private void scrollToStart() {
@@ -214,33 +234,24 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mTvEmptyState.setVisibility(GONE);
     }
 
+    private void displayReply() {
+        mLlReply.setVisibility(VISIBLE);
+        mViewReplySeparator.setVisibility(VISIBLE);
+    }
+
+    private void hideReply() {
+        mLlReply.setVisibility(GONE);
+        mViewReplySeparator.setVisibility(GONE);
+        mTvReplyMessage.setText(null);
+        mRootId = null;
+    }
+
     private void setToolbarText() {
         final String prefix = !mChannelType.equals(Channel.ChannelType.DIRECT.getRepresentation())
                 ? CHANNEL_PREFIX : DIRECT_PREFIX;
 
         mToolbar.setTitle(prefix + mChannelName);
     }
-
-    @Override
-    public void showProgress(boolean enabled) {
-        mSrlChat.setRefreshing(enabled);
-    }
-
-    private final PostAdapter.OnLongClickListener onPostLongClick = post -> {
-        final AlertDialog.Builder opinionDialogBuilder = new AlertDialog.Builder(this);
-        opinionDialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
-            switch (which) {
-                case 0:
-                    deleteMessage(mChannelId, post);
-                    break;
-                case 1:
-                    editMessage(mChannelId, post);
-                    break;
-                default:
-                    throw new RuntimeException("Not implemented feature");
-            }
-        }).show();
-    };
 
     private void deleteMessage(String channelId, Post post) {
         mPresenter.deleteMessage(channelId, post);
@@ -258,10 +269,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         builder.setView(input)
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save, (dialog, which) -> {
-                    mPresenter.editMessage(channelId, post, input.getText().toString());
-                })
+                .setPositiveButton(R.string.save, (dialog, which) ->
+                        mPresenter.editMessage(channelId, post, input.getText().toString()))
                 .show();
+    }
+
+    private void replyMessage(Post post) {
+        displayReply();
+        mTvReplyMessage.setText(post.getMessage());
+        mRootId = post.getId();
     }
 
     private void initParameters() {
@@ -280,9 +296,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-            mToolbar.setOnClickListener(v -> {
-                mPresenter.channelNameClick();
-            });
+            mToolbar.setOnClickListener(v -> mPresenter.channelNameClick());
         }
         mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -293,15 +307,47 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 hideKeyboard();
             }
         });
+
+        mIvReplyClose.setOnClickListener(v -> hideReply());
     }
 
-    @Override
-    public void openChannelDetails(Channel channel) {
-        startActivity(ChannelDetailsActivity.getIntent(this, channel));
-    }
+    private final RecyclerView.OnScrollListener mPaginationListener
+            = new PaginationScrollListener() {
+        @Override
+        public void onLoad() {
+            mPresenter.fetchData(mChannelId);
+        }
+    };
 
-    @Override
-    public void openUserProfile(User user) {
-
-    }
+    private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        if (isOwner) {
+            dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        deleteMessage(mChannelId, post);
+                        break;
+                    case 1:
+                        editMessage(mChannelId, post);
+                        break;
+                    case 2:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        } else {
+            dialogBuilder.setItems(R.array.post_opinion_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        replyMessage(post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        }
+        dialogBuilder.show();
+    };
 }

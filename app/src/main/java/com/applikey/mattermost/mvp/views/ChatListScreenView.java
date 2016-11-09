@@ -12,10 +12,16 @@ import java.util.List;
 
 @StateStrategyType(value = SingleStateStrategy.class)
 public interface ChatListScreenView extends MvpView {
+
     void setToolbarTitle(String title);
 
     @StateStrategyType(value = SkipStrategy.class)
     void onChannelLoaded(Channel channel);
+
+    /**
+     * Platform-specific. We call it explicitly to separate this logic from logout.
+     */
+    void stopWebSocketService();
 
     @StateStrategyType(value = SkipStrategy.class)
     void initViewPager(List<Fragment> pages);

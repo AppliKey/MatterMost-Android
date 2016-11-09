@@ -100,4 +100,5 @@
     <style name="SwitchStyle">
         <item name="colorControlActivated">@color/primaryStart</item>
     </style>
+
 </resources>

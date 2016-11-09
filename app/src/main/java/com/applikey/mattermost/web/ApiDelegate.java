@@ -1,11 +1,12 @@
 package com.applikey.mattermost.web;
 
+import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
-import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
@@ -33,40 +34,13 @@ public class ApiDelegate implements Api {
 
     private final ServerUrlFactory urlFactory;
     private final OkHttpClient okHttpClient;
-
+    private final Object mutex = new Object();
     private String serverUrl;
     private Api realApi;
-
-    private final Object mutex = new Object();
 
     public ApiDelegate(OkHttpClient okHttpClient, ServerUrlFactory urlFactory) {
         this.urlFactory = urlFactory;
         this.okHttpClient = okHttpClient;
-    }
-
-    private Api getRealApi() {
-        final String currentServerUrl = urlFactory.getServerUrl();
-        if (!isSameServerRequested(currentServerUrl)) {
-            synchronized (mutex) {
-                if (!isSameServerRequested(currentServerUrl)) {
-                    serverUrl = currentServerUrl;
-                    final Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(serverUrl)
-                            .client(okHttpClient)
-                            .addConverterFactory(PrimitiveConverterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                            .build();
-                    //noinspection UnnecessaryLocalVariable
-                    realApi = retrofit.create(Api.class);
-                }
-            }
-        }
-        return realApi;
-    }
-
-    private boolean isSameServerRequested(String requestedServer) {
-        return serverUrl != null && serverUrl.equals(requestedServer);
     }
 
     @Override
@@ -111,17 +85,21 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response> sendPasswordReset(@Field("email") String email) {
+    public Observable<Response<Void>> sendPasswordReset(@Field("email") String email) {
         return getRealApi().sendPasswordReset(email);
     }
 
     @Override
-    public Observable<Void> deletePost(@Path("teamId") String teamId, @Path("channelId") String channelId, @Path("channelId") String postId) {
+    public Observable<Void> deletePost(@Path("teamId") String teamId,
+            @Path("channelId") String channelId,
+            @Path("channelId") String postId) {
         return getRealApi().deletePost(teamId, channelId, postId);
     }
 
     @Override
-    public Observable<Post> updatePost(@Path("teamId") String teamId, @Path("channelId") String channelId, @Body Post post) {
+    public Observable<Post> updatePost(@Path("teamId") String teamId,
+            @Path("channelId") String channelId,
+            @Body Post post) {
         return getRealApi().updatePost(teamId, channelId, post);
     }
 
@@ -131,7 +109,8 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Channel> getChannelById(@Path("teamId") String teamId, @Path("channelId") String channelId) {
+    public Observable<Channel> getChannelById(@Path("teamId") String teamId,
+            @Path("channelId") String channelId) {
         return getRealApi().getChannelById(teamId, channelId);
     }
 
@@ -149,38 +128,86 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PostResponse> getLastPost(@Path("teamId") String teamId, @Path("channelId") String channelId) {
+    public Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
+            @Path("channelId") String channelId) {
         return getRealApi().getLastPost(teamId, channelId);
     }
 
     @Override
-    public Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId, @Path("channelId") String channelId) {
+    public Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
+            @Path("channelId") String channelId) {
         return getRealApi().getChannelExtra(teamId, channelId);
     }
 
     @Override
-    public Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request) {
-        return getRealApi().createChannel(teamId, request);
-    }
+    public Observable<Post> createPost(@Path("teamId") String teamId,
+            @Path("channelId") String channelId,
+            @Body
 
-    @Override
-    public Observable<Membership> addUserToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId, @Body RequestUserId userId) {
-        return getRealApi().addUserToChannel(teamId, channelId, userId);
-    }
-
-    @Override
-    public Observable<Post> createPost(@Path("teamId") String teamId, @Path("channelId") String channelId, @Body PendingPost request) {
+                    PendingPost request) {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
     @Override
     public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
-                                                           @Path("channelId") String channelId) {
+            @Path("channelId") String channelId) {
         return getRealApi().updateLastViewedAt(teamId, channelId);
     }
 
     @Override
-    public Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
+    public Observable<Channel> createChannel(@Path("team_id") String teamId, @Body
+            ChannelRequest request) {
+        return getRealApi().createChannel(teamId, request);
+    }
+
+    @Override
+    public Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
+            @Path("channel_id") String channelId,
+            @Body
+
+                    RequestUserId userId) {
+        return getRealApi().addUserToChannel(teamId, channelId, userId);
+    }
+
+    @Override
+    public Observable<Response<AttachDeviceRequest>> attachDevice(
+            @Body AttachDeviceRequest request) {
         return getRealApi().attachDevice(request);
+    }
+
+    @Override
+    public Observable<Channel> createChannel(@Path("team_id") String teamId,
+            @Body DirectChannelRequest request) {
+        return getRealApi().createChannel(teamId, request);
+    }
+
+    @Override
+    public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
+        return getRealApi().getChannelsUserHasNotJoined(teamId);
+    }
+
+    private Api getRealApi() {
+        final String currentServerUrl = urlFactory.getServerUrl();
+        if (!isSameServerRequested(currentServerUrl)) {
+            synchronized (mutex) {
+                if (!isSameServerRequested(currentServerUrl)) {
+                    serverUrl = currentServerUrl;
+                    final Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(serverUrl)
+                            .client(okHttpClient)
+                            .addConverterFactory(PrimitiveConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                            .build();
+                    //noinspection UnnecessaryLocalVariable
+                    realApi = retrofit.create(Api.class);
+                }
+            }
+        }
+        return realApi;
+    }
+
+    private boolean isSameServerRequested(String requestedServer) {
+        return serverUrl != null && serverUrl.equals(requestedServer);
     }
 }

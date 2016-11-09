@@ -32,10 +32,6 @@ public class SafeButton extends RobotoButton implements View.OnClickListener {
         init();
     }
 
-    private void init() {
-        super.setOnClickListener(this);
-    }
-
     @Override
     public void setOnClickListener(View.OnClickListener l) {
         mUserListener = l;
@@ -49,5 +45,9 @@ public class SafeButton extends RobotoButton implements View.OnClickListener {
             mLastClickTime = currentTimestamp;
             mUserListener.onClick(view);
         }
+    }
+
+    private void init() {
+        super.setOnClickListener(this);
     }
 }

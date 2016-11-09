@@ -22,7 +22,7 @@ public class SplashActivity extends BaseMvpActivity implements SplashView {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         startService(RegistrationIntentService.getIntent(this));

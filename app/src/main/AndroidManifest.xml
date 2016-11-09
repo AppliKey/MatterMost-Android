@@ -51,6 +51,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.ChatActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.CreateChannelActivity"
@@ -62,6 +63,11 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.ChannelDetailsActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.UserProfileActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
         <receiver
@@ -85,7 +91,7 @@
 
         <service
             android:name=".gcm.RegistrationIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <service
             android:name=".gcm.GcmInstanceIdListener"
@@ -94,6 +100,14 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
+
+        <service
+                android:name=".platform.WebSocketService"
+                android:exported="false"/>
+
+        <activity
+            android:name=".activities.SearchChatActivity"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

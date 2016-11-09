@@ -16,12 +16,12 @@ public class UserPendingInvitation implements Comparable<UserPendingInvitation> 
         return user;
     }
 
-    public boolean isInvited() {
-        return isInvited;
-    }
-
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isInvited() {
+        return isInvited;
     }
 
     public void setInvited(boolean invited) {

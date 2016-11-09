@@ -1,6 +1,7 @@
 package com.applikey.mattermost.views;
 
 import android.support.annotation.DrawableRes;
+
 import com.applikey.mattermost.R;
 
 public enum TabBehavior {

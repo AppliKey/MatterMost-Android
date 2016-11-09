@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.transition.TransitionManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
@@ -21,7 +23,9 @@ import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.widget.RobotoTextView;
+import com.transitionseverywhere.TransitionManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -59,13 +63,8 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         return intent;
     }
 
-    //TODO Implement Invite members logic
-    @OnClick(R.id.b_invite_member)
-    public void onInviteMemberClick() {
-    }
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_details);
         ButterKnife.bind(this);
@@ -93,25 +92,10 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         }
     }
 
-    private void initViews() {
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
-        getSupportActionBar().setTitle(null);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        mAddedPeopleLayout.setImageLoader(mImageLoader);
-    }
-
-    private void initParameters() {
-        final Bundle extras = getIntent().getExtras();
-        final String channelId = extras.getString(CHANNEL_ID_KEY);
-        mPresenter.getInitialData(channelId);
-    }
-
     @Override
     public void showBaseDetails(Channel channel) {
-        mChannelName.setText(getString(R.string.channel_display_name_format, channel.getDisplayName()));
+        mChannelName.setText(
+                getString(R.string.channel_display_name_format, channel.getDisplayName()));
         mChannelDescription.setText(channel.getPurpose());
         if (TextUtils.isEmpty(channel.getPurpose())) {
             mChannelDescription.setVisibility(View.GONE);
@@ -126,7 +110,42 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @Override
     public void onMakeChannelFavorite(boolean favorite) {
-        final int iconRes = favorite ? R.drawable.ic_favorite_check : R.drawable.ic_favorite_uncheck;
+        final int iconRes = favorite
+                ? R.drawable.ic_favorite_check
+                : R.drawable.ic_favorite_uncheck;
         mMenu.getItem(0).setIcon(iconRes);
+    }
+
+    @OnClick(R.id.added_people_layout)
+    void onAddedUsersPanelClick() {
+        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
+                .map(User::getId)
+                .collect(Collectors.toList());
+        startActivity(
+                AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds));
+    }
+
+    @OnClick(R.id.b_invite_member)
+    void onInviteMemberClick() {
+        //TODO Implement Invite members logic
+    }
+
+    private void initViews() {
+        setSupportActionBar(mToolbar);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_back);
+            actionBar.setTitle(null);
+        }
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        mAddedPeopleLayout.setImageLoader(mImageLoader);
+    }
+
+    private void initParameters() {
+        final Bundle extras = getIntent().getExtras();
+        final String channelId = extras.getString(CHANNEL_ID_KEY);
+        mPresenter.getInitialData(channelId);
     }
 }
