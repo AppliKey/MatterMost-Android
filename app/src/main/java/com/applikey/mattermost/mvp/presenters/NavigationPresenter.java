@@ -23,11 +23,6 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
         App.getUserComponent().inject(this);
     }
 
-    @Override
-    protected void onFirstViewAttach() {
-        super.onFirstViewAttach();
-    }
-
     public void createNewChannel() {
         getViewState().startChannelCreating();
     }

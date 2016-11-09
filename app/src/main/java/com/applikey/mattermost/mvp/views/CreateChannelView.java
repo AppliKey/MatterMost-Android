@@ -13,7 +13,7 @@ public interface CreateChannelView extends MvpView {
     void removeUser(User user);
     void showAllUsers(List<User> allUsers);
     void showEmptyChannelNameError();
-    void successfulClose();
+    void onChannelCreated();
     void showAddedUsers(List<User> users);
     void setButtonAddAllState(boolean isAllAlreadyInvited);
 }

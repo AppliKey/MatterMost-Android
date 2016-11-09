@@ -49,7 +49,6 @@ public class AddedPeopleLayout extends LinearLayout {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        inflate(context, R.layout.added_people_layout, this);
         setLayoutTransition(new LayoutTransition());
         ButterKnife.bind(this);
         setVisibility(VISIBLE);
@@ -169,7 +168,7 @@ public class AddedPeopleLayout extends LinearLayout {
 
     private void removeUnnecessaryViews(int lastVisibleViewIndex) {
         for (int i = lastVisibleViewIndex; i < mUserAvatars.length; i++) {
-            mUserAvatars[i].setVisibility(INVISIBLE);
+            mUserAvatars[i].setVisibility(GONE);
         }
     }
 

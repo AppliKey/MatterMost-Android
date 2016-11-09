@@ -22,13 +22,9 @@ import timber.log.Timber;
 public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewChannelAdapter.ViewHolder> {
 
     private final ImageLoader mImageLoader;
-    private List<User> mUsers;
-    private List<User> mAlreadyAddedUsers = new ArrayList<>();
+    private final List<User> mUsers = new ArrayList<>();
+    private final List<User> mAlreadyAddedUsers = new ArrayList<>();
     private final OnUserChosenListener mChosenListener;
-
-    public interface OnUserChosenListener {
-        void onChosen(User user);
-    }
 
     public PeopleToNewChannelAdapter(OnUserChosenListener listener, ImageLoader imageLoader) {
         mImageLoader = imageLoader;
@@ -36,12 +32,14 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     }
 
     public void addUsers(List<User> users) {
-        mUsers = new ArrayList<>(users);
+        mUsers.clear();
+        mUsers.addAll(users);
         notifyDataSetChanged();
     }
 
     public void addAlreadyAddedUsers(List<User> alreadyAddedUsers) {
-        mAlreadyAddedUsers = new ArrayList<>(alreadyAddedUsers);
+        mAlreadyAddedUsers.clear();
+        mAlreadyAddedUsers.addAll(alreadyAddedUsers);
         notifyDataSetChanged();
     }
 
@@ -59,7 +57,7 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         final View view = layoutInflater.inflate(R.layout.people_new_channel_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
+        final ViewHolder viewHolder = new ViewHolder(view);
         viewHolder.itemView.setOnClickListener(button -> {
             viewHolder.mCbIsMemberAdded.setChecked(!viewHolder.mCbIsMemberAdded.isChecked());
             final int adapterPosition = viewHolder.getAdapterPosition();
@@ -72,7 +70,7 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
 
     @Override
     public int getItemCount() {
-        return mUsers == null ? 0 : mUsers.size();
+        return mUsers.size();
     }
 
     @Override
@@ -83,6 +81,10 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         holder.mCbIsMemberAdded.setChecked(isUserAlreadyAdded);
         holder.mTvAddedMember.setText(User.getDisplayableName(user));
         mImageLoader.displayCircularImage(user.getProfileImage(), holder.mAddedPeopleAvatar);
+    }
+
+    public interface OnUserChosenListener {
+        void onChosen(User user);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

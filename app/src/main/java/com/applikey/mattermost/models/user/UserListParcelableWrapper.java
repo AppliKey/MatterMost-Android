@@ -5,15 +5,15 @@ import android.os.Parcelable;
 
 import java.util.List;
 
-public class UserListParcelableWrapper implements Parcelable{
+public class UserListParcelableWrapper implements Parcelable {
 
-    private List<User> data;
+    private final List<User> data;
 
     public UserListParcelableWrapper(List<User> data) {
         this.data = data;
     }
 
-    protected UserListParcelableWrapper(Parcel in) {
+    private UserListParcelableWrapper(Parcel in) {
         data = in.createTypedArrayList(User.CREATOR);
     }
 

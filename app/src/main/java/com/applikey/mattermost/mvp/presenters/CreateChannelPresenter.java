@@ -138,13 +138,13 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
                         user.getCreatedChannel().getChannel().getId(),
                         new RequestUserId(user.getUser().getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> getViewState().successfulClose(), mErrorHandler::handleError);
+                .subscribe(v -> {}, mErrorHandler::handleError, () -> getViewState().onChannelCreated());
         mSubscription.add(subscription);
     }
 
-    public void filterByFullName(String s) {
+    public void filterByFullName(String filter) {
         final List<User> foundedUsers = Stream.of(mInvitedUsersManager.getTeamMembers())
-                .filter(user -> user.search(s))
+                .filter(user -> user.search(filter))
                 .collect(Collectors.toList());
         getViewState().showAllUsers(foundedUsers);
     }

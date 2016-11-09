@@ -129,7 +129,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     }
 
     @Override
-    public void successfulClose() {
+    public void onChannelCreated() {
         finish();
     }
 
@@ -193,15 +193,13 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_ADDED_MEMBERS_DIALOG: {
-                if (resultCode == RESULT_OK) {
-                    final UserListParcelableWrapper wrapper = data.getParcelableExtra(AddedMembersActivity.USERS_IDS_KEY);
-                    mPresenter.setAlreadyAddedUsers(wrapper.getData());
-                }
+        if (requestCode == REQUEST_ADDED_MEMBERS_DIALOG) {
+            if (resultCode == RESULT_OK) {
+                final UserListParcelableWrapper wrapper = data.getParcelableExtra(AddedMembersActivity.USERS_IDS_KEY);
+                mPresenter.setAlreadyAddedUsers(wrapper.getData());
             }
-            break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
+
