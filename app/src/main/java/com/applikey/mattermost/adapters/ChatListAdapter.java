@@ -75,16 +75,12 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         }
         final Channel channel = data.get(position);
 
-        final long lastPostAt = channel.getLastPostAt();
-
         vh.getChannelName().setText(channel.getDisplayName());
 
         final String messagePreview = getMessagePreview(channel, mContext);
 
         vh.getMessagePreview().setText(messagePreview);
-        vh.getLastMessageTime().setText(
-                TimeUtil.formatTimeOrDateOnlyChannel(lastPostAt != 0 ? lastPostAt :
-                        channel.getCreatedAt()));
+        vh.getLastMessageTime().setText(TimeUtil.formatTimeOrDateOnlyChannel(channel.getLastActivityTime()));
 
         setChannelIcon(vh, channel);
         setChannelIconVisibility(vh, channel);

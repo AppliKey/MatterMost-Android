@@ -16,8 +16,10 @@ import java.util.Map;
 
 import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Completable;
 import rx.Observable;
 import rx.Single;
+import rx.schedulers.Schedulers;
 
 public class ChannelStorage {
 
@@ -199,14 +201,17 @@ public class ChannelStorage {
         mDb.saveTransactional(channel);
     }
 
-    public Observable<Boolean> setFavorite(Channel channel, boolean isFavorite) {
-        return isFavorite ? mRetainPrefs.addFavoriteChannel(channel.getId()) :
-                mRetainPrefs.removeFavoriteChannel(channel.getId());
+    public Completable setFavorite(String channelId, boolean isFavorite) {
+        final Completable action;
+        action = isFavorite ? mRetainPrefs.addFavoriteChannel(channelId) :
+                mRetainPrefs.removeFavoriteChannel(channelId);
+        return action.subscribeOn(Schedulers.io());
     }
 
-    public Observable<Boolean> isFavorite(Channel channel) {
+    public Observable<Boolean> isFavorite(String channelId) {
         return mRetainPrefs.getFavoritesChannels()
-                .map(ids -> ids.contains(channel.getId()));
+                .subscribeOn(Schedulers.io())
+                .map(ids -> ids.contains(channelId));
     }
 
     private List<Channel> restoreChannels(List<Channel> channels) {
@@ -219,8 +224,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-                                         Map<String, User> contacts,
-                                         String currentUserId) {
+            Map<String, User> contacts,
+            String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

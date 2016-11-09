@@ -72,7 +72,6 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         setContentView(R.layout.activity_channel_details);
         ButterKnife.bind(this);
         initViews();
-        initParameters();
     }
 
     @Override
@@ -81,6 +80,7 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
                 .setIcon(R.drawable.ic_favorite_uncheck)
                 .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         mMenu = menu;
+        initParameters();
         return true;
     }
 
@@ -97,8 +97,7 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @Override
     public void showBaseDetails(Channel channel) {
-        mChannelName.setText(
-                getString(R.string.channel_display_name_format, channel.getDisplayName()));
+        mChannelName.setText(getString(R.string.channel_display_name_format, channel.getDisplayName()));
         mChannelDescription.setText(channel.getPurpose());
         if (TextUtils.isEmpty(channel.getPurpose())) {
             mChannelDescription.setVisibility(View.GONE);

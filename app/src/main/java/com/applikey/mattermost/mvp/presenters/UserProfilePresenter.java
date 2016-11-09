@@ -5,7 +5,6 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.UserProfileView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -14,16 +13,12 @@ import com.arellomobile.mvp.InjectViewState;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class UserProfilePresenter extends BasePresenter<UserProfileView>
         implements FavoriteablePresenter {
 
     private static final String TAG = UserProfilePresenter.class.getSimpleName();
-
-    @Inject
-    TeamStorage mTeamStorage;
 
     @Inject
     UserStorage mUserStorage;
@@ -52,9 +47,9 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
         mSubscription.add(mUserStorage.getDirectProfile(userId)
                 .doOnNext(user -> mUser = user)
                 .doOnNext(view::showBaseDetails)
-                .flatMap(user -> mChannelStorage.directChannel(user.getId()))
+                .flatMap(user -> mChannelStorage.directChannel(userId))
                 .doOnNext(channel -> mChannel = channel)
-                .flatMap(channel -> mChannelStorage.isFavorite(channel).subscribeOn(Schedulers.io()))
+                .flatMap(channel -> mChannelStorage.isFavorite(channel.getId()))
                 .doOnNext(favorite -> mIsFavorite = favorite)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::onMakeFavorite, mErrorHandler::handleError));
@@ -62,8 +57,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
 
     @Override
     public void toggleFavorite() {
-        mChannelStorage.setFavorite(mChannel, !mIsFavorite)
-                .subscribeOn(Schedulers.io())
+        mChannelStorage.setFavorite(mChannel.getId(), !mIsFavorite)
                 .subscribe();
     }
 

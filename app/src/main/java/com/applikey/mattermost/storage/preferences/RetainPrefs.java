@@ -3,15 +3,15 @@ package com.applikey.mattermost.storage.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.Constants;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import rx.Completable;
 import rx.Observable;
 
 public class RetainPrefs {
@@ -26,33 +26,31 @@ public class RetainPrefs {
     public RetainPrefs(Context context) {
         mSharedPreferences = context.getSharedPreferences(Constants.RETAIN_PREFS_FILE_NAME, Context.MODE_PRIVATE);
         mRxPreferences = RxSharedPreferences.create(mSharedPreferences);
-        mSharedPreferences.edit().clear().apply();
     }
 
-    public void setFavoritesChannels(List<String> channelIds) {
-        Log.d(TAG, "setFavoritesChannels: " + channelIds);
+    public void setFavoritesChannels(Set<String> channelIds) {
         mSharedPreferences.edit().putString(KEY_FAVORITES_CHANNELS, TextUtils.join(",", channelIds)).apply();
     }
 
-    public Observable<List<String>> getFavoritesChannels() {
+    public Observable<Set<String>> getFavoritesChannels() {
         return mRxPreferences.getString(KEY_FAVORITES_CHANNELS, "")
                 .asObservable()
-                .map(ids -> new ArrayList<>(Arrays.asList(TextUtils.split(ids, ","))));
+                .map(ids -> new HashSet<>(Arrays.asList(TextUtils.split(ids, ","))));
     }
 
-    public Observable<Boolean> addFavoriteChannel(String channelId) {
+    public Completable addFavoriteChannel(String channelId) {
         return getFavoritesChannels()
                 .first()
                 .doOnNext(ids -> ids.add(channelId))
                 .doOnNext(this::setFavoritesChannels)
-                .map(ids -> true);
+                .toCompletable();
     }
 
-    public Observable<Boolean> removeFavoriteChannel(String channelId) {
+    public Completable removeFavoriteChannel(String channelId) {
         return getFavoritesChannels()
                 .first()
                 .doOnNext(ids -> ids.remove(channelId))
                 .doOnNext(this::setFavoritesChannels)
-                .map(ids -> true);
+                .toCompletable();
     }
 }
