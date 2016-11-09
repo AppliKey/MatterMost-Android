@@ -13,6 +13,7 @@ import com.applikey.mattermost.Constants;
 public class Prefs {
 
     private static final String KEY_USER_ID = Constants.PACKAGE_NAME + ".USER_ID";
+    private static final String KEY_TEAM_ID = Constants.PACKAGE_NAME + ".TEAM_ID";
     private static final String KEY_SERVER_URL = Constants.PACKAGE_NAME + ".SERVER_URL";
     private static final String KEY_AUTH_TOKEN = Constants.PACKAGE_NAME + ".AUTH_TOKEN";
     private static final String KEY_GCM_TOKEN = Constants.PACKAGE_NAME + ".GCM_TOKEN";
@@ -30,6 +31,15 @@ public class Prefs {
 
     public void setCurrentUserId(@Nullable String id) {
         mSharedPreferences.edit().putString(KEY_USER_ID, id).apply();
+    }
+
+    @Nullable
+    public String getCurrentTeamId() {
+        return mSharedPreferences.getString(KEY_TEAM_ID, null);
+    }
+
+    public void setCurrentTeamId(@Nullable String id) {
+        mSharedPreferences.edit().putString(KEY_TEAM_ID, id).apply();
     }
 
     @Nullable

@@ -25,34 +25,24 @@ import io.realm.RealmResults;
 
 public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListAdapter.ViewHolder> {
 
-    private final ImageLoader mImageLoader;
-    private final String mCurrentUserId;
-
-    private ClickListener mClickListener = null;
-    private final View.OnClickListener mOnClickListener = v -> {
-        final OrderedRealmCollection<Channel> data = getData();
-        if (data == null) {
-            return;
-        }
-        final int position = (Integer) v.getTag();
-
-        final Channel team = data.get(position);
-
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(team);
-        }
-    };
-    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid
-    // misunderstanding as we use hungarian notation.
-    private Context mContext;
-
-    public interface ClickListener {
+    public interface ChannelListener {
 
         void onItemClicked(Channel channel);
+
+        void onLoadAdditionalData(Channel channel);
     }
 
+    private final ImageLoader mImageLoader;
+
+    private final String mCurrentUserId;
+
+    private ChannelListener mChannelListener;
+
+    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid misunderstanding as we use hungarian notation.
+    private final Context mContext;
+
     public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-                           ImageLoader imageLoader, String currentUserId) {
+            ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
         mContext = context;
         mImageLoader = imageLoader;
@@ -69,6 +59,12 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         vh.getRoot().setOnClickListener(mOnClickListener);
 
         return vh;
+    }
+
+    @Override
+    public long getItemId(int index) {
+        final Channel item = getItem(index);
+        return item != null ? item.hashCode() : 0;
     }
 
     @Override
@@ -96,16 +92,14 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
         setUnreadStatus(vh, channel);
 
         vh.getRoot().setTag(position);
+
+        if (mChannelListener != null) {
+            mChannelListener.onLoadAdditionalData(channel);
+        }
     }
 
-    @Override
-    public long getItemId(int index) {
-        final Channel item = getItem(index);
-        return item != null ? item.hashCode() : 0;
-    }
-
-    public void setOnClickListener(ClickListener listener) {
-        this.mClickListener = listener;
+    public void setChannelListener(ChannelListener channelListener) {
+        mChannelListener = channelListener;
     }
 
     private String getMessagePreview(Channel channel, Context context) {
@@ -180,6 +174,20 @@ public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListA
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
     }
+
+    private final View.OnClickListener mOnClickListener = v -> {
+        final OrderedRealmCollection<Channel> data = getData();
+        if (data == null) {
+            return;
+        }
+        final int position = (Integer) v.getTag();
+
+        final Channel team = data.get(position);
+
+        if (mChannelListener != null) {
+            mChannelListener.onItemClicked(team);
+        }
+    };
 
     /* package */
     class ViewHolder extends RecyclerView.ViewHolder {
