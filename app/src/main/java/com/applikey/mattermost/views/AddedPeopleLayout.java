@@ -88,6 +88,7 @@ public class AddedPeopleLayout extends LinearLayout {
         final ImageView lastAvatar = mUserAvatars[lastAvatarIndex];
 
         final FrameLayout frameLayout = new FrameLayout(getContext());
+        frameLayout.setLayoutTransition(new LayoutTransition());
         final LinearLayout.LayoutParams frameLayoutParams = new LayoutParams(mItemWidth, mItemHeight);
         frameLayout.setLayoutParams(frameLayoutParams);
         frameLayout.addView(lastAvatar);
@@ -98,12 +99,12 @@ public class AddedPeopleLayout extends LinearLayout {
     private TextView initCounter() {
         final TextView textView = new TextView(getContext());
         final LinearLayout.LayoutParams layoutParams = new LayoutParams(mItemWidth, mItemHeight);
-        mCounter.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
-        mCounter.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.added_people_count_textsize));
-        mCounter.setLayoutParams(layoutParams);
-        mCounter.setGravity(Gravity.CENTER);
-        mCounter.setVisibility(GONE);
-        mCounter.setBackgroundResource(R.drawable.bg_added_people_count);
+        textView.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(R.dimen.added_people_count_textsize));
+        textView.setLayoutParams(layoutParams);
+        textView.setGravity(Gravity.CENTER);
+        textView.setVisibility(GONE);
+        textView.setBackgroundResource(R.drawable.bg_added_people_count);
         return textView;
     }
 
