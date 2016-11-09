@@ -133,6 +133,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
                 .map(Team::getId)
                 .first()
                 .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
+                .doOnNext(channel -> mChannelStorage.save(channel.getChannel()))
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()), AddedUser::new)
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
                         user.getCreatedChannel().getChannel().getId(),
