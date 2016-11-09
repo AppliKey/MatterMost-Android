@@ -12,8 +12,11 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
+
+import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -57,17 +60,24 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListAdapt
                 TimeUtil.formatTimeOrDateOnlyChannel(lastPostAt != 0 ? lastPostAt :
                         channel.getCreatedAt()));
 
-        mImageLoader.displayCircularImage("https://pixabay.com/static/uploads/photo/2014/03/29/09/17/cat-300572_960_720.jpg", vh.mIvFirst);
-        mImageLoader.displayCircularImage("https://pixabay.com/static/uploads/photo/2014/03/29/09/17/cat-300572_960_720.jpg", vh.mIvSecond);
-        mImageLoader.displayCircularImage("https://pixabay.com/static/uploads/photo/2014/03/29/09/17/cat-300572_960_720.jpg", vh.mIvThird);
-        mImageLoader.displayCircularImage("https://pixabay.com/static/uploads/photo/2014/03/29/09/17/cat-300572_960_720.jpg", vh.mIvFourth);
+        Iterator<User> iterator = channel.getUsers().iterator();
 
+        setGroupImage(iterator, vh.mIvFirst);
+        setGroupImage(iterator, vh.mIvSecond);
+        setGroupImage(iterator, vh.mIvThird);
+        setGroupImage(iterator, vh.mIvFourth);
 
         vh.getRoot().setTag(position);
-
-
     }
 
+    private void setGroupImage(Iterator<User> iterator, ImageView imageView) {
+        if (iterator.hasNext()) {
+            imageView.setVisibility(View.VISIBLE);
+            mImageLoader.displayCircularImage(iterator.next().getProfileImage(), imageView);
+        } else {
+            imageView.setVisibility(View.INVISIBLE);
+        }
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 

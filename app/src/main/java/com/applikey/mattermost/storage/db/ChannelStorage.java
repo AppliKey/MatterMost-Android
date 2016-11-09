@@ -21,6 +21,7 @@ import rx.Single;
 public class ChannelStorage {
 
     private final Db mDb;
+
     private final Prefs mPrefs;
 
     public ChannelStorage(final Db db, final Prefs prefs) {
@@ -52,28 +53,32 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listUndirected(String name) {
         return mDb.resultRealmObjectsFilteredSortedExcluded(Channel.class, Channel.FIELD_NAME,
-                name,
-                Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.DIRECT.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                            name,
+                                                            Channel.FIELD_NAME_TYPE,
+                                                            Channel.ChannelType.DIRECT
+                                                                    .getRepresentation(),
+                                                            Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PUBLIC.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                    Channel.ChannelType.PUBLIC
+                                                            .getRepresentation(),
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PRIVATE.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                    Channel.ChannelType.PRIVATE
+                                                            .getRepresentation(),
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.DIRECT.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                    Channel.ChannelType.DIRECT
+                                                            .getRepresentation(),
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     // TODO Duplicate
@@ -87,11 +92,12 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listUnread() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                true,
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                    true,
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     //TODO Save channel after create
+
     public void save(Channel channel) {
         mDb.saveTransactional(channel);
     }
@@ -154,6 +160,13 @@ public class ChannelStorage {
         });
     }
 
+    public void setUsers(String id, List<User> users) {
+        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+            realmChannel.setUsers(users);
+            return true;
+        });
+    }
+
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
         // Transform direct channels
 
@@ -188,16 +201,16 @@ public class ChannelStorage {
 
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
-                (channel, storedChannel) -> {
-                    channel.setLastPost(storedChannel.getLastPost());
-                    channel.updateLastActivityTime();
-                    return true;
-                });
+                                  (channel, storedChannel) -> {
+                                      channel.setLastPost(storedChannel.getLastPost());
+                                      channel.updateLastActivityTime();
+                                      return true;
+                                  });
     }
 
     private void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                         Map<String, User> contacts,
+                                         String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

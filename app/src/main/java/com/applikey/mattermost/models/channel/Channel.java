@@ -17,16 +17,22 @@ import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
 
-
 public class Channel extends RealmObject implements SearchItem {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
+
     public static final String FIELD_NAME_TYPE = "type";
+
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
+
     public static final String FIELD_NAME = "name";
+
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
+
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
+
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
+
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
     @PrimaryKey
@@ -76,7 +82,7 @@ public class Channel extends RealmObject implements SearchItem {
     // as it can not compare multiple fields
     private long lastActivityTime;
 
-    private RealmList<User> users;
+    private RealmList<User> mUsers = new RealmList<>();
 
     public enum ChannelType {
         PUBLIC("O"),
@@ -232,6 +238,14 @@ public class Channel extends RealmObject implements SearchItem {
         this.lastPost = lastPost;
     }
 
+    public RealmList<User> getUsers() {
+        return mUsers;
+    }
+
+    public void setUsers(List<User> users) {
+        mUsers.addAll(users);
+    }
+
     @Override
     public int getSearchType() {
         return CHANNEL;
@@ -259,40 +273,54 @@ public class Channel extends RealmObject implements SearchItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         final Channel channel = (Channel) o;
 
-        if (getLastPostAt() != channel.getLastPostAt())
+        if (getLastPostAt() != channel.getLastPostAt()) {
             return false;
-        if (getCreatedAt() != channel.getCreatedAt())
+        }
+        if (getCreatedAt() != channel.getCreatedAt()) {
             return false;
-        if (getLastViewedAt() != channel.getLastViewedAt())
+        }
+        if (getLastViewedAt() != channel.getLastViewedAt()) {
             return false;
-        if (hasUnreadMessages() != channel.hasUnreadMessages())
+        }
+        if (hasUnreadMessages() != channel.hasUnreadMessages()) {
             return false;
-        if (getLastActivityTime() != channel.getLastActivityTime())
+        }
+        if (getLastActivityTime() != channel.getLastActivityTime()) {
             return false;
-        if (!getId().equals(channel.getId()))
+        }
+        if (!getId().equals(channel.getId())) {
             return false;
-        if (!getType().equals(channel.getType()))
+        }
+        if (!getType().equals(channel.getType())) {
             return false;
+        }
         if (getDisplayName() != null
                 ? !getDisplayName().equals(channel.getDisplayName())
-                : channel.getDisplayName() != null)
+                : channel.getDisplayName() != null) {
             return false;
-        if (!getName().equals(channel.getName()))
+        }
+        if (!getName().equals(channel.getName())) {
             return false;
-        if (!getHeader().equals(channel.getHeader()))
+        }
+        if (!getHeader().equals(channel.getHeader())) {
             return false;
-        if (!getPurpose().equals(channel.getPurpose()))
+        }
+        if (!getPurpose().equals(channel.getPurpose())) {
             return false;
+        }
         if (getDirectCollocutor() != null ? !getDirectCollocutor().equals(
-                channel.getDirectCollocutor()) : channel.getDirectCollocutor() != null)
+                channel.getDirectCollocutor()) : channel.getDirectCollocutor() != null) {
             return false;
+        }
         return getLastPost() != null
                 ? !getLastPost().equals(channel.getLastPost())
                 : channel.getLastPost() != null;

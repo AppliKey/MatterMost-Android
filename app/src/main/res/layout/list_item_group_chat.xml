@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:id="@+id/container"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+<LinearLayout android:id="@+id/container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -26,28 +26,28 @@
                 android:layout_width="@dimen/large"
                 android:layout_height="@dimen/large"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:src="@drawable/no_resource"/>
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_second"
                 android:layout_width="@dimen/large"
                 android:layout_height="@dimen/large"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:src="@drawable/no_resource"/>
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_third"
                 android:layout_width="@dimen/large"
                 android:layout_height="@dimen/large"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:src="@drawable/no_resource"/>
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/iv_fourth"
                 android:layout_width="@dimen/large"
                 android:layout_height="@dimen/large"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:src="@drawable/no_resource"/>
+                android:visibility="invisible" />
 
         </GridLayout>
 
@@ -59,7 +59,7 @@
             android:layout_marginBottom="6dp"
             android:layout_marginRight="8dp"
             android:layout_toRightOf="@id/iv_preview_image_layout"
-            android:src="@drawable/ic_notification"/>
+            android:src="@drawable/ic_notification" />
 
         <ImageView
             android:id="@+id/iv_channel_icon"
@@ -70,7 +70,7 @@
             android:layout_marginRight="8dp"
             android:layout_toRightOf="@id/iv_notification_icon"
             android:scaleType="center"
-            android:src="@drawable/ic_private_group"/>
+            android:src="@drawable/ic_private_group" />
 
         <TextView
             android:id="@+id/tv_channel_name"
@@ -80,7 +80,7 @@
             android:layout_toRightOf="@id/iv_channel_icon"
             android:singleLine="true"
             android:textColor="@color/textListPrimary"
-            android:textSize="@dimen/list_item_heading_text"/>
+            android:textSize="@dimen/list_item_heading_text" />
 
         <TextView
             android:id="@id/tv_last_message_time"
@@ -91,7 +91,7 @@
             android:layout_marginLeft="@dimen/list_item_margin"
             android:layout_marginRight="@dimen/list_item_margin"
             android:textColor="@color/textListSecondary"
-            android:textSize="@dimen/list_item_secondary_text"/>
+            android:textSize="@dimen/list_item_secondary_text" />
 
         <TextView
             android:id="@+id/tv_message_preview"
@@ -104,12 +104,12 @@
             android:maxLines="2"
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_secondary_text"
-            tools:text="@string/example_message_preview"/>
+            tools:text="@string/example_message_preview" />
 
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/separator_list"/>
+        android:background="@color/separator_list" />
 </LinearLayout>
