@@ -20,8 +20,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
-
 
 public class AddedPeopleLayout extends LinearLayout {
     private ImageLoader mImageLoader;
@@ -50,7 +48,6 @@ public class AddedPeopleLayout extends LinearLayout {
 
     private void init(Context context, AttributeSet attrs) {
         setLayoutTransition(new LayoutTransition());
-        ButterKnife.bind(this);
         setVisibility(VISIBLE);
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.AddedPeopleLayout);
         mMinMargin = typedArray.getDimensionPixelSize(R.styleable.AddedPeopleLayout_min_item_right_margin, 0);
