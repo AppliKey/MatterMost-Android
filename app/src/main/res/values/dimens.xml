@@ -1,5 +1,6 @@
 <resources>
     <dimen name="activity_horizontal_margin">40dp</dimen>
+    <dimen name="activity_horizontal_margin_fixed_text">36dp</dimen>
     <dimen name="activity_vertical_margin">40dp</dimen>
 
     <dimen name="text_title_size">18sp</dimen>
@@ -9,6 +10,9 @@
     <dimen name="text_heading_padding">8dp</dimen>
     <dimen name="text_primary_button">16sp</dimen>
     <dimen name="settings_element_text_size">18sp</dimen>
+
+    <!-- This attribute allows us pushing elements to align it by edit text vertical text align -->
+    <dimen name="edit_text_align">4dp</dimen>
 
     <dimen name="edit_text_bottom_padding">20dp</dimen>
     <dimen name="edit_text_push_right">4dp</dimen>
@@ -22,6 +26,7 @@
 
     <dimen name="small">8dp</dimen>
     <dimen name="normal">16dp</dimen>
+    <dimen name="more">24dp</dimen>
     <dimen name="large">32dp</dimen>
 
     <dimen name="divider_size">1dp</dimen>
@@ -46,6 +51,7 @@
     <dimen name="small_icon_size">24dp</dimen>
 
     <dimen name="list_item_margin">20dp</dimen>
+    <dimen name="list_item_group_margin">16dp</dimen>
     <dimen name="list_item_margin_double">40dp</dimen>
     <dimen name="list_item_image">60dp</dimen>
     <dimen name="list_item_image_chat">40dp</dimen>
@@ -64,7 +70,7 @@
     <dimen name="list_item_chat_time_margin">8dp</dimen>
 
     <dimen name="post_message_corners">15dp</dimen>
-    <dimen name="dialog_create_channel_content_padding">26dp</dimen>
+    <dimen name="dialog_create_channel_content_offset">26dp</dimen>
     <dimen name="dialog_add_people_to_new_channel_fab_margin">16dp</dimen>
     <dimen name="switch_channel_type_icon_margin">10dp</dimen>
     <dimen name="channel_type_margin">40dp</dimen>
@@ -93,6 +99,8 @@
     <dimen name="search_chat_toolbar_text_size">18sp</dimen>
     <dimen name="drawer_item_text_size">18sp</dimen>
 
+    <dimen name="chat_group_list_photo_padding">4dp</dimen>
+
     <dimen name="status_indicator_size">12dp</dimen>
     <dimen name="avatar_large_size">100dp</dimen>
 
@@ -101,4 +109,7 @@
 
     <dimen name="settings_element_height">56dp</dimen>
     <dimen name="margin_settings_elements">1dp</dimen>
+    <dimen name="button_text_size">14sp</dimen>
+    <dimen name="button_height">40dp</dimen>
+    <dimen name="button_width">180dp</dimen>
 </resources>

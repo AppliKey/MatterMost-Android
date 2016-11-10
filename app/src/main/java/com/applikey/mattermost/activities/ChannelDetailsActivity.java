@@ -13,8 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
@@ -25,7 +23,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.widget.RobotoTextView;
 import com.transitionseverywhere.TransitionManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -118,11 +115,8 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @OnClick(R.id.added_people_layout)
     void onAddedUsersPanelClick() {
-        final List<String> alreadyAddedUsersIds = Stream.of(mAddedPeopleLayout.getUsers())
-                .map(User::getId)
-                .collect(Collectors.toList());
-        startActivity(
-                AddedMembersActivity.getIntent(this, (ArrayList<String>) alreadyAddedUsersIds));
+        final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
+        startActivity(AddedMembersActivity.getIntent(this, alreadyAddedUsers));
     }
 
     @OnClick(R.id.b_invite_member)

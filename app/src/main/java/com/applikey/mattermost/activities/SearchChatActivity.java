@@ -46,8 +46,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     private static final int CHANNEL_FRAGMENT = 2;
     private static final int USER_FRAGMENT = 3;
 
-    private final TabIndicatorModel
-            mTabIndicatorModel = new TabIndicatorModel();
+    private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;

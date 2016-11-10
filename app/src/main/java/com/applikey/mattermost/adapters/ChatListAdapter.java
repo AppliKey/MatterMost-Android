@@ -10,50 +10,21 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.viewholders.ChatListViewHolder;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import io.realm.OrderedRealmCollection;
-import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListViewHolder> {
+public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHolder> {
 
-    private final ImageLoader mImageLoader;
-    private final String mCurrentUserId;
-
-    private ClickListener mClickListener = null;
-    private final View.OnClickListener mOnClickListener = v -> {
-        final OrderedRealmCollection<Channel> data = getData();
-        if (data == null) {
-            return;
-        }
-        final int position = (Integer) v.getTag();
-
-        final Channel team = data.get(position);
-
-        if (mClickListener != null) {
-            mClickListener.onItemClicked(team);
-        }
-    };
-    // We ignore the availability of RealmRecyclerViewAdapter.context here to avoid
-    // misunderstanding as we use hungarian notation.
-    private Context mContext;
-
-    public interface ClickListener {
-
-        void onItemClicked(Channel channel);
-    }
-
-    public ChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-                           ImageLoader imageLoader, String currentUserId) {
-        super(context, data, true);
-        mContext = context;
-        mImageLoader = imageLoader;
-        mCurrentUserId = currentUserId;
-        setHasStableIds(true);
+    public ChatListAdapter(@NonNull Context context,
+                           RealmResults<Channel> data,
+                           ImageLoader imageLoader,
+                           String currentUserId) {
+        super(context, data, imageLoader, currentUserId);
     }
 
     @Override
