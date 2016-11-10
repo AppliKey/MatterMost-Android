@@ -5,6 +5,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public abstract class SearchFragment extends BaseMvpFragment {
+
+    private static final String TAG = SearchFragment.class.getSimpleName();
 
     @Bind(R.id.rv_items)
     RecyclerView mRecycleView;
@@ -77,6 +80,10 @@ public abstract class SearchFragment extends BaseMvpFragment {
 
 
     public void displayData(List<SearchItem> items) {
+        Log.d(TAG, "displayData size:" + items.size());
+        for(SearchItem searchItem : items){
+            Log.d(TAG, "displayData: " + searchItem);
+        }
         mAdapter.setDataSet(items);
     }
 

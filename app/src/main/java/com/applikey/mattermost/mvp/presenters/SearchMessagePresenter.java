@@ -1,9 +1,12 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.util.Log;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchMessageTextChanged;
 import com.applikey.mattermost.models.SearchItem;
+import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
@@ -22,8 +25,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
@@ -41,10 +44,6 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
 
     @Inject
     EventBus mEventBus;
-
-    @Inject
-    @Named(Constants.CURRENT_USER_QUALIFIER)
-    String mCurrentUserId;
 
     @Inject
     ErrorHandler mErrorHandler;
@@ -72,10 +71,16 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
                         .map(Team::getId)
                         .observeOn(Schedulers.io())
                         .flatMap(teamId -> mApi.searchPosts(teamId, new PostSearchRequest(text)),
-                                (Func2<String, PostResponse, List<SearchItem>>)
+                                (Func2<String, PostResponse, List<Post>>)
                                         (s, postResponse) -> new ArrayList<>(postResponse.getPosts().values()))
+                        .doOnNext(posts -> Log.d(TAG, "getData init size: " + posts.size()))
+                        .flatMap(Observable::from)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, mErrorHandler::handleError));
+                        .flatMap(item -> mChannelStorage.channel(item.getChannelId()).first(),
+                                 (post, channel) -> (SearchItem) new Message(post, channel))
+                        // TODO: 10.11.16 NEED FIX(TOLIST DOES NOT WORK)
+                        .toList()
+                        .subscribe(item -> Log.d(TAG, "getData final: " + item), mErrorHandler::handleError));
     }
 
     @Subscribe

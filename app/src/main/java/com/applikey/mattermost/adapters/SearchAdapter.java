@@ -11,6 +11,7 @@ import com.applikey.mattermost.adapters.viewholders.ChatListViewHolder;
 import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
@@ -79,9 +80,12 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             viewHolder.getRoot().setTag(position);
         } else {
-            final Post post = (Post) mDataSet.get(position);
+            final Message message = (Message) mDataSet.get(position);
+            final Post post = message.getPost();
+            final Channel channel = message.getChannel();
             final ChatListViewHolder holder = (ChatListViewHolder) vh;
 
+            holder.getChannelName().setText(channel.getDisplayName());
             holder.getLastMessageTime().setText(
                     TimeUtil.formatTimeOnly(post.getCreatedAt()));
             holder.getMessagePreview().setText(post.getMessage());
