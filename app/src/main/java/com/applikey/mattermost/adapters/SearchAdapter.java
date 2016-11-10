@@ -13,6 +13,7 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
@@ -81,6 +82,8 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             final Post post = (Post) mDataSet.get(position);
             final ChatListViewHolder holder = (ChatListViewHolder) vh;
 
+            holder.getLastMessageTime().setText(
+                    TimeUtil.formatTimeOnly(post.getCreatedAt()));
             holder.getMessagePreview().setText(post.getMessage());
         }
 

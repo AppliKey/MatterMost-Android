@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.viewholders.ChatListViewHolder;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -17,8 +18,7 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmResults;
 
-public class ChatListAdapter extends RealmRecyclerViewAdapter<Channel, ChatListViewHolder> {
-public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHolder> {
+public class ChatListAdapter extends BaseChatListAdapter<ChatListViewHolder> {
 
     public ChatListAdapter(@NonNull Context context,
                            RealmResults<Channel> data,
@@ -40,6 +40,7 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
 
     @Override
     public void onBindViewHolder(ChatListViewHolder vh, int position) {
+        super.onBindViewHolder(vh, position);
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;
@@ -71,11 +72,7 @@ public class ChatListAdapter extends BaseChatListAdapter<ChatListAdapter.ViewHol
         return item != null ? item.hashCode() : 0;
     }
 
-    public void setOnClickListener(ClickListener listener) {
-        this.mClickListener = listener;
-    }
-
-    private String getMessagePreview(Channel channel, Context context) {
+    public String getMessagePreview(Channel channel, Context context) {
         final Post lastPost = channel.getLastPost();
         final String messagePreview;
         if (channel.getLastPost() == null) {
