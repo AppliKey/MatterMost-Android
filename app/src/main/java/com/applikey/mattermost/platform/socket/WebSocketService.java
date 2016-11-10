@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import javax.inject.Inject;
 
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class WebSocketService extends Service {
 
@@ -46,6 +47,7 @@ public class WebSocketService extends Service {
     Socket mMessagingSocket;
 
     private Handler mHandler;
+    private CompositeSubscription mCompositeSubscription;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, WebSocketService.class);
@@ -57,15 +59,16 @@ public class WebSocketService extends Service {
         App.getUserComponent().inject(this);
 
         mHandler = new Handler(Looper.getMainLooper());
+        mCompositeSubscription = new CompositeSubscription();
 
         openSocket();
     }
 
     private void openSocket() {
-        mMessagingSocket.listen()
+        mCompositeSubscription.add(mMessagingSocket.listen()
                 .retryWhen(mErrorHandler::tryReconnectSocket)
                 .observeOn(Schedulers.computation())
-                .subscribe(this::handleSocketEvent, mErrorHandler::handleError);
+                .subscribe(this::handleSocketEvent, mErrorHandler::handleError));
     }
 
     @Override
@@ -86,9 +89,8 @@ public class WebSocketService extends Service {
     }
 
     private void closeSocket() {
-        if (mMessagingSocket.isOpen()) {
-            mMessagingSocket.close();
-        }
+        mMessagingSocket.close();
+        mCompositeSubscription.unsubscribe();
     }
 
     private void handleSocketEvent(WebSocketEvent event) {

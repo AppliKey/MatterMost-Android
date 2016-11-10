@@ -9,11 +9,11 @@ import com.applikey.mattermost.HttpCode;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.injects.PerApp;
-import com.applikey.mattermost.platform.socket.SocketConnectionException;
 import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
 import com.applikey.mattermost.utils.ConnectivityUtils;
 
+import java.net.ConnectException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -53,13 +53,15 @@ public final class ErrorHandler {
     }
 
     public Observable<?> tryReconnectSocket(Observable<? extends Throwable> attempt) {
-        return attempt.flatMap(throwable -> {
-            if (throwable instanceof SocketConnectionException) {
+        return attempt.observeOn(Schedulers.computation()).flatMap(throwable -> {
+            if (throwable instanceof ConnectException) {
                 return ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status);
             } else {
-                return Observable.range(1, MAX_ATTEMPT_NUMBER).flatMap(i -> i == MAX_ATTEMPT_NUMBER
-                        ? Observable.error(throwable)
-                        : Observable.timer(2 << i, TimeUnit.SECONDS, Schedulers.immediate()));
+                return Observable.range(1, MAX_ATTEMPT_NUMBER + 1, Schedulers.immediate())
+                        .doOnNext(i -> Log.d(TAG, "Socket reconnect attempt №" + i + ", delay = " + (2 << i)))
+                                .concatMap(i -> i > MAX_ATTEMPT_NUMBER
+                                        ? Observable.error(throwable)
+                                        : Observable.timer(2 << i, TimeUnit.SECONDS, Schedulers.immediate()));
             }
         });
     }

@@ -14,6 +14,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,7 +56,7 @@ public class MessagingSocket implements Socket {
                         Log.e(TAG, "WebSocket Error: ", cause);
                         switch (cause.getError()) {
                             case SOCKET_CONNECT_ERROR:
-                                emitter.onError(new SocketConnectionException("Unable to establish connection"));
+                                emitter.onError(new ConnectException("Unable to establish connection"));
                                 break;
                             default:
                                 emitter.onError(new SocketException("Unexpected socket exception"));
@@ -98,7 +99,9 @@ public class MessagingSocket implements Socket {
     @Override
     public void close() {
         mIsDisconnectingFired.set(true);
-        mWebSocket.sendClose();
-        mWebSocket.disconnect();
+        if (mWebSocket != null) {
+            mWebSocket.sendClose();
+            mWebSocket.disconnect();
+        }
     }
 }
