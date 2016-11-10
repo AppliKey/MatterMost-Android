@@ -81,7 +81,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     }
 
     @Subscribe
-    public void on(SearchAllTextChanged event) {
+    public void onInputTextChanged(SearchAllTextChanged event) {
         final SearchAllView view = getViewState();
         view.clearData();
         getData(event.getText());

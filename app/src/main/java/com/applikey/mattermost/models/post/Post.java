@@ -2,6 +2,7 @@ package com.applikey.mattermost.models.post;
 
 import android.support.annotation.Nullable;
 
+import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,7 +11,7 @@ import java.util.Comparator;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Post extends RealmObject {
+public class Post extends RealmObject implements SearchItem{
 
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
@@ -163,5 +164,10 @@ public class Post extends RealmObject {
         return getAuthor() != null
                 ? getAuthor().equals(post.getAuthor())
                 : post.getAuthor() == null;
+    }
+
+    @Override
+    public int getSearchType() {
+        return MESSAGE;
     }
 }

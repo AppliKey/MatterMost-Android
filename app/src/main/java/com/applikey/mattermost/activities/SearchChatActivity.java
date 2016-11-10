@@ -42,8 +42,9 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     private static final String TAG = SearchChatActivity.class.getSimpleName();
 
     private static final int ALL_FRAGMENT = 0;
-    private static final int CHANNEL_FRAGMENT = 1;
-    private static final int USER_FRAGMENT = 2;
+    private static final int MESSAGE_FRAGMENT = 1;
+    private static final int CHANNEL_FRAGMENT = 2;
+    private static final int USER_FRAGMENT = 3;
 
     private final TabIndicatorModel
             mTabIndicatorModel = new TabIndicatorModel();
@@ -145,6 +146,9 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
                 break;
             case ALL_FRAGMENT:
                 mSearchChatPresenter.handleAllTextChanges(text);
+                break;
+            case MESSAGE_FRAGMENT:
+                mSearchChatPresenter.handleMessageTextChanges(text);
                 break;
         }
     }

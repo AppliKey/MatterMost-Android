@@ -1,27 +1,21 @@
 package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
-import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
-import com.applikey.mattermost.mvp.views.SearchChannelView;
+import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.mvp.presenters.SearchMessagePresenter;
+import com.applikey.mattermost.mvp.views.SearchMessageView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
-
-public class SearchMessageFragment extends SearchFragment implements SearchChannelView,
+public class SearchMessageFragment extends SearchFragment implements SearchMessageView,
         SearchAdapter.ClickListener {
 
     @InjectPresenter
-    SearchChannelPresenter mPresenter;
-
-    @Bind(R.id.rv_items)
-    RecyclerView mRecycleView;
+    SearchMessagePresenter mPresenter;
 
     public static SearchMessageFragment newInstance() {
         return new SearchMessageFragment();
@@ -37,7 +31,7 @@ public class SearchMessageFragment extends SearchFragment implements SearchChann
 
     @Override
     public void onItemClicked(SearchItem item) {
-        mPresenter.handleChannelClick((Channel) item);
+        mPresenter.handleClick((Post) item);
     }
 
     @Override
@@ -48,7 +42,7 @@ public class SearchMessageFragment extends SearchFragment implements SearchChann
     }
 
     @Override
-    public void startChatView(Channel channel) {
+    public void startChatView(Post post) {
         // TODO: IMPLEMENT
     }
 

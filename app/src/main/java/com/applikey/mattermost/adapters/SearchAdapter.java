@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.viewholders.ChannelViewHolder;
+import com.applikey.mattermost.adapters.viewholders.ChatListViewHolder;
 import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
@@ -40,13 +41,17 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             final ChannelViewHolder vh = new ChannelViewHolder(v);
             vh.getRoot().setOnClickListener(mOnClickListener);
             return vh;
-        } else {
+        } else if (viewType == SearchItem.USER){
             final View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_search_user, parent, false);
 
             final UserViewHolder vh = new UserViewHolder(v);
             vh.getRoot().setOnClickListener(mOnClickListener);
             return vh;
+        } else {
+            final View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_item_chat, parent, false);
+            return new ChatListViewHolder(v);
         }
     }
 
@@ -72,6 +77,11 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             setChannelIcon(viewHolder, data);
 
             viewHolder.getRoot().setTag(position);
+        } else {
+            final Post post = (Post) mDataSet.get(position);
+            final ChatListViewHolder holder = (ChatListViewHolder) vh;
+
+            holder.getMessagePreview().setText(post.getMessage());
         }
 
     }

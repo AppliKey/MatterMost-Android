@@ -13,6 +13,7 @@ import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
+import com.applikey.mattermost.models.post.PostSearchRequest;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
@@ -184,6 +185,12 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
         return getRealApi().getChannelsUserHasNotJoined(teamId);
+    }
+
+    @Override
+    public Observable<PostResponse> searchPosts(@Path("team_id") String teamId, @Body
+            PostSearchRequest request) {
+        return getRealApi().searchPosts(teamId, request);
     }
 
     private Api getRealApi() {

@@ -22,5 +22,7 @@ public class Constants {
 
     public static final int WEB_SOCKET_TIMEOUT = 5000;
 
+    public static final long INPUT_REQUEST_TIMEOUT_MILLISEC = 500;
+
     public static final String EMPTY_STRING = "";
 }
