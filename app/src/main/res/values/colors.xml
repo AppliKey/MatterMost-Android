@@ -7,6 +7,8 @@
     <color name="primaryStart">#63cdff</color>
     <color name="primaryEnd">#6794ff</color>
 
+    <color name="color_disabled">#c9cdd4</color>
+
     <color name="background">#f1f2f5</color>
     <color name="unread_background">#f4f5f7</color>
 

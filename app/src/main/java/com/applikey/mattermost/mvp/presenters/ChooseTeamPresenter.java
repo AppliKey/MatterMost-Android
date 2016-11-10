@@ -47,6 +47,7 @@ public class ChooseTeamPresenter extends BasePresenter<ChooseTeamView> {
 
     public void chooseTeam(Team team) {
         mTeamStorage.setChosenTeam(team);
+        mPrefs.setCurrentTeamId(team.getId());
         final ChooseTeamView view = getViewState();
         view.onTeamChosen();
     }

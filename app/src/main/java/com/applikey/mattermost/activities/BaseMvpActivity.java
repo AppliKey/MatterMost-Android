@@ -1,7 +1,6 @@
 package com.applikey.mattermost.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.arellomobile.mvp.MvpDelegate;
 
@@ -10,26 +9,38 @@ import com.arellomobile.mvp.MvpDelegate;
  */
 public abstract class BaseMvpActivity extends BaseActivity {
 
-    private static final String TAG = BaseMvpActivity.class.getSimpleName();
-
     private MvpDelegate<? extends BaseMvpActivity> mMvpDelegate;
 
+    private MvpDelegate getMvpDelegate() {
+        if (mMvpDelegate == null) {
+            mMvpDelegate = new MvpDelegate<>(this);
+        }
+        return mMvpDelegate;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getMvpDelegate().onCreate(savedInstanceState);
     }
 
     @Override
-    protected void onStop() {
+    public void onStart() {
+        super.onStart();
+
+        getMvpDelegate().onAttach();
+    }
+
+    @Override
+    public void onStop() {
         super.onStop();
 
         getMvpDelegate().onDetach();
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         if (isFinishing()) {
             getMvpDelegate().onDestroy();
         }
@@ -42,19 +53,5 @@ public abstract class BaseMvpActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
 
         getMvpDelegate().onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        getMvpDelegate().onAttach();
-    }
-
-    public MvpDelegate getMvpDelegate() {
-        if (mMvpDelegate == null) {
-            mMvpDelegate = new MvpDelegate<>(this);
-        }
-        return mMvpDelegate;
     }
 }

@@ -16,10 +16,7 @@ import java.util.Date;
 @SuppressLint("SimpleDateFormat")
 public class TimeUtil {
 
-    private static final int MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
-
     public static final String TAG = TimeUtil.class.getSimpleName();
-
     public static final String DEFAULT_FORMAT_TIME_ONLY = "hh:mm aa";
     public static final String DEFAULT_FORMAT_DATE_ONLY = "dd, MMMM yyyy";
     public static final String CHANNEL_DATE_FORMAT = "d.MM.yyyy";
@@ -27,6 +24,7 @@ public class TimeUtil {
     public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String UTC_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String FILE_FORMAT = "yyyy_MM_dd_HH_mm_ss_SSS";
+    private static final int MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
 
     private TimeUtil() {
     }

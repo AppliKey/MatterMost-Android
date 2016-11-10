@@ -1,9 +1,12 @@
 package com.applikey.mattermost.models.user;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.SearchItem;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
@@ -12,11 +15,14 @@ import java.util.Map;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject implements Comparable<User>, Searchable<String> {
+public class User extends RealmObject implements Comparable<User>, Searchable<String>, Parcelable, SearchItem {
 
     public static final String FIELD_NAME_ID = "id";
 
     public static final String FIELD_USERNAME = "username";
+
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
 
     @PrimaryKey
     @SerializedName(FIELD_NAME_ID)
@@ -46,12 +52,42 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
 
     private int status;
 
+    public enum Status {
+        OFFLINE(R.drawable.indicator_status_offline),
+        ONLINE(R.drawable.indicator_status_online),
+        AWAY(R.drawable.indicator_status_idle);
+
+        private static final Map<String, Status> representations =
+                new HashMap<String, Status>() {{
+                    put("offline", OFFLINE);
+                    put("online", ONLINE);
+                    put("away", AWAY);
+                }};
+        private final int drawableId;
+
+        Status(int drawableId) {
+            this.drawableId = drawableId;
+        }
+
+        public int getDrawableId() {
+            return drawableId;
+        }
+
+        public static Status from(String representation) {
+            return representations.get(representation);
+        }
+
+        public static Status from(int ordinal) {
+            return values()[ordinal];
+        }
+    }
+
     public User() {
     }
 
     public User(String id, String username, String email, String firstName,
-                String lastName, long lastActivityAt, long updateAt,
-                String profileImage, int status) {
+            String lastName, long lastActivityAt, long updateAt,
+            String profileImage, int status) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -62,6 +98,48 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         this.profileImage = profileImage;
         this.status = status;
     }
+
+    protected User(Parcel in) {
+        id = in.readString();
+        username = in.readString();
+        email = in.readString();
+        firstName = in.readString();
+        lastName = in.readString();
+        lastActivityAt = in.readLong();
+        updateAt = in.readLong();
+        profileImage = in.readString();
+        status = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(username);
+        dest.writeString(email);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeLong(lastActivityAt);
+        dest.writeLong(updateAt);
+        dest.writeString(profileImage);
+        dest.writeInt(status);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -107,16 +185,16 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         return lastActivityAt;
     }
 
+    public void setLastActivityAt(long lastActivityAt) {
+        this.lastActivityAt = lastActivityAt;
+    }
+
     public long getUpdateAt() {
         return updateAt;
     }
 
     public void setUpdateAt(long updateAt) {
         this.updateAt = updateAt;
-    }
-
-    public void setLastActivityAt(long lastActivityAt) {
-        this.lastActivityAt = lastActivityAt;
     }
 
     public String getProfileImage() {
@@ -156,35 +234,18 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         return builder.toString();
     }
 
-    public enum Status {
-        OFFLINE(R.drawable.indicator_status_offline),
-        ONLINE(R.drawable.indicator_status_online),
-        AWAY(R.drawable.indicator_status_idle);
-
-        private final int drawableId;
-
-        Status(int drawableId) {
-            this.drawableId = drawableId;
-        }
-
-        public int getDrawableId() {
-            return drawableId;
-        }
-
-        private static final Map<String, Status> representations =
-                new HashMap<String, Status>() {{
-                    put("offline", OFFLINE);
-                    put("online", ONLINE);
-                    put("away", AWAY);
-                }};
-
-        public static Status from(String representation) {
-            return representations.get(representation);
-        }
-
-        public static Status from(int ordinal) {
-            return values()[ordinal];
-        }
+    @Override
+    public int hashCode() {
+        int result = getId().hashCode();
+        result = 31 * result + getUsername().hashCode();
+        result = 31 * result + getEmail().hashCode();
+        result = 31 * result + getFirstName().hashCode();
+        result = 31 * result + getLastName().hashCode();
+        result = 31 * result + (int) (getLastActivityAt() ^ (getLastActivityAt() >>> 32));
+        result = 31 * result + (int) (getUpdateAt() ^ (getUpdateAt() >>> 32));
+        result = 31 * result + getProfileImage().hashCode();
+        result = 31 * result + getStatus();
+        return result;
     }
 
     @Override
@@ -211,31 +272,18 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     }
 
     @Override
-    public int hashCode() {
-        int result = getId().hashCode();
-        result = 31 * result + getUsername().hashCode();
-        result = 31 * result + getEmail().hashCode();
-        result = 31 * result + getFirstName().hashCode();
-        result = 31 * result + getLastName().hashCode();
-        result = 31 * result + (int) (getLastActivityAt() ^ (getLastActivityAt() >>> 32));
-        result = 31 * result + (int) (getUpdateAt() ^ (getUpdateAt() >>> 32));
-        result = 31 * result + getProfileImage().hashCode();
-        result = 31 * result + getStatus();
-        return result;
+    public String toString() {
+        return User.getDisplayableName(this);
     }
 
     @Override
     public int compareTo(@NonNull User o) {
         if (this == o)
             return 0;
-        final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this).toLowerCase();
+        final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this)
+                .toLowerCase();
         final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
         return thisUserDisplayableNameIgnoreCase.compareTo(otherUserDisplayableNameIgnoreCase);
-    }
-
-    @Override
-    public String toString() {
-        return User.getDisplayableName(this);
     }
 
     @Override
@@ -245,9 +293,16 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         }
         boolean result = false;
 
-        if (firstName.contains(searchFilter) || lastName.contains(searchFilter) || email.contains(searchFilter)) {
+        if (firstName.contains(searchFilter) || lastName.contains(searchFilter) || email.contains(
+                searchFilter)) {
             result = true;
         }
         return result;
+    }
+
+    @Override
+    @Type
+    public int getSearchType() {
+        return USER;
     }
 }

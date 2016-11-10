@@ -10,20 +10,18 @@ import com.applikey.mattermost.models.channel.AddedUser;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.CreatedChannel;
+import com.applikey.mattermost.models.channel.InvitedUsersManager;
 import com.applikey.mattermost.models.channel.RequestUserId;
-import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,10 +33,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static rx.Observable.from;
+import static com.applikey.mattermost.utils.rx.RxUtils.doOnUi;
 
 @InjectViewState
-public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
+public class CreateChannelPresenter extends BasePresenter<CreateChannelView> implements InvitedUsersManager.OnInvitedListener {
 
     @Inject
     Api mApi;
@@ -53,13 +51,13 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
     UserStorage mUserStorage;
 
     @Inject
-    ErrorHandler mErrorHandler;
-
-    @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
 
-    private List<User> mInvitedUsers = new ArrayList<>();
+    @Inject
+    ErrorHandler mErrorHandler;
+
+    private InvitedUsersManager mInvitedUsersManager;
 
     public CreateChannelPresenter() {
         App.getUserComponent().inject(this);
@@ -67,58 +65,55 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
 
     @Override
     public void onFirstViewAttach() {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
-                .first()
-                .flatMap(Observable::from)
-                .filter(user -> !user.getId().equals(mCurrentUserId))
+        final Subscription subscription = getUserList()
                 .toSortedList()
-                .map(users -> convertToPendingUsers(users, false))
+                .doOnNext(users -> mInvitedUsersManager = new InvitedUsersManager(this, users))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        results -> getViewState().showUsers(results),
+                        results -> getViewState().showAllUsers(results),
                         error -> Timber.e("", error)
                 );
         mSubscription.add(subscription);
     }
 
-    public void addAllUsers() {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(results -> {
-                    mInvitedUsers = results;
-                    getViewState().addAllUsers(results);
-                    setAddAllButtonState();
-                }, Timber::e);
-        mSubscription.add(subscription);
-    }
-
-    public void getUsersAndFilterByFullName(String filterString, List<User> alreadyAddedUsers) {
-        final Subscription subscription = mUserStorage.listDirectProfiles()
+    private Observable<User> getUserList() {
+        return mUserStorage.listDirectProfiles()
                 .first()
                 .flatMap(Observable::from)
-                .filter(user -> !user.getId().equals(mCurrentUserId))
-                .toSortedList()
-                .map(users -> convertToPendingUsers(users, alreadyAddedUsers))
-                .map(users -> filterUserListByFullName(users, filterString))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        results -> getViewState().showUsers(results),
-                        Timber::e);
-        mSubscription.add(subscription);
+                .filter(user -> !user.getId().equals(mCurrentUserId));
     }
 
-    public void addUser(User user) {
-        mInvitedUsers.add(user);
-        setAddAllButtonState();
-        getViewState().showAddedUsers(mInvitedUsers);
+    public void inviteAll() {
+        mInvitedUsersManager.inviteAll();
     }
 
-    public void removeUser(User user) {
-        mInvitedUsers.remove(user);
-        setAddAllButtonState();
-        getViewState().showAddedUsers(mInvitedUsers);
+    public void revertInviteAll() {
+        mInvitedUsersManager.revertInvitingAll();
     }
 
+    @Override
+    public void onInvited(User user) {
+        getViewState().showAddedUser(user);
+    }
+
+    @Override
+    public void onRevertInvite(User user) {
+        getViewState().removeUser(user);
+    }
+
+    @Override
+    public void onInvitedAll(List<User> users) {
+        getViewState().showAddedUsers(users);
+    }
+
+    @Override
+    public void onRevertedAll(List<User> users) {
+        getViewState().showAddedUsers(users);
+    }
+
+    public void operateWithUser(User user) {
+        mInvitedUsersManager.operateWithUser(user);
+    }
 
     public void createChannel(String channelName, String channelDescription, boolean isPublicChannel) {
         if (TextUtils.isEmpty(channelName)) {
@@ -134,98 +129,43 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> {
         createChannelWithRequest(channelRequest);
     }
 
-    private boolean isUserPassesFilter(User user, String filterString) {
-        boolean result = false;
-        final String firstName = user.getFirstName();
-        final String lastName = user.getLastName();
-        final String userEmail = user.getEmail();
-        if (firstName.contains(filterString) || lastName.contains(filterString) || userEmail.contains(filterString)) {
-            result = true;
-        }
-        return result;
-    }
-
-    private List<UserPendingInvitation> filterUserListByFullName(List<UserPendingInvitation> source, String filter) {
-        return Stream.of(source)
-                .filter(user -> isUserPassesFilter(user.getUser(), filter))
-                .collect(Collectors.toList());
-    }
-
-    private void setAddAllButtonState() {
-        getViewState().setAddAllButtonEnabled(mInvitedUsers.size() == 0);
-    }
-
     private void createChannelWithRequest(ChannelRequest request) {
         final Subscription subscription = mTeamStorage.getChosenTeam()
                 .observeOn(Schedulers.io())
                 .map(Team::getId)
                 .first()
                 .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
-                .flatMap(createdChannel -> from(mInvitedUsers), AddedUser::new)
+                .compose(doOnUi(createdChannel -> mChannelStorage.save(createdChannel.getChannel()), Schedulers.io()))
+                .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()), AddedUser::new)
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
                         user.getCreatedChannel().getChannel().getId(),
                         new RequestUserId(user.getUser().getId())))
+                .toCompletable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(v -> getViewState().successfulClose(), mErrorHandler::handleError);
+                .subscribe(error -> getViewState().showError(mErrorHandler.getErrorMessage(error)), () -> getViewState().onChannelCreated());
         mSubscription.add(subscription);
     }
 
-    private List<UserPendingInvitation> convertToPendingUsers(List<User> users, boolean invited) {
-        return Stream.of(users)
-                .map(user -> new UserPendingInvitation(user, invited))
+    public void filterByFullName(String filter) {
+        final List<User> foundedUsers = Stream.of(mInvitedUsersManager.getTeamMembers())
+                .filter(user -> user.search(filter))
                 .collect(Collectors.toList());
+        getViewState().showAllUsers(foundedUsers);
     }
 
-    private List<UserPendingInvitation> convertToPendingUsers(List<User> users, List<User> alreadyAddedUsers) {
-        final List<UserPendingInvitation> pendingUsers = new ArrayList<>(users.size());
-        Stream.of(users).forEach(user -> {
-            final boolean isAlreadyAdded =
-                    Stream.of(alreadyAddedUsers)
-                            .map(user::equals)
-                            .filter(isAdded -> isAdded)
-                            .findFirst()
-                            .orElse(false);
-            pendingUsers.add(new UserPendingInvitation(user, isAlreadyAdded));
-        });
-        return pendingUsers;
+    public List<User> getInvitedUsers() {
+        return mInvitedUsersManager.getInvitedUsers();
     }
 
-    /**
-     * How it works:
-     * <li>1. All team members are fetched from data source</li>
-     * <li>2. Fetched members are sorted by comparator {@link User#compareTo(User)}</li>
-     * <li>3. User list is iterated and filtered by comparing ids with every id in
-     * <code>addedUsersIds</code>. Thus we get the list of already added users</li>
-     * <li>4. The list of already added users is shown in
-     * {@link AddedPeopleLayout}</li>
-     * <li>5. The initial list of users is converted to {@link UserPendingInvitation}</li>
-     * <li>6. The {@link UserPendingInvitation} list is shown in RecyclerView</li>
-     *
-     * @param addedUsersIds the list of already added users' ids
-     */
-    public void showAlreadyAddedUsers(List<String> addedUsersIds) {
+    public void setAlreadyAddedUsers(List<User> data) {
+        if (mInvitedUsersManager != null) {
+            mInvitedUsersManager.setAlreadyInvitedUsers(data);
+        }
+    }
 
-        final Subscription subscription = mUserStorage.listDirectProfiles()
-                .first()                                                               //      Start of Section 1
-                .flatMap(Observable::from)                                             //
-                .filter(user -> !user.getId().equals(mCurrentUserId))                  //      End of Section 1
-                .toSortedList()                                                        //      Section 2
-                .map(users -> {                                                        //      Start of Section 3
-                    final List<User> alreadyAddedUsers = Stream.of(users)              //
-                            .filter(user ->                                            //
-                                    Stream.of(addedUsersIds)                           //
-                                            .anyMatch(id -> user.getId().equals(id)))  //
-                            .collect(Collectors.toList());                             //      End of Section 3
-                    mInvitedUsers = alreadyAddedUsers;
-                    getViewState().showAddedUsers(mInvitedUsers);                      //      Section 4
-                    return convertToPendingUsers(users, alreadyAddedUsers);            //      Section 5
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        results -> getViewState().showUsers(results),                  //      Section 6
-                        error -> Timber.e("", error)
-                );
-        mSubscription.add(subscription);
+    @Override
+    public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
+        getViewState().setButtonAddAllState(isAllAlreadyInvited);
     }
 }
 

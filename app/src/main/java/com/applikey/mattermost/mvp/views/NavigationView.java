@@ -6,9 +6,5 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 @StateStrategyType(value = SkipStrategy.class)
 public interface NavigationView extends MvpView {
-
-    void onLogout();
-
     void startChannelCreating();
-
 }

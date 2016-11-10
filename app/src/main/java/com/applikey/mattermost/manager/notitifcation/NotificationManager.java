@@ -32,12 +32,12 @@ public class NotificationManager {
     }
 
     public void showNewMessageNotification(@NonNull String id, @NonNull String message) {
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putString(NOTIFICATION_CHANNEL_ID_KEY, id);
 
-        Intent intent = SplashActivity.getIntent(mContext, bundle);
+        final Intent intent = SplashActivity.getIntent(mContext, bundle);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent,
+        final PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
         final Notification notification =

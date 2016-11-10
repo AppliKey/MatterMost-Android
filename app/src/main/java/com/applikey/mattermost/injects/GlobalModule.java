@@ -15,6 +15,7 @@ import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
 import com.applikey.mattermost.web.BearerTokenFactory;
+import com.applikey.mattermost.web.GsonFactory;
 import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
@@ -95,7 +96,10 @@ public class GlobalModule {
             Request request = chain.request();
             final String authToken = tokenFactory.getBearerTokenString();
             if (authToken != null) {
-                final Headers headers = request.headers().newBuilder().add(Constants.AUTHORIZATION_HEADER, authToken).build();
+                final Headers headers = request.headers()
+                        .newBuilder()
+                        .add(Constants.AUTHORIZATION_HEADER, authToken)
+                        .build();
                 request = request.newBuilder().headers(headers).build();
             }
             return chain.proceed(request);
@@ -172,5 +176,11 @@ public class GlobalModule {
     @PerApp
     Context provideApplicationContext() {
         return mApplicationContext;
+    }
+
+    @Provides
+    @PerApp
+    Gson provideGson() {
+        return GsonFactory.INSTANCE.getGson();
     }
 }

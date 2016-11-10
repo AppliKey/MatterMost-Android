@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_marginTop="@dimen/pending_people_item_top_margin"
-    android:layout_marginBottom="@dimen/pending_people_item_bottom_margin"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:paddingBottom="@dimen/pending_people_item_bottom_margin"
+    android:paddingTop="@dimen/pending_people_item_top_margin">
 
     <ImageView
         android:id="@+id/iv_pending_people_avatar"
         android:layout_width="@dimen/pending_people_avatar_width"
         android:layout_height="@dimen/pending_people_avatar_height"
-        android:layout_gravity="left" />
+        android:layout_gravity="start"
+        android:layout_marginEnd="@dimen/normal"
+        tools:background="#AA45CB" />
 
-    <TextView
-        android:id="@+id/tv_added_people_name"
+    <com.devspark.robototextview.widget.RobotoTextView
+        android:id="@+id/tv_added_member"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:textSize="@dimen/settings_element_text_size"
+        tools:text="Denis Nikiforov" />
+
+    <CheckBox
+        android:id="@+id/cb_is_member_added"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|center_vertical"
-        android:layout_marginLeft="@dimen/pending_people_name_left_margin"
-        android:textSize="@dimen/pending_people_name_textsize"
-        tools:text="Lenora Flores" />
-
-    <View
-        android:id="@+id/add_people_image"
-        android:layout_width="@dimen/pending_people_button_width"
-        android:layout_height="@dimen/pending_people_button_height"
-        android:layout_gravity="right|center_vertical"
-        android:background="@drawable/ic_add" />
-</FrameLayout>
+        android:layout_gravity="center_vertical"
+        android:background="@null"
+        android:button="@drawable/bg_pending_member_item"
+        android:clickable="false" />
+</LinearLayout>

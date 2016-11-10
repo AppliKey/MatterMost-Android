@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 
+import android.widget.Toast;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.views.RestorePasswordView;
@@ -22,27 +23,29 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
     @InjectPresenter
     RestorePasswordPresenter mPresenter;
 
+    public static Intent getIntent(Context context) {
+        return new Intent(context, RestorePasswordActivity.class);
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restore_password);
 
         ButterKnife.bind(this);
     }
 
-    @OnClick(R.id.back)
-    public void onBack() {
-        finish();
-    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-    @OnClick(R.id.b_restore_password)
-    public void onRestoreClicked() {
-        showLoadingDialog();
-        mPresenter.sendRestorePasswordRequest(mEtLogin.getText().toString());
+        mPresenter.unSubscribe();
     }
 
     @Override
     public void onPasswordRestoreSent() {
+        Toast.makeText(this, getString(R.string.password_request_sent), Toast.LENGTH_SHORT).show();
+
         hideLoadingDialog();
         finish();
     }
@@ -53,14 +56,14 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
         mEtLogin.setError(message);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
+    @OnClick(R.id.back)
+    void onBack() {
+        finish();
     }
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, RestorePasswordActivity.class);
+    @OnClick(R.id.b_restore_password)
+    void onRestoreClicked() {
+        showLoadingDialog();
+        mPresenter.sendRestorePasswordRequest(mEtLogin.getText().toString());
     }
 }

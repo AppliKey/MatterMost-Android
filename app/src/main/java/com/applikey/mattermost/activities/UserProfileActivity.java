@@ -1,10 +1,10 @@
 package com.applikey.mattermost.activities;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,13 +59,8 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         return intent;
     }
 
-    @OnClick(R.id.b_direct_message)
-    public void onClick() {
-        mPresenter.sendDirectMessage();
-    }
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(this);
@@ -93,9 +88,38 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         }
     }
 
+    @Override
+    public void showBaseDetails(User user) {
+        mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
+        mDisplayName.setText(user.toString());
+        mEmail.setText(user.getEmail());
+        setStatusIcon(user);
+    }
+
+    @Override
+    public void onMakeChannelFavorite(boolean favorite) {
+        final int iconRes = favorite
+                ? R.drawable.ic_favorite_check
+                : R.drawable.ic_favorite_uncheck;
+        mMenu.getItem(0).setIcon(iconRes);
+    }
+
+    @Override
+    public void openDirectChannel(Channel channel) {
+        startActivity(ChatActivity.getIntent(this, channel));
+    }
+
+    @OnClick(R.id.b_direct_message)
+    void onClick() {
+        mPresenter.sendDirectMessage();
+    }
+
     private void initViews() {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(null);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(null);
+        }
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
@@ -105,27 +129,8 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         mPresenter.getInitialData(userId);
     }
 
-    @Override
-    public void showBaseDetails(User user) {
-        mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
-        mDisplayName.setText(user.toString());
-        mEmail.setText(User.getDisplayableName(user));
-        setStatusIcon(user);
-    }
-
     private void setStatusIcon(User user) {
         final User.Status status = User.Status.from(user.getStatus());
         mStatus.setImageResource(status.getDrawableId());
-    }
-
-    @Override
-    public void onMakeChannelFavorite(boolean favorite) {
-        final int iconRes = favorite ? R.drawable.ic_favorite_check : R.drawable.ic_favorite_uncheck;
-        mMenu.getItem(0).setIcon(iconRes);
-    }
-
-    @Override
-    public void openDirectChannel(Channel channel) {
-        startActivity(ChatActivity.getIntent(this, channel));
     }
 }

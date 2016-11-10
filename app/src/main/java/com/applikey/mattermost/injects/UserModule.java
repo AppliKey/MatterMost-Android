@@ -11,10 +11,11 @@ import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;
 
-import dagger.Module;
-import dagger.Provides;
 
 import javax.inject.Named;
+
+import dagger.Module;
+import dagger.Provides;
 
 @Module
 @PerUser

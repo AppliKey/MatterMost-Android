@@ -71,7 +71,7 @@ public class KVDataBase extends SQLiteOpenHelper implements KVDataSet {
 
         final SQLiteDatabase db = getWritableDatabase();
         db.execSQL("INSERT OR REPLACE INTO " + DEFAULT_TABLE_NAME
-                + "(key, value) VALUES(?, ?)", new Object[]{key, value});
+                + "(key, value) VALUES(?, ?)", new Object[] {key, value});
         db.close();
         return true;
     }

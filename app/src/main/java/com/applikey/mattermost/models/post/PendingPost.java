@@ -31,15 +31,11 @@ public class PendingPost {
     @SerializedName("root_id")
     private String rootId;
 
-    public String getId() {
-        return id;
-    }
-
     public PendingPost() {
     }
 
     public PendingPost(long createdAt, String userId, String channelId, String message, String type,
-                       String pendingPostId) {
+            String pendingPostId) {
         this.createdAt = createdAt;
         this.userId = userId;
         this.channelId = channelId;
@@ -49,10 +45,14 @@ public class PendingPost {
     }
 
     public PendingPost(long createdAt, String userId, String channelId, String message, String type,
-                       String pendingPostId, String parentId, String rootId) {
+            String pendingPostId, String parentId, String rootId) {
         this(createdAt, userId, channelId, message, type, pendingPostId);
         this.parentId = parentId;
         this.rootId = rootId;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setId(String id) {
