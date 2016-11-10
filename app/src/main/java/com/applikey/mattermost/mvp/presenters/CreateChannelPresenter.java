@@ -33,6 +33,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+import static com.applikey.mattermost.utils.rx.RxUtils.doOnUi;
+
 @InjectViewState
 public class CreateChannelPresenter extends BasePresenter<CreateChannelView> implements InvitedUsersManager.OnInvitedListener {
 
@@ -133,7 +135,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
                 .map(Team::getId)
                 .first()
                 .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
-                .doOnNext(channel -> mChannelStorage.save(channel.getChannel()))
+                .compose(doOnUi(createdChannel -> mChannelStorage.save(createdChannel.getChannel()), Schedulers.io()))
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()), AddedUser::new)
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
                         user.getCreatedChannel().getChannel().getId(),

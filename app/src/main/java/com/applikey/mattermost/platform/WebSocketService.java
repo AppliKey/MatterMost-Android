@@ -54,6 +54,9 @@ public class WebSocketService extends Service {
     @Inject
     ErrorHandler mErrorHandler;
 
+    @Inject
+    Gson mGson;
+
     private WebSocket mWebSocket;
     private Handler mHandler;
 
@@ -118,15 +121,13 @@ public class WebSocketService extends Service {
                 .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
                 .createSocket(baseUrl);
 
-        final Gson gson = new Gson();
-
         mWebSocket.addListener(new WebSocketAdapter() {
             @Override
             public void onTextMessage(WebSocket websocket, String text) throws Exception {
                 super.onTextMessage(websocket, text);
                 Log.d(TAG, text);
 
-                handleMessage(gson, text);
+                handleMessage(mGson, text);
             }
         });
 

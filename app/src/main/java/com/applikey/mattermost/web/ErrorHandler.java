@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.adapter.rxjava.HttpException;
 import timber.log.Timber;
 
@@ -33,16 +34,14 @@ public final class ErrorHandler {
     private final SettingsManager mSettingsManager;
     private final StorageDestroyer mStorageDestroyer;
     private final TypeAdapter<RequestError> mJsonErrorAdapter;
-    private final Gson mGson;
 
     @Inject
     public ErrorHandler(Context context, SettingsManager settingsManager,
-                        StorageDestroyer storageDestroyer) {
+                        StorageDestroyer storageDestroyer, Gson gson) {
         mContext = context;
         mSettingsManager = settingsManager;
         mStorageDestroyer = storageDestroyer;
-        mGson = new Gson();
-        mJsonErrorAdapter = mGson.getAdapter(RequestError.class);
+        mJsonErrorAdapter = gson.getAdapter(RequestError.class);
     }
 
     public void handleError(Throwable throwable) {
@@ -69,11 +68,11 @@ public final class ErrorHandler {
     }
 
     public String getErrorMessage(Throwable e) {
-        String errorMessage = "Something is wrong";
+        String errorMessage = mContext.getString(R.string.unknown_error);
         if (isHttpError(e)) {
             final HttpException httpException = (HttpException) e;
             if (isHttpExceptionWithCode(httpException, HttpCode.INTERNAL_SERVER_ERROR)) {
-                final retrofit2.Response<?> responseBody = httpException.response();
+                final Response<?> responseBody = httpException.response();
                 try {
                     final RequestError requestError = getErrorModel(responseBody, mJsonErrorAdapter);
                     if (requestError != null) {
@@ -83,6 +82,8 @@ public final class ErrorHandler {
                     Timber.e(ioe);
                 }
             }
+        } else {
+            handleError(e);
         }
         return errorMessage;
     }
@@ -103,7 +104,7 @@ public final class ErrorHandler {
     }
 
     @Nullable
-    private <T> T getErrorModel(retrofit2.Response response, TypeAdapter<T> parser) throws IOException {
+    private <T> T getErrorModel(Response response, TypeAdapter<T> parser) throws IOException {
         final ResponseBody responseBody = response.errorBody();
         if (responseBody == null) {
             return null;

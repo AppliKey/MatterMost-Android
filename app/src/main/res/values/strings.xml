@@ -104,7 +104,7 @@
     <string name="add_members">Add members</string>
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
-
+    <string name="unknown_error">Something is wrong</string>
 
 
 </resources>
