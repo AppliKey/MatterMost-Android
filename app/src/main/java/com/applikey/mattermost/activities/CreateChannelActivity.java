@@ -135,7 +135,10 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @Override
     public void showEmptyChannelNameError() {
-        showToast(getString(R.string.error_channel_name_empty));
+        @StringRes final int errorRes = mChannelTypeView.isChecked()
+                ? R.string.error_private_group_name_empty
+                : R.string.error_channel_name_empty;
+        showToast(errorRes);
     }
 
     @Override
@@ -159,6 +162,11 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
     @Override
     public void showAllUsers(List<User> allUsers) {
         mAdapter.addUsers(allUsers);
+    }
+
+    @Override
+    public void showError(String error) {
+        showToast(error);
     }
 
     @OnClick(R.id.btn_add_all)

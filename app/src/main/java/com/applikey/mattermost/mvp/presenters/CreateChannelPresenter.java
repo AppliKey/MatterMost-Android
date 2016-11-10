@@ -140,7 +140,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
                         new RequestUserId(user.getUser().getId())))
                 .toCompletable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mErrorHandler::handleError, () -> getViewState().onChannelCreated());
+                .subscribe(error -> getViewState().showError(mErrorHandler.getErrorMessage(error)), () -> getViewState().onChannelCreated());
         mSubscription.add(subscription);
     }
 

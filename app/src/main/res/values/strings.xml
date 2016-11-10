@@ -66,7 +66,9 @@
     <string name="action_create_channel">Create channel</string>
     <string name="new_public_channel">New public channel</string>
     <string name="new_private_group">New private group</string>
-    <string name="error_channel_name_empty">Channel name cannot be empty</string>
+    <string name="error_channel_name_empty">Please, name your channel</string>
+    <string name="error_private_group_name_empty">Please, name your private group</string>
+    <string name="error_channel_already_created">Oops, this name is already taken</string>
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
@@ -102,5 +104,7 @@
     <string name="add_members">Add members</string>
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
+
+
 
 </resources>

@@ -16,4 +16,5 @@ public interface CreateChannelView extends MvpView {
     void onChannelCreated();
     void showAddedUsers(List<User> users);
     void setButtonAddAllState(boolean isAllAlreadyInvited);
+    void showError(String error);
 }
