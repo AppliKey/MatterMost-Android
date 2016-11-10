@@ -27,9 +27,10 @@
             style="@style/AlertDialog.AppCompat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dialog_create_channel_content_padding"
+            android:layout_marginStart="@dimen/dialog_create_channel_content_padding"
+            android:animateLayoutChanges="true"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/dialog_create_channel_content_padding"
-            android:paddingRight="@dimen/dialog_create_channel_content_padding"
             android:paddingTop="@dimen/dialog_create_channel_top_padding">
 
             <com.applikey.mattermost.views.ChannelTypeView
@@ -39,78 +40,88 @@
                 android:layout_marginBottom="@dimen/create_channel_type_bottom_margin"
                 android:gravity="center" />
 
-            <TextView
+            <com.devspark.robototextview.widget.RobotoTextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
+                android:layout_marginStart="@dimen/edit_text_align"
                 android:layout_height="wrap_content"
-                android:text="@string/create_channel_title_name" />
+                android:text="@string/create_channel_title_name"
+                app:typeface="roboto_regular" />
 
-            <EditText
+            <com.devspark.robototextview.widget.RobotoEditText
                 android:id="@+id/et_channel_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/create_chat_hint_name"
                 android:inputType="textEmailAddress"
+                android:lines="1"
                 android:maxLines="1"
-                android:paddingBottom="@dimen/edit_text_bottom_padding"
-                android:singleLine="true" />
+                app:typeface="roboto_light" />
 
-            <TextView
+            <com.devspark.robototextview.widget.RobotoTextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/edit_text_align"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
-                android:text="@string/create_channel_description_title" />
+                android:text="@string/create_channel_description_title"
+                app:typeface="roboto_regular" />
 
-            <EditText
+            <com.devspark.robototextview.widget.RobotoEditText
                 android:id="@+id/et_channel_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/create_channel_description_hint"
+                android:gravity="top|start"
+                android:hint="@string/create_private_group_description_hint"
                 android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:paddingBottom="@dimen/edit_text_bottom_padding"
-                android:singleLine="true" />
+                app:typeface="roboto_light" />
 
-            <TextView
+            <com.devspark.robototextview.widget.RobotoTextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/edit_text_align"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
-                android:text="Add members" />
+                android:text="@string/add_members"
+                app:typeface="roboto_regular" />
 
             <com.applikey.mattermost.views.AddedPeopleLayout
                 android:id="@+id/added_people_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/added_people_layout_item_height"
                 android:layout_marginBottom="@dimen/normal"
-                android:layout_marginTop="@dimen/large" />
+                android:layout_marginTop="@dimen/large"
+                app:min_item_right_margin="@dimen/added_people_layout_item_right_margin" />
 
-            <EditText
+            <com.devspark.robototextview.widget.RobotoEditText
                 android:id="@+id/et_search_people"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableRight="@drawable/ic_search"
+                android:drawableEnd="@drawable/ic_search"
                 android:hint="@string/search_people_for_channel_hint"
-                android:paddingBottom="@dimen/edit_text_bottom_padding" />
+                android:paddingBottom="@dimen/edit_text_bottom_padding"
+                app:typeface="roboto_light" />
 
-            <com.applikey.mattermost.views.SafeButton
+            <com.devspark.robototextview.widget.RobotoCheckedTextView
                 android:id="@+id/btn_add_all"
                 style="@style/Button"
-                android:layout_width="180dp"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_height"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="13dp"
-                android:layout_marginTop="13dp"
+                android:layout_marginBottom="@dimen/normal"
+                android:layout_marginTop="@dimen/normal"
+                android:background="@drawable/bg_button_add_all"
+                android:checked="true"
                 android:gravity="center"
-                android:text="@string/button_add_all" />
+                android:text="@string/button_add_all"
+                android:textAlignment="gravity" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_peoples"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
         </LinearLayout>
+
 
     </android.support.v4.widget.NestedScrollView>
 

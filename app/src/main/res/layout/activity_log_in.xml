@@ -83,6 +83,7 @@
         <com.applikey.mattermost.views.SafeButton
             android:id="@id/b_restore_password"
             style="@style/BorderlessButton"
+            android:padding="@dimen/button_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.user;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject implements Comparable<User>, Searchable<String>, SearchItem {
+public class User extends RealmObject implements Comparable<User>, Searchable<String>, Parcelable, SearchItem {
 
     public static final String FIELD_NAME_ID = "id";
 
@@ -96,6 +98,48 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         this.profileImage = profileImage;
         this.status = status;
     }
+
+    protected User(Parcel in) {
+        id = in.readString();
+        username = in.readString();
+        email = in.readString();
+        firstName = in.readString();
+        lastName = in.readString();
+        lastActivityAt = in.readLong();
+        updateAt = in.readLong();
+        profileImage = in.readString();
+        status = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(username);
+        dest.writeString(email);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeLong(lastActivityAt);
+        dest.writeLong(updateAt);
+        dest.writeString(profileImage);
+        dest.writeInt(status);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getId() {
         return id;

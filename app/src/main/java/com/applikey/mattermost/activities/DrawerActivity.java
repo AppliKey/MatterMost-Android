@@ -1,7 +1,6 @@
 package com.applikey.mattermost.activities;
 
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.view.View;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
-import com.applikey.mattermost.platform.WebSocketService;
 import com.applikey.mattermost.utils.kissUtils.utils.SystemUtil;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.devspark.robototextview.util.RobotoTypefaceManager;
@@ -26,26 +24,9 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private static final int ITEM_ALL_CHANNELS = 0;
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
-    private static final int ITEM_LOGOUT = 3;
-
+    private Drawer mDrawer;
     @InjectPresenter
     NavigationPresenter mPresenter;
-
-    private Drawer mDrawer;
-
-    @Override
-    public void onLogout() {
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        stopService(WebSocketService.getIntent(this));
-        startActivity(intent);
-    }
-
-    @Override
-    public void startChannelCreating() {
-        startActivity(CreateChannelActivity.getIntent(this));
-        closeDrawer();
-    }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -76,9 +57,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         final PrimaryDrawerItem mItemSettings = new PrimaryDrawerItem().withName(R.string.settings)
                 .withIdentifier(ITEM_SETTINGS)
                 .withTypeface(typeface);
-        final PrimaryDrawerItem mItemLogout = new PrimaryDrawerItem().withName(R.string.logout)
-                .withIdentifier(ITEM_LOGOUT)
-                .withTypeface(typeface);
 
         mDrawer = new DrawerBuilder().withActivity(this)
                 .withToolbar(getToolbar())
@@ -87,8 +65,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                 .addDrawerItems(
                         mItemAllChannels,
                         mItemInviteNewMember,
-                        mItemSettings,
-                        mItemLogout
+                        mItemSettings
                 )
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     itemScreen((int) drawerItem.getIdentifier());
@@ -130,15 +107,18 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
             case ITEM_SETTINGS:
                 startSettings();
                 break;
-            case ITEM_LOGOUT:
-                mPresenter.logout();
-                break;
         }
         closeDrawer();
     }
 
     private void startSettings() {
         startActivity(SettingsActivity.getIntent(this));
+        closeDrawer();
+    }
+
+    @Override
+    public void startChannelCreating() {
+        startActivity(CreateChannelActivity.getIntent(this));
         closeDrawer();
     }
 }
