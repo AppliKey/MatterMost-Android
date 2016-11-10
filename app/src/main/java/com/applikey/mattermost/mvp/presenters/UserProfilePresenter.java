@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.UserProfileView;
@@ -32,6 +33,9 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
     @Inject
     ErrorHandler mErrorHandler;
 
+    @Inject
+    MetaDataManager mMetaDataManager;
+
     private User mUser;
     private Channel mChannel;
 
@@ -49,7 +53,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
                 .doOnNext(view::showBaseDetails)
                 .flatMap(user -> mChannelStorage.directChannel(userId))
                 .doOnNext(channel -> mChannel = channel)
-                .flatMap(channel -> mChannelStorage.isFavorite(channel.getId()))
+                .flatMap(channel -> mMetaDataManager.isFavoriteChannel(channel.getId()))
                 .doOnNext(favorite -> mIsFavorite = favorite)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::onMakeFavorite, mErrorHandler::handleError));
@@ -57,7 +61,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
 
     @Override
     public void toggleFavorite() {
-        mChannelStorage.setFavorite(mChannel.getId(), !mIsFavorite)
+        mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
                 .subscribe();
     }
 

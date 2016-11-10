@@ -200,8 +200,7 @@ public class Db {
                 .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
 
-    public <T extends RealmObject> Observable<RealmResults<T>>
-    resultRealmObjectsFilteredSortedExcluded(
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedExcluded(
             Class<T> tClass,
             String fieldName,
             String value,

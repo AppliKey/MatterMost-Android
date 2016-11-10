@@ -1,14 +1,15 @@
 package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.annimon.stream.Stream;
+import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.storage.preferences.PersistencePrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
 
 import java.util.List;
@@ -16,22 +17,22 @@ import java.util.Map;
 
 import io.realm.RealmResults;
 import io.realm.Sort;
-import rx.Completable;
 import rx.Observable;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ChannelStorage {
 
+    private static final String TAG = "ChannelStorage";
+
     private final Db mDb;
     private final Prefs mPrefs;
-    private final PersistencePrefs mPersistencePrefs;
+    private final MetaDataManager mMetaDataManager;
 
-    public ChannelStorage(final Db db, final Prefs prefs, final PersistencePrefs persistencePrefs) {
+    public ChannelStorage(final Db db, final Prefs prefs, final MetaDataManager metaDataManager) {
         mDb = db;
         mPrefs = prefs;
-        mPersistencePrefs = persistencePrefs;
+        mMetaDataManager = metaDataManager;
     }
 
     public Observable<Channel> findById(String id) {
@@ -80,14 +81,15 @@ public class ChannelStorage {
                 .first();
     }
 
+    //Realm doesn't support empty array for operation "in"
     public Observable<RealmResults<Channel>> listFavorite() {
-        return mPersistencePrefs.getFavoritesChannels()
-                .subscribeOn(Schedulers.io())
-                .map(ids -> ids.toArray(new String[ids.size()]))
+        return mMetaDataManager.getFavoriteChannels()
+                .doOnNext(strings -> Log.d(TAG, "listFavorite: " + strings))
+                .map(ids -> ids.isEmpty() ? new String[] {"-1"} : ids.toArray(new String[ids.size()]))
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
-                        ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME))
-                .first();
+                        ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME));
+                //.first();
     }
 
     public Observable<Channel> channelById(String id) {
@@ -204,19 +206,6 @@ public class ChannelStorage {
 
     public void saveChannel(Channel channel) {
         mDb.saveTransactional(channel);
-    }
-
-    public Completable setFavorite(String channelId, boolean isFavorite) {
-        final Completable action;
-        action = isFavorite ? mPersistencePrefs.addFavoriteChannel(channelId) :
-                mPersistencePrefs.removeFavoriteChannel(channelId);
-        return action.subscribeOn(Schedulers.io());
-    }
-
-    public Observable<Boolean> isFavorite(String channelId) {
-        return mPersistencePrefs.getFavoritesChannels()
-                .subscribeOn(Schedulers.io())
-                .map(ids -> ids.contains(channelId));
     }
 
     private List<Channel> restoreChannels(List<Channel> channels) {

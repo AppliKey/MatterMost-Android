@@ -84,7 +84,6 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mPresenter.unSubscribe();
         mEventBus.unregister(this);
     }
 

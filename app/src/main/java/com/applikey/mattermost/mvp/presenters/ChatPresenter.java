@@ -32,6 +32,8 @@ import timber.log.Timber;
 public class ChatPresenter extends BasePresenter<ChatView> {
 
     private static final int PAGE_SIZE = 60;
+    private static final String CHANNEL_PREFIX = "#";
+    private static final String DIRECT_PREFIX = "";
 
     @Inject
     PostStorage mPostStorage;
@@ -69,7 +71,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         updateLastViewedAt(channelId);
         mSubscription.add(mChannelStorage.channelById(channelId)
-                .subscribe(channel -> mChannel = channel, mErrorHandler::handleError));
+                .doOnNext(channel -> mChannel = channel)
+                .map(channel -> {
+                    final String prefix = !mChannel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())
+                            ? CHANNEL_PREFIX : DIRECT_PREFIX;
+                    return prefix + channel.getDisplayName();
+                })
+                .subscribe(view::showTitle, mErrorHandler::handleError));
+
         mSubscription.add(mPostStorage.listByChannel(channelId)
                 .first()
                 .subscribe(view::onDataReady, mErrorHandler::handleError));
@@ -161,8 +170,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnNext(post -> mChannel.setLastPost(post))
-                .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
+                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError));
     }
 

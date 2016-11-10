@@ -23,4 +23,8 @@ public interface ChatView extends MvpView {
     void openChannelDetails(Channel channel);
 
     void openUserProfile(User user);
+
+    void showTitle(String title);
+
+    void showEmpty();
 }

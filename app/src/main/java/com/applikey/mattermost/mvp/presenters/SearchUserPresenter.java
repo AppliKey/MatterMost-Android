@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -62,8 +61,8 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     }
 
     @Override
-    public void unSubscribe() {
-        super.unSubscribe();
+    public void onDestroy() {
+        super.onDestroy();
         mEventBus.unregister(this);
     }
 

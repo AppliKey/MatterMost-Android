@@ -66,24 +66,13 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
         App.getUserComponent().inject(this);
+        getPresenter().displayData();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mTvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getPresenter().unSubscribe();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getPresenter().displayData();
     }
 
     @Nullable

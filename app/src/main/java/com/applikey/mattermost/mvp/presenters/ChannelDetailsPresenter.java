@@ -3,6 +3,7 @@ package com.applikey.mattermost.mvp.presenters;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.MemberInfo;
@@ -41,6 +42,9 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     @Inject
     Prefs mPrefs;
 
+    @Inject
+    MetaDataManager mMetaDataManager;
+
     private Channel mChannel;
 
     private boolean mIsFavorite;
@@ -56,7 +60,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
                 .doOnNext(channel -> mChannel = channel)
                 .subscribe(view::showBaseDetails, mErrorHandler::handleError));
 
-        mChannelStorage.isFavorite(channelId)
+        mMetaDataManager.isFavoriteChannel(channelId)
                 .doOnNext(favorite -> mIsFavorite = favorite)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
@@ -75,7 +79,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     @Override
     public void toggleFavorite() {
         Log.d(TAG, "toggleFavorite: " + !mIsFavorite);
-        mChannelStorage.setFavorite(mChannel.getId(), !mIsFavorite)
+        mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
                 .subscribe();
     }
 }

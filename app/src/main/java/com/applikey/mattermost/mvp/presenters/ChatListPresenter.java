@@ -5,7 +5,7 @@ import com.applikey.mattermost.models.channel.Channel;
 import io.realm.RealmResults;
 import rx.Observable;
 
-public interface ChatListPresenter extends UnsubscribeablePresenter {
+public interface ChatListPresenter {
 
     Observable<RealmResults<Channel>> getInitData();
 

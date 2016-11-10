@@ -68,7 +68,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     @Override
     public void displayData() {
         final Subscription subscription = getInitData()
-                .first()
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
                 .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
@@ -106,8 +105,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     }
 
     @Override
-    public void unSubscribe() {
-        super.unSubscribe();
+    public void onDestroy() {
+        super.onDestroy();
         if (mChannels != null) {
             mChannels.removeChangeListener(this);
         }

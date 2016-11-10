@@ -44,8 +44,8 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     }
 
     @Override
-    public void unSubscribe() {
-        super.unSubscribe();
+    public void onDestroy() {
+        super.onDestroy();
         mEventBus.unregister(this);
     }
 
