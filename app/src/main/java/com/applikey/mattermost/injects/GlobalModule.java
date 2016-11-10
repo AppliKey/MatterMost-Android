@@ -168,12 +168,6 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    Gson provideGson() {
-        return new Gson();
-    }
-
-    @Provides
-    @PerApp
     Context provideApplicationContext() {
         return mApplicationContext;
     }
