@@ -8,16 +8,21 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
 import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
+import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
+import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.google.gson.Gson;
@@ -28,8 +33,16 @@ import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class WebSocketService extends Service {
 
@@ -57,8 +70,15 @@ public class WebSocketService extends Service {
     @Inject
     Gson mGson;
 
+    @Inject
+    Api mApi;
+
+    @Inject
+    UserStorage mUserStorage;
+
     private WebSocket mWebSocket;
     private Handler mHandler;
+    private Subscription mPollingSubscription;
 
     @Override
     public void onCreate() {
@@ -73,18 +93,38 @@ public class WebSocketService extends Service {
         } catch (IOException | WebSocketException e) {
             Log.e(TAG, e.getMessage());
         }
+        startPollingUsersStatuses();
+    }
+
+    private void startPollingUsersStatuses() {
+        mPollingSubscription = Observable.interval(10, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(tick -> {
+                    Timber.d("getting users list");
+                    return mUserStorage.listDirectProfiles().first();
+                })
+                .observeOn(Schedulers.io())
+                .flatMap(users -> {
+                    Timber.d("getting users statuses from api");
+                    return mApi.getUserStatusesCompatible(Stream.of(users)
+                            .map(User::getId)
+                            .collect(Collectors.toList())
+                            .toArray(new String[users.size()]));
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(usersStatusesMap -> {
+                    Timber.d("updating users statuses");
+                    for (Map.Entry<String, String> entry : usersStatusesMap.entrySet()) {
+                        Timber.d("user id: %s with status: %s", entry.getKey(), entry.getValue());
+                    }
+                    mUserStorage.updateUsersStatuses(usersStatusesMap);
+                })
+                .subscribe();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        try {
-            openSocket();
-        } catch (IOException | WebSocketException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     @Override
@@ -94,6 +134,9 @@ public class WebSocketService extends Service {
         Log.d(TAG, "closing socket");
 
         closeSocket();
+        if (mPollingSubscription != null && !mPollingSubscription.isUnsubscribed()) {
+            mPollingSubscription.unsubscribe();
+        }
     }
 
     @Override

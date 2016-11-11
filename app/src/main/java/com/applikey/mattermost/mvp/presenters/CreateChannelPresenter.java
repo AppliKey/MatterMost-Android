@@ -131,12 +131,13 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
 
     private void createChannelWithRequest(ChannelRequest request) {
         final Subscription subscription = mTeamStorage.getChosenTeam()
-                .observeOn(Schedulers.io())
                 .map(Team::getId)
                 .first()
+                .observeOn(Schedulers.io())
                 .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
                 .compose(doOnUi(createdChannel -> mChannelStorage.save(createdChannel.getChannel()), Schedulers.io()))
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()), AddedUser::new)
+                .observeOn(Schedulers.io())
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
                         user.getCreatedChannel().getChannel().getId(),
                         new RequestUserId(user.getUser().getId())))
