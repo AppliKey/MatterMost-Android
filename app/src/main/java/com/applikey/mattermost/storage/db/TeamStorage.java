@@ -1,7 +1,5 @@
 package com.applikey.mattermost.storage.db;
 
-import android.util.Log;
-
 import com.applikey.mattermost.models.team.Team;
 
 import java.util.List;
@@ -33,7 +31,6 @@ public class TeamStorage {
     }
 
     public Observable<Team> getChosenTeam() {
-        Log.d(TAG, "getChosenTeam: " + Thread.currentThread());
         final Observable<DictionaryEntry> dictionaryEntry =
                 mDb.getSingleDictionaryEntry(CHOSEN_TEAM_KEY);
         return dictionaryEntry.flatMap(v -> {
