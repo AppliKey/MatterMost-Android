@@ -24,5 +24,5 @@ public class Constants {
 
     public static final String EMPTY_STRING = "";
 
-    public static final String RETAIN_PREFS_FILE_NAME = "PersistencePrefs";
+    public static final String PERSISTENT_PREFS_FILE_NAME = "PersistentPrefs";
 }

@@ -12,15 +12,13 @@ import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.storage.preferences.PersistencePrefs;
+import com.applikey.mattermost.storage.preferences.PersistentPrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
 import com.applikey.mattermost.web.BearerTokenFactory;
-import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;
 
 import com.applikey.mattermost.utils.image.ImagePathHelper;
-import com.google.gson.Gson;
 
 import javax.inject.Named;
 
@@ -40,8 +38,8 @@ public class UserModule {
 
     @Provides
     @PerUser
-    PersistencePrefs providePersistencePrefs(Context context, Gson gson) {
-        return new PersistencePrefs(context, gson);
+    PersistentPrefs providePersistencePrefs(Context context, Gson gson) {
+        return new PersistentPrefs(context, gson);
     }
 
     @Provides
@@ -64,8 +62,8 @@ public class UserModule {
 
     @Provides
     @PerUser
-    MetaDataManager provideMetadataManager(Prefs prefs, PersistencePrefs persistencePrefs) {
-        return new MetaDataManager(prefs, persistencePrefs);
+    MetaDataManager provideMetadataManager(Prefs prefs, PersistentPrefs persistentPrefs) {
+        return new MetaDataManager(prefs, persistentPrefs);
     }
 
     @Provides

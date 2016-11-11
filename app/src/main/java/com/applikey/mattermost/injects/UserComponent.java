@@ -1,7 +1,6 @@
 package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.activities.ChatActivity;
-import com.applikey.mattermost.activities.SearchChatActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
@@ -48,27 +47,25 @@ public interface UserComponent {
 
     void inject(WebSocketService service);
 
-    void inject(ChannelDetailsPresenter channelDetailsPresenter);
+    void inject(ChannelDetailsPresenter presenter);
 
-    void inject(NavigationPresenter navigationPresenter);
+    void inject(NavigationPresenter presenter);
 
-    void inject(UserProfilePresenter userProfilePresenter);
+    void inject(UserProfilePresenter presenter);
 
-    void inject(SearchUserPresenter searchUserPresenter);
+    void inject(SearchUserPresenter presenter);
 
-    void inject(SearchChannelPresenter searchChannelPresenter);
+    void inject(SearchChannelPresenter presenter);
 
-    void inject(SearchAllPresenter searchAllPresenter);
+    void inject(SearchAllPresenter presenter);
 
-    void inject(SearchChatActivity searchChatActivity);
+    void inject(SearchChatPresenter presenter);
 
-    void inject(SearchChatPresenter searchChatPresenter);
+    void inject(ChatListScreenPresenter presenter);
 
-    void inject(ChatListScreenPresenter chatListScreenPresenter);
+    void inject(ChatPresenter presenter);
 
-    void inject(ChatPresenter chatPresenter);
-
-    void inject(AddedMembersPresenter addedMembersPresenter);
+    void inject(AddedMembersPresenter presenter);
 
     @Subcomponent.Builder
     interface Builder {

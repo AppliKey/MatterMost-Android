@@ -15,9 +15,9 @@ import java.util.Set;
 import rx.Completable;
 import rx.Observable;
 
-public class PersistencePrefs {
+public class PersistentPrefs {
 
-    private static final String TAG = "PersistencePrefs";
+    private static final String TAG = "PersistentPrefs";
 
     private static final String KEY_USERS_METADATA = Constants.PACKAGE_NAME + ".USERS_METADATA";
 
@@ -25,10 +25,10 @@ public class PersistencePrefs {
     private final SharedPreferences mSharedPreferences;
     private final RxSharedPreferences mRxPreferences;
 
-    public PersistencePrefs(Context context, final Gson gson) {
+    public PersistentPrefs(Context context, final Gson gson) {
         mGson = gson;
 
-        mSharedPreferences = context.getSharedPreferences(Constants.RETAIN_PREFS_FILE_NAME, Context.MODE_PRIVATE);
+        mSharedPreferences = context.getSharedPreferences(Constants.PERSISTENT_PREFS_FILE_NAME, Context.MODE_PRIVATE);
         mRxPreferences = RxSharedPreferences.create(mSharedPreferences);
     }
 
