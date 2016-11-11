@@ -119,7 +119,7 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
     @OnClick(R.id.added_people_layout)
     void onAddedUsersPanelClick() {
         final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
-        startActivity(AddedMembersActivity.getIntent(this, alreadyAddedUsers));
+        startActivity(AddedMembersActivity.getIntent(this, alreadyAddedUsers, false));
     }
 
     @OnClick(R.id.b_invite_member)

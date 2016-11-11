@@ -27,6 +27,7 @@ public class AddedMembersActivity extends BaseMvpActivity
         SearchView.OnQueryTextListener {
 
     /* package */ static final String USERS_IDS_KEY = "USERS_IDS_KEY";
+    private static final String EDITABLE_KEY = "EDITABLE_KEY";
 
     @InjectPresenter
     AddedMembersPresenter mPresenter;
@@ -38,23 +39,29 @@ public class AddedMembersActivity extends BaseMvpActivity
     Toolbar mToolbar;
 
     private PeopleToNewChannelAdapter mAdapter;
+    private boolean mEditable;
 
-    public static Intent getIntent(Context context, List<User> alreadyAddedUsers) {
+    // FIXME: 11.11.16 Save ids instead of Users
+    public static Intent getIntent(Context context, List<User> alreadyAddedUsers, boolean editable) {
         final Intent intent = new Intent(context, AddedMembersActivity.class);
         final UserListParcelableWrapper wrapper = new UserListParcelableWrapper(alreadyAddedUsers);
         intent.putExtra(USERS_IDS_KEY, wrapper);
+        intent.putExtra(EDITABLE_KEY, editable);
         return intent;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_added_people);
+        setContentView(R.layout.activity_added_members);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
-        final UserListParcelableWrapper wrapper = getIntent().getParcelableExtra(USERS_IDS_KEY);
+        final Bundle args = getIntent().getExtras();
+        final UserListParcelableWrapper wrapper = args.getParcelable(USERS_IDS_KEY);
+        mEditable = args.getBoolean(EDITABLE_KEY);
         final List<User> alreadyAddedUsers = wrapper.getData();
         mPresenter.setData(alreadyAddedUsers);
+        //TODO implement disable plus button
         mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
         mRvAddedMembers.setAdapter(mAdapter);
         setTitle(R.string.added_members_title);
