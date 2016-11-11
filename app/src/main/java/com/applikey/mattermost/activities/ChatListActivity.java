@@ -82,25 +82,23 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mPresenter.unSubscribe();
-        mEventBus.unregister(this);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        if (mChatListPagerAdapter == null) {
-            mPresenter.initPages();
-        } else {
+        if (mChatListPagerAdapter != null) {
             mPresenter.checkSettingChanges();
         }
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mEventBus.unregister(this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
+        mPresenter.initPages();
         return true;
     }
 

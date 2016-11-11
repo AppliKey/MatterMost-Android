@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.SearchItem;
 import com.google.gson.annotations.SerializedName;
@@ -214,6 +215,10 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     }
 
     public static String getDisplayableName(@NonNull User user) {
+        if (user == null) {
+            return Constants.EMPTY_STRING;
+        }
+
         final StringBuilder builder = new StringBuilder();
 
         if (!user.getFirstName().isEmpty()) {

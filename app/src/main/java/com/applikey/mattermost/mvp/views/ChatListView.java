@@ -13,4 +13,6 @@ public interface ChatListView extends MvpView {
     void displayInitialData(RealmResults<Channel> channels);
 
     void showUnreadIndicator(boolean showIndicator);
+
+    void showEmpty();
 }

@@ -54,13 +54,6 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
     }
 
     @Override
-    public void onDestroy() {
-        mPresenter.unSubscribe();
-
-        super.onDestroy();
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
 
