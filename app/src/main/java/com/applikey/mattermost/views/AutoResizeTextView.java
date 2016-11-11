@@ -1,5 +1,6 @@
 package com.applikey.mattermost.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
@@ -14,14 +15,8 @@ public class AutoResizeTextView extends AppCompatTextView {
     // Minimum text size for this text view
     public static final float MIN_TEXT_SIZE = 20;
 
-    // Interface for resize notifications
-    public interface OnTextResizeListener {
-
-        public void onTextResize(TextView textView, float oldSize, float newSize);
-    }
-
     // Our ellipse string
-    private static final String mEllipsis = "...";
+    private static final String mEllipsis = "…";
 
     // Registered resize listener
     private OnTextResizeListener mTextResizeListener;
@@ -217,6 +212,7 @@ public class AutoResizeTextView extends AppCompatTextView {
      * @param width
      * @param height
      */
+    @SuppressLint("SetTextI18n")
     public void resizeText(int width, int height) {
         CharSequence text = getText();
         // Do not resize if the view does not have dimensions or there is no text
@@ -304,6 +300,13 @@ public class AutoResizeTextView extends AppCompatTextView {
         StaticLayout layout = new StaticLayout(source, paintCopy, width, Layout.Alignment.ALIGN_NORMAL, mSpacingMult,
                                                mSpacingAdd, true);
         return layout.getHeight();
+    }
+
+    // Interface for resize notifications
+    public interface OnTextResizeListener {
+
+        void onTextResize(TextView textView, float oldSize, float newSize);
+
     }
 
 }

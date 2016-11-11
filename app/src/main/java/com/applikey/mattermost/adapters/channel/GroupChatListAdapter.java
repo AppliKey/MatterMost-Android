@@ -64,7 +64,7 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListViewH
             vh.getFourthImageView().setVisibility(View.GONE);
             vh.getCounterView().setVisibility(View.VISIBLE);
 
-            vh.getCounterView().setCount(users.size());
+            vh.getCounterView().setCount(users.size() - GROUP_GRID_COUNT);
         } else {
             vh.getFourthImageView().setVisibility(View.GONE);
             vh.getCounterView().setVisibility(View.GONE);
