@@ -55,6 +55,7 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListViewH
         setGroupImage(iterator, vh.getSecondImageView());
         setGroupImage(iterator, vh.getThirdImageView());
 
+        //TODO replace to viewholder
         if (users.size() == GROUP_GRID_COUNT) {
             vh.getCounterView().setVisibility(View.GONE);
 
