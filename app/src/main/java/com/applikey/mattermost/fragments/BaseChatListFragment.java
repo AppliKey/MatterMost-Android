@@ -3,6 +3,7 @@ package com.applikey.mattermost.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.adapters.BaseChatListAdapter;
 import com.applikey.mattermost.adapters.ChatListAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
 import com.applikey.mattermost.models.channel.Channel;
@@ -78,8 +80,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
         ButterKnife.bind(this, view);
@@ -93,10 +95,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
 
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
-        final ChatListAdapter adapter = new ChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
-        adapter.setChannelListener(this);
-        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mRvChannels.setLayoutManager(layoutManager);
+        final BaseChatListAdapter adapter = getAdapter(channels);
+        adapter.setOnClickListener(this);
+        mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
     }
 
@@ -108,6 +109,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     }
 
     @Override
+    @CallSuper
     public void onLoadAdditionalData(Channel channel) {
         getPresenter().getLastPost(channel);
     }
@@ -126,4 +128,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     protected abstract ChatListPresenter getPresenter();
 
     protected abstract int getEmptyStateTextId();
+
+    protected abstract BaseChatListAdapter getAdapter(RealmResults<Channel> channels);
+
 }

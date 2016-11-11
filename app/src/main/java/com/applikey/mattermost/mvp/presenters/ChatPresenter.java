@@ -70,6 +70,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final ChatView view = getViewState();
 
         updateLastViewedAt(channelId);
+
         mSubscription.add(mChannelStorage.channelById(channelId)
                 .doOnNext(channel -> mChannel = channel)
                 .map(channel -> {

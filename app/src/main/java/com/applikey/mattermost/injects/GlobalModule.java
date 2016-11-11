@@ -12,6 +12,7 @@ import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
 import com.applikey.mattermost.web.BearerTokenFactory;
+import com.applikey.mattermost.web.GsonFactory;
 import com.applikey.mattermost.web.ServerUrlFactory;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
@@ -154,5 +155,11 @@ public class GlobalModule {
     @PerApp
     Context provideApplicationContext() {
         return mApplicationContext;
+    }
+
+    @Provides
+    @PerApp
+    Gson provideGson() {
+        return GsonFactory.INSTANCE.getGson();
     }
 }

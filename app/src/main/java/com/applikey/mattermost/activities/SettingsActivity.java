@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.views.SettingsView;
-import com.applikey.mattermost.platform.WebSocketService;
+import com.applikey.mattermost.platform.socket.WebSocketService;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.Bind;

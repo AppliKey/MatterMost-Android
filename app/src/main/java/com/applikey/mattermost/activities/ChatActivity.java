@@ -45,10 +45,10 @@ import static android.view.View.VISIBLE;
 public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
-    private static final String CHANNEL_NAME_KEY = "channel-name";
-    private static final String CHANNEL_TYPE_KEY = "channel-type";
-    private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
 
+    private static final String CHANNEL_TYPE_KEY = "channel-type";
+
+    private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
 
     private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
@@ -90,15 +90,18 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     ImageLoader mImageLoader;
 
     private String mRootId;
+
     private String mChannelId;
+
     private String mChannelType;
+
     private long mChannelLastViewed;
+
     private PostAdapter mAdapter;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra(CHANNEL_ID_KEY, channel.getId());
-        intent.putExtra(CHANNEL_NAME_KEY, channel.getDisplayName());
         intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
         intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         return intent;
@@ -143,7 +146,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
                 mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
-                channelType, mChannelLastViewed, onPostLongClick);
+                                   channelType, mChannelLastViewed, onPostLongClick);
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
@@ -236,7 +239,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     private void deleteMessage(String channelId, Post post) {
-        mPresenter.deleteMessage(channelId, post);
+        showDeletionDialog(channelId, post);
     }
 
     private void editMessage(String channelId, Post post) {
@@ -251,8 +254,24 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         builder.setView(input)
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.save, (dialog, which) ->
-                        mPresenter.editMessage(channelId, post, input.getText().toString()))
+                .setPositiveButton(R.string.save, (dialog, which) -> {
+                    if (input.getText().length() > 0) {
+                        mPresenter.editMessage(channelId, post, input.getText().toString());
+                    } else {
+                        showDeletionDialog(channelId, post);
+                    }
+                })
+                .show();
+    }
+
+    private void showDeletionDialog(String channelId, Post post) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.post_delete)
+                .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.delete,
+                                   (dialog1, which1) -> mPresenter.deleteMessage(
+                                           channelId, post))
                 .show();
     }
 

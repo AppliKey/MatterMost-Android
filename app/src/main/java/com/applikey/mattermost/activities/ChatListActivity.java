@@ -21,7 +21,7 @@ import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
-import com.applikey.mattermost.platform.WebSocketService;
+import com.applikey.mattermost.platform.socket.WebSocketService;
 import com.applikey.mattermost.views.TabBehavior;
 import com.applikey.mattermost.views.TabSelectedListener;
 import com.arellomobile.mvp.presenter.InjectPresenter;

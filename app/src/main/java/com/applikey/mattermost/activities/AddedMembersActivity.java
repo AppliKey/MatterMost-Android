@@ -9,17 +9,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
-import com.applikey.mattermost.models.channel.UserPendingInvitation;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.user.UserListParcelableWrapper;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.views.AddedMembersView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -42,11 +39,10 @@ public class AddedMembersActivity extends BaseMvpActivity
 
     private PeopleToNewChannelAdapter mAdapter;
 
-    public static Intent getIntent(Context context, ArrayList<String> usersIds) {
+    public static Intent getIntent(Context context, List<User> alreadyAddedUsers) {
         final Intent intent = new Intent(context, AddedMembersActivity.class);
-        final Bundle bundle = new Bundle();
-        bundle.putStringArrayList(USERS_IDS_KEY, usersIds);
-        intent.putExtras(bundle);
+        final UserListParcelableWrapper wrapper = new UserListParcelableWrapper(alreadyAddedUsers);
+        intent.putExtra(USERS_IDS_KEY, wrapper);
         return intent;
     }
 
@@ -56,10 +52,11 @@ public class AddedMembersActivity extends BaseMvpActivity
         setContentView(R.layout.activity_added_people);
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
-        final List<String> usersIds = getIntent().getStringArrayListExtra(USERS_IDS_KEY);
+        final UserListParcelableWrapper wrapper = getIntent().getParcelableExtra(USERS_IDS_KEY);
+        final List<User> alreadyAddedUsers = wrapper.getData();
+        mPresenter.setData(alreadyAddedUsers);
         mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
         mRvAddedMembers.setAdapter(mAdapter);
-        mPresenter.getUsersByIds(usersIds);
         setTitle(R.string.added_members_title);
     }
 
@@ -70,11 +67,18 @@ public class AddedMembersActivity extends BaseMvpActivity
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        final MenuItem searchViewMenuItem = menu.findItem(R.id.action_search_added_members);
-        final SearchView mSearchView = (SearchView) searchViewMenuItem.getActionView();
-        mSearchView.setOnQueryTextListener(this);
-        return super.onPrepareOptionsMenu(menu);
+    public void showAddedMembers(List<User> users) {
+        mAdapter.addAlreadyAddedUsers(users);
+    }
+
+    @Override
+    public void showUsers(List<User> users) {
+        mAdapter.addUsers(users);
+    }
+
+    @Override
+    public void onChosen(User user) {
+        mPresenter.handleUser(user);
     }
 
     @Override
@@ -89,26 +93,18 @@ public class AddedMembersActivity extends BaseMvpActivity
     }
 
     @Override
-    public void showAddedMembers(List<UserPendingInvitation> users) {
-        mAdapter.addUsers(users);
-    }
-
-    @Override
-    public void onChosen(User user, boolean isInvited) {
-        if (isInvited) {
-            mPresenter.addUser(user);
-        } else {
-            mPresenter.removeUser(user);
-        }
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        final MenuItem searchViewMenuItem = menu.findItem(R.id.action_search_added_members);
+        final SearchView searchView = (SearchView) searchViewMenuItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public void onBackPressed() {
         final Intent intent = new Intent();
-        final List<String> addedMembersIds = Stream.of(mPresenter.getResultingList())
-                .map(User::getId)
-                .collect(Collectors.toList());
-        intent.putStringArrayListExtra(USERS_IDS_KEY, (ArrayList<String>) addedMembersIds);
+        final UserListParcelableWrapper wrapper = new UserListParcelableWrapper(mPresenter.getInvitedUsers());
+        intent.putExtra(USERS_IDS_KEY, wrapper);
         setResult(RESULT_OK, intent);
         super.onBackPressed();
     }
@@ -120,7 +116,17 @@ public class AddedMembersActivity extends BaseMvpActivity
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        mPresenter.getUsersAndFilterByFullName(newText);
+        mPresenter.filterByFullName(newText);
         return true;
+    }
+
+    @Override
+    public void addInvitedUser(User user) {
+        mAdapter.addAlreadyAddedUser(user);
+    }
+
+    @Override
+    public void removeInvitedUser(User user) {
+        mAdapter.removeAlreadyAddedUser(user);
     }
 }

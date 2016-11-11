@@ -31,6 +31,8 @@
 
     <string name="edit_message">Edit Message</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="delete">Delete</string>
     <string name="save">Save</string>
 
     <string name="could_not_receive_teams">Could not receive teams</string>
@@ -67,14 +69,19 @@
     <string name="action_create_channel">Create channel</string>
     <string name="new_public_channel">New public channel</string>
     <string name="new_private_group">New private group</string>
-    <string name="error_channel_name_empty">Channel name cannot be empty</string>
+    <string name="post_delete">Post Delete</string>
+    <string name="are_you_sure_you_want_to_delete_this_post">Are you sure you want to delete this post?</string>
+    <string name="error_channel_name_empty">Please, name your channel</string>
+    <string name="error_private_group_name_empty">Please, name your private group</string>
+    <string name="error_channel_already_created">Oops, this name is already taken</string>
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
     <string name="new_message">New Message</string>
     <string name="search">Search</string>
-    <string name="create_chat_hint_name">Example: Project Name, Bugs, Sales</string>
-    <string name="create_channel_description_hint">What are you going to discuss\n in this group</string>
+    <string name="create_chat_hint_name">Example: Project name, Bugs, Sales</string>
+    <string name="create_private_group_description_hint">What are you going to discuss in this group</string>
+    <string name="create_public_channel_description_hint">What are you going to discuss in this channel</string>
     <string name="added_members_title">Added members</string>
     <string name="settings_unread_tabs_content">Enable unread tabs</string>
     <string name="settings_unread_tabs_title">Unread tabs</string>
@@ -99,6 +106,10 @@
     <string name="make_favorite">Make favorite</string>
     <string name="edit_profile">Edit profile</string>
     <string name="unread_messages">Unread messages</string>
+    <string name="add_members">Add members</string>
+    <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
+    <string name="unknown_error">Something is wrong</string>
+
 
 </resources>
