@@ -306,7 +306,6 @@ public class Db {
         return query.findAllSortedAsync(sortedField)
                 .asObservable()
                 .filter(response -> !response.isEmpty())
-                .doOnUnsubscribe(realm::close)
                 .map(realm::copyFromRealm);
     }
 
@@ -322,7 +321,6 @@ public class Db {
             map = object
                     .<T>asObservable()
                     .first()
-                    .doOnUnsubscribe(realm::close)
                     .map(realmResult -> {
                         Log.d(TAG, "getObject: " + realmResult);
                         return realmResult;

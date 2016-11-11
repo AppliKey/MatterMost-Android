@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -93,7 +92,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     }
 
     @Subscribe
-    void on(SearchUserTextChanged event) {
+    public void on(SearchUserTextChanged event) {
         final SearchUserView view = getViewState();
         view.clearData();
         getData(event.getText());
