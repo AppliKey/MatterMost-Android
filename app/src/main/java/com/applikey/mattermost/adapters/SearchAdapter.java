@@ -23,7 +23,9 @@ import java.util.List;
 public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<SearchItem> mDataSet = new ArrayList<>();
+
     private ImageLoader mImageLoader;
+
     private ClickListener mClickListener = null;
 
     public SearchAdapter(ImageLoader imageLoader) {
@@ -34,16 +36,16 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
-            @SearchItem.Type int viewType) {
+                                                      @SearchItem.Type int viewType) {
 
-        if (viewType == SearchItem.CHANNEL) {
+        if (viewType == SearchItem.CHANNEL || viewType == SearchItem.MESSAGE_CHANNEL) {
             final View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_search_channel, parent, false);
 
             final ChannelViewHolder vh = new ChannelViewHolder(v);
             vh.getRoot().setOnClickListener(mOnClickListener);
             return vh;
-        } else if (viewType == SearchItem.USER){
+        } else if (viewType == SearchItem.USER) {
             final View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_search_user, parent, false);
 
@@ -61,34 +63,13 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
         final int searchType = mDataSet.get(position).getSearchType();
         if (searchType == SearchItem.CHANNEL) {
-            final Channel data = (Channel) mDataSet.get(position);
-            final ChannelViewHolder viewHolder = (ChannelViewHolder) vh;
-
-            viewHolder.getChannelName().setText(data.getDisplayName());
-
-            setChannelIcon(viewHolder, data);
-            setMessage(viewHolder, data);
-
-            viewHolder.getRoot().setTag(position);
+            bindChannelVH(vh, position);
         } else if (searchType == SearchItem.USER) {
-            final User data = (User) mDataSet.get(position);
-            final UserViewHolder viewHolder = (UserViewHolder) vh;
-
-            viewHolder.getChannelName().setText(User.getDisplayableName(data));
-
-            setChannelIcon(viewHolder, data);
-
-            viewHolder.getRoot().setTag(position);
-        } else {
-            final Message message = (Message) mDataSet.get(position);
-            final Post post = message.getPost();
-            final Channel channel = message.getChannel();
-            final ChatListViewHolder holder = (ChatListViewHolder) vh;
-
-            holder.getChannelName().setText(channel.getDisplayName());
-            holder.getLastMessageTime().setText(
-                    TimeUtil.formatTimeOnly(post.getCreatedAt()));
-            holder.getMessagePreview().setText(post.getMessage());
+            bindUserVH(vh, position);
+        } else if (searchType == SearchItem.MESSAGE) {
+            bindMessageVH(vh, position);
+        } else if (searchType == SearchItem.MESSAGE_CHANNEL) {
+            bindMessageChannelVH(vh, position);
         }
 
     }
@@ -105,7 +86,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setDataSet(List<SearchItem> dataSet) {
         mDataSet.clear();
-        for(SearchItem searchItem : dataSet) {
+        for (SearchItem searchItem : dataSet) {
             mDataSet.add(searchItem);
         }
         notifyDataSetChanged();
@@ -118,6 +99,51 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setOnClickListener(ClickListener listener) {
         this.mClickListener = listener;
+    }
+
+    private void bindMessageVH(RecyclerView.ViewHolder vh, int position) {
+        final ChatListViewHolder holder = (ChatListViewHolder) vh;
+        final Message message = (Message) mDataSet.get(position);
+        final Post post = message.getPost();
+        final Channel channel = message.getChannel();
+
+        holder.getChannelName().setText(channel.getDisplayName());
+        holder.getLastMessageTime().setText(
+                TimeUtil.formatTimeOnly(post.getCreatedAt()));
+        holder.getMessagePreview().setText(post.getMessage());
+    }
+
+    private void bindMessageChannelVH(RecyclerView.ViewHolder vh, int position) {
+        final Message message = (Message) mDataSet.get(position);
+        final Post post = message.getPost();
+        final Channel channel = message.getChannel();
+        final ChannelViewHolder holder = (ChannelViewHolder) vh;
+
+        holder.getChannelName().setText(channel.getDisplayName());
+        holder.getTvMessage().setText(post.getMessage());
+    }
+
+    private void bindUserVH(RecyclerView.ViewHolder vh, int position) {
+        final User data = (User) mDataSet.get(position);
+        final UserViewHolder viewHolder = (UserViewHolder) vh;
+
+        viewHolder.getChannelName().setText(User.getDisplayableName(data));
+
+        setChannelIcon(viewHolder, data);
+
+        viewHolder.getRoot().setTag(position);
+    }
+
+    private void bindChannelVH(RecyclerView.ViewHolder vh, int position) {
+        final Channel data = (Channel) mDataSet.get(position);
+        final ChannelViewHolder viewHolder = (ChannelViewHolder) vh;
+
+        viewHolder.getChannelName().setText(data.getDisplayName());
+
+        setChannelIcon(viewHolder, data);
+        setMessage(viewHolder, data);
+
+        viewHolder.getRoot().setTag(position);
     }
 
     private void setChannelIcon(ChannelViewHolder viewHolder, Channel element) {
@@ -144,6 +170,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     };
 
     public interface ClickListener {
+
         void onItemClicked(SearchItem searchItem);
     }
 }

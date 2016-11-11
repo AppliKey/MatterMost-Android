@@ -36,7 +36,7 @@ public class Message implements SearchItem{
 
     @Override
     public int getSearchType() {
-        return MESSAGE;
+        return Channel.ChannelType.fromRepresentation(channel.getType()) == Channel.ChannelType.DIRECT ? MESSAGE : MESSAGE_CHANNEL;
     }
 
     @Override
