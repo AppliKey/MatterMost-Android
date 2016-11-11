@@ -9,8 +9,9 @@ import java.util.Set;
 
 import rx.Completable;
 import rx.Observable;
-import rx.Subscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
+import rx.subjects.SerializedSubject;
 
 public class MetaDataManager {
 
@@ -21,18 +22,14 @@ public class MetaDataManager {
 
     private UserMetaData mUserMetaData;
 
-    private Subscriber<? super Set<String>> mFavoriteChannelsSubscriber;
-    private final Observable<Set<String>> mFavoriteChannelsObservable;
+    private final SerializedSubject<UserMetaData, UserMetaData> mMetaDataSubject;
 
     public MetaDataManager(final Prefs prefs, final PersistencePrefs persistencePrefs) {
         mPrefs = prefs;
         mPersistencePrefs = persistencePrefs;
         initUserMetaData();
 
-        mFavoriteChannelsObservable = Observable.create(subscriber -> {
-            mFavoriteChannelsSubscriber = subscriber;
-            emitFavoriteChannels();
-        });
+        mMetaDataSubject = new SerializedSubject<>(BehaviorSubject.create());
     }
 
     private void initUserMetaData() {
@@ -43,23 +40,27 @@ public class MetaDataManager {
                 .filter(userMetadata -> userMetadata.isSame(generateMataDataKey()))
                 .firstOrDefault(new UserMetaData(generateMataDataKey()))
                 .doOnNext(userMetaData -> mUserMetaData = userMetaData)
-                .subscribe(userMetaData -> {
-                }, Throwable::printStackTrace);
+                .subscribe(userMetaData -> emitMetaData(), Throwable::printStackTrace);
     }
 
-    private void emitFavoriteChannels() {
-        if (mFavoriteChannelsObservable == null) {
+    private void emitMetaData() {
+        if (mMetaDataSubject == null) {
             return;
         }
-        mFavoriteChannelsSubscriber.onNext(mUserMetaData.getFavoriteChannels());
+        mMetaDataSubject.onNext(mUserMetaData);
     }
 
     private String generateMataDataKey() {
         return mPrefs.getCurrentServerUrl() + mPrefs.getCurrentTeamId() + mPrefs.getCurrentUserId();
     }
 
+    public Observable<UserMetaData> getMetaDataObservable() {
+        return mMetaDataSubject;
+    }
+
     public Observable<Set<String>> getFavoriteChannels() {
-        return mFavoriteChannelsObservable
+        return getMetaDataObservable()
+                .map(UserMetaData::getFavoriteChannels)
                 .subscribeOn(Schedulers.io());
     }
 
@@ -69,7 +70,7 @@ public class MetaDataManager {
         } else {
             mUserMetaData.getFavoriteChannels().remove(channelId);
         }
-        emitFavoriteChannels();
+        emitMetaData();
         return mPersistencePrefs.saveUserMetaData(mUserMetaData)
                 .subscribeOn(Schedulers.io());
     }
