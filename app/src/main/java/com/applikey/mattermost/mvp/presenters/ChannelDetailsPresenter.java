@@ -79,7 +79,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     @Override
     public void toggleFavorite() {
         Log.d(TAG, "toggleFavorite: " + !mIsFavorite);
-        mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
-                .subscribe();
+        mSubscription.add(mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
+                .subscribe());
     }
 }

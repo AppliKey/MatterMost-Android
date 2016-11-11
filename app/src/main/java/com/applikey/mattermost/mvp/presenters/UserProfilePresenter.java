@@ -64,8 +64,8 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
     @Override
     public void toggleFavorite() {
         Log.d(TAG, "toggleFavorite: " + !mIsFavorite);
-        mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
-                .subscribe();
+        mSubscription.add(mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
+                .subscribe());
     }
 
     //TODO Create direct chat
