@@ -99,7 +99,8 @@
     <dimen name="search_chat_toolbar_text_size">18sp</dimen>
     <dimen name="drawer_item_text_size">18sp</dimen>
 
-    <dimen name="chat_group_list_photo_padding">4dp</dimen>
+    <dimen name="chat_group_list_photo_size">30dp</dimen>
+    <dimen name="chat_group_list_photo_padding">2dp</dimen>
 
     <dimen name="status_indicator_size">12dp</dimen>
     <dimen name="avatar_large_size">100dp</dimen>
