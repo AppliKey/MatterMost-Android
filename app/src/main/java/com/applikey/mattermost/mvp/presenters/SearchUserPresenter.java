@@ -92,7 +92,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     }
 
     @Subscribe
-    void on(SearchUserTextChanged event) {
+    public void on(SearchUserTextChanged event) {
         final SearchUserView view = getViewState();
         view.clearData();
         getData(event.getText());
