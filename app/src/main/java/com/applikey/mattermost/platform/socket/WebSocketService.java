@@ -20,6 +20,7 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.utils.rx.RetryWhenNetwork;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.GsonFactory;
@@ -97,12 +98,13 @@ public class WebSocketService extends Service {
                         .map(User::getId)
                         .collect(Collectors.toList())
                         .toArray(new String[users.size()])))
+                .retryWhen(new RetryWhenNetwork(this))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(usersStatusesMap -> {
                     Timber.d("updating users statuses");
                     mUserStorage.updateUsersStatuses(usersStatusesMap);
                 })
-                .subscribe();
+                .subscribe(ignore -> {}, mErrorHandler::handleError);
     }
 
     @Override
