@@ -16,7 +16,6 @@ import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.web.ErrorHandler;
-import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -46,6 +45,9 @@ public class WebSocketService extends Service {
     @Inject
     Socket mMessagingSocket;
 
+    @Inject
+    Gson mGson;
+
     private Handler mHandler;
     private CompositeSubscription mCompositeSubscription;
 
@@ -66,6 +68,7 @@ public class WebSocketService extends Service {
 
     private void openSocket() {
         mCompositeSubscription.add(mMessagingSocket.listen()
+                .subscribeOn(Schedulers.io())
                 .retryWhen(mErrorHandler::tryReconnectSocket)
                 .observeOn(Schedulers.computation())
                 .subscribe(this::handleSocketEvent, mErrorHandler::handleError));
@@ -118,17 +121,16 @@ public class WebSocketService extends Service {
     }
 
     private Post extractPostFromSocket(WebSocketEvent event) {
-        final Gson gson = GsonFactory.INSTANCE.getGson();
         final JsonObject eventData = event.getData();
         final String postObject;
         if (eventData != null) {
-            final MessagePostedEventData data = gson.fromJson(eventData, MessagePostedEventData.class);
+            final MessagePostedEventData data = mGson.fromJson(eventData, MessagePostedEventData.class);
             postObject = data.getPostObject();
         } else {
             final JsonObject eventProps = event.getProps();
-            final Props props = gson.fromJson(eventProps, Props.class);
+            final Props props = mGson.fromJson(eventProps, Props.class);
             postObject = props.getPost();
         }
-        return gson.fromJson(postObject, Post.class);
+        return mGson.fromJson(postObject, Post.class);
     }
 }

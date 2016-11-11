@@ -14,13 +14,11 @@ import com.applikey.mattermost.models.web.RequestError;
 import com.applikey.mattermost.storage.db.StorageDestroyer;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
 import com.applikey.mattermost.utils.ConnectivityUtils;
-
-import java.net.ConnectException;
-import java.util.concurrent.TimeUnit;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -35,7 +33,7 @@ import timber.log.Timber;
 public final class ErrorHandler {
 
     private static final String TAG = ErrorHandler.class.getSimpleName();
-    private static final int MAX_ATTEMPT_NUMBER = 5;
+    private static final int MAX_ATTEMPT_NUMBER = 3;
 
     private final Context mContext;
     private final SettingsManager mSettingsManager;
@@ -63,18 +61,17 @@ public final class ErrorHandler {
         Log.e(TAG, message);
     }
 
-    public Observable<?> tryReconnectSocket(Observable<? extends Throwable> attempt) {
-        return attempt.observeOn(Schedulers.computation()).flatMap(throwable -> {
-            if (throwable instanceof ConnectException) {
-                return ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status);
-            } else {
-                return Observable.range(1, MAX_ATTEMPT_NUMBER + 1, Schedulers.immediate())
-                        .doOnNext(i -> Log.d(TAG, "Socket reconnect attempt №" + i + ", delay = " + (2 << i)))
-                                .concatMap(i -> i > MAX_ATTEMPT_NUMBER
-                                        ? Observable.error(throwable)
-                                        : Observable.timer(2 << i, TimeUnit.SECONDS, Schedulers.immediate()));
-            }
-        });
+    public Observable<?> tryReconnectSocket(Observable<? extends Throwable> errors) {
+        return errors.zipWith(attempts(), (error, attempt) -> attempt)
+                .doOnNext(attempt -> Log.d(TAG, "tryReconnectSocket: Start attempt #" + attempt + " after delay " + (1 << attempt) + "sec"))
+                .flatMap(attempt -> Observable.timer(1 << attempt, TimeUnit.SECONDS, Schedulers.immediate()));
+    }
+
+    private Observable<Integer> attempts() {
+        return ConnectivityUtils.getConnectivityObservable(mContext)
+                .switchMap(connected -> connected
+                        ? Observable.range(1, MAX_ATTEMPT_NUMBER)
+                        : ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status).map(status -> 0));
     }
 
     private boolean handleApiException(Throwable throwable) {
