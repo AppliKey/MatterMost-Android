@@ -3,8 +3,8 @@ package com.applikey.mattermost.fragments;
 import android.os.Bundle;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.adapters.BaseChatListAdapter;
-import com.applikey.mattermost.adapters.GroupChatListAdapter;
+import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
+import com.applikey.mattermost.adapters.channel.GroupChatListAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
