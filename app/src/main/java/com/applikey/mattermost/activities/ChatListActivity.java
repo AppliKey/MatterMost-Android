@@ -82,6 +82,14 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (mChatListPagerAdapter != null) {
+            mPresenter.checkSettingChanges();
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         mEventBus.unregister(this);
@@ -90,11 +98,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
-        if (mChatListPagerAdapter == null) {
-            mPresenter.initPages();
-        } else {
-            mPresenter.checkSettingChanges();
-        }
+        mPresenter.initPages();
         return true;
     }
 
