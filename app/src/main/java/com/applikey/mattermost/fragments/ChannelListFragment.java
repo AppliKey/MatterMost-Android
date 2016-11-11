@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
-import com.applikey.mattermost.adapters.channel.ChatListAdapter;
+import com.applikey.mattermost.adapters.channel.GroupChatListAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
@@ -39,7 +39,7 @@ public class ChannelListFragment extends BaseChatListFragment {
 
     @Override
     protected BaseChatListAdapter getAdapter(RealmResults<Channel> channels) {
-        return new ChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
+        return new GroupChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
     }
 
     @Override

@@ -117,7 +117,9 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                 .flatMap(channelExtraResult -> mUserStorage.findUsers(
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
-                                .collect(Collectors.toList())), this::transform)
+                                .collect(Collectors.toList())), this::transform) //TODO replace to rx style
+
+
                 .first()
                 .subscribe(channelWithUsers -> {
                     mChannelStorage.setUsers(channelWithUsers.getChannel().getId(), channelWithUsers.getUsers());
