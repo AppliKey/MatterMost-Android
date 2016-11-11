@@ -1,4 +1,4 @@
-package com.applikey.mattermost.platform;
+package com.applikey.mattermost.platform.socket;
 
 import android.app.Service;
 import android.content.Context;
@@ -11,7 +11,6 @@ import android.util.Log;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
 import com.applikey.mattermost.models.socket.Props;
@@ -25,6 +24,7 @@ import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.applikey.mattermost.web.GsonFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.neovisionaries.ws.client.WebSocket;
@@ -37,6 +37,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import rx.Observable;
 import rx.Subscription;
@@ -52,11 +55,6 @@ public class WebSocketService extends Service {
     private static final String EVENT_TYPING = "typing";
     private static final String EVENT_MESSAGE_POSTED = "posted";
 
-    @Inject
-    Prefs mPrefs;
-
-    @Inject
-    BearerTokenFactory mTokenFactory;
 
     @Inject
     PostStorage mPostStorage;
@@ -68,7 +66,7 @@ public class WebSocketService extends Service {
     ErrorHandler mErrorHandler;
 
     @Inject
-    Gson mGson;
+    Socket mMessagingSocket;
 
     @Inject
     Api mApi;
@@ -78,22 +76,30 @@ public class WebSocketService extends Service {
 
     private WebSocket mWebSocket;
     private Handler mHandler;
+    private CompositeSubscription mCompositeSubscription;
     private Subscription mPollingSubscription;
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, WebSocketService.class);
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         App.getUserComponent().inject(this);
 
         mHandler = new Handler(Looper.getMainLooper());
+        mCompositeSubscription = new CompositeSubscription();
 
-        try {
-            openSocket();
-        } catch (IOException | WebSocketException e) {
-            Log.e(TAG, e.getMessage());
-        }
+        openSocket();
         startPollingUsersStatuses();
+    }
+
+    private void openSocket() {
+        mCompositeSubscription.add(mMessagingSocket.listen()
+                .retryWhen(mErrorHandler::tryReconnectSocket)
+                .observeOn(Schedulers.computation())
+                .subscribe(this::handleSocketEvent, mErrorHandler::handleError));
     }
 
     private void startPollingUsersStatuses() {
@@ -131,8 +137,6 @@ public class WebSocketService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        Log.d(TAG, "closing socket");
-
         closeSocket();
         if (mPollingSubscription != null && !mPollingSubscription.isUnsubscribed()) {
             mPollingSubscription.unsubscribe();
@@ -144,45 +148,12 @@ public class WebSocketService extends Service {
         return null;
     }
 
-    public static Intent getIntent(Context context) {
-        return new Intent(context, WebSocketService.class);
+    private void closeSocket() {
+        mMessagingSocket.close();
+        mCompositeSubscription.unsubscribe();
     }
 
-    private void openSocket() throws IOException, WebSocketException {
-        Log.d(TAG, "Opening socket");
-
-        if (mWebSocket != null) {
-            mWebSocket.disconnect();
-        }
-
-        String baseUrl = mPrefs.getCurrentServerUrl();
-        baseUrl = UrlUtil.removeProtocol(baseUrl);
-        baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
-        baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
-
-        mWebSocket = new WebSocketFactory()
-                .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
-                .createSocket(baseUrl);
-
-        mWebSocket.addListener(new WebSocketAdapter() {
-            @Override
-            public void onTextMessage(WebSocket websocket, String text) throws Exception {
-                super.onTextMessage(websocket, text);
-                Log.d(TAG, text);
-
-                handleMessage(mGson, text);
-            }
-        });
-
-        mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mTokenFactory.getBearerTokenString());
-
-        mWebSocket.connectAsynchronously();
-        Log.d(TAG, "Socket opened");
-    }
-
-    private void handleMessage(Gson gson, String message) {
-        final WebSocketEvent event = gson.fromJson(message, WebSocketEvent.class);
-
+    private void handleSocketEvent(WebSocketEvent event) {
         String eventType = event.getEvent();
         // Mattermost Old API fix
         if (eventType == null) {
@@ -193,38 +164,25 @@ public class WebSocketService extends Service {
 
         switch (eventType) {
             case EVENT_MESSAGE_POSTED: {
-                Log.d(TAG, "Extracting message");
-
-                final Post post = extractPostFromSocket(gson, event);
+                final Post post = extractPostFromSocket(event);
                 Log.d(TAG, "Post message: " + post.getMessage());
-
                 mHandler.post(() -> {
                     mPostStorage.save(post);
-
                     mChannelStorage.findByIdAndCopy(post.getChannelId())
                             .first()
-                            .doOnNext(channel -> {
-                                channel.setLastPost(post);
-                                mChannelStorage.updateLastPost(channel);
-                            })
-                            .subscribe(v -> {
-                            }, mErrorHandler::handleError);
+                            .doOnNext(channel -> channel.setLastPost(post))
+                            .subscribe(mChannelStorage::updateLastPost, mErrorHandler::handleError);
                 });
             }
         }
     }
 
-    private void closeSocket() {
-        mWebSocket.sendClose();
-        mWebSocket.disconnect();
-    }
-
-    private Post extractPostFromSocket(Gson gson, WebSocketEvent event) {
+    private Post extractPostFromSocket(WebSocketEvent event) {
+        final Gson gson = GsonFactory.INSTANCE.getGson();
         final JsonObject eventData = event.getData();
         final String postObject;
         if (eventData != null) {
-            final MessagePostedEventData data = gson.fromJson(eventData,
-                    MessagePostedEventData.class);
+            final MessagePostedEventData data = gson.fromJson(eventData, MessagePostedEventData.class);
             postObject = data.getPostObject();
         } else {
             final JsonObject eventProps = event.getProps();
