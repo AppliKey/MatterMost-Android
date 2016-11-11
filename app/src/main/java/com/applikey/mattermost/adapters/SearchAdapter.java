@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.viewholders.ChannelViewHolder;
@@ -106,11 +107,50 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final Message message = (Message) mDataSet.get(position);
         final Post post = message.getPost();
         final Channel channel = message.getChannel();
+        final User user = message.getChannel().getDirectCollocutor();
 
         holder.getChannelName().setText(channel.getDisplayName());
         holder.getLastMessageTime().setText(
                 TimeUtil.formatTimeOnly(post.getCreatedAt()));
         holder.getMessagePreview().setText(post.getMessage());
+
+        setMessageStatus(holder, user);
+
+        setMessageReadStatus(holder, channel);
+
+        setMessageChannelIcon(holder, user);
+
+    }
+
+    private void setMessageStatus(ChatListViewHolder holder, User user){
+        final User.Status status = user != null ?
+                User.Status.from(user.getStatus()) : null;
+        if (status != null) {
+            holder.getStatus().setImageResource(status.getDrawableId());
+        }
+        holder.getStatusBackground().setVisibility(View.VISIBLE);
+        holder.getStatus().setVisibility(View.VISIBLE);
+    }
+
+    private void setMessageReadStatus(ChatListViewHolder holder, Channel channel){
+        if (channel.hasUnreadMessages()) {
+            holder.getNotificationIcon().setVisibility(View.VISIBLE);
+            holder.getContainer().setBackgroundResource(R.color.unread_background);
+        } else {
+            holder.getNotificationIcon().setVisibility(View.GONE);
+            holder.getContainer().setBackgroundResource(android.R.color.white);
+        }
+    }
+
+    private void setMessageChannelIcon(ChatListViewHolder holder, User user){
+        final String previewImagePath = user != null ?
+                user.getProfileImage() : null;
+        final ImageView previewImage = holder.getPreviewImage();
+        if (previewImagePath != null && !previewImagePath.isEmpty()) {
+            mImageLoader.displayCircularImage(previewImagePath, previewImage);
+        } else {
+            previewImage.setImageResource(R.drawable.no_resource);
+        }
     }
 
     private void bindMessageChannelVH(RecyclerView.ViewHolder vh, int position) {
@@ -121,6 +161,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.getChannelName().setText(channel.getDisplayName());
         holder.getTvMessage().setText(post.getMessage());
+
     }
 
     private void bindUserVH(RecyclerView.ViewHolder vh, int position) {

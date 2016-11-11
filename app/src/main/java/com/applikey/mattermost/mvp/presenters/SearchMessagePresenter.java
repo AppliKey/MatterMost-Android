@@ -6,7 +6,9 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchMessageTextChanged;
 import com.applikey.mattermost.models.SearchItem;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
 import com.applikey.mattermost.mvp.views.SearchMessageView;
@@ -25,6 +27,7 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 @InjectViewState
@@ -71,7 +74,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(Observable::from)
                         .flatMap(item -> mChannelStorage.channel(item.getChannelId()).first(),
-                                 (post, channel) -> (SearchItem) new Message(post, channel))
+                                 (Func2<Post, Channel, SearchItem>) Message::new)
                         .toList()
                         .subscribe(view::displayData,
                                    mErrorHandler::handleError)
