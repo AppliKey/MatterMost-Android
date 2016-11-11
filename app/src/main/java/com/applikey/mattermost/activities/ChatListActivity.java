@@ -88,18 +88,13 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
         if (mChatListPagerAdapter == null) {
             mPresenter.initPages();
         } else {
             mPresenter.checkSettingChanges();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar, menu);
         return true;
     }
 

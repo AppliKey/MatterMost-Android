@@ -1,6 +1,8 @@
 package com.applikey.mattermost.manager.metadata;
 
 
+import android.support.annotation.WorkerThread;
+
 import com.applikey.mattermost.models.user.UserMetaData;
 import com.applikey.mattermost.storage.preferences.PersistencePrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -43,6 +45,7 @@ public class MetaDataManager {
                 .subscribe(userMetaData -> emitMetaData(), Throwable::printStackTrace);
     }
 
+    @WorkerThread
     private void emitMetaData() {
         if (mMetaDataSubject == null) {
             return;

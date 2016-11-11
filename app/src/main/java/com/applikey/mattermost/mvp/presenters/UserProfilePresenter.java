@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.util.Log;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
@@ -61,6 +63,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
 
     @Override
     public void toggleFavorite() {
+        Log.d(TAG, "toggleFavorite: " + !mIsFavorite);
         mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
                 .subscribe();
     }

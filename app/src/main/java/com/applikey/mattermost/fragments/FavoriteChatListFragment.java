@@ -16,6 +16,8 @@ import static com.applikey.mattermost.views.TabBehavior.FAVOURITES;
 
 public class FavoriteChatListFragment extends BaseChatListFragment {
 
+    private static final String TAG = "FavoriteChatListFragmen";
+
     @InjectPresenter
     FavoriteChatListPresenter mPresenter;
 
