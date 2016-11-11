@@ -15,7 +15,6 @@ public class FavoriteChatListPresenter extends BaseChatListPresenter {
         App.getUserComponent().inject(this);
     }
 
-    //TODO Real time update date
     @Override
     public Observable<RealmResults<Channel>> getInitData() {
         return mChannelStorage.listFavorite();
