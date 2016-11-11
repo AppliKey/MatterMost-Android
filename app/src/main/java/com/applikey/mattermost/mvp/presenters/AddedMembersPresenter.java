@@ -24,7 +24,7 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     private List<User> mPendingUsers;
 
     public AddedMembersPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void setData(List<User> alreadyAddedUsers) {

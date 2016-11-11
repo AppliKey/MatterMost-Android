@@ -22,6 +22,7 @@ import java.util.List;
 
 
 public class AddedPeopleLayout extends LinearLayout {
+
     private ImageLoader mImageLoader;
 
     private int mItemWidth;
@@ -47,6 +48,9 @@ public class AddedPeopleLayout extends LinearLayout {
     }
 
     private void init(Context context, AttributeSet attrs) {
+        if (isInEditMode()) {
+            return;
+        }
         setLayoutTransition(new LayoutTransition());
         setVisibility(VISIBLE);
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.AddedPeopleLayout);

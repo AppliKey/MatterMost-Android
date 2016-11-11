@@ -68,18 +68,13 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         final int behaviorOrdinal = BundleUtil.getInt(arguments, BEHAVIOR_KEY);
         mTabBehavior = TabBehavior.values()[behaviorOrdinal];
         App.getUserComponent().inject(this);
+        getPresenter().displayData();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mTvEmptyState.setText(getResources().getString(getEmptyStateTextId()));
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getPresenter().unSubscribe();
     }
 
     @Nullable
@@ -95,20 +90,8 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getPresenter().displayData();
-    }
-
-    @Override
     public void displayInitialData(RealmResults<Channel> channels) {
         Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed " + channels.size());
-
-        if (channels.isEmpty()) {
-            mTvEmptyState.setVisibility(View.VISIBLE);
-            mRvChannels.setVisibility(View.GONE);
-            return;
-        }
 
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
@@ -134,6 +117,12 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     @Override
     public void showUnreadIndicator(boolean showIndicator) {
         mEventBus.post(new TabIndicatorRequested(mTabBehavior, showIndicator));
+    }
+
+    @Override
+    public void showEmpty() {
+        mTvEmptyState.setVisibility(View.VISIBLE);
+        mRvChannels.setVisibility(View.GONE);
     }
 
     protected abstract ChatListPresenter getPresenter();
