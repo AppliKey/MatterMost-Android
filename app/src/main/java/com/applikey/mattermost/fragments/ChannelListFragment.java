@@ -43,6 +43,12 @@ public class ChannelListFragment extends BaseChatListFragment {
     }
 
     @Override
+    public void onLoadAdditionalData(Channel channel) {
+        super.onLoadAdditionalData(channel);
+        getPresenter().getChatUsers(channel);
+    }
+
+    @Override
     protected int getEmptyStateTextId() {
         return R.string.no_channels_available;
     }
