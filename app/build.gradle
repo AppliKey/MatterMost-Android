@@ -110,11 +110,12 @@ dependencies {
     compile "com.github.aurae.retrofit2:converter-logansquare:1.4.0"
 
     // rx
-    compile 'io.reactivex:rxandroid:1.1.0'
-    compile 'io.reactivex:rxjava:1.1.1'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.2.2'
     compile 'com.trello:rxlifecycle:0.4.0'
     compile 'com.trello:rxlifecycle-components:0.4.0'
     compile 'com.github.pwittchen:reactivenetwork:0.2.0'
+    compile 'com.f2prateek.rx.preferences:rx-preferences:1.0.2'
 
     // eventbus
     compile 'org.greenrobot:eventbus:3.0.0'

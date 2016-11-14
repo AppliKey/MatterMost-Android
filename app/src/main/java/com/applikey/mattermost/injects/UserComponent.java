@@ -1,11 +1,13 @@
 package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.activities.ChatActivity;
-import com.applikey.mattermost.activities.SearchChatActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
+import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelDetailsPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
+import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
+import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
@@ -18,7 +20,7 @@ import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
-import com.applikey.mattermost.platform.WebSocketService;
+import com.applikey.mattermost.platform.socket.WebSocketService;
 
 import dagger.Subcomponent;
 
@@ -46,21 +48,25 @@ public interface UserComponent {
 
     void inject(WebSocketService service);
 
-    void inject(ChannelDetailsPresenter channelDetailsPresenter);
+    void inject(ChannelDetailsPresenter presenter);
 
-    void inject(NavigationPresenter navigationPresenter);
+    void inject(NavigationPresenter presenter);
 
-    void inject(UserProfilePresenter userProfilePresenter);
+    void inject(UserProfilePresenter presenter);
 
-    void inject(SearchUserPresenter searchUserPresenter);
+    void inject(SearchUserPresenter presenter);
 
-    void inject(SearchChannelPresenter searchChannelPresenter);
+    void inject(SearchChannelPresenter presenter);
 
-    void inject(SearchAllPresenter searchAllPresenter);
+    void inject(SearchAllPresenter presenter);
 
-    void inject(SearchChatActivity searchChatActivity);
+    void inject(SearchChatPresenter presenter);
 
-    void inject(SearchChatPresenter searchChatPresenter);
+    void inject(ChatListScreenPresenter presenter);
+
+    void inject(ChatPresenter presenter);
+
+    void inject(AddedMembersPresenter presenter);
 
     void inject(SearchMessagePresenter searchMessagePresenter);
 
@@ -70,5 +76,6 @@ public interface UserComponent {
         UserComponent.Builder userModule(UserModule userModule);
 
         UserComponent build();
+
     }
 }

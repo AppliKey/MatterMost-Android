@@ -9,11 +9,9 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import java.util.List;
 
 @StateStrategyType(value = SingleStateStrategy.class)
-public interface ChannelDetailsView extends MvpView {
+public interface ChannelDetailsView extends MvpView, FavoriteableView {
 
     void showBaseDetails(Channel channel);
 
     void showMembers(List<User> users);
-
-    void onMakeChannelFavorite(boolean favorite);
 }

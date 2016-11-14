@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.fragments.ChannelListFragment;
 import com.applikey.mattermost.fragments.DirectChatListFragment;
-import com.applikey.mattermost.fragments.EmptyChatListFragment;
+import com.applikey.mattermost.fragments.FavoriteChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.UnreadChatListFragment;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -61,32 +61,25 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     private boolean mLastUnreadTabState;
 
     public ChatListScreenPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void applyInitialViewState() {
-        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
-                                                                         getViewState()
-                                                                                 .setToolbarTitle(
-                                                                                         team.getDisplayName()),
-                                                                 mErrorHandler::handleError));
+        final Subscription subscription = mTeamStorage.getChosenTeam()
+                .subscribe(team -> getViewState().setToolbarTitle(team.getDisplayName()), mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
     }
 
     public void preloadChannel(String channelId) {
-        final Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
-                                                         mTeamStorage.getChosenTeam()
-                                                                 .flatMap(
-                                                                         team -> mApi
-                                                                                 .getChannelById(
-                                                                                         team.getId(),
-                                                                                         channelId)
-                                                                                 .subscribeOn(
-                                                                                         Schedulers.io())))
-                .observeOn(AndroidSchedulers.mainThread())
-                .first()
-                .subscribe(channel -> {
-                    getViewState().onChannelLoaded(channel);
-                }, mErrorHandler::handleError);
+        final Subscription subscription =
+                Observable.amb(mChannelStorage.channelById(channelId), mTeamStorage.getChosenTeam()
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId).subscribeOn(Schedulers.io())))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .first()
+                        .subscribe(channel -> {
+                            getViewState().onChannelLoaded(channel);
+                        }, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
@@ -116,6 +109,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(this::fetchUserStatus)
                 .subscribe(v -> {
                 }, mErrorHandler::handleError);
+
         mSubscription.add(subscription);
     }
 
@@ -159,7 +153,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         if (shouldShowUnreadTab) {
             tabs.add(UnreadChatListFragment.newInstance());
         }
-        tabs.add(EmptyChatListFragment.newInstance());
+        tabs.add(FavoriteChatListFragment.newInstance());
         tabs.add(ChannelListFragment.newInstance());
         tabs.add(GroupListFragment.newInstance());
         tabs.add(DirectChatListFragment.newInstance());

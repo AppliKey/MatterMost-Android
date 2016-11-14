@@ -131,9 +131,9 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
 
     private void createChannelWithRequest(ChannelRequest request) {
         final Subscription subscription = mTeamStorage.getChosenTeam()
-                .observeOn(Schedulers.io())
                 .map(Team::getId)
                 .first()
+                .observeOn(Schedulers.io())
                 .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
                 .compose(doOnUi(createdChannel -> mChannelStorage.save(createdChannel.getChannel()), Schedulers.io()))
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()), AddedUser::new)
@@ -142,7 +142,7 @@ public class CreateChannelPresenter extends BasePresenter<CreateChannelView> imp
                         new RequestUserId(user.getUser().getId())))
                 .toCompletable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(error -> getViewState().showError(mErrorHandler.getErrorMessage(error)), () -> getViewState().onChannelCreated());
+                .subscribe(() -> getViewState().onChannelCreated(), error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
     }
 

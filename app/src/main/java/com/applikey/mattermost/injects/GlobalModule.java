@@ -5,11 +5,8 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
-import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
-import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
@@ -144,26 +141,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    ChannelStorage provideChannelStorage(Db db, Prefs prefs) {
-        return new ChannelStorage(db, prefs);
-    }
-
-    @Provides
-    @PerApp
-    UserStorage provideUserStorage(Db db, ImagePathHelper imagePathHelper) {
-        return new UserStorage(db, imagePathHelper);
-    }
-
-    @Provides
-    @PerApp
     ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory) {
         return new ImagePathHelper(serverUrlFactory);
-    }
-
-    @Provides
-    @PerApp
-    PostStorage providePostStorage(Db db) {
-        return new PostStorage(db);
     }
 
     @Provides

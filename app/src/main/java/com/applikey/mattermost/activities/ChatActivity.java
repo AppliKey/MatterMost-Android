@@ -46,15 +46,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
 
-    private static final String CHANNEL_NAME_KEY = "channel-name";
-
     private static final String CHANNEL_TYPE_KEY = "channel-type";
 
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
-
-    private static final String CHANNEL_PREFIX = "#";
-
-    private static final String DIRECT_PREFIX = "";
 
     private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
@@ -99,8 +93,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private String mChannelId;
 
-    private String mChannelName;
-
     private String mChannelType;
 
     private long mChannelLastViewed;
@@ -110,7 +102,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra(CHANNEL_ID_KEY, channel.getId());
-        intent.putExtra(CHANNEL_NAME_KEY, channel.getDisplayName());
         intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
         intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         return intent;
@@ -127,19 +118,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         initParameters();
         initView();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         mPresenter.getInitialData(mChannelId);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        setToolbarText();
     }
 
     @Override
@@ -163,6 +142,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onDataReady(RealmResults<Post> posts) {
+        hideEmptyState();
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
                 mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
@@ -170,16 +150,14 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
 
-        mRvMessages.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
+        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
+    }
 
-        if (posts.size() > 0) {
-            hideEmptyState();
-        } else {
-            displayEmptyState();
-        }
+    @Override
+    public void showEmpty() {
+        displayEmptyState();
     }
 
     @Override
@@ -255,11 +233,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mRootId = null;
     }
 
-    private void setToolbarText() {
-        final String prefix = !mChannelType.equals(Channel.ChannelType.DIRECT.getRepresentation())
-                ? CHANNEL_PREFIX : DIRECT_PREFIX;
-
-        mToolbar.setTitle(prefix + mChannelName);
+    @Override
+    public void showTitle(String title) {
+        mToolbar.setTitle(title);
     }
 
     private void deleteMessage(String channelId, Post post) {
@@ -308,7 +284,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private void initParameters() {
         final Bundle extras = getIntent().getExtras();
         mChannelId = extras.getString(CHANNEL_ID_KEY);
-        mChannelName = extras.getString(CHANNEL_NAME_KEY);
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
         mChannelLastViewed = extras.getLong(CHANNEL_LAST_VIEWED_KEY);
     }
