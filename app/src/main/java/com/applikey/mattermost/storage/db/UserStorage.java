@@ -24,9 +24,18 @@ public class UserStorage {
     }
 
     public void saveUsersStatuses(Map<String, User> directProfiles,
-            Map<String, String> userStatuses) {
+                                  Map<String, String> userStatuses) {
         addStatusData(directProfiles, userStatuses);
         mDb.saveTransactional(directProfiles.values());
+    }
+
+    public void updateUsersStatuses(Map<String, String> usersStatusesMap) {
+        mDb.updateMapTransactional(usersStatusesMap, User.class, (user, status, realm) -> {
+            if (realm != null && user != null) {
+                user.setStatus(status != null ? User.Status.from(status).ordinal() :
+                        User.Status.OFFLINE.ordinal());
+            }
+        } );
     }
 
     public Observable<List<User>> listDirectProfiles() {
@@ -43,7 +52,7 @@ public class UserStorage {
 
     public Observable<List<User>> searchUsers(String text) {
         return mDb.listRealmObjectsFilteredSorted(User.class, text,
-                new String[] {User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME}, User.FIELD_USERNAME);
+                new String[]{User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME}, User.FIELD_USERNAME);
     }
 
     public Observable<List<User>> findUsers(List<String> ids) {
