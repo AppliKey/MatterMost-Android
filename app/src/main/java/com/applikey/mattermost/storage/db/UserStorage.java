@@ -35,7 +35,6 @@ public class UserStorage {
                 user.setStatus(status != null ? User.Status.from(status).ordinal() :
                         User.Status.OFFLINE.ordinal());
             }
-            return true;
         } );
     }
 

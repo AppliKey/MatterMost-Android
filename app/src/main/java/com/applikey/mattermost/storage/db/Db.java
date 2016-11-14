@@ -16,9 +16,9 @@ import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
 import rx.functions.Action1;
+import rx.functions.Action3;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.functions.Func3;
 
 public class Db {
 
@@ -90,8 +90,8 @@ public class Db {
         });
     }
 
-    public <T extends RealmObject, V> void updateMapTransactional(Map<String, V> usersStatusesMap, Class<T> clazz, Func3<T, V, Realm, Boolean> updateFunc) {
-        mRealm.executeTransactionAsync(realm -> Stream.of(usersStatusesMap.entrySet())
+    public <T extends RealmObject, V> void updateMapTransactional(Map<String, V> valuesMap, Class<T> clazz, Action3<T, V, Realm> updateFunc) {
+        mRealm.executeTransactionAsync(realm -> Stream.of(valuesMap.entrySet())
                 .forEach(entry -> {
                     final T object = realm.where(clazz).equalTo("id", entry.getKey()).findFirst();
                     updateFunc.call(object, entry.getValue(),  realm);
