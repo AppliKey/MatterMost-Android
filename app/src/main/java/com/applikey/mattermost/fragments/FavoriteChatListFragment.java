@@ -4,26 +4,28 @@ import android.os.Bundle;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
-import com.applikey.mattermost.adapters.channel.UnreadChatListAdapter;
+import com.applikey.mattermost.adapters.channel.FavoriteChatListAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
-import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.FavoriteChatListPresenter;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import io.realm.RealmResults;
 
-import static com.applikey.mattermost.views.TabBehavior.UNREAD;
+import static com.applikey.mattermost.views.TabBehavior.FAVOURITES;
 
-public class UnreadChatListFragment extends BaseChatListFragment {
+public class FavoriteChatListFragment extends BaseChatListFragment {
+
+    private static final String TAG = "FavoriteChatListFragment";
 
     @InjectPresenter
-    UnreadChatListPresenter mPresenter;
+    FavoriteChatListPresenter mPresenter;
 
-    public static UnreadChatListFragment newInstance() {
-        final UnreadChatListFragment fragment = new UnreadChatListFragment();
+    public static BaseChatListFragment newInstance() {
+        final BaseChatListFragment fragment = new FavoriteChatListFragment();
 
         final Bundle bundle = new Bundle();
-        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, UNREAD.ordinal());
+        bundle.putInt(BaseChatListFragment.BEHAVIOR_KEY, FAVOURITES.ordinal());
 
         fragment.setArguments(bundle);
 
@@ -39,18 +41,18 @@ public class UnreadChatListFragment extends BaseChatListFragment {
     }
 
     @Override
+    protected int getEmptyStateTextId() {
+        return R.string.no_favorite_chats_available;
+    }
+
+    @Override
     protected BaseChatListAdapter getAdapter(RealmResults<Channel> channels) {
-        return new UnreadChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
+        return new FavoriteChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
     }
 
     @Override
     public void onLoadAdditionalData(Channel channel) {
         super.onLoadAdditionalData(channel);
         getPresenter().getChatUsers(channel);
-    }
-
-    @Override
-    protected int getEmptyStateTextId() {
-        return R.string.no_unread_chats_available;
     }
 }

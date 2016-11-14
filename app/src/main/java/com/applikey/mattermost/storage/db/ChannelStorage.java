@@ -1,8 +1,10 @@
 package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.annimon.stream.Stream;
+import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
@@ -17,21 +19,21 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class ChannelStorage {
+
+    private static final String TAG = "ChannelStorage";
 
     private final Db mDb;
 
     private final Prefs mPrefs;
+    private final MetaDataManager mMetaDataManager;
 
-    public ChannelStorage(final Db db, final Prefs prefs) {
+    public ChannelStorage(final Db db, final Prefs prefs, final MetaDataManager metaDataManager) {
         mDb = db;
         mPrefs = prefs;
-    }
-
-    // TODO Naming
-    public Observable<Channel> channel(String channelId) {
-        return mDb.getObjectWithCopy(Channel.class, channelId);
+        mMetaDataManager = metaDataManager;
     }
 
     public Observable<Channel> findById(String id) {
@@ -81,7 +83,16 @@ public class ChannelStorage {
                 .first();
     }
 
-    // TODO Duplicate
+    //Realm doesn't support empty array for operation "in"
+    public Observable<RealmResults<Channel>> listFavorite() {
+        return mMetaDataManager.getFavoriteChannels()
+                .doOnNext(strings -> Log.d(TAG, "listFavorite: " + strings))
+                .map(ids -> ids.isEmpty() ? new String[] {"null"} : ids.toArray(new String[ids.size()]))
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
+                        ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME));
+    }
+
     public Observable<Channel> channelById(String id) {
         return mDb.getObject(Channel.class, id);
     }
@@ -218,8 +229,8 @@ public class ChannelStorage {
     }
 
     private void updateDirectChannelData(Channel channel,
-                                         Map<String, User> contacts,
-                                         String currentUserId) {
+            Map<String, User> contacts,
+            String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

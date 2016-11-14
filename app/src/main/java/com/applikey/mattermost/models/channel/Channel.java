@@ -27,6 +27,8 @@ public class Channel extends RealmObject implements SearchItem {
 
     public static final String FIELD_NAME = "name";
 
+    public static final String FIELD_ID = "id";
+
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
 
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
@@ -36,7 +38,7 @@ public class Channel extends RealmObject implements SearchItem {
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
     @PrimaryKey
-    @SerializedName("id")
+    @SerializedName(FIELD_ID)
     private String id;
 
     @SerializedName(FIELD_NAME_TYPE)

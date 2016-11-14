@@ -1,6 +1,5 @@
 package com.applikey.mattermost.storage.db;
 
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 
@@ -31,15 +30,12 @@ public class UserStorage {
     }
 
     public void updateUsersStatuses(Map<String, String> usersStatusesMap) {
-        Stream.of(usersStatusesMap.entrySet())
-                .forEach(entry -> mDb.updateTransactional(User.class, entry.getKey(), (userRealm, realm) -> {
-                    if (realm != null) {
-                        final String status = entry.getValue();
-                        userRealm.setStatus(status != null ? User.Status.from(status).ordinal() :
-                                User.Status.OFFLINE.ordinal());
-                    }
-                    return true;
-                }));
+        mDb.updateMapTransactional(usersStatusesMap, User.class, (user, status, realm) -> {
+            if (realm != null && user != null) {
+                user.setStatus(status != null ? User.Status.from(status).ordinal() :
+                        User.Status.OFFLINE.ordinal());
+            }
+        } );
     }
 
     public Observable<List<User>> listDirectProfiles() {
