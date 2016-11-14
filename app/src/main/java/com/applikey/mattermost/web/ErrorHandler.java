@@ -55,6 +55,7 @@ public final class ErrorHandler {
             return;
         }
 
+        throwable.printStackTrace();
         Log.e(TAG, throwable.getMessage());
     }
 

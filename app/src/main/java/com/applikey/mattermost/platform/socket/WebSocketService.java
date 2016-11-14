@@ -8,21 +8,34 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
 import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
+import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.utils.rx.RetryWhenNetwork;
+import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class WebSocketService extends Service {
 
@@ -31,7 +44,6 @@ public class WebSocketService extends Service {
     private static final String EVENT_STATUS_CHANGE = "status_change";
     private static final String EVENT_TYPING = "typing";
     private static final String EVENT_MESSAGE_POSTED = "posted";
-
 
     @Inject
     PostStorage mPostStorage;
@@ -46,10 +58,17 @@ public class WebSocketService extends Service {
     Socket mMessagingSocket;
 
     @Inject
+    Api mApi;
+
+    @Inject
+    UserStorage mUserStorage;
+
+    @Inject
     Gson mGson;
 
     private Handler mHandler;
     private CompositeSubscription mCompositeSubscription;
+    private Subscription mPollingSubscription;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, WebSocketService.class);
@@ -64,6 +83,7 @@ public class WebSocketService extends Service {
         mCompositeSubscription = new CompositeSubscription();
 
         openSocket();
+        startPollingUsersStatuses();
     }
 
     private void openSocket() {
@@ -72,6 +92,24 @@ public class WebSocketService extends Service {
                 .retryWhen(mErrorHandler::tryReconnectSocket)
                 .observeOn(Schedulers.computation())
                 .subscribe(this::handleSocketEvent, mErrorHandler::handleError));
+    }
+
+    private void startPollingUsersStatuses() {
+        mPollingSubscription = Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(tick -> mUserStorage.listDirectProfiles().first())
+                .observeOn(Schedulers.io())
+                .flatMap(users -> mApi.getUserStatusesCompatible(Stream.of(users)
+                        .map(User::getId)
+                        .collect(Collectors.toList())
+                        .toArray(new String[users.size()])))
+                .retryWhen(new RetryWhenNetwork(this))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(usersStatusesMap -> {
+                    Timber.d("updating users statuses");
+                    mUserStorage.updateUsersStatuses(usersStatusesMap);
+                })
+                .subscribe(ignore -> {}, mErrorHandler::handleError);
     }
 
     @Override
@@ -84,6 +122,9 @@ public class WebSocketService extends Service {
         super.onDestroy();
 
         closeSocket();
+        if (mPollingSubscription != null && !mPollingSubscription.isUnsubscribed()) {
+            mPollingSubscription.unsubscribe();
+        }
     }
 
     @Override

@@ -28,9 +28,10 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void logout() {
-        mSettingsManager.deleteUserSession();
         getViewState().logout();
+        mSettingsManager.deleteUserSession();
         mStorageDestroyer.get().deleteDatabase();
+        mPrefs.clear();
         App.releaseUserComponent();
     }
 

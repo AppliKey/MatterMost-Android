@@ -83,4 +83,8 @@ public class Prefs {
     public boolean getValue(String key, boolean defValue) {
         return mSharedPreferences.getBoolean(key, defValue);
     }
+
+    public void clear() {
+        mSharedPreferences.edit().clear().apply();
+    }
 }

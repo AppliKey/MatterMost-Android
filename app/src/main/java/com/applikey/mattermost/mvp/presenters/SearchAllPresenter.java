@@ -49,8 +49,8 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     }
 
     @Override
-    public void unSubscribe() {
-        super.unSubscribe();
+    public void onDestroy() {
+        super.onDestroy();
         mEventBus.unregister(this);
     }
 
@@ -81,7 +81,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     }
 
     @Subscribe
-    void on(SearchAllTextChanged event) {
+    public void on(SearchAllTextChanged event) {
         final SearchAllView view = getViewState();
         view.clearData();
         getData(event.getText());

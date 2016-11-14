@@ -54,9 +54,7 @@ public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamVie
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         hideLoadingDialog();
-        mPresenter.unSubscribe();
     }
 
     @Override

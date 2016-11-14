@@ -48,13 +48,6 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
-    }
-
-    @Override
     public void displayData(List<SearchItem> channels) {
         mAdapter.setDataSet(channels);
     }

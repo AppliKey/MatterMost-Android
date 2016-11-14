@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -23,31 +25,46 @@
 
             <ImageView
                 android:id="@+id/iv_first"
-                android:layout_width="@dimen/large"
-                android:layout_height="@dimen/large"
+                android:layout_width="@dimen/chat_group_list_photo_size"
+                android:layout_height="@dimen/chat_group_list_photo_size"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:visibility="invisible" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/iv_second"
-                android:layout_width="@dimen/large"
-                android:layout_height="@dimen/large"
+                android:layout_width="@dimen/chat_group_list_photo_size"
+                android:layout_height="@dimen/chat_group_list_photo_size"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:visibility="invisible" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/iv_third"
-                android:layout_width="@dimen/large"
-                android:layout_height="@dimen/large"
+                android:layout_width="@dimen/chat_group_list_photo_size"
+                android:layout_height="@dimen/chat_group_list_photo_size"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:visibility="invisible" />
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/iv_fourth"
-                android:layout_width="@dimen/large"
-                android:layout_height="@dimen/large"
+                android:layout_width="@dimen/chat_group_list_photo_size"
+                android:layout_height="@dimen/chat_group_list_photo_size"
+                android:layout_column="1"
+                android:layout_row="1"
                 android:padding="@dimen/chat_group_list_photo_padding"
-                android:visibility="invisible" />
+                android:visibility="gone" />
+
+            <com.applikey.mattermost.views.CircleCounterView
+                android:id="@+id/ccv_fourth"
+                android:layout_width="@dimen/chat_group_list_photo_size"
+                android:layout_height="@dimen/chat_group_list_photo_size"
+                android:layout_column="1"
+                android:layout_row="1"
+                android:padding="@dimen/chat_group_list_photo_padding"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
         </GridLayout>
 

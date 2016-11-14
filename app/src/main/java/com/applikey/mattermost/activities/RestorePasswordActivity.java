@@ -36,13 +36,6 @@ public class RestorePasswordActivity extends BaseMvpActivity implements RestoreP
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
-    }
-
-    @Override
     public void onPasswordRestoreSent() {
         Toast.makeText(this, getString(R.string.password_request_sent), Toast.LENGTH_SHORT).show();
 

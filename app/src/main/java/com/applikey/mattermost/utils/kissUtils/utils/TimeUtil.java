@@ -8,6 +8,7 @@ package com.applikey.mattermost.utils.kissUtils.utils;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -88,10 +89,8 @@ public class TimeUtil {
     }
 
     public static String formatTimeOrDateOnlyChannel(long time) {
-        final Date now = new Date();
 
-        final boolean sameDay = time / MILLISECONDS_IN_DAY ==
-                now.getTime() / MILLISECONDS_IN_DAY;
+        final boolean sameDay = DateUtils.isToday(time);
 
         if (sameDay) {
             return formatTimeOnly(time);

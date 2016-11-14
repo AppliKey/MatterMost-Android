@@ -38,13 +38,6 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
-    }
-
-    @Override
     public void displayData(List<User> users) {
         mUserAdapter.setDataSet(users);
     }

@@ -3,8 +3,8 @@ package com.applikey.mattermost.fragments;
 import android.os.Bundle;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.adapters.BaseChatListAdapter;
-import com.applikey.mattermost.adapters.ChatListAdapter;
+import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
+import com.applikey.mattermost.adapters.channel.UnreadChatListAdapter;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
@@ -40,7 +40,13 @@ public class UnreadChatListFragment extends BaseChatListFragment {
 
     @Override
     protected BaseChatListAdapter getAdapter(RealmResults<Channel> channels) {
-        return new ChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
+        return new UnreadChatListAdapter(getContext(), channels, mImageLoader, mCurrentUserId);
+    }
+
+    @Override
+    public void onLoadAdditionalData(Channel channel) {
+        super.onLoadAdditionalData(channel);
+        getPresenter().getChatUsers(channel);
     }
 
     @Override
