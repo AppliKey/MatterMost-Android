@@ -32,16 +32,4 @@ public class ChatListAdapter extends BaseChatListAdapter<UserChatListViewHolder>
         vh.getContainer().setOnClickListener(mOnClickListener);
         return vh;
     }
-
-    @Override
-    public void onBindViewHolder(UserChatListViewHolder vh, int position) {
-        super.onBindViewHolder(vh, position);
-        final OrderedRealmCollection<Channel> data = getData();
-        if (data == null) {
-            return;
-        }
-        final Channel channel = data.get(position);
-
-        vh.bind(mImageLoader, channel);
-    }
 }

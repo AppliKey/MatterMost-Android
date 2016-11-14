@@ -11,7 +11,6 @@ import com.applikey.mattermost.adapters.channel.viewholder.GroupChatListViewHold
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import io.realm.OrderedRealmCollection;
 import io.realm.RealmResults;
 
 public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListViewHolder> {
@@ -29,17 +28,5 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListViewH
 
         vh.getContainer().setOnClickListener(mOnClickListener);
         return vh;
-    }
-
-    @Override
-    public void onBindViewHolder(GroupChatListViewHolder vh, int position) {
-        super.onBindViewHolder(vh, position);
-        final OrderedRealmCollection<Channel> data = getData();
-        if (data == null) {
-            return;
-        }
-        final Channel channel = data.get(position);
-
-        vh.bind(mImageLoader, channel);
     }
 }

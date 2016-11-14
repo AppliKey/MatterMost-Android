@@ -16,10 +16,12 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmResults;
 
-public class UnreadChatListAdapter extends BaseChatListAdapter<BaseChatListViewHolder> {
+public class FavoriteChatListAdapter extends BaseChatListAdapter<BaseChatListViewHolder> {
 
-    public UnreadChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-                                 ImageLoader imageLoader, String currentUserId) {
+    public FavoriteChatListAdapter(@NonNull Context context,
+                                   RealmResults<Channel> data,
+                                   ImageLoader imageLoader,
+                                   String currentUserId) {
         super(context, data, imageLoader, currentUserId);
     }
 
@@ -52,5 +54,4 @@ public class UnreadChatListAdapter extends BaseChatListAdapter<BaseChatListViewH
         }
         return viewHolder;
     }
-
 }
