@@ -62,14 +62,14 @@ public final class ErrorHandler {
         Log.e(TAG, message);
     }
 
-    public Observable<?> tryReconnect(Observable<? extends Throwable> errors) {
+    public Observable<?> tryReconnectSocket(Observable<? extends Throwable> errors) {
         final AtomicInteger attemptCount = new AtomicInteger(0);
         return errors
-                .doOnNext(next -> Log.d(TAG, "tryReconnect: error arrived!"))
+                .doOnNext(next -> Log.d(TAG, "tryReconnectSocket: error arrived!"))
                 .debounce(10, TimeUnit.SECONDS, Schedulers.immediate())
-                .doOnNext(next -> Log.d(TAG, "tryReconnect: attempt #" + attemptCount.incrementAndGet() + ", start listening to network status"))
+                .doOnNext(next -> Log.d(TAG, "tryReconnectSocket: attempt #" + attemptCount.incrementAndGet() + ", start listening to network status"))
                 .switchMap(error -> ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status))
-                .doOnNext(next -> Log.d(TAG, "tryReconnect: network is available, reconnect started!"));
+                .doOnNext(next -> Log.d(TAG, "tryReconnectSocket: network is available, reconnect started!"));
     }
 
     private boolean handleApiException(Throwable throwable) {

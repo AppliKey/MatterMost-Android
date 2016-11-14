@@ -69,7 +69,7 @@ public class WebSocketService extends Service {
     private void openSocket() {
         mCompositeSubscription.add(mMessagingSocket.listen()
                 .subscribeOn(Schedulers.io())
-                .retryWhen(mErrorHandler::tryReconnect)
+                .retryWhen(mErrorHandler::tryReconnectSocket)
                 .observeOn(Schedulers.computation())
                 .subscribe(this::handleSocketEvent, mErrorHandler::handleError));
     }
