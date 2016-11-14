@@ -1,6 +1,5 @@
 package com.applikey.mattermost.adapters.viewholders;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,7 +10,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class UserViewHolder extends RecyclerView.ViewHolder {
+public class UserViewHolder extends ClickableVH {
 
     private final View mRoot;
 

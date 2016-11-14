@@ -1,6 +1,7 @@
 package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.adapters.SearchAdapter;
@@ -12,6 +13,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 public class SearchChannelFragment extends SearchFragment implements SearchChannelView,
         SearchAdapter.ClickListener {
+
+    private static final String TAG = SearchChannelFragment.class.getSimpleName();
 
     @InjectPresenter
     SearchChannelPresenter mPresenter;
@@ -30,12 +33,9 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
 
     @Override
     public void onItemClicked(SearchItem item) {
-        mPresenter.handleChannelClick((Channel) item);
-    }
 
-    @Override
-    public void startChatView(Channel channel) {
-        // TODO: IMPLEMENT
+        Log.d(TAG, "onItemClicked: ");
+        mPresenter.handleChannelClick((Channel) item);
     }
 
 }

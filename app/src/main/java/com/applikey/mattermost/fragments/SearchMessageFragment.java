@@ -7,7 +7,6 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Message;
-import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.mvp.presenters.SearchMessagePresenter;
 import com.applikey.mattermost.mvp.views.SearchMessageView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -33,11 +32,6 @@ public class SearchMessageFragment extends SearchFragment implements SearchMessa
     @Override
     public void onItemClicked(SearchItem item) {
         mPresenter.handleClick((Message) item);
-    }
-
-    @Override
-    public void startChatView(Post post) {
-        // TODO: IMPLEMENT
     }
 
     @Override

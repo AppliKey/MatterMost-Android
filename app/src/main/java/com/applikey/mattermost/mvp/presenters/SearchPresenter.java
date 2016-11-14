@@ -4,10 +4,10 @@ import android.text.TextUtils;
 
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.team.Team;
+import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
-import com.arellomobile.mvp.MvpView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 // TODO: Refactor
-public abstract class SearchPresenter<T extends MvpView> extends BasePresenter<T> {
+public abstract class SearchPresenter<T extends SearchView> extends BasePresenter<T> {
 
     boolean mChannelsIsFetched = false;
 
@@ -56,6 +56,7 @@ public abstract class SearchPresenter<T extends MvpView> extends BasePresenter<T
         }
         return channels;
     }
+
 
     public abstract void getData(String text);
 }

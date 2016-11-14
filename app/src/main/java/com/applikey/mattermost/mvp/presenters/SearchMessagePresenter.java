@@ -90,6 +90,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     }
 
     public void handleClick(Message message) {
-        // TODO: 10.11.16 Implement
+        final SearchMessageView view = getViewState();
+        view.startChatView(message.getChannel());
     }
 }

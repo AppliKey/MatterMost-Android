@@ -1,6 +1,5 @@
 package com.applikey.mattermost.adapters.viewholders;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,7 +14,7 @@ import butterknife.ButterKnife;
  * @author Anatoliy Chub
  */
 
-public class ChatListViewHolder extends RecyclerView.ViewHolder {
+public class ChatListViewHolder extends ClickableVH {
 
     private final View mRoot;
 
@@ -50,6 +49,8 @@ public class ChatListViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         mRoot = itemView;
+
+        mRoot.setOnClickListener(this);
 
         ButterKnife.bind(this, itemView);
     }
@@ -93,4 +94,6 @@ public class ChatListViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout getContainer() {
         return mContainer;
     }
+
+
 }

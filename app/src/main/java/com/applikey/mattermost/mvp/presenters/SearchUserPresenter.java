@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -32,6 +33,8 @@ import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
+
+    private static final String TAG = SearchUserPresenter.class.getSimpleName();
 
     @Inject
     UserStorage mUserStorage;
@@ -84,6 +87,7 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
 
     public void handleUserClick(User user) {
         final SearchUserView view = getViewState();
+        Log.d(TAG, "handleUserClick: ");
         mSubscription.add(mChannelStorage.getChannel(user.getId())
                                   .observeOn(AndroidSchedulers.mainThread())
                                   // TODO CODE SMELLS

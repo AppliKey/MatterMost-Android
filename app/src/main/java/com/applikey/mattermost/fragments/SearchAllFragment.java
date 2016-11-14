@@ -30,12 +30,7 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     @Override
     public void onItemClicked(SearchItem item) {
-        // TODO: IMPLEMENT
-    }
-
-    @Override
-    public void startChatActivity(SearchItem item) {
-        // TODO: IMPLEMENT
+        // TODO: 14.11.16 IMPLEMENT
     }
 
 }

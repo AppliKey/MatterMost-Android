@@ -1,6 +1,7 @@
 package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.R;
@@ -13,6 +14,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 public class SearchUserFragment extends SearchFragment implements SearchUserView,
         SearchAdapter.ClickListener {
+
+    private static final String TAG = SearchUserFragment.class.getSimpleName();
 
     @InjectPresenter
     SearchUserPresenter mPresenter;
@@ -30,6 +33,7 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
 
     @Override
     public void onItemClicked(SearchItem item) {
+        Log.d(TAG, "onItemClicked: ");
         mPresenter.handleUserClick((User) item);
     }
 

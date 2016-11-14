@@ -15,13 +15,15 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.utils.RecyclerItemClickListener;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+        implements RecyclerItemClickListener.OnItemClickListener {
 
     private List<SearchItem> mDataSet = new ArrayList<>();
 
@@ -102,6 +104,16 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.mClickListener = listener;
     }
 
+    @Override
+    public void onItemClick(View childView, int position) {
+        mClickListener.onItemClicked(mDataSet.get(position));
+    }
+
+    @Override
+    public void onItemLongPress(View childView, int position) {
+
+    }
+
     private void bindMessageVH(RecyclerView.ViewHolder vh, int position) {
         final ChatListViewHolder holder = (ChatListViewHolder) vh;
         final Message message = (Message) mDataSet.get(position);
@@ -120,6 +132,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         setMessageChannelIcon(holder, user);
 
+        holder.setClickListener(this);
     }
 
     private void setMessageStatus(ChatListViewHolder holder, User user){
@@ -173,6 +186,8 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         setChannelIcon(viewHolder, data);
 
         viewHolder.getRoot().setTag(position);
+
+        viewHolder.setClickListener(this);
     }
 
     private void bindChannelVH(RecyclerView.ViewHolder vh, int position) {
@@ -185,6 +200,8 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         setMessage(viewHolder, data);
 
         viewHolder.getRoot().setTag(position);
+
+        viewHolder.setClickListener(this);
     }
 
     private void setChannelIcon(ChannelViewHolder viewHolder, Channel element) {
