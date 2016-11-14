@@ -26,11 +26,9 @@ public class FavoriteChatListAdapter extends BaseChatListAdapter<BaseChatListVie
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     public int getItemViewType(int position) {
         final OrderedRealmCollection<Channel> data = getData();
-        if (data == null) {
-            throw new RuntimeException("Data can't be null");
-        }
         final Channel channel = data.get(position);
 
         if (Channel.ChannelType.fromRepresentation(channel.getType()) == Channel.ChannelType.PUBLIC
