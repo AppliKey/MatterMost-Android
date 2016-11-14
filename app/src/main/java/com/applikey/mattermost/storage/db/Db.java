@@ -2,8 +2,11 @@ package com.applikey.mattermost.storage.db;
 
 import android.util.Log;
 
+import com.annimon.stream.Stream;
+
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -15,6 +18,7 @@ import rx.Single;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.functions.Func3;
 
 public class Db {
 
@@ -86,6 +90,14 @@ public class Db {
         });
     }
 
+    public <T extends RealmObject, V> void updateMapTransactional(Map<String, V> usersStatusesMap, Class<T> clazz, Func3<T, V, Realm, Boolean> updateFunc) {
+        mRealm.executeTransactionAsync(realm -> Stream.of(usersStatusesMap.entrySet())
+                .forEach(entry -> {
+                    final T object = realm.where(clazz).equalTo("id", entry.getKey()).findFirst();
+                    updateFunc.call(object, entry.getValue(),  realm);
+                }));
+    }
+
     public void doTransactional(Action1<Realm> update) {
         mRealm.executeTransactionAsync(update::call);
     }
@@ -122,9 +134,7 @@ public class Db {
     }
 
     public void saveTransactional(Iterable<? extends RealmObject> objects) {
-        mRealm.executeTransaction(realm -> {
-            realm.copyToRealmOrUpdate(objects);
-        });
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(objects));
     }
 
     public <T extends RealmObject> Observable<List<T>> listRealmObjects(Class<T> tClass) {
@@ -312,7 +322,7 @@ public class Db {
 
     public <T extends RealmObject> Single<T> getObject(Class<T> tClass, String field, String id) {
         final Realm realm = getRealm();
-        T object = realm.where(tClass)
+        final T object = realm.where(tClass)
                 .contains(field, id)
                 .findFirst();
         final Observable<T> map;
@@ -341,4 +351,6 @@ public class Db {
     private Realm getRealm() {
         return mRealm;
     }
+
+
 }
