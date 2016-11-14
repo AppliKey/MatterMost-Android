@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,6 +31,8 @@ import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiPopup;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -71,7 +74,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     TextView mTvEmptyState;
 
     @Bind(R.id.et_message)
-    EditText mEtMessage;
+    EmojiEditText mEtMessage;
 
     @Bind(R.id.ll_reply)
     LinearLayout mLlReply;
@@ -95,6 +98,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
+    @Bind(R.id.cb_emoji)
+    CheckBox mCbEmojicon;
+
+    @Bind(R.id.root_view)
+    View rootView;
+/*
+    @Bind(R.id.emojicon_view)
+    EmojiconsView mEmojiconsView;*/
+
     private String mRootId;
 
     private String mChannelId;
@@ -106,6 +118,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private long mChannelLastViewed;
 
     private PostAdapter mAdapter;
+
+    private EmojiPopup mEmojiPopup;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -124,6 +138,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
+        mEmojiPopup = EmojiPopup.Builder.fromRootView(rootView).build(mEtMessage);
+
 
         initParameters();
         initView();
@@ -138,7 +154,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Override
     public void onResume() {
         super.onResume();
-
         setToolbarText();
     }
 
@@ -227,6 +242,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         } else {
             mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
         }
+    }
+
+    @OnClick(R.id.cb_emoji)
+    public void onClickEmoji() {
+        mEmojiPopup.toggle(); // Toggles visibility of the Popup
+/*        emojiPopup.dismiss(); // Dismisses the Popup
+        emojiPopup.isShowing(); // Returns true when Popup is showing*/
     }
 
     private void scrollToStart() {
@@ -375,4 +397,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         }
         dialogBuilder.show();
     };
+
+
 }

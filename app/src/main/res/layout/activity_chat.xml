@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -119,7 +120,7 @@
                 android:scaleType="center"
                 android:src="@drawable/ic_attach"/>
 
-            <EditText
+            <com.vanniktech.emoji.EmojiEditText
                 android:id="@+id/et_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -128,7 +129,21 @@
                 android:background="@null"
                 android:fontFamily="sans-serif-light"
                 android:hint="@string/message"
-                android:textColorHint="@color/textSecondary"/>
+                android:textColorHint="@color/textSecondary"
+                android:imeOptions="actionSend"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="3"
+                app:emojiSize="26sp"/>
+
+            <CheckBox
+                android:id="@+id/cb_emoji"
+                style="@style/ImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="0dp"
+                android:layout_gravity="center"
+                android:button="@drawable/ic_emoji"/>
 
             <ImageView
                 android:id="@+id/iv_send_message"
@@ -141,5 +156,12 @@
                 android:src="@drawable/ic_send"/>
 
         </LinearLayout>
+
+<!--
+        <io.github.rockerhieu.emojicon.EmojiconsView
+            android:id="@+id/emojicon_view"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="200dp"/>-->
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

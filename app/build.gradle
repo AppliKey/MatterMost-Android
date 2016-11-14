@@ -164,4 +164,7 @@ dependencies {
 
     //sockets
     compile 'com.neovisionaries:nv-websocket-client:1.30'
+
+    //emoji
+    compile 'com.vanniktech:emoji:0.3.0'
 }

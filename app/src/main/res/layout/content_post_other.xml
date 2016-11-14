@@ -64,7 +64,7 @@
             android:paddingStart="@dimen/list_item_chat_padding"
             android:paddingTop="@dimen/list_item_chat_padding_timestamp">
 
-            <TextView
+            <com.vanniktech.emoji.EmojiTextView
                 android:id="@+id/tv_reply_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                 tools:text="User Message"
                 tools:visibility="visible"/>
 
-            <TextView
+            <com.vanniktech.emoji.EmojiTextView
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
