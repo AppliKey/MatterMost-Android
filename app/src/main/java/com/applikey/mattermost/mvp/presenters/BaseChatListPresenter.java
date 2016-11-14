@@ -79,7 +79,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     @Override
     public void displayData() {
         final Subscription subscription = getInitData()
-                .first()
                 .doOnNext(channels -> mChannels = channels)
                 .doOnNext(channels -> channels.addChangeListener(this))
                 .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
@@ -136,6 +135,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         }
         if (channels.size() == 0) {
             view.showUnreadIndicator(false);
+            view.showEmpty();
         } else {
             view.showUnreadIndicator(channels.sort(Channel.FIELD_UNREAD_TYPE, Sort.DESCENDING)
                                              .first().hasUnreadMessages());
@@ -143,8 +143,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     }
 
     @Override
-    public void unSubscribe() {
-        super.unSubscribe();
+    public void onDestroy() {
+        super.onDestroy();
         if (mChannels != null) {
             mChannels.removeChangeListener(this);
         }

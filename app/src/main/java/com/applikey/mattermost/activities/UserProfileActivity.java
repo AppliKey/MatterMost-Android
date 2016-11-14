@@ -65,7 +65,6 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         setContentView(R.layout.activity_user_profile);
         ButterKnife.bind(this);
         initViews();
-        initParameters();
     }
 
     @Override
@@ -74,6 +73,7 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
                 .setIcon(R.drawable.ic_favorite_uncheck)
                 .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         mMenu = menu;
+        initParameters();
         return true;
     }
 
@@ -81,7 +81,7 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ITEM_FAVORITE:
-                mPresenter.toggleChannelFavorite();
+                mPresenter.toggleFavorite();
                 return true;
             default:
                 return false;
@@ -97,7 +97,7 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     }
 
     @Override
-    public void onMakeChannelFavorite(boolean favorite) {
+    public void onMakeFavorite(boolean favorite) {
         final int iconRes = favorite
                 ? R.drawable.ic_favorite_check
                 : R.drawable.ic_favorite_uncheck;

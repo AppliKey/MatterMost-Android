@@ -42,6 +42,7 @@
     <string name="no_groups_available">No Groups Available</string>
     <string name="no_direct_chats_available">No Direct Chats Available</string>
     <string name="no_unread_chats_available">No Unread Messages</string>
+    <string name="no_favorite_chats_available">No Favorite Chats Available</string>
 
     <string name="action_search">Search</string>
 

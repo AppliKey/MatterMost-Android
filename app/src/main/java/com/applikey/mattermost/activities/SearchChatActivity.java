@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchChatAdapter;
@@ -77,7 +76,6 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
 
         setContentView(R.layout.activity_search_chat);
 
-        App.getUserComponent().inject(this);
         ButterKnife.bind(this);
 
         initView();

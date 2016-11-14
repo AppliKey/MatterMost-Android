@@ -45,13 +45,6 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
-    }
-
-    @Override
     public void displayData(List<Channel> channels) {
         mChannelAdapter.setDataSet(channels);
     }

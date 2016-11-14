@@ -62,8 +62,8 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     }
 
     @Override
-    public void unSubscribe() {
-        super.unSubscribe();
+    public void onDestroy() {
+        super.onDestroy();
         mEventBus.unregister(this);
     }
 
@@ -93,7 +93,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     }
 
     @Subscribe
-    void on(SearchUserTextChanged event) {
+    public void on(SearchUserTextChanged event) {
         final SearchUserView view = getViewState();
         view.clearData();
         getData(event.getText());

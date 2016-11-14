@@ -1,14 +1,16 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.util.Log;
+
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.MemberInfo;
-import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
@@ -20,12 +22,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @InjectViewState
-public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
+public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
+        implements FavoriteablePresenter {
 
     private static final String TAG = ChannelDetailsPresenter.class.getSimpleName();
-
-    @Inject
-    TeamStorage mTeamStorage;
 
     @Inject
     UserStorage mUserStorage;
@@ -39,9 +39,14 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
     @Inject
     ErrorHandler mErrorHandler;
 
+    @Inject
+    Prefs mPrefs;
+
+    @Inject
+    MetaDataManager mMetaDataManager;
+
     private Channel mChannel;
 
-    //temp field, remove after implement Make favorite logic
     private boolean mIsFavorite;
 
     public ChannelDetailsPresenter() {
@@ -51,27 +56,30 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView> {
     public void getInitialData(String channelId) {
         final ChannelDetailsView view = getViewState();
 
-        mSubscription.add(mChannelStorage.channel(channelId)
+        mSubscription.add(mChannelStorage.channelById(channelId)
                 .doOnNext(channel -> mChannel = channel)
                 .subscribe(view::showBaseDetails, mErrorHandler::handleError));
 
-        mSubscription.add(
-                mTeamStorage.getChosenTeam()
-                        .first()
-                        .map(Team::getId)
-                        .flatMap(teamId -> mApi.getChannelExtra(teamId, channelId)
-                                .subscribeOn(Schedulers.io()))
-                        .map(ExtraInfo::getMembers)
-                        .flatMap(Observable::from)
-                        .map(MemberInfo::getId)
-                        .toList()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(ids -> mUserStorage.findUsers(ids))
-                        .subscribe(view::showMembers, mErrorHandler::handleError));
+        mMetaDataManager.isFavoriteChannel(channelId)
+                .doOnNext(favorite -> mIsFavorite = favorite)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
+
+        mSubscription.add(mApi.getChannelExtra(mPrefs.getCurrentTeamId(), channelId)
+                .subscribeOn(Schedulers.io())
+                .map(ExtraInfo::getMembers)
+                .flatMap(Observable::from)
+                .map(MemberInfo::getId)
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(ids -> mUserStorage.findUsers(ids))
+                .subscribe(view::showMembers, mErrorHandler::handleError));
     }
 
-    //TODO Implement favorite logic
-    public void toggleChannelFavorite() {
-        getViewState().onMakeChannelFavorite(mIsFavorite = !mIsFavorite);
+    @Override
+    public void toggleFavorite() {
+        Log.d(TAG, "toggleFavorite: " + !mIsFavorite);
+        mSubscription.add(mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
+                .subscribe());
     }
 }
