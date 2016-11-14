@@ -11,7 +11,6 @@ import com.applikey.mattermost.adapters.channel.viewholder.UserChatListViewHolde
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import io.realm.OrderedRealmCollection;
 import io.realm.RealmResults;
 
 public class UserChatListAdapter extends BaseChatListAdapter<UserChatListViewHolder> {
@@ -25,10 +24,10 @@ public class UserChatListAdapter extends BaseChatListAdapter<UserChatListViewHol
 
     @Override
     public UserChatListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View v = LayoutInflater.from(mContext)
+        final View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.list_item_chat, parent, false);
 
-        final UserChatListViewHolder vh = new UserChatListViewHolder(v, mCurrentUserId);
+        final UserChatListViewHolder vh = new UserChatListViewHolder(view, mCurrentUserId);
         vh.getContainer().setOnClickListener(mOnClickListener);
         return vh;
     }

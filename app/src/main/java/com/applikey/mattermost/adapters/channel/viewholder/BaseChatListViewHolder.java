@@ -45,7 +45,7 @@ public abstract class BaseChatListViewHolder extends RecyclerView.ViewHolder {
 
     public BaseChatListViewHolder(View itemView, String userId) {
         this(itemView);
-        this.mCurrentUserId = userId;
+        mCurrentUserId = userId;
     }
 
     public View getContainer() {

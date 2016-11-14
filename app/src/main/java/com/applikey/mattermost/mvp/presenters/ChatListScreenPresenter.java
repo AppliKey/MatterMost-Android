@@ -65,28 +65,21 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     public void applyInitialViewState() {
-        mSubscription.add(mTeamStorage.getChosenTeam().subscribe(team ->
-                                                                         getViewState()
-                                                                                 .setToolbarTitle(
-                                                                                         team.getDisplayName()),
-                                                                 mErrorHandler::handleError));
+        final Subscription subscription = mTeamStorage.getChosenTeam()
+                .subscribe(team -> getViewState().setToolbarTitle(team.getDisplayName()), mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
     }
 
     public void preloadChannel(String channelId) {
-        final Subscription subscription = Observable.amb(mChannelStorage.channelById(channelId),
-                                                         mTeamStorage.getChosenTeam()
-                                                                 .flatMap(
-                                                                         team -> mApi
-                                                                                 .getChannelById(
-                                                                                         team.getId(),
-                                                                                         channelId)
-                                                                                 .subscribeOn(
-                                                                                         Schedulers.io())))
-                .observeOn(AndroidSchedulers.mainThread())
-                .first()
-                .subscribe(channel -> {
-                    getViewState().onChannelLoaded(channel);
-                }, mErrorHandler::handleError);
+        final Subscription subscription =
+                Observable.amb(mChannelStorage.channelById(channelId), mTeamStorage.getChosenTeam()
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId).subscribeOn(Schedulers.io())))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .first()
+                        .subscribe(channel -> {
+                            getViewState().onChannelLoaded(channel);
+                        }, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
@@ -116,6 +109,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .doOnNext(this::fetchUserStatus)
                 .subscribe(v -> {
                 }, mErrorHandler::handleError);
+
         mSubscription.add(subscription);
     }
 

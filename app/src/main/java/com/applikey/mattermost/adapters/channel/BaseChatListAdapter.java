@@ -61,12 +61,12 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
         this.mChannelListener = listener;
     }
 
-    public final View.OnClickListener mOnClickListener = v -> {
+    public final View.OnClickListener mOnClickListener = view -> {
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;
         }
-        final int position = (Integer) v.getTag();
+        final int position = (Integer) view.getTag();
 
         final Channel team = data.get(position);
 

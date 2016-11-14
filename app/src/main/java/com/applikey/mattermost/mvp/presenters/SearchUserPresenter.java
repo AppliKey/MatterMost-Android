@@ -102,7 +102,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     private void createChannel(User user) {
         final SearchUserView view = getViewState();
         view.showLoading(true);
-        Subscription subscription = mTeamStorage.getChosenTeam()
+        final Subscription subscription = mTeamStorage.getChosenTeam()
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.createChannel(team.getId(),
                                                     new DirectChannelRequest(user.getId())),

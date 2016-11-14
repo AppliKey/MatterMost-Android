@@ -22,9 +22,9 @@ public class GroupChatListAdapter extends BaseChatListAdapter<GroupChatListViewH
 
     @Override
     public GroupChatListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View v = LayoutInflater.from(mContext)
+        final View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.list_item_group_chat, parent, false);
-        final GroupChatListViewHolder vh = new GroupChatListViewHolder(v, mCurrentUserId);
+        final GroupChatListViewHolder vh = new GroupChatListViewHolder(view, mCurrentUserId);
 
         vh.getContainer().setOnClickListener(mOnClickListener);
         return vh;
