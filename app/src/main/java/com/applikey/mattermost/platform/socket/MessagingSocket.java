@@ -93,6 +93,7 @@ public class MessagingSocket implements Socket {
                 mWebSocket.connect();
                 Log.d(TAG, "Socket connected!");
             } catch (IOException | WebSocketException e) {
+                Log.e(TAG, "Socket error: ", e);
                 emitter.onError(e);
             }
         }, Emitter.BackpressureMode.BUFFER);

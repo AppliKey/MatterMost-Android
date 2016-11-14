@@ -19,6 +19,7 @@ import com.google.gson.TypeAdapter;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -65,6 +66,16 @@ public final class ErrorHandler {
         return errors.zipWith(attempts(), (error, attempt) -> attempt)
                 .doOnNext(attempt -> Log.d(TAG, "tryReconnectSocket: Start attempt #" + attempt + " after delay " + (1 << attempt) + "sec"))
                 .flatMap(attempt -> Observable.timer(1 << attempt, TimeUnit.SECONDS, Schedulers.immediate()));
+    }
+
+    public Observable<?> tryReconnect(Observable<? extends Throwable> errors) {
+        final AtomicInteger attemptCount = new AtomicInteger(0);
+        return errors
+                .doOnNext(next -> Log.d(TAG, "tryReconnect: error arrived!"))
+                .debounce(10, TimeUnit.SECONDS, Schedulers.immediate())
+                .doOnNext(next -> Log.d(TAG, "tryReconnect: attempt #" + attemptCount.incrementAndGet() + ", start listening to network status"))
+                .switchMap(error -> ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status))
+                .doOnNext(next -> Log.d(TAG, "tryReconnect: network is available, reconnect started!"));
     }
 
     private Observable<Integer> attempts() {
