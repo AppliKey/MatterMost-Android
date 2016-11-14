@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.BaseActivity;
@@ -31,11 +32,14 @@ public abstract class SearchFragment extends BaseMvpFragment {
 
     protected SearchAdapter mAdapter;
 
+    @Bind(R.id.tv_empty_state)
+    TextView mTvEmptyState;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(getLayout(), container, false);
 
         ButterKnife.bind(this, view);
@@ -78,15 +82,22 @@ public abstract class SearchFragment extends BaseMvpFragment {
         return R.layout.fragment_search_chat;
     }
 
-
     public void displayData(List<SearchItem> items) {
+
+        if (items == null || items.size() == 0) {
+            mTvEmptyState.setVisibility(View.VISIBLE);
+            mRecycleView.setVisibility(View.GONE);
+        } else {
+            mTvEmptyState.setVisibility(View.GONE);
+            mRecycleView.setVisibility(View.VISIBLE);
+        }
+
         Log.d(TAG, "displayData size:" + items.size());
-        for(SearchItem searchItem : items){
+        for (SearchItem searchItem : items) {
             Log.d(TAG, "displayData: " + searchItem);
         }
         mAdapter.setDataSet(items);
     }
-
 
     public void clearData() {
         mAdapter.clear();

@@ -67,6 +67,11 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
         mSubscription.add(
                 mApi.searchPosts(mPrefs.getCurrentTeamId(), new PostSearchRequest(text))
                         .map(PostResponse::getPosts)
+                        .doOnNext(postMap -> {
+                            if (postMap == null || postMap.size() == 0) {
+                                view.displayData(null);
+                            }
+                        })
                         .map(Map::values)
                         .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                         .doOnNext(posts -> Log.d(TAG, "getData init size: " + posts.size()))

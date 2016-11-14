@@ -109,6 +109,7 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
+    <string name="no_results_found_try_again">No results found. Try again?</string>
 
 
 </resources>

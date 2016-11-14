@@ -6,9 +6,23 @@
     android:layout_height="match_parent"
     android:focusableInTouchMode="true">
 
+
+    <com.devspark.robototextview.widget.RobotoTextView
+        android:visibility="gone"
+        android:id="@+id/tv_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fragment_search_empty_state_margin_top"
+        android:textColor="@color/textlink_disabled"
+        android:textSize="@dimen/text_title_size"
+        android:gravity="center"
+        android:text="@string/no_results_found_try_again"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_items"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+
 
 </LinearLayout>
