@@ -14,12 +14,12 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmResults;
 
-public class ChatListAdapter extends BaseChatListAdapter<UserChatListViewHolder> {
+public class UserChatListAdapter extends BaseChatListAdapter<UserChatListViewHolder> {
 
-    public ChatListAdapter(@NonNull Context context,
-                           RealmResults<Channel> data,
-                           ImageLoader imageLoader,
-                           String currentUserId) {
+    public UserChatListAdapter(@NonNull Context context,
+                               RealmResults<Channel> data,
+                               ImageLoader imageLoader,
+                               String currentUserId) {
         super(context, data, imageLoader, currentUserId);
     }
 

@@ -18,7 +18,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
-import com.applikey.mattermost.adapters.channel.ChatListAdapter;
+import com.applikey.mattermost.adapters.channel.UserChatListAdapter;
 import com.applikey.mattermost.events.TabIndicatorRequested;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
 public abstract class BaseChatListFragment extends BaseMvpFragment
-        implements ChatListView, ChatListAdapter.ChannelListener {
+        implements ChatListView, UserChatListAdapter.ChannelListener {
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
 

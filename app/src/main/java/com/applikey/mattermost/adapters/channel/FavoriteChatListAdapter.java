@@ -52,6 +52,8 @@ public class FavoriteChatListAdapter extends BaseChatListAdapter<BaseChatListVie
             view = LayoutInflater.from(mContext).inflate(R.layout.list_item_chat, parent, false);
             viewHolder = new UserChatListViewHolder(view, mCurrentUserId);
         }
+
+        viewHolder.getContainer().setOnClickListener(mOnClickListener);
         return viewHolder;
     }
 }

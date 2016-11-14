@@ -31,11 +31,10 @@ public class UnreadChatListAdapter extends BaseChatListAdapter<BaseChatListViewH
         }
         final Channel channel = data.get(position);
 
-        if (Channel.ChannelType.fromRepresentation(channel.getType()) == Channel.ChannelType.PUBLIC
-                || Channel.ChannelType.fromRepresentation(channel.getType()) == Channel.ChannelType.PRIVATE) {
-            return R.layout.list_item_group_chat;
-        } else {
+        if (Channel.ChannelType.fromRepresentation(channel.getType()) == Channel.ChannelType.DIRECT) {
             return R.layout.list_item_chat;
+        } else {
+            return R.layout.list_item_group_chat;
         }
     }
 
@@ -50,7 +49,8 @@ public class UnreadChatListAdapter extends BaseChatListAdapter<BaseChatListViewH
             view = LayoutInflater.from(mContext).inflate(R.layout.list_item_chat, parent, false);
             viewHolder = new UserChatListViewHolder(view, mCurrentUserId);
         }
+
+        viewHolder.getContainer().setOnClickListener(mOnClickListener);
         return viewHolder;
     }
-
 }
