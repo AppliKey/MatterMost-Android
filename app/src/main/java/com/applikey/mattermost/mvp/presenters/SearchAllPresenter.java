@@ -27,6 +27,8 @@ import rx.android.schedulers.AndroidSchedulers;
 @InjectViewState
 public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
+    private static final String TAG = SearchAllPresenter.class.getSimpleName();
+
     @Inject
     ChannelStorage mChannelStorage;
 
@@ -59,14 +61,11 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
             return;
         }
         final SearchAllView view = getViewState();
+        view.setEmptyState(true);
+        mSubscription.clear();
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))
-                                .doOnNext(channels -> {
-                                    if (channels == null || channels.size() == 0) {
-                                        view.displayData(null);
-                                    }
-                                })
                                 .doOnNext(channels -> addFilterChannels(channels, text)),
                         mUserStorage.searchUsers(text), (items, users) -> {
 
@@ -91,4 +90,5 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         view.clearData();
         getData(event.getText());
     }
+
 }

@@ -53,8 +53,8 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     }
 
     @Override
-    public void unSubscribe() {
-        super.unSubscribe();
+    public void onDestroy() {
+        super.onDestroy();
         mEventBus.unregister(this);
     }
 
@@ -63,22 +63,18 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
             return;
         }
         final SearchMessageView view = getViewState();
+        view.setEmptyState(true);
         mSubscription.clear();
         mSubscription.add(
                 mApi.searchPosts(mPrefs.getCurrentTeamId(), new PostSearchRequest(text))
                         .map(PostResponse::getPosts)
-                        .doOnNext(postMap -> {
-                            if (postMap == null || postMap.size() == 0) {
-                                view.displayData(null);
-                            }
-                        })
                         .map(Map::values)
                         .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                         .doOnNext(posts -> Log.d(TAG, "getData init size: " + posts.size()))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(Observable::from)
-                        .flatMap(item -> mChannelStorage.channel(item.getChannelId()).first(),
+                        .flatMap(item -> mChannelStorage.channelById(item.getChannelId()),
                                  (Func2<Post, Channel, SearchItem>) Message::new)
                         .toList()
                         .subscribe(view::displayData,

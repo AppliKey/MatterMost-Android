@@ -34,18 +34,6 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
     }
 
     @Override
-    public void displayData(List<Channel> channels) {
-        mChannelAdapter.setDataSet(channels);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
-    }
-
-    @Override
     public void startChatView(Channel channel) {
         // TODO: IMPLEMENT
     }

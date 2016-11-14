@@ -56,6 +56,8 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
             return;
         }
         final SearchChannelView view = getViewState();
+        view.setEmptyState(true);
+        mSubscription.clear();
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
                         .map(Channel::getList)

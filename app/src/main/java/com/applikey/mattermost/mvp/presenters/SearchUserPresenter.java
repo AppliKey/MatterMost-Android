@@ -71,6 +71,7 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
 
     public void getData(String text) {
         final SearchUserView view = getViewState();
+        view.setEmptyState(true);
         mSubscription.add(
                 mUserStorage.searchUsers(text)
                         .first()

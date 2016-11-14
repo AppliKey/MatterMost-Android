@@ -3,6 +3,7 @@ package com.applikey.mattermost.fragments;
 import android.os.Bundle;
 import android.view.View;
 
+import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.user.User;
@@ -33,31 +34,13 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
     }
 
     @Override
-    public void displayData(List<User> users) {
-        mUserAdapter.setDataSet(users);
-    }
-
-    @Override
     public void clearData() {
-        mUserAdapter.clear();
+        mAdapter.clear();
     }
 
     @Override
     protected int getLayout() {
         return R.layout.fragment_search_chat;
-    }
-
-    private void initView() {
-        mUserAdapter = new UserAdapter(mImageLoader);
-        mUserAdapter.setOnClickListener(this);
-        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecycleView.setAdapter(mUserAdapter);
-    }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
     }
 
 }

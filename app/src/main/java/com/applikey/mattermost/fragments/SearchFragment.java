@@ -83,15 +83,7 @@ public abstract class SearchFragment extends BaseMvpFragment {
     }
 
     public void displayData(List<SearchItem> items) {
-
-        if (items == null || items.size() == 0) {
-            mTvEmptyState.setVisibility(View.VISIBLE);
-            mRecycleView.setVisibility(View.GONE);
-        } else {
-            mTvEmptyState.setVisibility(View.GONE);
-            mRecycleView.setVisibility(View.VISIBLE);
-        }
-
+        setEmptyState(items.size() == 0);
         Log.d(TAG, "displayData size:" + items.size());
         for (SearchItem searchItem : items) {
             Log.d(TAG, "displayData: " + searchItem);
@@ -99,6 +91,15 @@ public abstract class SearchFragment extends BaseMvpFragment {
         mAdapter.setDataSet(items);
     }
 
+    public void setEmptyState(boolean isEmpty){
+        if (isEmpty) {
+            mTvEmptyState.setVisibility(View.VISIBLE);
+            mRecycleView.setVisibility(View.GONE);
+        } else {
+            mTvEmptyState.setVisibility(View.GONE);
+            mRecycleView.setVisibility(View.VISIBLE);
+        }
+    }
     public void clearData() {
         mAdapter.clear();
     }

@@ -36,13 +36,6 @@ public class SearchMessageFragment extends SearchFragment implements SearchMessa
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mPresenter.unSubscribe();
-    }
-
-    @Override
     public void startChatView(Post post) {
         // TODO: IMPLEMENT
     }
