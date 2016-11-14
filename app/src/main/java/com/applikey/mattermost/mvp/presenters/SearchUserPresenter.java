@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -81,14 +82,14 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     public void handleUserClick(User user) {
         final SearchUserView view = getViewState();
         mSubscription.add(mChannelStorage.getChannel(user.getId())
-                .observeOn(AndroidSchedulers.mainThread())
-                // TODO CODE SMELLS
-                .doOnError(throwable -> {
-                    if (throwable instanceof ObjectNotFoundException) {
-                        createChannel(user);
-                    }
-                })
-                .subscribe(view::startChatView, mErrorHandler::handleError));
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  // TODO CODE SMELLS
+                                  .doOnError(throwable -> {
+                                      if (throwable instanceof ObjectNotFoundException) {
+                                          createChannel(user);
+                                      }
+                                  })
+                                  .subscribe(view::startChatView, mErrorHandler::handleError));
     }
 
     @Subscribe
@@ -101,11 +102,11 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
     private void createChannel(User user) {
         final SearchUserView view = getViewState();
         view.showLoading(true);
-        mTeamStorage.getChosenTeam()
+        final Subscription subscription = mTeamStorage.getChosenTeam()
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.createChannel(team.getId(),
-                        new DirectChannelRequest(user.getId())),
-                        (team, channel) -> channel)
+                                                    new DirectChannelRequest(user.getId())),
+                         (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
                 .subscribe(channel -> {
@@ -115,5 +116,7 @@ public class SearchUserPresenter extends BasePresenter<SearchUserView> {
                     throwable.printStackTrace();
                     view.showLoading(false);
                 });
+
+        mSubscription.add(subscription);
     }
 }
