@@ -52,6 +52,6 @@ public class CircleCounterView extends FrameLayout {
         mCounterTextView.setGravity(Gravity.CENTER);
         mCounterTextView.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
         mCounterTextView.setBackgroundResource(R.drawable.bg_added_people_count);
-        mCounterTextView.setPadding(0, getPaddingTop(), 0, getPaddingBottom());
+        mCounterTextView.setPadding(getPaddingLeft(), getPaddingTop(), getPaddingLeft(), getPaddingBottom());
     }
 }

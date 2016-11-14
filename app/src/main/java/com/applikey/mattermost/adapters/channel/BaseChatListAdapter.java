@@ -5,12 +5,8 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.channel.viewholder.BaseChatListViewHolder;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import io.realm.OrderedRealmCollection;
@@ -56,18 +52,7 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
             mChannelListener.onLoadAdditionalData(channel);
         }
 
-        final long lastPostAt = channel.getLastPostAt();
-
-        vh.getChannelName().setText(channel.getDisplayName());
-
-        final String messagePreview = getMessagePreview(channel, mContext);
-
-        vh.getMessagePreview().setText(messagePreview);
-        vh.getLastMessageTime().setText(
-                TimeUtil.formatTimeOrDateOnlyChannel(lastPostAt != 0 ? lastPostAt :
-                        channel.getCreatedAt()));
-
-        setUnreadStatus(vh, channel);
+        vh.bind(mImageLoader, channel);
 
         vh.getContainer().setTag(position);
     }
@@ -76,45 +61,12 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
         this.mChannelListener = listener;
     }
 
-    private String getMessagePreview(Channel channel, Context context) {
-        final Post lastPost = channel.getLastPost();
-        final String messagePreview;
-        if (channel.getLastPost() == null) {
-            messagePreview = context.getString(R.string.channel_preview_message_placeholder);
-        } else if (isMy(lastPost)) {
-            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
-                    channel.getLastPost().getMessage();
-        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
-            final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
-            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
-                    +
-                    channel.getLastPost().getMessage();
-        } else {
-            messagePreview = channel.getLastPost().getMessage();
-        }
-        return messagePreview;
-    }
-
-    private void setUnreadStatus(VH vh, Channel data) {
-        if (data.hasUnreadMessages()) {
-            vh.getNotificationIcon().setVisibility(View.VISIBLE);
-            vh.getContainer().setBackgroundResource(R.color.unread_background);
-        } else {
-            vh.getNotificationIcon().setVisibility(View.GONE);
-            vh.getContainer().setBackgroundResource(android.R.color.white);
-        }
-    }
-
-    private boolean isMy(Post post) {
-        return post.getUserId().equals(mCurrentUserId);
-    }
-
-    public final View.OnClickListener mOnClickListener = v -> {
+    public final View.OnClickListener mOnClickListener = view -> {
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;
         }
-        final int position = (Integer) v.getTag();
+        final int position = (Integer) view.getTag();
 
         final Channel team = data.get(position);
 

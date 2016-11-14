@@ -22,6 +22,8 @@ public class Constants {
 
     public static final int WEB_SOCKET_TIMEOUT = 5000;
 
+    public static final int POLLING_PERIOD_SECONDS = 15;
+
     public static final String EMPTY_STRING = "";
 
     public static final String PERSISTENT_PREFS_FILE_NAME = "PersistentPrefs";
