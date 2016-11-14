@@ -39,7 +39,6 @@ public class AddedMembersActivity extends BaseMvpActivity
     Toolbar mToolbar;
 
     private PeopleToNewChannelAdapter mAdapter;
-    private boolean mEditable;
 
     // FIXME: 11.11.16 Save ids instead of Users
     public static Intent getIntent(Context context, List<User> alreadyAddedUsers, boolean editable) {
@@ -58,11 +57,12 @@ public class AddedMembersActivity extends BaseMvpActivity
         setSupportActionBar(mToolbar);
         final Bundle args = getIntent().getExtras();
         final UserListParcelableWrapper wrapper = args.getParcelable(USERS_IDS_KEY);
-        mEditable = args.getBoolean(EDITABLE_KEY);
+
+        final boolean editable = args.getBoolean(EDITABLE_KEY);
         final List<User> alreadyAddedUsers = wrapper.getData();
+
         mPresenter.setData(alreadyAddedUsers);
-        //TODO implement disable plus button
-        mAdapter = new PeopleToNewChannelAdapter(this, mImageLoader);
+        mAdapter = new PeopleToNewChannelAdapter(editable, this, mImageLoader);
         mRvAddedMembers.setAdapter(mAdapter);
         setTitle(R.string.added_members_title);
     }

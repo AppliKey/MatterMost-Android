@@ -8,6 +8,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.MemberInfo;
+import com.applikey.mattermost.models.post.LastPostDto;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.user.User;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -32,6 +34,7 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -66,6 +69,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     private final Set<String> mPreviewLoadedChannels = new HashSet<>();
     private final Set<String> mUsersLoadedChannels = new HashSet<>();
 
+    private Subscriber<? super String> mChannelSubscriber;
+
     /* package */ BaseChatListPresenter() {
         App.getUserComponent().inject(this);
     }
@@ -74,6 +79,24 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         mTeamId = mPrefs.getCurrentTeamId();
+
+        createObservable();
+    }
+
+    private void createObservable() {
+        final Observable<String> channelObservable = Observable.create(subscriber -> {
+            mChannelSubscriber = subscriber;
+        });
+
+        mSubscription.add(channelObservable
+                .onBackpressureBuffer()
+                .observeOn(Schedulers.io())
+                .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
+                .buffer(1, 1, TimeUnit.SECONDS)
+                .filter(posts -> !posts.isEmpty())
+                .doOnNext(posts -> Log.d(TAG, "createObservable: posts size = " + posts.size()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(posts -> mChannelStorage.updateLastPosts(posts), mErrorHandler::handleError));
     }
 
     @Override
@@ -93,12 +116,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         }
         Log.d(TAG, "getLastPost for " + channel.getDisplayName());
         mPreviewLoadedChannels.add(channel.getId());
-        mSubscription.add(mApi.getLastPost(mTeamId, channel.getId())
-                                  .map(this::transform)
-                                  .subscribeOn(Schedulers.io())
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(post -> mChannelStorage.setLastPost(channel, post),
-                                             mErrorHandler::handleError));
+        mChannelSubscriber.onNext(channel.getId());
     }
 
     @Override
@@ -136,7 +154,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
             view.showEmpty();
         } else {
             view.showUnreadIndicator(channels.sort(Channel.FIELD_UNREAD_TYPE, Sort.DESCENDING)
-                                             .first().hasUnreadMessages());
+                    .first().hasUnreadMessages());
         }
     }
 
@@ -148,15 +166,16 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         }
     }
 
-    private Post transform(PostResponse postResponse) {
+    private LastPostDto transform(String channelId, PostResponse postResponse) {
         final List<Post> posts = Stream.of(postResponse.getPosts())
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
-        Post lastPost = null;
+
         if (!posts.isEmpty()) {
-            lastPost = posts.get(posts.size() - 1);
+            final Post lastPost = posts.get(posts.size() - 1);
+            return new LastPostDto(lastPost, channelId);
         }
-        return lastPost;
+        return null;
     }
 
     private ChannelExtraResult transform(Channel channel, ExtraInfo extraInfo) {

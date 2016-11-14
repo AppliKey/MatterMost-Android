@@ -22,14 +22,14 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
 
     private ChannelListener mChannelListener = null;
 
-    final ImageLoader mImageLoader;
+    protected final ImageLoader mImageLoader;
 
-    final String mCurrentUserId;
+    protected final String mCurrentUserId;
 
-    final Context mContext;
+    protected final Context mContext;
 
     public BaseChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-                               ImageLoader imageLoader, String currentUserId) {
+            ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
         mContext = context;
         mImageLoader = imageLoader;
