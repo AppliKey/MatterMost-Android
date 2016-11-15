@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              tools:showIn="@layout/list_item_post_other">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    tools:showIn="@layout/list_item_post_other">
 
     <FrameLayout
         android:id="@+id/iv_preview_image_layout"
@@ -76,6 +77,7 @@
                 android:maxLines="1"
                 android:textColor="@color/textListPrimary"
                 android:textSize="@dimen/text_primary_button"
+                app:emojiSize="@dimen/emoji_size"
                 android:visibility="gone"
                 tools:text="User Message"
                 tools:visibility="visible"/>
@@ -87,6 +89,7 @@
                 android:fontFamily="sans-serif-light"
                 android:textColor="@color/textListPrimary"
                 android:textSize="@dimen/list_item_chat_text_size"
+                app:emojiSize="@dimen/emoji_size"
                 tools:text="Some message"/>
 
         </LinearLayout>

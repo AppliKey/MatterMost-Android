@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:tools="http://schemas.android.com/tools"
-       tools:showIn="@layout/list_item_post_my">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/list_item_post_my">
 
     <TextView
         android:id="@+id/tv_name"
@@ -13,7 +14,7 @@
         android:maxLines="1"
         android:textColor="@color/textListPrimary"
         android:textSize="@dimen/list_item_chat_text_size"
-        tools:text="Name"/>
+        tools:text="Name" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -40,8 +41,9 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/text_primary_button"
             android:visibility="gone"
+            app:emojiSize="@dimen/emoji_size"
             tools:text="User Message"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <com.vanniktech.emoji.EmojiTextView
             android:id="@+id/tv_message"
@@ -50,7 +52,8 @@
             android:fontFamily="sans-serif-light"
             android:textColor="@android:color/white"
             android:textSize="@dimen/list_item_chat_text_size"
-            tools:text="Some message"/>
+            app:emojiSize="@dimen/emoji_size"
+            tools:text="Some message" />
 
     </LinearLayout>
 
@@ -62,6 +65,6 @@
         android:fontFamily="sans-serif-light"
         android:textColor="@color/textListSecondary"
         android:textSize="@dimen/list_item_chat_date_size"
-        tools:text="11:12 AM"/>
+        tools:text="11:12 AM" />
 
 </merge>

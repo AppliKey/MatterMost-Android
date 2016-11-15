@@ -129,18 +129,14 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
-        mEmojiPopup = EmojiPopup.Builder.fromRootView(rootView).build(mEtMessage);
-
+        mEmojiPopup = EmojiPopup.Builder
+                .fromRootView(rootView)
+                .setOnSoftKeyboardCloseListener(() -> mEmojiPopup.dismiss())
+                .build(mEtMessage);
 
         initParameters();
         initView();
         mPresenter.getInitialData(mChannelId);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setToolbarText();
     }
 
     @Override
@@ -211,6 +207,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void onBackPressed() {
+        if (mEmojiPopup != null && mEmojiPopup.isShowing()) {
+            mEmojiPopup.dismiss();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected Toolbar getToolbar() {
         return mToolbar;
     }
@@ -231,9 +236,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @OnClick(R.id.cb_emoji)
     public void onClickEmoji() {
-        mEmojiPopup.toggle(); // Toggles visibility of the Popup
-/*        emojiPopup.dismiss(); // Dismisses the Popup
-        emojiPopup.isShowing(); // Returns true when Popup is showing*/
+        mEmojiPopup.toggle();
     }
 
     private void scrollToStart() {

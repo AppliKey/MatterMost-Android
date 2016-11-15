@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -84,7 +85,7 @@
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_secondary_text" />
 
-        <TextView
+        <com.vanniktech.emoji.EmojiTextView
             android:id="@+id/tv_message_preview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,6 +96,7 @@
             android:maxLines="2"
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_secondary_text"
+            app:emojiSize="@dimen/emoji_size"
             tools:text="@string/example_message_preview" />
 
     </RelativeLayout>

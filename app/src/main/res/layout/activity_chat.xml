@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
@@ -17,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             app:contentInsetStartWithNavigation="60dp"
-            app:elevation="2dp"/>
+            app:elevation="2dp" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -38,14 +37,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical"
-                tools:listitem="@layout/list_item_post_my"/>
+                tools:listitem="@layout/list_item_post_my" />
 
             <TextView
                 android:id="@+id/tv_empty_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/no_posts_to_display"/>
+                android:text="@string/no_posts_to_display" />
 
         </FrameLayout>
 
@@ -67,7 +66,7 @@
             android:visibility="gone"
             tools:visibility="visible">
 
-            <TextView
+            <com.vanniktech.emoji.EmojiTextView
                 android:id="@+id/tv_reply_message"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -82,7 +81,8 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:textSize="@dimen/text_primary_button"
-                tools:text="User Message"/>
+                app:emojiSize="@dimen/emoji_size"
+                tools:text="User Message" />
 
             <ImageView
                 android:id="@+id/iv_reply_close"
@@ -92,7 +92,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:scaleType="center"
-                android:src="@drawable/ic_close"/>
+                android:src="@drawable/ic_close" />
 
         </LinearLayout>
 
@@ -102,7 +102,7 @@
             android:layout_height="1dp"
             android:background="@color/separator_list"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/l_message"
@@ -118,7 +118,7 @@
                 android:layout_height="@dimen/image_button_dimen_large"
                 android:layout_gravity="center"
                 android:scaleType="center"
-                android:src="@drawable/ic_attach"/>
+                android:src="@drawable/ic_attach" />
 
             <com.vanniktech.emoji.EmojiEditText
                 android:id="@+id/et_message"
@@ -129,21 +129,21 @@
                 android:background="@null"
                 android:fontFamily="sans-serif-light"
                 android:hint="@string/message"
-                android:textColorHint="@color/textSecondary"
                 android:imeOptions="actionSend"
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLines="3"
-                app:emojiSize="26sp"/>
+                android:textColorHint="@color/textSecondary"
+                app:emojiSize="28sp" />
 
             <CheckBox
                 android:id="@+id/cb_emoji"
                 style="@style/ImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="0dp"
                 android:layout_gravity="center"
-                android:button="@drawable/ic_emoji"/>
+                android:button="@drawable/ic_emoji"
+                android:gravity="center"
+                android:padding="0dp" />
 
             <ImageView
                 android:id="@+id/iv_send_message"
@@ -153,15 +153,15 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:scaleType="center"
-                android:src="@drawable/ic_send"/>
+                android:src="@drawable/ic_send" />
 
         </LinearLayout>
 
-<!--
-        <io.github.rockerhieu.emojicon.EmojiconsView
-            android:id="@+id/emojicon_view"
-            android:layout_width="match_parent"
-            android:visibility="gone"
-            android:layout_height="200dp"/>-->
+        <!--
+                <io.github.rockerhieu.emojicon.EmojiconsView
+                    android:id="@+id/emojicon_view"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="200dp"/>-->
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -168,4 +168,5 @@ dependencies {
 
     //emoji
     compile 'com.vanniktech:emoji:0.3.0'
+    compile 'com.vdurmont:emoji-java:3.1.3'
 }
