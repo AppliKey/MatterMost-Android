@@ -156,12 +156,5 @@
                 android:src="@drawable/ic_send" />
 
         </LinearLayout>
-
-        <!--
-                <io.github.rockerhieu.emojicon.EmojiconsView
-                    android:id="@+id/emojicon_view"
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="200dp"/>-->
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
