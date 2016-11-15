@@ -17,7 +17,7 @@ public class RetryWhenNetwork implements Func1<Observable<? extends Throwable>, 
     }
 
     @Override
-    public Observable<?> call(Observable<? extends Throwable> attempt) {
-        return attempt.flatMap(throwable -> ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status));
+    public Observable<?> call(Observable<? extends Throwable> errors) {
+        return errors.switchMap(throwable -> ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status));
     }
 }
