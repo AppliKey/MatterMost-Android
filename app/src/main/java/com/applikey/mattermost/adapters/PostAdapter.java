@@ -2,7 +2,9 @@ package com.applikey.mattermost.adapters;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.text.util.LinkifyCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +74,8 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         final View itemView = inflater.inflate(layoutId, parent, false);
         final ViewHolder viewHolder = new ViewHolder(itemView);
         viewHolder.mTvTimestamp.setOnClickListener(v ->
-                viewHolder.toggleDate(getItem(viewHolder.getAdapterPosition())));
+                                                           viewHolder.toggleDate(
+                                                                   getItem(viewHolder.getAdapterPosition())));
         return viewHolder;
     }
 
@@ -119,7 +122,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
         } else {
             holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
-                    mImageLoader, mOnLongClickListener);
+                                 mImageLoader, mOnLongClickListener);
         }
     }
 
@@ -150,6 +153,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
 
     @FunctionalInterface
     public interface OnLongClickListener {
+
         void onLongClick(Post post, boolean isPostOwner);
     }
 
@@ -258,6 +262,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(post.getAuthor()));
             mTvMessage.setText(post.getMessage());
+            LinkifyCompat.addLinks(mTvMessage, Linkify.WEB_URLS);
 
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
