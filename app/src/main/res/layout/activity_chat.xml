@@ -133,12 +133,13 @@
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLines="3"
                 android:textColorHint="@color/textSecondary"
-                app:emojiSize="28sp" />
+                app:emojiSize="@dimen/emoji_size" />
 
-            <CheckBox
-                android:id="@+id/cb_emoji"
+            <ImageView
+                android:id="@+id/iv_emoji"
                 style="@style/ImageButton"
                 android:layout_width="wrap_content"
+                app:srcCompat = "@drawable/bg_emoji_button"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:button="@drawable/ic_emoji"

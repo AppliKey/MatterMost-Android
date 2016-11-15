@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -92,14 +91,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
-    @Bind(R.id.cb_emoji)
-    CheckBox mCbEmojicon;
+    @Bind(R.id.iv_emoji)
+    ImageView mIvEmojicon;
 
     @Bind(R.id.root_view)
     View rootView;
-/*
-    @Bind(R.id.emojicon_view)
-    EmojiconsView mEmojiconsView;*/
 
     private String mRootId;
 
@@ -132,6 +128,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mEmojiPopup = EmojiPopup.Builder
                 .fromRootView(rootView)
                 .setOnSoftKeyboardCloseListener(() -> mEmojiPopup.dismiss())
+                .setOnEmojiPopupShownListener(() -> mIvEmojicon.setSelected(true))
+                .setOnEmojiPopupDismissListener(() -> mIvEmojicon.setSelected(false))
                 .build(mEtMessage);
 
         initParameters();
@@ -234,8 +232,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         }
     }
 
-    @OnClick(R.id.cb_emoji)
-    public void onClickEmoji() {
+    @OnClick(R.id.iv_emoji)
+    public void onClickEmoji(ImageView imageView) {
         mEmojiPopup.toggle();
     }
 
