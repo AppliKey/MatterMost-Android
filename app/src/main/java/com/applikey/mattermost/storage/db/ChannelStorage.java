@@ -161,7 +161,11 @@ public class ChannelStorage {
     }
 
     public void updateLastPosts(List<LastPostDto> lastPosts) {
+        final String currentUserId = mPrefs.getCurrentUserId();
         mDb.doTransactional(realm -> {
+            final User currentUser = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, currentUserId)
+                    .findFirst();
             for (int i = 0; i < lastPosts.size(); i++) {
                 if (lastPosts.get(i) == null) {
                     continue;
@@ -174,9 +178,14 @@ public class ChannelStorage {
                         .equalTo(Channel.FIELD_ID, channelId)
                         .findFirst();
 
-                final User author = realm.where(User.class)
-                        .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
-                        .findFirst();
+                final User author;
+                if (TextUtils.equals(realmPost.getUserId(), currentUserId)) {
+                    author = currentUser;
+                } else {
+                    author = realm.where(User.class)
+                            .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                            .findFirst();
+                }
 
                 final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
                         realm.where(Post.class)

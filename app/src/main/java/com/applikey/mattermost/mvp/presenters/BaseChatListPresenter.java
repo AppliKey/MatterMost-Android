@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.annimon.stream.Collectors;
@@ -88,11 +89,14 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
             mChannelSubscriber = subscriber;
         });
 
+        final long timeout = 1;
+        final long timeShift = 1;
+
         mSubscription.add(channelObservable
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
                 .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
-                .buffer(1, 1, TimeUnit.SECONDS)
+                .buffer(timeout, timeShift, TimeUnit.SECONDS)
                 .filter(posts -> !posts.isEmpty())
                 .doOnNext(posts -> Log.d(TAG, "createObservable: posts size = " + posts.size()))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -135,8 +139,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
                                 .collect(Collectors.toList())), this::transform) //TODO replace to rx style
-
-
                 .first()
                 .subscribe(channelWithUsers -> {
                     mChannelStorage.setUsers(channelWithUsers.getChannel().getId(), channelWithUsers.getUsers());
@@ -168,6 +170,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         }
     }
 
+    @Nullable
     private LastPostDto transform(String channelId, PostResponse postResponse) {
         final List<Post> posts = Stream.of(postResponse.getPosts())
                 .map(Map.Entry::getValue)
