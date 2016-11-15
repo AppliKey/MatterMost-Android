@@ -57,9 +57,9 @@
         <com.applikey.mattermost.views.AddedPeopleLayout
             android:id="@+id/added_people_layout"
             android:layout_width="match_parent"
-            app:min_item_right_margin="@dimen/added_people_layout_item_right_margin"
             android:layout_height="@dimen/added_people_layout_item_height"
-            android:layout_marginTop="@dimen/large" />
+            android:layout_marginTop="@dimen/large"
+            app:min_item_right_margin="@dimen/added_people_layout_item_right_margin" />
 
         <com.applikey.mattermost.views.SafeButton
             android:id="@+id/b_invite_member"
