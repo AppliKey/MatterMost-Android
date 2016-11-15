@@ -30,7 +30,7 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
 
     @Override
     public void onItemClicked(SearchItem item) {
-        // TODO: 14.11.16 IMPLEMENT
+        mPresenter.handleItemClick(item);
     }
 
 }

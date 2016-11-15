@@ -67,11 +67,6 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
                         .subscribe(channels -> view.displayData(new ArrayList<>(channels)), mErrorHandler::handleError));
     }
 
-    public void handleChannelClick(Channel channel) {
-        final SearchChannelView view = getViewState();
-        view.startChatView(channel);
-    }
-
     @Subscribe
     public void onInputTextChanged(SearchChannelTextChanged event) {
         final SearchChannelView view = getViewState();

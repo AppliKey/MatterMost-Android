@@ -89,8 +89,4 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
         getData(event.getText());
     }
 
-    public void handleClick(Message message) {
-        final SearchMessageView view = getViewState();
-        view.startChatView(message.getChannel());
-    }
 }

@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -10,7 +9,6 @@ import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchUserView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.ObjectNotFoundException;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -85,20 +83,6 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
                         .subscribe(users ->  view.displayData(new ArrayList<>(users)), mErrorHandler::handleError));
     }
 
-    public void handleUserClick(User user) {
-        final SearchUserView view = getViewState();
-        Log.d(TAG, "handleUserClick: ");
-        mSubscription.add(mChannelStorage.getChannel(user.getId())
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  // TODO CODE SMELLS
-                                  .doOnError(throwable -> {
-                                      if (throwable instanceof ObjectNotFoundException) {
-                                          createChannel(user);
-                                      }
-                                  })
-                                  .subscribe(view::startChatView, mErrorHandler::handleError));
-    }
-
     @Subscribe
     public void onInputTextChanged(SearchUserTextChanged event) {
         final SearchUserView view = getViewState();
@@ -106,7 +90,7 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
         getData(event.getText());
     }
 
-    private void createChannel(User user) {
+    void createChannel(User user) {
         final SearchUserView view = getViewState();
         view.showLoading(true);
         final Subscription subscription = mTeamStorage.getChosenTeam()
