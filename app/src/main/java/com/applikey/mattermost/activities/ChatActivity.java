@@ -30,6 +30,8 @@ import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiPopup;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -65,7 +67,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     TextView mTvEmptyState;
 
     @Bind(R.id.et_message)
-    EditText mEtMessage;
+    EmojiEditText mEtMessage;
 
     @Bind(R.id.ll_reply)
     LinearLayout mLlReply;
@@ -89,6 +91,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
+    @Bind(R.id.iv_emoji)
+    ImageView mIvEmojicon;
+
+    @Bind(R.id.root_view)
+    View rootView;
+
     private String mRootId;
 
     private String mChannelId;
@@ -98,6 +106,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private long mChannelLastViewed;
 
     private PostAdapter mAdapter;
+
+    private EmojiPopup mEmojiPopup;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -115,6 +125,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
+        mEmojiPopup = EmojiPopup.Builder
+                .fromRootView(rootView)
+                .setOnSoftKeyboardCloseListener(() -> mEmojiPopup.dismiss())
+                .setOnEmojiPopupShownListener(() -> mIvEmojicon.setSelected(true))
+                .setOnEmojiPopupDismissListener(() -> mIvEmojicon.setSelected(false))
+                .build(mEtMessage);
 
         initParameters();
         initView();
@@ -189,6 +205,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void onBackPressed() {
+        if (mEmojiPopup != null && mEmojiPopup.isShowing()) {
+            mEmojiPopup.dismiss();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected Toolbar getToolbar() {
         return mToolbar;
     }
@@ -205,6 +230,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         } else {
             mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
         }
+    }
+
+    @OnClick(R.id.iv_emoji)
+    public void onClickEmoji(ImageView imageView) {
+        mEmojiPopup.toggle();
     }
 
     private void scrollToStart() {
