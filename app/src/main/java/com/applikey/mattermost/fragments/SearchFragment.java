@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChatActivity;
@@ -18,8 +19,11 @@ import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchView;
+import com.applikey.mattermost.storage.preferences.Prefs;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,10 +35,19 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     @Bind(R.id.rv_items)
     RecyclerView mRecycleView;
 
+    @Inject
+    Prefs mPrefs;
+
     protected SearchAdapter mAdapter;
 
     @Bind(R.id.tv_empty_state)
     TextView mTvEmptyState;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        App.getUserComponent().inject(this);
+    }
 
     @Nullable
     @Override
@@ -73,7 +86,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     }
 
     protected void initView(SearchAdapter.ClickListener clickListener) {
-        mAdapter = new SearchAdapter(mImageLoader);
+        mAdapter = new SearchAdapter(mImageLoader, mPrefs);
         mAdapter.setOnClickListener(clickListener);
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecycleView.setAdapter(mAdapter);

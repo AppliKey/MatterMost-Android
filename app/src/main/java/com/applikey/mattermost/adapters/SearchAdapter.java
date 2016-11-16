@@ -1,5 +1,6 @@
 package com.applikey.mattermost.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -31,9 +33,12 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private ClickListener mClickListener = null;
 
-    public SearchAdapter(ImageLoader imageLoader) {
+    private Prefs mPrefs;
+
+    public SearchAdapter(ImageLoader imageLoader, Prefs prefs) {
         super();
 
+        mPrefs = prefs;
         mImageLoader = imageLoader;
     }
 
@@ -126,7 +131,10 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.getChannelName().setText(channel.getDisplayName());
         holder.getLastMessageTime().setText(
                 TimeUtil.formatTimeOnly(post.getCreatedAt()));
-        holder.getMessagePreview().setText(post.getMessage());
+
+        String messageText = getAuthorPrefix(holder.getChannelIcon().getContext(), post) + post.getMessage();
+
+        holder.getMessagePreview().setText(messageText);
 
         setMessageStatus(holder, user);
 
@@ -137,6 +145,12 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.setClickListener(this);
     }
 
+    private String getAuthorPrefix(Context context, Post post){
+        if(mPrefs.getCurrentUserId().equals(post.getUserId())){
+            return context.getString(R.string.chat_you);
+        }
+        return post.getAuthor() + ":";
+    }
     private void setMessageStatus(ChatListViewHolder holder, User user){
         final User.Status status = user != null ?
                 User.Status.from(user.getStatus()) : null;
@@ -175,7 +189,10 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final ChannelViewHolder holder = (ChannelViewHolder) vh;
 
         holder.getChannelName().setText(channel.getDisplayName());
-        holder.getTvMessage().setText(post.getMessage());
+
+        String messageText = getAuthorPrefix(holder.getRoot().getContext(), post) + post.getMessage();
+
+        holder.getTvMessage().setText(messageText);
         holder.setClickListener(this);
 
     }
