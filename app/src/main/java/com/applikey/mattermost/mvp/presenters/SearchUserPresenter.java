@@ -8,12 +8,6 @@ import com.applikey.mattermost.events.SearchUserTextChanged;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchUserView;
-import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.TeamStorage;
-import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.web.Api;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
@@ -35,29 +29,11 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
     private static final String TAG = SearchUserPresenter.class.getSimpleName();
 
     @Inject
-    UserStorage mUserStorage;
-
-    @Inject
-    ChannelStorage mChannelStorage;
-
-    @Inject
-    Api mApi;
-
-    @Inject
-    Prefs mPrefs;
-
-    @Inject
-    TeamStorage mTeamStorage;
-
-    @Inject
     EventBus mEventBus;
 
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
-
-    @Inject
-    ErrorHandler mErrorHandler;
 
     public SearchUserPresenter() {
         App.getUserComponent().inject(this);

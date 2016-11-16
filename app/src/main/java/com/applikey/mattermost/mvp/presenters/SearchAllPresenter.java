@@ -7,16 +7,8 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchAllTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Message;
-import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.post.PostResponse;
-import com.applikey.mattermost.models.post.PostSearchRequest;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchAllView;
-import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
@@ -24,7 +16,6 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -32,8 +23,6 @@ import javax.inject.Named;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
-import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
@@ -41,23 +30,11 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     private static final String TAG = SearchAllPresenter.class.getSimpleName();
 
     @Inject
-    ChannelStorage mChannelStorage;
-
-    @Inject
-    UserStorage mUserStorage;
-
-    @Inject
     EventBus mEventBus;
 
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
-
-    @Inject
-    Prefs mPrefs;
-
-    @Inject
-    ErrorHandler mErrorHandler;
 
     public SearchAllPresenter() {
         App.getUserComponent().inject(this);
@@ -78,19 +55,6 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         view.setEmptyState(true);
         mSubscription.clear();
 
-
-        final Observable<List<SearchItem>> postItems =
-                mApi.searchPosts(mPrefs.getCurrentTeamId(), new PostSearchRequest(text))
-                .map(PostResponse::getPosts)
-                        .filter(postMap -> postMap != null)
-                .map(Map::values)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(Observable::from)
-                .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
-                         (Func2<Post, Channel, SearchItem>) Message::new)
-                .toList();
-
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))
@@ -108,7 +72,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
                             return searchItemList;
                         })
-                        .flatMap(items -> postItems,
+                        .flatMap(items -> getPostsObservable(text),
                                  (items, items2) -> {
                                      items.addAll(items2);
                                      return items;

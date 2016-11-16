@@ -5,24 +5,31 @@ import android.text.TextUtils;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
+import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.post.PostResponse;
+import com.applikey.mattermost.models.post.PostSearchRequest;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.ObjectNotFoundException;
 import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
-// TODO: Refactor
 public abstract class SearchPresenter<T extends SearchView> extends BasePresenter<T> {
 
     boolean mChannelsIsFetched = false;
@@ -36,7 +43,13 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     TeamStorage mTeamStorage;
 
     @Inject
+    UserStorage mUserStorage;
+
+    @Inject
     Api mApi;
+
+    @Inject
+    Prefs mPrefs;
 
     @Inject
     ErrorHandler mErrorHandler;
@@ -91,6 +104,19 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 view.startChatView(((Message) item).getChannel());
                 break;
         }
+    }
+
+    protected  Observable<List<SearchItem>> getPostsObservable(String text) {
+        return mApi.searchPosts(mPrefs.getCurrentTeamId(), new PostSearchRequest(text))
+                .map(PostResponse::getPosts)
+                .filter(postMap -> postMap != null)
+                .map(Map::values)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(Observable::from)
+                .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
+                         (Func2<Post, Channel, SearchItem>) Message::new)
+                .toList();
     }
 
     void createChannel(User user) {

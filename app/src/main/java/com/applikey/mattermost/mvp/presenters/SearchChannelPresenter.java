@@ -7,9 +7,6 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchChannelTextChanged;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
-import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,20 +24,11 @@ import rx.schedulers.Schedulers;
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
     @Inject
-    ChannelStorage mChannelStorage;
-
-    @Inject
-    Prefs mPrefs;
-
-    @Inject
     EventBus mEventBus;
 
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
-
-    @Inject
-    ErrorHandler mErrorHandler;
 
     public SearchChannelPresenter() {
         App.getUserComponent().inject(this);
