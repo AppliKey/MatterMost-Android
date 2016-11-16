@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
-import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
 import com.applikey.mattermost.models.team.Team;
@@ -106,7 +105,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         }
     }
 
-    protected  Observable<List<SearchItem>> getPostsObservable(String text) {
+    protected Observable<List<SearchItem>> getPostsObservable(String text) {
         return mApi.searchPosts(mPrefs.getCurrentTeamId(), new PostSearchRequest(text))
                 .map(PostResponse::getPosts)
                 .filter(postMap -> postMap != null)
@@ -115,7 +114,12 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
                 .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
-                         (Func2<Post, Channel, SearchItem>) Message::new)
+                         Message::new)
+                .flatMap(item -> mUserStorage.getDirectProfile(item.getPost().getUserId()).first(),
+                         (Func2<Message, User, SearchItem>) (message, user) -> {
+                             message.setUser(user);
+                             return message;
+                         })
                 .toList();
     }
 

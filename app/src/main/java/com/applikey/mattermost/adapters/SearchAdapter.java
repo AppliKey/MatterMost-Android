@@ -132,7 +132,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.getLastMessageTime().setText(
                 TimeUtil.formatTimeOnly(post.getCreatedAt()));
 
-        String messageText = getAuthorPrefix(holder.getChannelIcon().getContext(), post) + post.getMessage();
+        String messageText = getAuthorPrefix(holder.getChannelIcon().getContext(), message) + post.getMessage();
 
         holder.getMessagePreview().setText(messageText);
 
@@ -145,11 +145,12 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.setClickListener(this);
     }
 
-    private String getAuthorPrefix(Context context, Post post){
+    private String getAuthorPrefix(Context context, Message message){
+        final Post post = message.getPost();
         if(mPrefs.getCurrentUserId().equals(post.getUserId())){
             return context.getString(R.string.chat_you);
         }
-        return post.getAuthor() + ":";
+        return message.getUser().getUsername() + ":";
     }
     private void setMessageStatus(ChatListViewHolder holder, User user){
         final User.Status status = user != null ?
@@ -190,7 +191,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.getChannelName().setText(channel.getDisplayName());
 
-        String messageText = getAuthorPrefix(holder.getRoot().getContext(), post) + post.getMessage();
+        String messageText = getAuthorPrefix(holder.getRoot().getContext(), message) + post.getMessage();
 
         holder.getTvMessage().setText(messageText);
         holder.setClickListener(this);
