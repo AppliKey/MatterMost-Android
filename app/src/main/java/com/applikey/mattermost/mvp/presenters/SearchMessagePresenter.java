@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.applikey.mattermost.App;
@@ -59,7 +60,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     }
 
     public void getData(String text) {
-        if (!mChannelsIsFetched) {
+        if (!mChannelsIsFetched || TextUtils.isEmpty(text)) {
             return;
         }
         final SearchMessageView view = getViewState();

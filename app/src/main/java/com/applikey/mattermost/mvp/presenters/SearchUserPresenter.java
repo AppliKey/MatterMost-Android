@@ -71,6 +71,11 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
     }
 
     public void getData(String text) {
+
+        if (TextUtils.isEmpty(text)) {
+            return;
+        }
+
         final SearchUserView view = getViewState();
         view.setEmptyState(true);
         mSubscription.add(

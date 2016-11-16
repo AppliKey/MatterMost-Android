@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.text.TextUtils;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchChannelTextChanged;
@@ -52,7 +54,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     }
 
     public void getData(String text) {
-        if (!mChannelsIsFetched) {
+        if (!mChannelsIsFetched  || TextUtils.isEmpty(text)) {
             return;
         }
         final SearchChannelView view = getViewState();
