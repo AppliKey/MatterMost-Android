@@ -91,6 +91,11 @@
     <string name="last_name">Last name</string>
     <string name="send_invitation_capt">SEND INVITATION</string>
     <string name="invitation_info">People invited automatically join the\n<b>Town Square</b> channel.</string>
+    <string name="invitation_sent">New member invitation has been sent</string>
+
+    <string name="error_email_empty">The entered email is empty</string>
+    <string name="error_email_invalid">The entered email is invalid</string>
+    <string name="error_invitation_sending_failed">Invitation sending failed</string>
 
     <array name="post_own_opinion_array">
         <item>Delete</item>

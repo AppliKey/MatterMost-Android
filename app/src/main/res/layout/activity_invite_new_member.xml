@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content"/>
 
         <com.applikey.mattermost.views.SafeButton
-                android:id="@+id/b_restore_password"
+                android:id="@+id/b_invite_new_member"
                 style="@style/Button"
                 android:layout_marginStart="@dimen/edit_text_align"
                 android:layout_marginEnd="@dimen/edit_text_align"
