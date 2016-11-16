@@ -278,10 +278,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(layoutParams);
+        input.setBackgroundResource(0);
         input.setText(post.getMessage());
 
+        final int editTextMargin = getResources().getDimensionPixelOffset(R.dimen.more);
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(input)
+        builder.setView(input, editTextMargin, 0, editTextMargin, 0)
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.save, (dialog, which) -> {
