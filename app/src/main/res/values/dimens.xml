@@ -38,6 +38,9 @@
 
     <dimen name="login_screen_content_margin_top">140dp</dimen>
 
+    <dimen name="invite_screen_content_margin_top">40dp</dimen>
+    <dimen name="invite_screen_item_margin">30dp</dimen>
+
     <dimen name="teams_screen_headers_margin_bottom">72dp</dimen>
 
     <dimen name="image_button_dimen">48dp</dimen>

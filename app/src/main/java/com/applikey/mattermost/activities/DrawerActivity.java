@@ -25,14 +25,22 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private static final int ITEM_ALL_CHANNELS = 0;
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
-    private Drawer mDrawer;
+
     @InjectPresenter
     NavigationPresenter mPresenter;
 
+    private Drawer mDrawer;
+
     @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+    public void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         initDrawer();
+    }
+
+    @Override
+    public void startChannelCreating() {
+        startActivity(CreateChannelActivity.getIntent(this));
+        closeDrawer();
     }
 
     protected boolean showHamburger() {
@@ -104,6 +112,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                 }
                 break;
             case ITEM_INVITE_MEMBER:
+                startInviteNewMember();
                 break;
             case ITEM_SETTINGS:
                 startSettings();
@@ -112,14 +121,13 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         closeDrawer();
     }
 
-    private void startSettings() {
-        startActivity(SettingsActivity.getIntent(this));
+    private void startInviteNewMember() {
+        startActivity(InviteNewMemberActivity.getIntent(this));
         closeDrawer();
     }
 
-    @Override
-    public void startChannelCreating() {
-        startActivity(CreateChannelActivity.getIntent(this));
+    private void startSettings() {
+        startActivity(SettingsActivity.getIntent(this));
         closeDrawer();
     }
 }
