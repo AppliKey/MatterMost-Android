@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -90,6 +91,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     @OnTextChanged(R.id.et_search)
     void onTextChanged(CharSequence text) {
         Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
+        mBtnClearSearch.setVisibility(!TextUtils.isEmpty(text) ? VISIBLE : GONE);
         mSearchText = text.toString();
         onContentChanged(mSearchText, mTabLayout.getSelectedTabPosition());
     }
