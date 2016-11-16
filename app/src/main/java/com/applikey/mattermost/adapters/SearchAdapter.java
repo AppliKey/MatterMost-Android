@@ -58,7 +58,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else {
             final View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_chat, parent, false);
-            return new ChatListViewHolder(v);
+            final ChatListViewHolder vh = new ChatListViewHolder(v);
+            vh.getRoot().setOnClickListener(mOnClickListener);
+            return vh;
         }
     }
 
@@ -174,6 +176,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         holder.getChannelName().setText(channel.getDisplayName());
         holder.getTvMessage().setText(post.getMessage());
+        holder.setClickListener(this);
 
     }
 

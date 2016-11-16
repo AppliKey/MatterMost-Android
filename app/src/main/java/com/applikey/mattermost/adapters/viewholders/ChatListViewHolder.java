@@ -50,8 +50,6 @@ public class ChatListViewHolder extends ClickableVH {
 
         mRoot = itemView;
 
-        mRoot.setOnClickListener(this);
-
         ButterKnife.bind(this, itemView);
     }
 
