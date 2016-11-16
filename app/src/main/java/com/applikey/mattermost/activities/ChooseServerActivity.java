@@ -56,7 +56,6 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     @Override
     public void onStart() {
         super.onStart();
-
         mPresenter.getInitialData();
     }
 
