@@ -11,8 +11,6 @@ public interface SearchUserView extends SearchView {
 
     void displayData(List<SearchItem> items);
 
-    void showLoading(boolean show);
-
     void clearData();
 
 }

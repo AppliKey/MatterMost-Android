@@ -33,4 +33,5 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
         mPresenter.handleItemClick(item);
     }
 
+
 }

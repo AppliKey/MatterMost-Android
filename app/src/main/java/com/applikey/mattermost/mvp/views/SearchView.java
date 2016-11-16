@@ -12,4 +12,6 @@ public interface SearchView extends MvpView {
     @StateStrategyType(value = SkipStrategy.class)
     void startChatView(Channel channel);
 
+    void showLoading(boolean show);
+
 }

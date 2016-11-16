@@ -54,10 +54,9 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
         view.setEmptyState(true);
         mSubscription.clear();
         mSubscription.add(getPostsObservable(text)
-                                  .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC,
-                                            TimeUnit.MILLISECONDS)
-                                  .subscribe(view::displayData,
-                                             mErrorHandler::handleError)
+                        .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
+                        .subscribe(view::displayData,
+                                   mErrorHandler::handleError)
                          );
     }
 

@@ -17,13 +17,14 @@ import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.mvp.views.SearchView;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public abstract class SearchFragment extends BaseMvpFragment {
+public abstract class SearchFragment extends BaseMvpFragment implements SearchView {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
@@ -62,6 +63,7 @@ public abstract class SearchFragment extends BaseMvpFragment {
         getActivity().startActivity(ChatActivity.getIntent(getContext(), channel));
     }
 
+    @Override
     public void showLoading(boolean show) {
         if (show) {
             ((BaseActivity) getActivity()).showLoadingDialog();
