@@ -8,6 +8,7 @@ import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
+import com.applikey.mattermost.models.post.LastPostDto;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -55,31 +56,31 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listUndirected(String name) {
         return mDb.resultRealmObjectsFilteredSortedExcluded(Channel.class, Channel.FIELD_NAME,
-                                                            name,
-                                                            Channel.FIELD_NAME_TYPE,
-                                                            Channel.ChannelType.DIRECT
-                                                                    .getRepresentation(),
-                                                            Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                name,
+                Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.DIRECT
+                        .getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.PUBLIC.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                Channel.ChannelType.PUBLIC.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.PRIVATE.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                Channel.ChannelType.PRIVATE.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.DIRECT.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                Channel.ChannelType.DIRECT.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
@@ -103,8 +104,8 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listUnread() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                                                    true,
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                true,
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
@@ -156,6 +157,47 @@ public class ChannelStorage {
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
             return true;
+        });
+    }
+
+    public void updateLastPosts(List<LastPostDto> lastPosts) {
+        final String currentUserId = mPrefs.getCurrentUserId();
+        mDb.doTransactional(realm -> {
+            final User currentUser = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, currentUserId)
+                    .findFirst();
+            for (int i = 0; i < lastPosts.size(); i++) {
+                if (lastPosts.get(i) == null) {
+                    continue;
+                }
+                final String channelId = lastPosts.get(i).getChannelId();
+
+                final Post realmPost = realm.copyToRealmOrUpdate(lastPosts.get(i).getPost());
+
+                final Channel realmChannel = realm.where(Channel.class)
+                        .equalTo(Channel.FIELD_ID, channelId)
+                        .findFirst();
+
+                final User author;
+                if (TextUtils.equals(realmPost.getUserId(), currentUserId)) {
+                    author = currentUser;
+                } else {
+                    author = realm.where(User.class)
+                            .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                            .findFirst();
+                }
+
+                final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+                        realm.where(Post.class)
+                                .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                                .findFirst()
+                        : null;
+
+                realmPost.setAuthor(author);
+                realmPost.setRootPost(rootPost);
+                realmChannel.setLastPost(realmPost);
+                realmChannel.updateLastActivityTime();
+            }
         });
     }
 
@@ -220,12 +262,12 @@ public class ChannelStorage {
 
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
-                                  (channel, storedChannel) -> {
-                                      channel.setUsers(storedChannel.getUsers());
-                                      channel.setLastPost(storedChannel.getLastPost());
-                                      channel.updateLastActivityTime();
-                                      return true;
-                                  });
+                (channel, storedChannel) -> {
+                    channel.setUsers(storedChannel.getUsers());
+                    channel.setLastPost(storedChannel.getLastPost());
+                    channel.updateLastActivityTime();
+                    return true;
+                });
     }
 
     private void updateDirectChannelData(Channel channel,

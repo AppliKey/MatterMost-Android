@@ -64,6 +64,12 @@ public class MessagingSocket implements Socket {
                     }
 
                     @Override
+                    public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception {
+                        Log.e(TAG, "handleCallbackError: ", cause);
+                        emitter.onError(cause);
+                    }
+
+                    @Override
                     public void onDisconnected(WebSocket websocket,
                             WebSocketFrame serverCloseFrame,
                             WebSocketFrame clientCloseFrame,
@@ -74,18 +80,20 @@ public class MessagingSocket implements Socket {
                             emitter.onCompleted();
                         } else {
                             Log.w(TAG, "Socket connection interrupted. Trying to reconnect...");
-                            mWebSocket.recreate().connectAsynchronously();
+                            emitter.onError(new SocketException("Connection interrupted"));
                         }
                     }
                 };
                 mWebSocket = new WebSocketFactory()
                         .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
                         .createSocket(mURI);
-                mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mBearerTokenFactory.getBearerTokenString());
                 mWebSocket.addListener(socketListener);
-                mWebSocket.connectAsynchronously();
+                mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mBearerTokenFactory.getBearerTokenString());
                 emitter.setCancellation(() -> mWebSocket.removeListener(socketListener));
-            } catch (IOException e) {
+                mWebSocket.connect();
+                Log.d(TAG, "Socket connected!");
+            } catch (IOException | WebSocketException e) {
+                Log.e(TAG, "Socket error: ", e);
                 emitter.onError(e);
             }
         }, Emitter.BackpressureMode.BUFFER);

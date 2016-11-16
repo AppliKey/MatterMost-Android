@@ -20,7 +20,6 @@ public class ConnectivityUtils {
                 .observeConnectivity(context)
                 .subscribeOn(Schedulers.io())
                 .map(connectivityStatus -> ConnectivityStatus.MOBILE_CONNECTED.equals(connectivityStatus)
-                        || ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET.equals(connectivityStatus))
-                .observeOn(AndroidSchedulers.mainThread());
+                        || ConnectivityStatus.WIFI_CONNECTED_HAS_INTERNET.equals(connectivityStatus));
     }
 }

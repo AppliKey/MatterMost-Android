@@ -114,4 +114,5 @@
     <dimen name="button_height">40dp</dimen>
     <dimen name="button_width">180dp</dimen>
     <dimen name="fragment_search_empty_state_margin_top">100dp</dimen>
+    <dimen name="emoji_size">28sp</dimen>
 </resources>

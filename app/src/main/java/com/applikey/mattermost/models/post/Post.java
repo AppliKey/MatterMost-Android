@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
+import com.vdurmont.emoji.EmojiParser;
 
 import java.util.Comparator;
 
@@ -74,11 +75,11 @@ public class Post extends RealmObject implements SearchItem{
     }
 
     public String getMessage() {
-        return message;
+        return EmojiParser.parseToUnicode(message);
     }
 
     public void setMessage(String message) {
-        this.message = message;
+        this.message = EmojiParser.parseToAliases(message);
     }
 
     public int getPriority() {

@@ -25,8 +25,10 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
     private final List<User> mUsers = new ArrayList<>();
     private final List<User> mAlreadyAddedUsers = new ArrayList<>();
     private final OnUserChosenListener mChosenListener;
+    private final boolean mWithActions;
 
-    public PeopleToNewChannelAdapter(OnUserChosenListener listener, ImageLoader imageLoader) {
+    public PeopleToNewChannelAdapter(boolean withActions, OnUserChosenListener listener, ImageLoader imageLoader) {
+        mWithActions = withActions;
         mImageLoader = imageLoader;
         mChosenListener = listener;
     }
@@ -81,9 +83,11 @@ public class PeopleToNewChannelAdapter extends RecyclerView.Adapter<PeopleToNewC
         holder.mCbIsMemberAdded.setChecked(isUserAlreadyAdded);
         holder.mTvAddedMember.setText(User.getDisplayableName(user));
         mImageLoader.displayCircularImage(user.getProfileImage(), holder.mAddedPeopleAvatar);
+        holder.mCbIsMemberAdded.setVisibility(mWithActions ? View.VISIBLE : View.GONE);
     }
 
     public interface OnUserChosenListener {
+
         void onChosen(User user);
     }
 
