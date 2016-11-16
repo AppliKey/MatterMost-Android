@@ -10,30 +10,30 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        app:navigationIcon="@drawable/ic_back"
         app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp">
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIcon="@drawable/ic_back">
 
         <com.devspark.robototextview.widget.RobotoEditText
             android:id="@+id/et_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:typeface="roboto_regular"
-            android:textSize="@dimen/search_chat_toolbar_text_size"
+            android:layout_gravity="start"
+            android:background="@null"
             android:hint="@string/search_with_ellipsis"
             android:textColorHint="@color/tabUnSelected"
-            android:layout_gravity="start"
-            android:background="@null"/>
+            android:textSize="@dimen/search_chat_toolbar_text_size"
+            app:typeface="roboto_regular" />
 
         <ImageButton
             android:id="@+id/btn_clear_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:layout_gravity="end"
             android:layout_marginEnd="@dimen/normal"
-            android:src="@drawable/ic_close"
             android:background="@android:color/transparent"
-            android:layout_gravity="end"/>
+            android:padding="8dp"
+            android:src="@drawable/ic_close" />
 
     </android.support.v7.widget.Toolbar>
 
@@ -43,12 +43,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabIndicatorHeight="0px"
-        app:tabMode="fixed"/>
+        app:tabMode="fixed" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

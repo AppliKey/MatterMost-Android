@@ -30,8 +30,6 @@
             android:id="@+id/rv_added_members"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingEnd="@dimen/dialog_create_channel_content_offset"
-            android:paddingStart="@dimen/dialog_create_channel_content_offset"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
         <TextView
