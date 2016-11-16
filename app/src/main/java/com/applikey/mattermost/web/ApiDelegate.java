@@ -4,8 +4,10 @@ import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.channel.ChannelTitleRequest;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
@@ -184,6 +186,18 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
         return getRealApi().getChannelsUserHasNotJoined(teamId);
+    }
+
+    @Override
+    public Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
+            @Body ChannelTitleRequest request) {
+        return getRealApi().updateChannelTitle(teamId, request);
+    }
+
+    @Override
+    public Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
+            @Body ChannelPurposeRequest request) {
+        return getRealApi().updateChannelPurpose(teamId, request);
     }
 
     private Api getRealApi() {

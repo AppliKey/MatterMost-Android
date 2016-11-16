@@ -75,6 +75,10 @@
     <string name="error_private_group_name_empty">Please, name your private group</string>
     <string name="error_channel_already_created">Oops, this name is already taken</string>
 
+    <string name="edit_public_channel">Edit public channel</string>
+    <string name="edit_private_group">Edit private group</string>
+    <string name="edit_channel">Edit</string>
+
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
     <string name="new_message">New Message</string>

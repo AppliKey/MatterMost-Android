@@ -95,4 +95,9 @@ public class ChannelTypeView extends LinearLayout {
         mToggleButton.setChecked(true);
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        mToggleButton.setEnabled(enabled);
+    }
 }

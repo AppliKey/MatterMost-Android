@@ -14,4 +14,6 @@ public interface ChannelDetailsView extends MvpView, FavoriteableView {
     void showBaseDetails(Channel channel);
 
     void showMembers(List<User> users);
+
+    void openEditChannel(Channel channel);
 }

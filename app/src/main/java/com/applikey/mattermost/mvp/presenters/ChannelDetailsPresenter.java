@@ -82,4 +82,8 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
         mSubscription.add(mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
                 .subscribe());
     }
+
+    public void onEditChannel() {
+        getViewState().openEditChannel(mChannel);
+    }
 }

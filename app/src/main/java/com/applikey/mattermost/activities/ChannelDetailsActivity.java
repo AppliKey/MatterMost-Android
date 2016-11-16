@@ -94,7 +94,8 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @Override
     public void showBaseDetails(Channel channel) {
-        mChannelName.setText(getString(R.string.channel_display_name_format, channel.getDisplayName()));
+        mChannelName.setText(
+                getString(R.string.channel_display_name_format, channel.getDisplayName()));
         mChannelDescription.setText(channel.getPurpose());
         if (TextUtils.isEmpty(channel.getPurpose())) {
             mChannelDescription.setVisibility(View.GONE);
@@ -114,6 +115,16 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
                 ? R.drawable.ic_favorite_check
                 : R.drawable.ic_favorite_uncheck;
         mMenu.getItem(0).setIcon(iconRes);
+    }
+
+    @Override
+    public void openEditChannel(Channel channel) {
+        startActivity(EditChannelActivity.getIntent(this, channel));
+    }
+
+    @OnClick(R.id.b_edit_channel)
+    public void onEditChannelClick() {
+        mPresenter.onEditChannel();
     }
 
     @OnClick(R.id.added_people_layout)
