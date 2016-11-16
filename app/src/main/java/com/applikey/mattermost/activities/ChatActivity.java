@@ -277,8 +277,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
+        final int editTextPadding = getResources().getDimensionPixelOffset(R.dimen.more);
+        input.setPadding(editTextPadding, 0, editTextPadding, 0);
         input.setLayoutParams(layoutParams);
+        input.setBackgroundResource(0);
         input.setText(post.getMessage());
+        input.setSelection(post.getMessage().length());
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(input)
