@@ -101,4 +101,16 @@
         <item name="colorControlActivated">@color/primaryStart</item>
     </style>
 
+    <style name="SearchEditText">
+        <item name="android:textSize">@dimen/search_chat_toolbar_text_size</item>
+        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:hint">@string/search_with_ellipsis</item>
+        <item name="android:textColorHint">@color/tabUnSelected</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:textColor">@color/textlink_enabled</item>
+
+    </style>
+
+
 </resources>
