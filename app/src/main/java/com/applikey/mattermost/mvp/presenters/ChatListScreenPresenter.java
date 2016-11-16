@@ -9,12 +9,14 @@ import com.applikey.mattermost.fragments.FavoriteChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.UnreadChatListFragment;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
+import com.applikey.mattermost.storage.db.PreferenceStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
@@ -53,6 +55,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     SettingsManager mSettingsManager;
 
     @Inject
+    PreferenceStorage mPreferenceStorage;
+
+    @Inject
     Api mApi;
 
     @Inject
@@ -80,6 +85,16 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                         .subscribe(channel -> {
                             getViewState().onChannelLoaded(channel);
                         }, mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
+    }
+
+    public void loadInitInfo() {
+        final Subscription subscription = mApi.getInitialLoad()
+                .map(InitLoadResponse::getPreferences)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mPreferenceStorage::save, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }

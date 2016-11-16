@@ -10,6 +10,7 @@ import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
+import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -60,7 +61,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response> getInitialLoad() {
+    public Observable<InitLoadResponse> getInitialLoad() {
         return getRealApi().getInitialLoad();
     }
 
@@ -91,15 +92,15 @@ public class ApiDelegate implements Api {
 
     @Override
     public Observable<Void> deletePost(@Path("teamId") String teamId,
-            @Path("channelId") String channelId,
-            @Path("channelId") String postId) {
+                                       @Path("channelId") String channelId,
+                                       @Path("channelId") String postId) {
         return getRealApi().deletePost(teamId, channelId, postId);
     }
 
     @Override
     public Observable<Post> updatePost(@Path("teamId") String teamId,
-            @Path("channelId") String channelId,
-            @Body Post post) {
+                                       @Path("channelId") String channelId,
+                                       @Body Post post) {
         return getRealApi().updatePost(teamId, channelId, post);
     }
 
@@ -110,7 +111,7 @@ public class ApiDelegate implements Api {
 
     @Override
     public Observable<Channel> getChannelById(@Path("teamId") String teamId,
-            @Path("channelId") String channelId) {
+                                              @Path("channelId") String channelId) {
         return getRealApi().getChannelById(teamId, channelId);
     }
 
@@ -121,36 +122,36 @@ public class ApiDelegate implements Api {
 
     @Override
     public Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
-            @Path("channelId") String channelId,
-            @Path("offset") int offset,
-            @Path("limit") int limit) {
+                                                 @Path("channelId") String channelId,
+                                                 @Path("offset") int offset,
+                                                 @Path("limit") int limit) {
         return getRealApi().getPostsPage(teamId, channelId, offset, limit);
     }
 
     @Override
     public Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
-            @Path("channelId") String channelId) {
+                                                @Path("channelId") String channelId) {
         return getRealApi().getLastPost(teamId, channelId);
     }
 
     @Override
     public Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
-            @Path("channelId") String channelId) {
+                                                 @Path("channelId") String channelId) {
         return getRealApi().getChannelExtra(teamId, channelId);
     }
 
     @Override
     public Observable<Post> createPost(@Path("teamId") String teamId,
-            @Path("channelId") String channelId,
-            @Body
+                                       @Path("channelId") String channelId,
+                                       @Body
 
-                    PendingPost request) {
+                                               PendingPost request) {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
     @Override
     public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
-            @Path("channelId") String channelId) {
+                                                           @Path("channelId") String channelId) {
         return getRealApi().updateLastViewedAt(teamId, channelId);
     }
 
@@ -162,10 +163,10 @@ public class ApiDelegate implements Api {
 
     @Override
     public Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
-            @Path("channel_id") String channelId,
-            @Body
+                                                   @Path("channel_id") String channelId,
+                                                   @Body
 
-                    RequestUserId userId) {
+                                                           RequestUserId userId) {
         return getRealApi().addUserToChannel(teamId, channelId, userId);
     }
 
@@ -177,7 +178,7 @@ public class ApiDelegate implements Api {
 
     @Override
     public Observable<Channel> createChannel(@Path("team_id") String teamId,
-            @Body DirectChannelRequest request) {
+                                             @Body DirectChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
     }
 
