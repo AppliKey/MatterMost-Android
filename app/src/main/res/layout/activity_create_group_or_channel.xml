@@ -71,7 +71,7 @@
                 android:gravity="top|start"
                 android:hint="@string/create_private_group_description_hint"
                 android:inputType="textMultiLine"
-                android:typeface="sans" />
+                android:fontFamily="sans-serif-light" />
 
             <com.devspark.robototextview.widget.RobotoTextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
