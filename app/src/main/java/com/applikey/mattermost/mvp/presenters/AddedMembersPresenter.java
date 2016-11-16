@@ -60,6 +60,9 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
                 .sorted()
                 .collect(Collectors.toList());
         getViewState().showUsers(filteredUsers);
+        if (filteredUsers.isEmpty()) {
+            getViewState().showEmptyState();
+        }
     }
 
     public void handleUser(User user) {

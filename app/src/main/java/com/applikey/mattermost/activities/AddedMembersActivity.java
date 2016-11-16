@@ -8,6 +8,8 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
@@ -37,6 +39,9 @@ public class AddedMembersActivity extends BaseMvpActivity
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Bind(R.id.text_empty)
+    TextView mTextEmpty;
 
     private PeopleToNewChannelAdapter mAdapter;
 
@@ -80,6 +85,7 @@ public class AddedMembersActivity extends BaseMvpActivity
 
     @Override
     public void showUsers(List<User> users) {
+        mTextEmpty.setVisibility(View.GONE);
         mAdapter.addUsers(users);
     }
 
@@ -135,5 +141,10 @@ public class AddedMembersActivity extends BaseMvpActivity
     @Override
     public void removeInvitedUser(User user) {
         mAdapter.removeAlreadyAddedUser(user);
+    }
+
+    @Override
+    public void showEmptyState() {
+        mTextEmpty.setVisibility(View.VISIBLE);
     }
 }
