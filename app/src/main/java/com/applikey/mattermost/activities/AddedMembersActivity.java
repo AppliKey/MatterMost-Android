@@ -8,7 +8,11 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.models.user.User;
@@ -17,6 +21,7 @@ import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.views.AddedMembersView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -38,13 +43,17 @@ public class AddedMembersActivity extends BaseMvpActivity
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
+    @Bind(R.id.text_empty)
+    TextView mTextEmpty;
+
     private PeopleToNewChannelAdapter mAdapter;
 
-    // FIXME: 11.11.16 Save ids instead of Users
     public static Intent getIntent(Context context, List<User> alreadyAddedUsers, boolean editable) {
+        final List<String> ids = Stream.of(alreadyAddedUsers)
+                .map(User::getId).collect(Collectors.toList());
+
         final Intent intent = new Intent(context, AddedMembersActivity.class);
-        final UserListParcelableWrapper wrapper = new UserListParcelableWrapper(alreadyAddedUsers);
-        intent.putExtra(USERS_IDS_KEY, wrapper);
+        intent.putStringArrayListExtra(USERS_IDS_KEY, (ArrayList<String>) ids);
         intent.putExtra(EDITABLE_KEY, editable);
         return intent;
     }
@@ -56,10 +65,8 @@ public class AddedMembersActivity extends BaseMvpActivity
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         final Bundle args = getIntent().getExtras();
-        final UserListParcelableWrapper wrapper = args.getParcelable(USERS_IDS_KEY);
-
+        final List<String> alreadyAddedUsers = args.getStringArrayList(USERS_IDS_KEY);
         final boolean editable = args.getBoolean(EDITABLE_KEY);
-        final List<User> alreadyAddedUsers = wrapper.getData();
 
         mPresenter.setData(alreadyAddedUsers);
         mAdapter = new PeopleToNewChannelAdapter(editable, this, mImageLoader);
@@ -80,6 +87,7 @@ public class AddedMembersActivity extends BaseMvpActivity
 
     @Override
     public void showUsers(List<User> users) {
+        mTextEmpty.setVisibility(View.GONE);
         mAdapter.addUsers(users);
     }
 
@@ -135,5 +143,10 @@ public class AddedMembersActivity extends BaseMvpActivity
     @Override
     public void removeInvitedUser(User user) {
         mAdapter.removeAlreadyAddedUser(user);
+    }
+
+    @Override
+    public void showEmptyState() {
+        mTextEmpty.setVisibility(View.VISIBLE);
     }
 }

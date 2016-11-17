@@ -6,6 +6,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.AddedMembersView;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     @Inject
     UserStorage mUserStorage;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private List<User> mAlreadyAddedUsers;
     private List<User> mPendingUsers;
 
@@ -27,17 +31,17 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
         App.getUserComponent().inject(this);
     }
 
-    public void setData(List<User> alreadyAddedUsers) {
-        mAlreadyAddedUsers = alreadyAddedUsers;
-        mPendingUsers = new ArrayList<>(mAlreadyAddedUsers);
-    }
-
-    @Override
-    protected void onFirstViewAttach() {
-        super.onFirstViewAttach();
-        Collections.sort(mAlreadyAddedUsers);
-        getViewState().showUsers(mAlreadyAddedUsers);
-        getViewState().showAddedMembers(mAlreadyAddedUsers);
+    public void setData(List<String> alreadyAddedUsers) {
+        mSubscription.add(mUserStorage.findUsers(alreadyAddedUsers)
+                .doOnNext(Collections::sort)
+                .doOnNext(users -> {
+                    mAlreadyAddedUsers = users;
+                    mPendingUsers = new ArrayList<>(mAlreadyAddedUsers);
+                })
+                .subscribe(users -> {
+                    getViewState().showUsers(mAlreadyAddedUsers);
+                    getViewState().showAddedMembers(mAlreadyAddedUsers);
+                }, mErrorHandler::handleError));
     }
 
     private void addUser(User user) {
@@ -57,9 +61,11 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     public void filterByFullName(String filter) {
         final List<User> filteredUsers = Stream.of(mPendingUsers)
                 .filter(user -> user.search(filter))
-                .sorted()
                 .collect(Collectors.toList());
         getViewState().showUsers(filteredUsers);
+        if (filteredUsers.isEmpty()) {
+            getViewState().showEmptyState();
+        }
     }
 
     public void handleUser(User user) {

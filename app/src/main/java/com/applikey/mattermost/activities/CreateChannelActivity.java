@@ -185,8 +185,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @OnClick(R.id.added_people_layout)
     public void onAddedUsersPanelClick() {
-        final List<User> invitedUsers = mPresenter.getInvitedUsers();
-        final Intent intent = AddedMembersActivity.getIntent(this, invitedUsers, true);
+        final Intent intent = AddedMembersActivity.getIntent(this, mPresenter.getInvitedUsers(), true);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
     }
 
