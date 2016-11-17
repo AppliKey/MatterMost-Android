@@ -1,6 +1,5 @@
 package com.applikey.mattermost.activities;
 
-
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,10 +11,8 @@ import android.view.View;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
-import com.applikey.mattermost.platform.socket.WebSocketService;
 import com.applikey.mattermost.utils.kissUtils.utils.SystemUtil;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.util.RobotoTypefaceManager;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -46,18 +43,15 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     }
 
     private void initDrawer() {
-        final Typeface typeface = RobotoTypefaceManager.obtainTypeface(this,
-                RobotoTypefaceManager.Typeface.ROBOTO_REGULAR);
-
         final PrimaryDrawerItem mItemAllChannels = new PrimaryDrawerItem().withName(R.string.all_channels)
                 .withIdentifier(ITEM_ALL_CHANNELS)
-                .withTypeface(typeface);
+                .withTypeface(Typeface.SANS_SERIF);
         final PrimaryDrawerItem mItemInviteNewMember = new PrimaryDrawerItem().withName(R.string.invite_new_member)
                 .withIdentifier(ITEM_INVITE_MEMBER)
-                .withTypeface(typeface);
+                .withTypeface(Typeface.SANS_SERIF);
         final PrimaryDrawerItem mItemSettings = new PrimaryDrawerItem().withName(R.string.settings)
                 .withIdentifier(ITEM_SETTINGS)
-                .withTypeface(typeface);
+                .withTypeface(Typeface.SANS_SERIF);
 
         mDrawer = new DrawerBuilder().withActivity(this)
                 .withToolbar(getToolbar())
@@ -67,7 +61,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                         mItemAllChannels,
                         mItemInviteNewMember,
                         mItemSettings
-                )
+                               )
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     itemScreen((int) drawerItem.getIdentifier());
                     return true;
