@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.models.user.User;
@@ -46,9 +48,12 @@ public class AddedMembersActivity extends BaseMvpActivity
 
     private PeopleToNewChannelAdapter mAdapter;
 
-    public static Intent getIntent(Context context, List<String> alreadyAddedUsers, boolean editable) {
+    public static Intent getIntent(Context context, List<User> alreadyAddedUsers, boolean editable) {
+        final List<String> ids = Stream.of(alreadyAddedUsers)
+                .map(User::getId).collect(Collectors.toList());
+
         final Intent intent = new Intent(context, AddedMembersActivity.class);
-        intent.putStringArrayListExtra(USERS_IDS_KEY, (ArrayList<String>) alreadyAddedUsers);
+        intent.putStringArrayListExtra(USERS_IDS_KEY, (ArrayList<String>) ids);
         intent.putExtra(EDITABLE_KEY, editable);
         return intent;
     }

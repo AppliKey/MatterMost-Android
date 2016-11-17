@@ -14,8 +14,6 @@ import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.models.user.User;
@@ -187,9 +185,7 @@ public class CreateChannelActivity extends BaseMvpActivity implements CreateChan
 
     @OnClick(R.id.added_people_layout)
     public void onAddedUsersPanelClick() {
-        final List<String> invitedUsers = Stream.of(mPresenter.getInvitedUsers())
-                .map(User::getId).collect(Collectors.toList());
-        final Intent intent = AddedMembersActivity.getIntent(this, invitedUsers, true);
+        final Intent intent = AddedMembersActivity.getIntent(this, mPresenter.getInvitedUsers(), true);
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
     }
 
