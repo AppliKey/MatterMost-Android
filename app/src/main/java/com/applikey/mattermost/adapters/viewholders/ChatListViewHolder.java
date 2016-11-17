@@ -12,8 +12,6 @@ import butterknife.ButterKnife;
 
 public class ChatListViewHolder extends ClickableViewHolder {
 
-    private final View mRoot;
-
     @Bind(R.id.iv_preview_image)
     ImageView mPreviewImage;
 
@@ -44,13 +42,7 @@ public class ChatListViewHolder extends ClickableViewHolder {
     public ChatListViewHolder(View itemView) {
         super(itemView);
 
-        mRoot = itemView;
-
         ButterKnife.bind(this, itemView);
-    }
-
-    public View getRoot() {
-        return mRoot;
     }
 
     public ImageView getPreviewImage() {

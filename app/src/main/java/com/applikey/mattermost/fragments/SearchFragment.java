@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChatActivity;
@@ -19,11 +20,11 @@ import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchView;
-import com.applikey.mattermost.storage.preferences.Prefs;
 
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,7 +37,8 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     RecyclerView mRecyclerView;
 
     @Inject
-    Prefs mPrefs;
+    @Named(Constants.CURRENT_USER_QUALIFIER)
+    String mCurrentUserId;
 
     protected SearchAdapter mAdapter;
 
@@ -86,7 +88,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     }
 
     protected void initView(SearchAdapter.ClickListener clickListener) {
-        mAdapter = new SearchAdapter(mImageLoader, mPrefs);
+        mAdapter = new SearchAdapter(mImageLoader, mCurrentUserId);
         mAdapter.setOnClickListener(clickListener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
@@ -98,7 +100,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     }
 
     public void displayData(List<SearchItem> items) {
-        setEmptyState(items.size() == 0);
+        setEmptyState(items.isEmpty());
         Log.d(TAG, "displayData size:" + items.size());
         for (SearchItem searchItem : items) {
             Log.d(TAG, "displayData: " + searchItem);

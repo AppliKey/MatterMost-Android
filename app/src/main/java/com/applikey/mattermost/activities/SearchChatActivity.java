@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -22,7 +23,6 @@ import com.applikey.mattermost.mvp.views.SearchChatView;
 import com.applikey.mattermost.views.SearchTabBehavior;
 import com.applikey.mattermost.views.TabSelectedListener;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.widget.RobotoEditText;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -58,7 +58,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     TabLayout mTabLayout;
 
     @Bind(R.id.et_search)
-    RobotoEditText mEtSearch;
+    EditText mEtSearch;
 
     @Bind(R.id.btn_clear_search)
     ImageButton mBtnClearSearch;

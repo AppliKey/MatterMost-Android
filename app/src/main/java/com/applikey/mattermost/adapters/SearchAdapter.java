@@ -17,7 +17,6 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
-import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -34,12 +33,10 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private ClickListener mClickListener;
 
-    private Prefs mPrefs;
+    private String mCurrentUserId;
 
-    public SearchAdapter(ImageLoader imageLoader, Prefs prefs) {
-        super();
-
-        mPrefs = prefs;
+    public SearchAdapter(ImageLoader imageLoader, String currentUserId) {
+        mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
     }
 
@@ -64,7 +61,6 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             viewHolder = new ChatListViewHolder(view);
         }
 
-        viewHolder.setClickListener(this);
         return viewHolder;
     }
 
@@ -147,7 +143,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private String getAuthorPrefix(Context context, Message message) {
         final Post post = message.getPost();
-        if (mPrefs.getCurrentUserId().equals(post.getUserId())) {
+        if (mCurrentUserId.equals(post.getUserId())) {
             return context.getString(R.string.chat_you);
         }
         return message.getUser().getUsername() + ":";

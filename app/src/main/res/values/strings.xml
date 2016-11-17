@@ -77,7 +77,7 @@
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
-    <string name="chat_you">you:</string>
+    <string name="chat_you">You:</string>
     <string name="new_message">New Message</string>
     <string name="search">Search</string>
     <string name="create_chat_hint_name">Example: Project name, Bugs, Sales</string>

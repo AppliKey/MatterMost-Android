@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
@@ -25,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
@@ -78,7 +80,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     }
 
     public void handleItemClick(SearchItem item) {
-        SearchView view = getViewState();
+        final SearchView view = getViewState();
         switch (item.getSearchType()) {
             case SearchItem.CHANNEL:
                 view.startChatView((Channel) item);
@@ -124,6 +126,24 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     }
 
     void createChannel(User user) {
+        final SearchView view = getViewState();
+        view.showLoading(true);
+        final Subscription subscription = mTeamStorage.getChosenTeam()
+                .observeOn(Schedulers.io())
+                .flatMap(team -> mApi.createChannel(team.getId(),
+                                                    new DirectChannelRequest(user.getId())),
+                         (team, channel) -> channel)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .subscribe(channel -> {
+                    view.startChatView(channel);
+                    view.showLoading(false);
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    view.showLoading(false);
+                });
+
+        mSubscription.add(subscription);
     }
 
     public void getData(String text){

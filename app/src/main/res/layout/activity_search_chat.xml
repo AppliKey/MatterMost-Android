@@ -24,16 +24,14 @@
             android:background="@android:color/transparent"
             android:layout_gravity="end"/>
 
-        <com.devspark.robototextview.widget.RobotoEditText
+        <EditText
             android:id="@+id/et_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_3x"
-            app:typeface="roboto_regular"
+            android:fontFamily="sans-serif"
             style="@style/SearchEditText"
             android:background="@null"/>
-
-
 
     </android.support.v7.widget.Toolbar>
 

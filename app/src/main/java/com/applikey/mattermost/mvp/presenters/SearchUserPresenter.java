@@ -5,8 +5,6 @@ import android.text.TextUtils;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchUserTextChanged;
-import com.applikey.mattermost.models.channel.DirectChannelRequest;
-import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchUserView;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.arellomobile.mvp.InjectViewState;
@@ -20,9 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
@@ -69,26 +65,5 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
         final SearchUserView view = getViewState();
         view.clearData();
         getData(event.getText());
-    }
-
-    void createChannel(User user) {
-        final SearchUserView view = getViewState();
-        view.showLoading(true);
-        final Subscription subscription = mTeamStorage.getChosenTeam()
-                .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.createChannel(team.getId(),
-                                                    new DirectChannelRequest(user.getId())),
-                         (team, channel) -> channel)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
-                .subscribe(channel -> {
-                    view.startChatView(channel);
-                    view.showLoading(false);
-                }, throwable -> {
-                    throwable.printStackTrace();
-                    view.showLoading(false);
-                });
-
-        mSubscription.add(subscription);
     }
 }
