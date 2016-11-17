@@ -70,11 +70,8 @@
             android:layout_below="@+id/tv_channel_name"
             android:layout_toEndOf="@+id/tb_icons"
             android:layout_marginTop="@dimen/search_channel_message_top_margin"
-            android:maxLines="2"
             android:ellipsize="end"
-            android:maxLines="2"
             android:textColor="@color/textlink_disabled"
-            app:typeface="roboto_regular"
             tools:text="This is a very simple and short message, which you can see in preview"
             android:textSize="@dimen/list_item_secondary_text" />
 

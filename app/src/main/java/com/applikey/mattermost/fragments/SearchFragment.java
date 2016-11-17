@@ -99,6 +99,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
         return R.layout.fragment_search_chat;
     }
 
+    @Override
     public void displayData(List<SearchItem> items) {
         setEmptyState(items.isEmpty());
         Log.d(TAG, "displayData size:" + items.size());
