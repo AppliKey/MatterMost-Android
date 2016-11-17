@@ -154,7 +154,7 @@ public class GlobalModule {
     @Provides
     @PerApp
     ForegroundManager provideForegroundManager(Context context) {
-        return new ForegroundManager(((App) context));
+        return new ForegroundManager(context);
     }
 
     @Provides

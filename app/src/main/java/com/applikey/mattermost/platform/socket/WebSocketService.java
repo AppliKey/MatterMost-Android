@@ -87,11 +87,13 @@ public class WebSocketService extends Service {
 
         openSocket();
 //        startPollingUsersStatuses();
-        mForegroundManager.foreground()
-                .doOnNext(foreground -> Log.d(TAG, "Application is " + (foreground ? "foreground" : "background")))
+        mSubscriptions.add(mForegroundManager.foreground()
+                .subscribeOn(Schedulers.computation())
+                .doOnNext(foreground -> Log.d(TAG, "Application is on " + (foreground ? "foreground" : "background")))
                 .switchMap(foreground -> foreground ? Observable.never() : Observable.timer(10, TimeUnit.SECONDS))
-                .doOnNext(next -> Log.d(TAG, "Application in background for 10 secs!"))
-                .subscribe(background -> stopSelf(), Throwable::printStackTrace);
+                .doOnNext(next -> Log.d(TAG, "Application is on background for 10 secs!"))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(background -> stopSelf(), Throwable::printStackTrace));
     }
 
     private void openSocket() {

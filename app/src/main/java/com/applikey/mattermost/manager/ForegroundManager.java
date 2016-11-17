@@ -3,6 +3,7 @@ package com.applikey.mattermost.manager;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 
 import java.util.concurrent.TimeUnit;
@@ -15,8 +16,8 @@ public class ForegroundManager {
     private static final String TAG = "ForegroundManager";
     private final Application mApp;
 
-    public ForegroundManager(Application app) {
-        mApp = app;
+    public ForegroundManager(Context context) {
+        mApp = ((Application) context.getApplicationContext());
     }
 
     @SafeVarargs
