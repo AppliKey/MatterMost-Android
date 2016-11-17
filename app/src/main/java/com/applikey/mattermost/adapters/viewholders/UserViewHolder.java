@@ -10,7 +10,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class UserViewHolder extends ClickableVH {
+public class UserViewHolder extends ClickableViewHolder {
 
     private final View mRoot;
 

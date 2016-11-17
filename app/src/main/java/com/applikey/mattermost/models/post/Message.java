@@ -4,11 +4,7 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 
-/**
- * @author Anatoliy Chub
- */
-
-public class Message implements SearchItem{
+public class Message implements SearchItem {
 
     private Channel channel;
 
@@ -47,7 +43,8 @@ public class Message implements SearchItem{
 
     @Override
     public int getSearchType() {
-        return Channel.ChannelType.fromRepresentation(channel.getType()) == Channel.ChannelType.DIRECT ? MESSAGE : MESSAGE_CHANNEL;
+        return Channel.ChannelType.fromRepresentation(channel.getType())
+                == Channel.ChannelType.DIRECT ? MESSAGE : MESSAGE_CHANNEL;
     }
 
     @Override

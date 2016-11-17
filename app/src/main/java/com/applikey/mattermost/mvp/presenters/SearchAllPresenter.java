@@ -89,5 +89,4 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         getData(event.getText());
     }
 
-
 }

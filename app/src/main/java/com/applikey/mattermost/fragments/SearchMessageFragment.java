@@ -3,6 +3,7 @@ package com.applikey.mattermost.fragments;
 import android.os.Bundle;
 import android.view.View;
 
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
@@ -25,7 +26,7 @@ public class SearchMessageFragment extends SearchFragment implements SearchMessa
         super.onViewCreated(view, savedInstanceState);
         initView(this);
         mPresenter.requestNotJoinedChannels();
-        mPresenter.getData("");
+        mPresenter.getData(Constants.EMPTY_STRING);
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.applikey.mattermost.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ChannelViewHolder extends ClickableVH {
+public class ChannelViewHolder extends ClickableViewHolder {
 
     private final View mRoot;
 

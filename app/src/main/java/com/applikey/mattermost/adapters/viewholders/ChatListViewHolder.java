@@ -10,11 +10,7 @@ import com.applikey.mattermost.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * @author Anatoliy Chub
- */
-
-public class ChatListViewHolder extends ClickableVH {
+public class ChatListViewHolder extends ClickableViewHolder {
 
     private final View mRoot;
 

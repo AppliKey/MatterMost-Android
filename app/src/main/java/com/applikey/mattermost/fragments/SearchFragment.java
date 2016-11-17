@@ -33,7 +33,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     private static final String TAG = SearchFragment.class.getSimpleName();
 
     @Bind(R.id.rv_items)
-    RecyclerView mRecycleView;
+    RecyclerView mRecyclerView;
 
     @Inject
     Prefs mPrefs;
@@ -88,8 +88,8 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     protected void initView(SearchAdapter.ClickListener clickListener) {
         mAdapter = new SearchAdapter(mImageLoader, mPrefs);
         mAdapter.setOnClickListener(clickListener);
-        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecycleView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @LayoutRes
@@ -109,12 +109,13 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     public void setEmptyState(boolean isEmpty){
         if (isEmpty) {
             mTvEmptyState.setVisibility(View.VISIBLE);
-            mRecycleView.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.GONE);
         } else {
             mTvEmptyState.setVisibility(View.GONE);
-            mRecycleView.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         }
     }
+
     public void clearData() {
         mAdapter.clear();
     }
