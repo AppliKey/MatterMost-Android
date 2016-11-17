@@ -17,7 +17,7 @@
         android:layout_marginEnd="@dimen/normal"
         tools:background="#AA45CB" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
+    <TextView
         android:id="@+id/tv_added_member"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

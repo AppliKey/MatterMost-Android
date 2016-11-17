@@ -15,17 +15,16 @@
         android:layout_height="@dimen/list_item_image_chat"
         android:src="@drawable/no_resource" />
 
-    <com.devspark.robototextview.widget.RobotoTextView
-        android:id="@+id/tv_channel_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/user_avatar_right_margin"
-        android:lines="1"
-        android:maxLines="1"
-        android:textColor="@color/textListPrimary"
-        android:textSize="@dimen/list_item_heading_text"
-        app:typeface="roboto_regular"
-        tools:text="First Last" />
+        <TextView
+            android:id="@+id/tv_channel_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/user_avatar_right_margin"
+            android:layout_marginStart="@dimen/user_avatar_right_margin"
+            android:lines="1"
+            android:maxLines="1"
+            android:textColor="@color/textListPrimary"
+            android:textSize="@dimen/list_item_heading_text" />
 
 </LinearLayout>

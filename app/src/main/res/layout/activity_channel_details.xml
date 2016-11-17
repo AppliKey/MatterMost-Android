@@ -27,32 +27,30 @@
         android:padding="@dimen/large"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.devspark.robototextview.widget.RobotoTextView
+        <TextView
             android:id="@+id/channel_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/textListPrimary"
             android:textSize="@dimen/text_title_size"
-            app:typeface="roboto_regular"
             tools:text="#cool_chat" />
 
-        <com.devspark.robototextview.widget.RobotoTextView
+        <TextView
             android:id="@+id/channel_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/large"
             android:textColor="@color/textListPrimary"
             android:textSize="@dimen/text_title_size"
-            app:typeface="roboto_light"
+            android:fontFamily="@string/font_light"
             tools:text="An Ugly Myspace Profile Will Sure Ruin Your Reputation" />
 
-        <com.devspark.robototextview.widget.RobotoTextView
+        <TextView
             style="@style/TextHeadingSecondary.Small.Capitalize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/large"
-            android:text="@string/members"
-            app:typeface="roboto_regular" />
+            android:text="@string/members" />
 
         <com.applikey.mattermost.views.AddedPeopleLayout
             android:id="@+id/added_people_layout"
@@ -70,8 +68,7 @@
             android:layout_marginEnd="@dimen/normal"
             android:layout_marginStart="@dimen/normal"
             android:layout_marginTop="@dimen/large"
-            android:text="@string/invite_new_member"
-            app:typeface="roboto_regular" />
+            android:text="@string/invite_new_member" />
 
     </LinearLayout>
 
