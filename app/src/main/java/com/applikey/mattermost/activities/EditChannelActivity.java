@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
@@ -13,7 +14,6 @@ import com.applikey.mattermost.mvp.presenters.BaseEditChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.EditChannelPresenter;
 import com.applikey.mattermost.mvp.views.EditChannelView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.widget.RobotoTextView;
 
 import butterknife.Bind;
 
@@ -27,7 +27,7 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     private static final String CHANNEL_ID_KEY = "channel-id";
 
     @Bind(R.id.add_members_text)
-    RobotoTextView mAddMembersText;
+    TextView mAddMembersText;
 
     @InjectPresenter
     EditChannelPresenter mPresenter;
