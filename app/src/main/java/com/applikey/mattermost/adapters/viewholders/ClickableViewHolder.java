@@ -1,11 +1,10 @@
 package com.applikey.mattermost.adapters.viewholders;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
 
-public class ClickableViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public abstract class ClickableViewHolder extends BaseViewHolder implements View.OnClickListener {
 
     private static final String TAG = ClickableViewHolder.class.getSimpleName();
 

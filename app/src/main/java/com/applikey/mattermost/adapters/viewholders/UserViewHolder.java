@@ -5,14 +5,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.utils.RecyclerItemClickListener;
+import com.applikey.mattermost.web.images.ImageLoader;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-
 public class UserViewHolder extends ClickableViewHolder {
-
-    private final View mRoot;
 
     @Bind(R.id.iv_preview_image)
     ImageView mPreviewImage;
@@ -23,22 +23,32 @@ public class UserViewHolder extends ClickableViewHolder {
     public UserViewHolder(View itemView) {
         super(itemView);
 
-        mRoot = itemView;
-
         ButterKnife.bind(this, itemView);
-    }
-
-    public View getRoot() {
-        return mRoot;
     }
 
     public ImageView getPreviewImage() {
         return mPreviewImage;
     }
 
-
-    public TextView getChannelName() {
+    @Override
+    public TextView getName() {
         return mChannelName;
+    }
+
+    public void bind(ImageLoader imageLoader,RecyclerItemClickListener.OnItemClickListener listener , User data) {
+        mChannelName.setText(User.getDisplayableName(data));
+        setChannelIcon(imageLoader, data);
+        setClickListener(listener);
+    }
+
+    private void setChannelIcon(ImageLoader imageLoader, User user) {
+        final String previewImagePath = user != null ? user.getProfileImage() : null;
+        final ImageView previewImage = mPreviewImage;
+        if (previewImagePath != null && !previewImagePath.isEmpty()) {
+            imageLoader.displayCircularImage(previewImagePath, previewImage);
+        } else {
+            previewImage.setImageResource(R.drawable.no_resource);
+        }
     }
 
 }

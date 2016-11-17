@@ -2,7 +2,7 @@ package com.applikey.mattermost.adapters.viewholders;
 
 import android.view.View;
 
-import com.applikey.mattermost.adapters.channel.viewholder.UserChatListViewHolder;
+import com.applikey.mattermost.adapters.channel.viewholder.GroupChatListViewHolder;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
@@ -10,15 +10,15 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import butterknife.ButterKnife;
 
-public class ChatListViewHolder extends UserChatListViewHolder {
+public class MessageChannelViewHolder extends GroupChatListViewHolder {
 
-
-    public ChatListViewHolder(View itemView, String userId) {
+    public MessageChannelViewHolder(View itemView, String userId) {
         super(itemView, userId);
+
         ButterKnife.bind(this, itemView);
     }
 
-    public void bind(ImageLoader imageLoader, RecyclerItemClickListener.OnItemClickListener listener, Message message){
+    public void bind(ImageLoader imageLoader, RecyclerItemClickListener.OnItemClickListener listener, Message message) {
         super.bind(imageLoader, message.getChannel());
 
         final Post post = message.getPost();
@@ -27,7 +27,7 @@ public class ChatListViewHolder extends UserChatListViewHolder {
                 + post.getMessage();
 
         getMessagePreview().setText(messageText);
-
-        this.setClickListener(listener);
+        setClickListener(listener);
     }
+
 }

@@ -2,14 +2,15 @@ package com.applikey.mattermost.adapters.channel.viewholder;
 
 import android.content.Context;
 import android.support.annotation.CallSuper;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.adapters.viewholders.ClickableViewHolder;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
@@ -18,7 +19,7 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public abstract class BaseChatListViewHolder extends RecyclerView.ViewHolder {
+public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
     private String mCurrentUserId;
 
@@ -56,7 +57,7 @@ public abstract class BaseChatListViewHolder extends RecyclerView.ViewHolder {
         return mNotificationIcon;
     }
 
-    public TextView getChannelName() {
+    public TextView getName() {
         return mChannelName;
     }
 
@@ -73,7 +74,7 @@ public abstract class BaseChatListViewHolder extends RecyclerView.ViewHolder {
 
         final long lastPostAt = channel.getLastPostAt();
 
-        getChannelName().setText(channel.getDisplayName());
+        getName().setText(channel.getDisplayName());
 
         final String messagePreview = getMessagePreview(channel, getContainer().getContext());
 
@@ -115,5 +116,13 @@ public abstract class BaseChatListViewHolder extends RecyclerView.ViewHolder {
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
+    }
+
+    protected String getAuthorPrefix(Context context, Message message) {
+        final Post post = message.getPost();
+        if (mCurrentUserId.equals(post.getUserId())) {
+            return context.getString(R.string.chat_you);
+        }
+        return message.getUser().getUsername() + ":";
     }
 }

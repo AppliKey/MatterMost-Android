@@ -1,24 +1,21 @@
 package com.applikey.mattermost.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.adapters.viewholders.ChannelViewHolder;
+import com.applikey.mattermost.adapters.channel.viewholder.GroupChatListViewHolder;
 import com.applikey.mattermost.adapters.viewholders.ChatListViewHolder;
 import com.applikey.mattermost.adapters.viewholders.ClickableViewHolder;
+import com.applikey.mattermost.adapters.viewholders.MessageChannelViewHolder;
 import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
-import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
-import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
 import java.util.ArrayList;
@@ -46,11 +43,14 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final View view;
         final ClickableViewHolder viewHolder;
 
-        if (viewType == SearchItem.CHANNEL || viewType == SearchItem.MESSAGE_CHANNEL) {
+        if (viewType == SearchItem.CHANNEL) {
             view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.list_item_search_channel, parent, false);
-            viewHolder = new ChannelViewHolder(view);
-
+                    .inflate(R.layout.list_item_group_chat, parent, false);
+            viewHolder = new GroupChatListViewHolder(view, mCurrentUserId);
+        } else if (viewType == SearchItem.MESSAGE_CHANNEL) {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_item_group_chat, parent, false);
+            viewHolder = new MessageChannelViewHolder(view, mCurrentUserId);
         } else if (viewType == SearchItem.USER) {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_search_user, parent, false);
@@ -58,7 +58,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_chat, parent, false);
-            viewHolder = new ChatListViewHolder(view);
+            viewHolder = new ChatListViewHolder(view, mCurrentUserId);
         }
 
         return viewHolder;
@@ -66,15 +66,18 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
+
         final int searchType = mDataSet.get(position).getSearchType();
+
         if (searchType == SearchItem.CHANNEL) {
-            bindChannelViewHolder(vh, position);
+            ((GroupChatListViewHolder) vh).bind(mImageLoader, (Channel) mDataSet.get(position));
         } else if (searchType == SearchItem.USER) {
-            bindUserViewHolder(vh, position);
+            ((UserViewHolder) vh).bind(mImageLoader, this, (User) mDataSet.get(position));
         } else if (searchType == SearchItem.MESSAGE) {
-            bindMessageViewHolder(vh, position);
+            ((ChatListViewHolder) vh).bind(mImageLoader, this, (Message) mDataSet.get(position));
         } else if (searchType == SearchItem.MESSAGE_CHANNEL) {
-            bindMessageChannelViewHolder(vh, position);
+            ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
+                                                 (Message) mDataSet.get(position));
         }
 
     }
@@ -116,134 +119,8 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     }
 
-    private void bindMessageViewHolder(RecyclerView.ViewHolder vh, int position) {
-        final ChatListViewHolder holder = (ChatListViewHolder) vh;
-        final Message message = (Message) mDataSet.get(position);
-        final Post post = message.getPost();
-        final Channel channel = message.getChannel();
-        final User user = message.getChannel().getDirectCollocutor();
-
-        holder.getChannelName().setText(channel.getDisplayName());
-        holder.getLastMessageTime().setText(
-                TimeUtil.formatTimeOnly(post.getCreatedAt()));
-
-        final String messageText = getAuthorPrefix(holder.getChannelIcon().getContext(), message)
-                + post.getMessage();
-
-        holder.getMessagePreview().setText(messageText);
-
-        setMessageStatus(holder, user);
-
-        setMessageReadStatus(holder, channel);
-
-        setMessageChannelIcon(holder, user);
-
-        holder.setClickListener(this);
-    }
-
-    private String getAuthorPrefix(Context context, Message message) {
-        final Post post = message.getPost();
-        if (mCurrentUserId.equals(post.getUserId())) {
-            return context.getString(R.string.chat_you);
-        }
-        return message.getUser().getUsername() + ":";
-    }
-
-    private void setMessageStatus(ChatListViewHolder holder, User user) {
-        final User.Status status = user != null ?
-                User.Status.from(user.getStatus()) : null;
-        if (status != null) {
-            holder.getStatus().setImageResource(status.getDrawableId());
-        }
-        holder.getStatusBackground().setVisibility(View.VISIBLE);
-        holder.getStatus().setVisibility(View.VISIBLE);
-    }
-
-    private void setMessageReadStatus(ChatListViewHolder holder, Channel channel) {
-        if (channel.hasUnreadMessages()) {
-            holder.getNotificationIcon().setVisibility(View.VISIBLE);
-            holder.getContainer().setBackgroundResource(R.color.unread_background);
-        } else {
-            holder.getNotificationIcon().setVisibility(View.GONE);
-            holder.getContainer().setBackgroundResource(android.R.color.white);
-        }
-    }
-
-    private void setMessageChannelIcon(ChatListViewHolder holder, User user) {
-        final String previewImagePath = user != null ?
-                user.getProfileImage() : null;
-        final ImageView previewImage = holder.getPreviewImage();
-        if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            mImageLoader.displayCircularImage(previewImagePath, previewImage);
-        } else {
-            previewImage.setImageResource(R.drawable.no_resource);
-        }
-    }
-
-    private void bindMessageChannelViewHolder(RecyclerView.ViewHolder vh, int position) {
-        final Message message = (Message) mDataSet.get(position);
-        final Post post = message.getPost();
-        final Channel channel = message.getChannel();
-        final ChannelViewHolder holder = (ChannelViewHolder) vh;
-
-        holder.getChannelName().setText(channel.getDisplayName());
-
-        final String messageText = getAuthorPrefix(holder.getRoot().getContext(), message)
-                + post.getMessage();
-
-        holder.getTvMessage().setText(messageText);
-        holder.setClickListener(this);
-
-    }
-
-    private void bindUserViewHolder(RecyclerView.ViewHolder vh, int position) {
-        final User data = (User) mDataSet.get(position);
-        final UserViewHolder viewHolder = (UserViewHolder) vh;
-
-        viewHolder.getChannelName().setText(User.getDisplayableName(data));
-
-        setChannelIcon(viewHolder, data);
-
-        viewHolder.getRoot().setTag(position);
-
-        viewHolder.setClickListener(this);
-    }
-
-    private void bindChannelViewHolder(RecyclerView.ViewHolder vh, int position) {
-        final Channel data = (Channel) mDataSet.get(position);
-        final ChannelViewHolder viewHolder = (ChannelViewHolder) vh;
-
-        viewHolder.getChannelName().setText(data.getDisplayName());
-
-        setChannelIcon(viewHolder, data);
-        setMessage(viewHolder, data);
-
-        viewHolder.getRoot().setTag(position);
-
-        viewHolder.setClickListener(this);
-    }
-
-    private void setChannelIcon(ChannelViewHolder viewHolder, Channel element) {
-        // TODO: 17.11.16 IMPLEMENT IMAGE DOWNLOADING
-    }
-
-    private void setChannelIcon(UserViewHolder viewHolder, User element) {
-
-        final String previewImagePath = element.getProfileImage();
-        if (previewImagePath != null && !previewImagePath.isEmpty()) {
-            mImageLoader.displayCircularImage(previewImagePath, viewHolder.getPreviewImage());
-        }
-    }
-
-    private void setMessage(ChannelViewHolder vh, Channel channel) {
-        final Post post = channel.getLastPost();
-        if (post != null) {
-            vh.getTvMessage().setText(post.getMessage());
-        }
-    }
-
     public interface ClickListener {
-
         void onItemClicked(SearchItem searchItem);
     }
+
 }
