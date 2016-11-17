@@ -95,7 +95,6 @@
 
     <style name="DrawerItemTextAppearance">
         <item name="android:textSize">@dimen/drawer_item_text_size</item>
-        <item name="typeface">roboto_regular</item>
     </style>
 
     <style name="SwitchStyle">

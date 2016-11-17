@@ -10,9 +10,9 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        app:navigationIcon="@drawable/ic_back"
         app:contentInsetStart="0dp"
-        app:contentInsetStartWithNavigation="0dp">
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIcon="@drawable/ic_back">
 
         <ImageButton
             android:id="@+id/btn_clear_search"
@@ -28,6 +28,7 @@
             android:id="@+id/et_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
             android:layout_marginEnd="@dimen/margin_3x"
             android:fontFamily="sans-serif"
             style="@style/SearchEditText"
@@ -41,12 +42,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabIndicatorHeight="0px"
-        app:tabMode="fixed"/>
+        app:tabMode="fixed" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

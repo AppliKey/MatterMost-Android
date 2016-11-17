@@ -1,6 +1,5 @@
 package com.applikey.mattermost.activities;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
@@ -21,7 +21,6 @@ import com.applikey.mattermost.mvp.presenters.ChannelDetailsPresenter;
 import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.views.AddedPeopleLayout;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.widget.RobotoTextView;
 import com.transitionseverywhere.TransitionManager;
 
 import java.util.List;
@@ -44,10 +43,10 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
     Toolbar mToolbar;
 
     @Bind(R.id.channel_name)
-    RobotoTextView mChannelName;
+    TextView mChannelName;
 
     @Bind(R.id.channel_description)
-    RobotoTextView mChannelDescription;
+    TextView mChannelDescription;
 
     @Bind(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
@@ -94,10 +93,13 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @Override
     public void showBaseDetails(Channel channel) {
-        mChannelName.setText(getString(R.string.channel_display_name_format, channel.getDisplayName()));
+        mChannelName.setText(
+                getString(R.string.channel_display_name_format, channel.getDisplayName()));
         mChannelDescription.setText(channel.getPurpose());
         if (TextUtils.isEmpty(channel.getPurpose())) {
             mChannelDescription.setVisibility(View.GONE);
+        } else {
+            mChannelDescription.setVisibility(View.VISIBLE);
         }
     }
 
@@ -116,10 +118,19 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         mMenu.getItem(0).setIcon(iconRes);
     }
 
+    @Override
+    public void openEditChannel(Channel channel) {
+        startActivity(EditChannelActivity.getIntent(this, channel));
+    }
+
+    @OnClick(R.id.b_edit_channel)
+    public void onEditChannelClick() {
+        mPresenter.onEditChannel();
+    }
+
     @OnClick(R.id.added_people_layout)
     void onAddedUsersPanelClick() {
-        final List<User> alreadyAddedUsers = mAddedPeopleLayout.getUsers();
-        startActivity(AddedMembersActivity.getIntent(this, alreadyAddedUsers, false));
+        startActivity(AddedMembersActivity.getIntent(this, mAddedPeopleLayout.getUsers(), false));
     }
 
     @OnClick(R.id.b_invite_member)

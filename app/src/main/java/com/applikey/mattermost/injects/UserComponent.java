@@ -5,6 +5,7 @@ import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.SearchFragment;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.BaseEditChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelDetailsPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
@@ -21,6 +22,7 @@ import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
+import com.applikey.mattermost.mvp.views.BaseEditChannelView;
 import com.applikey.mattermost.platform.socket.WebSocketService;
 
 import dagger.Subcomponent;
@@ -44,6 +46,8 @@ public interface UserComponent {
     void inject(BaseChatListFragment fragment);
 
     void inject(CreateChannelPresenter presenter);
+
+    void inject(BaseEditChannelPresenter<BaseEditChannelView> presenter);
 
     void inject(SettingsPresenter presenter);
 

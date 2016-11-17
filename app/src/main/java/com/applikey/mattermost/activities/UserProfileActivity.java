@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
@@ -17,7 +18,6 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 import com.applikey.mattermost.mvp.views.UserProfileView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.widget.RobotoTextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,10 +43,10 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     ImageView mStatus;
 
     @Bind(R.id.display_name)
-    RobotoTextView mDisplayName;
+    TextView mDisplayName;
 
     @Bind(R.id.email)
-    RobotoTextView mEmail;
+    TextView mEmail;
 
     @Bind(R.id.avatar)
     ImageView mAvatar;

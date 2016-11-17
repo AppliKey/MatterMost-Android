@@ -9,8 +9,14 @@ import java.util.List;
 
 @StateStrategyType(value = AddToEndSingleStrategy.class)
 public interface AddedMembersView extends MvpView {
+
     void showUsers(List<User> users);
+
     void showAddedMembers(List<User> users);
+
     void addInvitedUser(User user);
+
     void removeInvitedUser(User user);
+
+    void showEmptyState();
 }

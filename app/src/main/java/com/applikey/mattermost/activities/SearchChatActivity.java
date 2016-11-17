@@ -119,7 +119,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
                     mTabIndicatorModel.register(SearchTabBehavior.values()[i + 1],
-                            (ImageView) notificationIcon);
+                                                (ImageView) notificationIcon);
                 }
             }
         }
@@ -180,7 +180,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         protected int getSelectedTabColor() {
             if (mSelectedTabColor == -1) {
                 mSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
-                        R.color.tabSelected);
+                                                           R.color.tabSelected);
             }
             return mSelectedTabColor;
         }
@@ -188,7 +188,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         protected int getUnSelectedTabColor() {
             if (mUnSelectedTabColor == -1) {
                 mUnSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
-                        R.color.tabUnSelected);
+                                                             R.color.tabUnSelected);
             }
             return mUnSelectedTabColor;
         }
