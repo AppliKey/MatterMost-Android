@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.viewholders.ChannelViewHolder;
 import com.applikey.mattermost.adapters.viewholders.ChatListViewHolder;
+import com.applikey.mattermost.adapters.viewholders.ClickableVH;
 import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
@@ -31,8 +32,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private ImageLoader mImageLoader;
 
-    private ClickListener mClickListener = null;
-
+    private ClickListener mClickListener;
     private Prefs mPrefs;
 
     public SearchAdapter(ImageLoader imageLoader, Prefs prefs) {
@@ -45,28 +45,26 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                       @SearchItem.Type int viewType) {
+        final View view;
+        final ClickableVH viewHolder;
 
         if (viewType == SearchItem.CHANNEL || viewType == SearchItem.MESSAGE_CHANNEL) {
-            final View v = LayoutInflater.from(parent.getContext())
+            view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_search_channel, parent, false);
+            viewHolder = new ChannelViewHolder(view);
 
-            final ChannelViewHolder vh = new ChannelViewHolder(v);
-            vh.getRoot().setOnClickListener(mOnClickListener);
-            return vh;
         } else if (viewType == SearchItem.USER) {
-            final View v = LayoutInflater.from(parent.getContext())
+            view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_search_user, parent, false);
-
-            final UserViewHolder vh = new UserViewHolder(v);
-            vh.getRoot().setOnClickListener(mOnClickListener);
-            return vh;
+            viewHolder = new UserViewHolder(view);
         } else {
-            final View v = LayoutInflater.from(parent.getContext())
+            view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_chat, parent, false);
-            final ChatListViewHolder vh = new ChatListViewHolder(v);
-            vh.getRoot().setOnClickListener(mOnClickListener);
-            return vh;
+            viewHolder = new ChatListViewHolder(view);
         }
+
+        viewHolder.setClickListener(this);
+        return viewHolder;
     }
 
     @Override
@@ -244,9 +242,6 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    private final View.OnClickListener mOnClickListener = v -> {
-        final int position = (Integer) v.getTag();
-    };
 
     public interface ClickListener {
 
