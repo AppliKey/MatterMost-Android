@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -274,14 +275,19 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private void editMessage(String channelId, Post post) {
         final EditText input = new EditText(this);
-        final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
+        final FrameLayout frameLayout = new FrameLayout(this);
+        final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+        final int editTextMargin = getResources().getDimensionPixelOffset(R.dimen.more);
+        layoutParams.setMargins(editTextMargin, 0, editTextMargin, 0);
         input.setLayoutParams(layoutParams);
+        frameLayout.addView(input);
         input.setText(post.getMessage());
+        input.setSelection(post.getMessage().length());
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(input)
+        builder.setView(frameLayout)
                 .setTitle(R.string.edit_message)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.save, (dialog, which) -> {

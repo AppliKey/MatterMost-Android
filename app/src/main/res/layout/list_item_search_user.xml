@@ -2,7 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:paddingTop="@dimen/user_item_top_padding">
 
@@ -18,7 +17,7 @@
             android:layout_marginStart="@dimen/large"
             android:src="@drawable/no_resource" />
 
-        <com.devspark.robototextview.widget.RobotoTextView
+        <TextView
             android:id="@+id/tv_channel_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +27,6 @@
             android:lines="1"
             android:maxLines="1"
             android:textColor="@color/textListPrimary"
-            app:typeface="roboto_regular"
             android:textSize="@dimen/list_item_heading_text" />
 
     </LinearLayout>

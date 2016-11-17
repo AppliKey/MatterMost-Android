@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -21,7 +22,6 @@ import com.applikey.mattermost.mvp.views.SearchChatView;
 import com.applikey.mattermost.views.SearchTabBehavior;
 import com.applikey.mattermost.views.TabSelectedListener;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.widget.RobotoEditText;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -56,7 +56,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     TabLayout mTabLayout;
 
     @Bind(R.id.et_search)
-    RobotoEditText mEtSearch;
+    EditText mEtSearch;
 
     @Bind(R.id.btn_clear_search)
     ImageButton mBtnClearSearch;
@@ -116,7 +116,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
                     mTabIndicatorModel.register(SearchTabBehavior.values()[i + 1],
-                            (ImageView) notificationIcon);
+                                                (ImageView) notificationIcon);
                 }
             }
         }
@@ -174,7 +174,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         protected int getSelectedTabColor() {
             if (mSelectedTabColor == -1) {
                 mSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
-                        R.color.tabSelected);
+                                                           R.color.tabSelected);
             }
             return mSelectedTabColor;
         }
@@ -182,7 +182,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         protected int getUnSelectedTabColor() {
             if (mUnSelectedTabColor == -1) {
                 mUnSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
-                        R.color.tabUnSelected);
+                                                             R.color.tabUnSelected);
             }
             return mUnSelectedTabColor;
         }
