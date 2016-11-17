@@ -27,27 +27,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:orientation="vertical"
-            android:padding="@dimen/large">
+            android:orientation="vertical">
 
             <com.applikey.mattermost.views.ChannelTypeView
                 android:id="@+id/channel_type_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/create_channel_type_bottom_margin"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
+                android:layout_marginTop="@dimen/large"
                 android:gravity="center" />
 
             <TextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/edit_text_align"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
                 android:text="@string/create_channel_title_name" />
 
             <EditText
                 android:id="@+id/et_channel_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
                 android:fontFamily="@string/font_light"
                 android:hint="@string/create_chat_hint_name"
                 android:inputType="textEmailAddress"
@@ -58,7 +63,8 @@
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/edit_text_align"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
                 android:text="@string/create_channel_description_title" />
 
@@ -66,6 +72,8 @@
                 android:id="@+id/et_channel_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
                 android:fontFamily="sans-serif-light"
                 android:gravity="top|start"
                 android:hint="@string/create_private_group_description_hint"
@@ -76,7 +84,8 @@
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/edit_text_align"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
                 android:text="@string/add_members" />
 
@@ -85,6 +94,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/added_people_layout_item_height"
                 android:layout_marginBottom="@dimen/normal"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
                 android:layout_marginTop="@dimen/large"
                 app:min_item_right_margin="@dimen/added_people_layout_item_right_margin" />
 
@@ -92,6 +103,8 @@
                 android:id="@+id/et_search_people"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
                 android:drawableEnd="@drawable/ic_search"
                 android:fontFamily="@string/font_light"
                 android:hint="@string/search_people_for_channel_hint"

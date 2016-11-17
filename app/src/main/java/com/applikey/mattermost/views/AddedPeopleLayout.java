@@ -20,7 +20,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class AddedPeopleLayout extends LinearLayout {
 
     private ImageLoader mImageLoader;

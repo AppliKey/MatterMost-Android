@@ -298,8 +298,11 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         }
         boolean result = false;
 
-        if (firstName.contains(searchFilter) || lastName.contains(searchFilter) || email.contains(
-                searchFilter)) {
+        searchFilter = searchFilter.toLowerCase();
+
+        if (firstName.toLowerCase().contains(searchFilter)
+                || lastName.toLowerCase().contains(searchFilter)
+                || email.toLowerCase().contains(searchFilter)) {
             result = true;
         }
         return result;
