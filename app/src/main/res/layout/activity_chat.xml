@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout android:id="@+id/root_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -139,12 +139,12 @@
                 android:id="@+id/iv_emoji"
                 style="@style/ImageButton"
                 android:layout_width="wrap_content"
-                android:src = "@drawable/bg_emoji_button"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:button="@drawable/ic_emoji"
                 android:gravity="center"
-                android:padding="0dp" />
+                android:padding="0dp"
+                android:src="@drawable/bg_emoji_button" />
 
             <ImageView
                 android:id="@+id/iv_send_message"
