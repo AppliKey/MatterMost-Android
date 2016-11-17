@@ -5,21 +5,12 @@ import android.text.TextUtils;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelTitleRequest;
-import com.applikey.mattermost.models.channel.CreatedChannel;
-import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.views.EditChannelView;
 import com.arellomobile.mvp.InjectViewState;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static com.applikey.mattermost.utils.rx.RxUtils.doOnUi;
-
-/**
- * @author Denis Kolesnik
- * @since 16.11.16
- */
 
 @InjectViewState
 public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelView> {
@@ -56,25 +47,16 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
 
     private void updateChannel(ChannelTitleRequest channelTitleRequest,
             ChannelPurposeRequest channelPurposeRequest) {
-        mTeamStorage.getChosenTeam()
-                .first()
-                .observeOn(Schedulers.io())
-                .map(Team::getId)
-                .doOnNext(channelTitleRequest::setTeamId)
-                .flatMap(teamId ->
-                        mApi.updateChannelTitle(teamId, channelTitleRequest), CreatedChannel::new)
-                .compose(doOnUi(createdChannel ->
-                                mChannelStorage.saveChannel(createdChannel.getChannel()),
-                        Schedulers.io()))
-                .flatMap(createdChannel -> mApi.updateChannelPurpose(createdChannel.getTeamId(),
-                        channelPurposeRequest),
-                        (createdChannel, channel) ->
-                                new CreatedChannel(createdChannel.getTeamId(), channel))
-                .compose(doOnUi(createdChannel -> mChannelStorage.saveChannel(
-                        createdChannel.getChannel()),
-                        Schedulers.io()))
-                .toCompletable()
+        String teamId = mPrefs.getCurrentTeamId();
+        mApi.updateChannelTitle(teamId, channelTitleRequest)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .observeOn(Schedulers.io())
+                .flatMap(channel -> mApi.updateChannelPurpose(teamId, channelPurposeRequest))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .toCompletable()
                 .subscribe(() -> getViewState().onChannelUpdated(),
                         error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
     }

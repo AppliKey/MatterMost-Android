@@ -2,11 +2,6 @@ package com.applikey.mattermost.models.channel;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * @author Denis Kolesnik
- * @since 16.11.16
- */
-
 public class ChannelPurposeRequest {
 
     @SerializedName("channel_id")

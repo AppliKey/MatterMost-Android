@@ -17,11 +17,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import butterknife.Bind;
 
-/**
- * @author Denis Kolesnik
- * @since 16.11.16
- */
-
 public class EditChannelActivity extends BaseEditChannelActivity implements EditChannelView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
@@ -104,6 +99,5 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
         final String channelName = mEtChannelName.getText().toString().trim();
         final String channelDescription = mEtChannelDescription.getText().toString().trim();
         mPresenter.updateChannel(channelName, channelDescription);
-
     }
 }

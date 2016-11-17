@@ -10,6 +10,7 @@ import com.applikey.mattermost.mvp.views.BaseEditChannelView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
@@ -21,12 +22,6 @@ import javax.inject.Named;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
-
-/**
- * @author Denis Kolesnik
- * @since 16.11.16
- */
 
 public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends BasePresenter<V>
         implements InvitedUsersManager.OnInvitedListener {
@@ -50,6 +45,9 @@ public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends Bas
     @Inject
     ErrorHandler mErrorHandler;
 
+    @Inject
+    Prefs mPrefs;
+
     InvitedUsersManager mInvitedUsersManager;
 
     public BaseEditChannelPresenter() {
@@ -64,7 +62,7 @@ public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends Bas
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         results -> getViewState().showAllUsers(results),
-                        error -> Timber.e("", error)
+                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error))
                 );
         mSubscription.add(subscription);
     }

@@ -2,11 +2,6 @@ package com.applikey.mattermost.models.channel;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * @author Denis Kolesnik
- * @since 16.11.16
- */
-
 public class ChannelTitleRequest {
 
     private String id;
@@ -49,18 +44,12 @@ public class ChannelTitleRequest {
     public ChannelTitleRequest(Channel channel) {
         this.id = channel.getId();
         this.createAt = channel.getCreatedAt();
-//        this.updateAt = ;
-//        this.deleteAt = ;
-//        this.teamId = ;
         this.type = channel.getType();
         this.displayName = channel.getDisplayName();
         this.name = channel.getName();
         this.header = channel.getHeader();
         this.purpose = channel.getPurpose();
         this.lastPostAt = channel.getLastPostAt();
-//        this.totalMsgCount = ;
-//        this.extraUpdateAt = ;
-//        this.creatorId =;
     }
 
     public String getId() {

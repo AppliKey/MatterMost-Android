@@ -30,14 +30,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-/**
- * @author Denis Kolesnik
- * @since 16.11.16
- */
-
 public abstract class BaseEditChannelActivity extends BaseMvpActivity
         implements BaseEditChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
-
 
     @Bind(R.id.et_channel_name)
     EditText mEtChannelName;
@@ -82,7 +76,6 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
         mRvPeoples.setLayoutManager(new LinearLayoutManager(this));
         mRvPeoples.setNestedScrollingEnabled(false);
         mRvPeoples.setAdapter(mAdapter);
-
     }
 
     @Override
