@@ -5,7 +5,9 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.manager.ForegroundManager;
+import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.activities.ChatListActivity;
+import com.applikey.mattermost.manager.RxForeground;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -24,6 +26,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
@@ -33,6 +37,7 @@ import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
+import rx.Observable;
 
 @Module
 public class GlobalModule {
@@ -153,8 +158,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    ForegroundManager provideForegroundManager(Context context) {
-        return new ForegroundManager(context);
+    RxForeground provideForegroundManager(Context context) {
+        return RxForeground.with(context);
     }
 
     @Provides

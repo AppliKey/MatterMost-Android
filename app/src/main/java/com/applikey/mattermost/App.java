@@ -6,7 +6,6 @@ import com.applikey.mattermost.injects.ApplicationComponent;
 import com.applikey.mattermost.injects.DaggerApplicationComponent;
 import com.applikey.mattermost.injects.GlobalModule;
 import com.applikey.mattermost.injects.UserComponent;
-import com.applikey.mattermost.manager.ForegroundManager;
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.crashlytics.android.Crashlytics;
@@ -25,10 +24,6 @@ public class App extends Application {
 
     @Inject
     ImageLoader imageLoader;
-
-    @Inject
-    ForegroundManager mForegroundManager;
-
 
     @Override
     public void onCreate() {

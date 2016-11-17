@@ -12,7 +12,9 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.manager.ForegroundManager;
+import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.activities.ChatListActivity;
+import com.applikey.mattermost.manager.RxForeground;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
 import com.applikey.mattermost.models.socket.Props;
@@ -30,6 +32,7 @@ import com.google.gson.JsonObject;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -65,7 +68,7 @@ public class WebSocketService extends Service {
     UserStorage mUserStorage;
 
     @Inject
-    ForegroundManager mForegroundManager;
+    RxForeground mMessagingForeground;
 
     @Inject
     Gson mGson;
@@ -87,10 +90,11 @@ public class WebSocketService extends Service {
 
         openSocket();
 //        startPollingUsersStatuses();
-        mSubscriptions.add(mForegroundManager.foreground()
+
+        mSubscriptions.add(mMessagingForeground.ofActivities(ChatListActivity.class, ChatActivity.class).observe()
                 .subscribeOn(Schedulers.computation())
-                .doOnNext(foreground -> Log.d(TAG, "Application is on " + (foreground ? "foreground" : "background")))
-                .switchMap(foreground -> foreground ? Observable.never() : Observable.timer(10, TimeUnit.SECONDS))
+                .doOnNext(observe -> Log.d(TAG, "Application is on " + (observe ? "observe" : "background")))
+                .switchMap(observe -> observe ? Observable.never() : Observable.timer(10, TimeUnit.SECONDS))
                 .doOnNext(next -> Log.d(TAG, "Application is on background for 10 secs!"))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(background -> stopSelf(), Throwable::printStackTrace));

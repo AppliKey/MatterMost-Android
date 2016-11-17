@@ -5,34 +5,54 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import rx.Emitter;
 import rx.Observable;
 
-public class ForegroundManager {
+public class RxForeground {
 
     private static final String TAG = "ForegroundManager";
-    private final Application mApp;
 
-    public ForegroundManager(Context context) {
+    private final Application mApp;
+    private final Set<Class<? extends Activity>> mClasses;
+    private volatile boolean mIsForeground;
+
+    public static RxForeground with(Context context) {
+        return new RxForeground(context);
+    }
+
+    private RxForeground(Context context) {
         mApp = ((Application) context.getApplicationContext());
+        mClasses = new HashSet<>();
     }
 
     @SafeVarargs
-    public final Observable<Boolean> foreground(Class<? extends Activity>... classes) {
+    public final RxForeground ofActivities(@NonNull Class<? extends Activity>... classes) {
+        mClasses.clear();
+        mClasses.addAll(Arrays.asList(classes));
+        return this;
+    }
+
+    public final Observable<Boolean> observe() {
         final Observable<Boolean> observable = Observable.fromEmitter(emitter -> {
             final LifecycleCallback lifecycleCallback = new LifecycleCallback() {
                 @Override
                 public void onActivityResumed(Activity activity) {
-                    if (classes.length == 0) {
+                    if (mClasses.isEmpty()) {
                         emitter.onNext(true);
+                        mIsForeground = true;
                         return;
                     }
-                    for (Class clazz : classes) {
-                        if (clazz.equals(activity.getClass())) {
+                    for (Class clazz : mClasses) {
+                        if (clazz.isInstance(activity)) {
                             emitter.onNext(true);
+                            mIsForeground = true;
                             return;
                         }
                     }
@@ -40,13 +60,15 @@ public class ForegroundManager {
 
                 @Override
                 public void onActivityPaused(Activity activity) {
-                    if (classes.length == 0) {
+                    if (mClasses.isEmpty()) {
                         emitter.onNext(false);
+                        mIsForeground = false;
                         return;
                     }
-                    for (Class clazz : classes) {
-                        if (clazz.equals(activity.getClass())) {
+                    for (Class clazz : mClasses) {
+                        if (clazz.isInstance(activity)) {
                             emitter.onNext(false);
+                            mIsForeground = false;
                             return;
                         }
                     }
@@ -58,6 +80,10 @@ public class ForegroundManager {
 
         }, Emitter.BackpressureMode.LATEST);
         return observable.debounce(500, TimeUnit.MILLISECONDS).distinctUntilChanged();
+    }
+
+    public boolean isForeground() {
+        return mIsForeground;
     }
 
     private abstract static class LifecycleCallback implements Application.ActivityLifecycleCallbacks {
