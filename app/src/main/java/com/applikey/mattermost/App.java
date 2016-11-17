@@ -6,6 +6,7 @@ import com.applikey.mattermost.injects.ApplicationComponent;
 import com.applikey.mattermost.injects.DaggerApplicationComponent;
 import com.applikey.mattermost.injects.GlobalModule;
 import com.applikey.mattermost.injects.UserComponent;
+import com.applikey.mattermost.manager.ForegroundManager;
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.crashlytics.android.Crashlytics;
@@ -21,8 +22,13 @@ public class App extends Application {
 
     private static ApplicationComponent mComponent;
     private static UserComponent mUserComponent;
+
     @Inject
     ImageLoader imageLoader;
+
+    @Inject
+    ForegroundManager mForegroundManager;
+
 
     @Override
     public void onCreate() {
@@ -41,6 +47,7 @@ public class App extends Application {
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                         .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                         .build());
+
     }
 
     @Override
@@ -48,6 +55,7 @@ public class App extends Application {
         super.onTrimMemory(level);
         imageLoader.dropMemoryCache();
     }
+
 
     public static ApplicationComponent getComponent() {
         return mComponent;
@@ -63,4 +71,5 @@ public class App extends Application {
     public static void releaseUserComponent() {
         mUserComponent = null;
     }
+
 }

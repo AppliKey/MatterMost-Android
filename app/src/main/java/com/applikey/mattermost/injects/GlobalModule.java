@@ -5,6 +5,7 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.manager.ForegroundManager;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -148,6 +149,12 @@ public class GlobalModule {
     @PerApp
     Context provideApplicationContext() {
         return mApplicationContext;
+    }
+
+    @Provides
+    @PerApp
+    ForegroundManager provideForegroundManager(Context context) {
+        return new ForegroundManager(((App) context));
     }
 
     @Provides

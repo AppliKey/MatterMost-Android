@@ -12,6 +12,7 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.manager.ForegroundManager;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
 import com.applikey.mattermost.models.socket.Props;
@@ -64,6 +65,9 @@ public class WebSocketService extends Service {
     UserStorage mUserStorage;
 
     @Inject
+    ForegroundManager mForegroundManager;
+
+    @Inject
     Gson mGson;
 
     private Handler mHandler;
@@ -83,6 +87,11 @@ public class WebSocketService extends Service {
 
         openSocket();
 //        startPollingUsersStatuses();
+        mForegroundManager.foreground()
+                .doOnNext(foreground -> Log.d(TAG, "Application is " + (foreground ? "foreground" : "background")))
+                .switchMap(foreground -> foreground ? Observable.never() : Observable.timer(10, TimeUnit.SECONDS))
+                .doOnNext(next -> Log.d(TAG, "Application in background for 10 secs!"))
+                .subscribe(background -> stopSelf(), Throwable::printStackTrace);
     }
 
     private void openSocket() {
@@ -120,7 +129,7 @@ public class WebSocketService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        Log.d(TAG, "Terminate Service");
         mMessagingSocket.close();
         mSubscriptions.unsubscribe();
     }
