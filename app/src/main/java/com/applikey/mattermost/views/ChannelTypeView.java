@@ -99,5 +99,7 @@ public class ChannelTypeView extends LinearLayout {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         mToggleButton.setEnabled(enabled);
+        mTvTypePrivate.setEnabled(enabled);
+        mTvTypePublic.setEnabled(enabled);
     }
 }

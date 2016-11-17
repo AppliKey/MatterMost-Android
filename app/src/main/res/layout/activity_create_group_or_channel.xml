@@ -74,6 +74,7 @@
                 app:typeface="roboto_light" />
 
             <com.devspark.robototextview.widget.RobotoTextView
+                android:id="@+id/add_members_text"
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

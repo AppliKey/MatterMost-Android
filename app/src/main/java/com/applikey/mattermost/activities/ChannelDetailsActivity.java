@@ -99,6 +99,8 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         mChannelDescription.setText(channel.getPurpose());
         if (TextUtils.isEmpty(channel.getPurpose())) {
             mChannelDescription.setVisibility(View.GONE);
+        } else {
+            mChannelDescription.setVisibility(View.VISIBLE);
         }
     }
 

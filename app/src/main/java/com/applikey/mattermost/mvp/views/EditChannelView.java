@@ -11,4 +11,5 @@ public interface EditChannelView extends BaseEditChannelView {
 
     void showChannelData(Channel channel);
 
+    void onChannelUpdated();
 }

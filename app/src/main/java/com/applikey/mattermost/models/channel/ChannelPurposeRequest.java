@@ -14,6 +14,11 @@ public class ChannelPurposeRequest {
     @SerializedName("channel_purpose")
     private String channelPurpose;
 
+    public ChannelPurposeRequest(String channelId, String channelPurpose) {
+        this.channelId = channelId;
+        this.channelPurpose = channelPurpose;
+    }
+
     public String getChannelId() {
         return channelId;
     }
