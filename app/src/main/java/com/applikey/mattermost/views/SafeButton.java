@@ -2,16 +2,15 @@ package com.applikey.mattermost.views;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.support.v7.widget.AppCompatButton;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.devspark.robototextview.widget.RobotoButton;
 
 /**
  * @author serega2593
  * @see <a href="https://gist.github.com/serega2593/c967f6187025205185d7">appropriate gist</a>
  */
-public class SafeButton extends RobotoButton implements View.OnClickListener {
+public class SafeButton extends AppCompatButton implements View.OnClickListener {
 
     private static final long MIN_INTERVAL_MS = 500;
     private OnClickListener mUserListener;
