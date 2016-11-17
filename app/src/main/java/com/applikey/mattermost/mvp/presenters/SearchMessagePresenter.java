@@ -6,6 +6,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchMessageTextChanged;
 import com.applikey.mattermost.mvp.views.SearchMessageView;
+import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -46,17 +47,18 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
         mEventBus.unregister(this);
     }
 
-    public void getData(String text) {
-        if (!mChannelsIsFetched || TextUtils.isEmpty(text)) {
-            return;
-        }
-        final SearchMessageView view = getViewState();
-        view.setEmptyState(true);
+    @Override
+    public boolean isDataRequestValid(String text) {
+        return mChannelsIsFetched || !TextUtils.isEmpty(text);
+    }
+
+    @Override
+    public void doRequest(SearchView view, String text) {
         mSubscription.clear();
         mSubscription.add(getPostsObservable(text)
-                        .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
-                        .subscribe(view::displayData,
-                                   mErrorHandler::handleError)
+                                  .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
+                                  .subscribe(view::displayData,
+                                             mErrorHandler::handleError)
                          );
     }
 

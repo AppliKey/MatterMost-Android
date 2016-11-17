@@ -126,5 +126,16 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     void createChannel(User user) {
     }
 
-    public abstract void getData(String text);
+    public void getData(String text){
+        if (!isDataRequestValid(text)) {
+            return;
+        }
+        final SearchView view = getViewState();
+        view.setEmptyState(true);
+        doRequest(view, text);
+    }
+
+    public abstract boolean isDataRequestValid(String text);
+
+    public abstract void doRequest(SearchView view, String text);
 }

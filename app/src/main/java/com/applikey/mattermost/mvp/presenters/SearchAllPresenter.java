@@ -9,6 +9,7 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchAllView;
+import com.applikey.mattermost.mvp.views.SearchView;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,14 +48,14 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         mEventBus.unregister(this);
     }
 
-    public void getData(String text) {
-        if (!mChannelsIsFetched  || TextUtils.isEmpty(text)) {
-            return;
-        }
-        final SearchAllView view = getViewState();
-        view.setEmptyState(true);
-        mSubscription.clear();
+    @Override
+    public boolean isDataRequestValid(String text) {
+        return mChannelsIsFetched  || !TextUtils.isEmpty(text);
+    }
 
+    @Override
+    public void doRequest(SearchView view, String text) {
+        mSubscription.clear();
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))

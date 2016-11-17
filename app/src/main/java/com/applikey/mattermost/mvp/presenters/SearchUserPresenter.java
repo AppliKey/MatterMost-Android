@@ -8,6 +8,7 @@ import com.applikey.mattermost.events.SearchUserTextChanged;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchUserView;
+import com.applikey.mattermost.mvp.views.SearchView;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
@@ -46,14 +47,13 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
         mEventBus.unregister(this);
     }
 
-    public void getData(String text) {
+    @Override
+    public boolean isDataRequestValid(String text) {
+        return !TextUtils.isEmpty(text);
+    }
 
-        if (TextUtils.isEmpty(text)) {
-            return;
-        }
-
-        final SearchUserView view = getViewState();
-        view.setEmptyState(true);
+    @Override
+    public void doRequest(SearchView view, String text) {
         mSubscription.add(
                 mUserStorage.searchUsers(text)
                         .first()

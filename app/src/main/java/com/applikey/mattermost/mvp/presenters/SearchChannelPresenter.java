@@ -7,6 +7,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchChannelTextChanged;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
+import com.applikey.mattermost.mvp.views.SearchView;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,12 +42,13 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
         mEventBus.unregister(this);
     }
 
-    public void getData(String text) {
-        if (!mChannelsIsFetched  || TextUtils.isEmpty(text)) {
-            return;
-        }
-        final SearchChannelView view = getViewState();
-        view.setEmptyState(true);
+    @Override
+    public boolean isDataRequestValid(String text) {
+        return mChannelsIsFetched  || !TextUtils.isEmpty(text);
+    }
+
+    @Override
+    public void doRequest(SearchView view, String text) {
         mSubscription.clear();
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
