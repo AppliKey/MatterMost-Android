@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.CallSuper;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
@@ -34,9 +33,6 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
     @Bind(R.id.tv_message_preview)
     TextView mMessagePreview;
-
-    @Bind(R.id.container)
-    LinearLayout mContainer;
 
     public BaseChatListViewHolder(View itemView) {
         super(itemView);
