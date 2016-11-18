@@ -15,6 +15,7 @@ import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
+import io.realm.Realm;
 import timber.log.Timber;
 
 public class App extends Application {
@@ -27,6 +28,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Realm.init(this);
         Fabric.with(this, new Crashlytics());
         KissTools.setContext(this);
         mComponent = DaggerApplicationComponent.builder()
