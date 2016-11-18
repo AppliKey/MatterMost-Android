@@ -12,9 +12,6 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.activities.ChatActivity;
-import com.applikey.mattermost.activities.ChatListActivity;
-import com.applikey.mattermost.manager.RxForeground;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.MessagePostedEventData;
 import com.applikey.mattermost.models.socket.Props;
@@ -32,13 +29,12 @@ import com.google.gson.JsonObject;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class WebSocketService extends Service {
 
@@ -68,9 +64,6 @@ public class WebSocketService extends Service {
     UserStorage mUserStorage;
 
     @Inject
-    RxForeground mMessagingForeground;
-
-    @Inject
     Gson mGson;
 
     private Handler mHandler;
@@ -84,28 +77,22 @@ public class WebSocketService extends Service {
     public void onCreate() {
         super.onCreate();
         App.getUserComponent().inject(this);
+        Log.d(TAG, "Service started");
 
         mHandler = new Handler(Looper.getMainLooper());
         mSubscriptions = new CompositeSubscription();
 
         openSocket();
-//        startPollingUsersStatuses();
-
-        mSubscriptions.add(mMessagingForeground.ofActivities(ChatListActivity.class, ChatActivity.class).observe()
-                .subscribeOn(Schedulers.computation())
-                .doOnNext(observe -> Log.d(TAG, "Application is on " + (observe ? "observe" : "background")))
-                .switchMap(observe -> observe ? Observable.never() : Observable.timer(10, TimeUnit.SECONDS))
-                .doOnNext(next -> Log.d(TAG, "Application is on background for 10 secs!"))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(background -> stopSelf(), Throwable::printStackTrace));
+        startPollingUsersStatuses();
     }
 
     private void openSocket() {
-        mSubscriptions.add(mMessagingSocket.listen()
+        final Subscription socketSubscription = mMessagingSocket.listen()
                 .subscribeOn(Schedulers.io())
                 .retryWhen(mErrorHandler::tryReconnectSocket)
                 .observeOn(Schedulers.computation())
-                .subscribe(this::handleSocketEvent, mErrorHandler::handleError));
+                .subscribe(this::handleSocketEvent, mErrorHandler::handleError);
+        mSubscriptions.add(socketSubscription);
     }
 
     private void startPollingUsersStatuses() {
@@ -120,7 +107,7 @@ public class WebSocketService extends Service {
                 .retryWhen(new RetryWhenNetwork(this))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(usersStatusesMap -> {
-                    Timber.d("updating users statuses");
+//                    Timber.d("updating users statuses");
                     mUserStorage.updateUsersStatuses(usersStatusesMap);
                 })
                 .subscribe(ignore -> {
@@ -135,7 +122,7 @@ public class WebSocketService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "Terminate Service");
+        Log.d(TAG, "Service stopped");
         mMessagingSocket.close();
         mSubscriptions.unsubscribe();
     }

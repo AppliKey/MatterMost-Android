@@ -1,20 +1,28 @@
 package com.applikey.mattermost;
 
 import android.app.Application;
+import android.util.Log;
 
+import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.activities.ChatListActivity;
 import com.applikey.mattermost.injects.ApplicationComponent;
 import com.applikey.mattermost.injects.DaggerApplicationComponent;
 import com.applikey.mattermost.injects.GlobalModule;
 import com.applikey.mattermost.injects.UserComponent;
+import com.applikey.mattermost.manager.RxForeground;
+import com.applikey.mattermost.platform.socket.WebSocketService;
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
+import rx.Observable;
 import timber.log.Timber;
 
 public class App extends Application {
@@ -43,6 +51,19 @@ public class App extends Application {
                         .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                         .build());
 
+        RxForeground.with(this)
+                .observeForeground(ChatListActivity.class, ChatActivity.class)
+                .doOnNext(observe -> Log.d("App", "Application is on " + (observe ? "foreground" : "background")))
+                .switchMap(foreground -> foreground
+                        ? Observable.just(true)
+                        : Observable.timer(10, TimeUnit.SECONDS).map(tick -> false))
+                .subscribe(foreground -> {
+                    if (foreground) {
+                        startService(WebSocketService.getIntent(this));
+                    } else {
+                        stopService(WebSocketService.getIntent(this));
+                    }
+                }, Throwable::printStackTrace);
     }
 
     @Override

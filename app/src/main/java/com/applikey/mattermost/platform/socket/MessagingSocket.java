@@ -13,7 +13,6 @@ import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.URI;
@@ -79,7 +78,7 @@ public class MessagingSocket implements Socket {
                             Log.d(TAG, "Socket disconnected!");
                             emitter.onCompleted();
                         } else {
-                            Log.w(TAG, "Socket connection interrupted. Trying to reconnect...");
+                            Log.w(TAG, "Socket connection interrupted.");
                             emitter.onError(new SocketException("Connection interrupted"));
                         }
                     }
@@ -92,7 +91,7 @@ public class MessagingSocket implements Socket {
                 emitter.setCancellation(() -> mWebSocket.removeListener(socketListener));
                 mWebSocket.connect();
                 Log.d(TAG, "Socket connected!");
-            } catch (IOException | WebSocketException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Socket error: ", e);
                 emitter.onError(e);
             }
