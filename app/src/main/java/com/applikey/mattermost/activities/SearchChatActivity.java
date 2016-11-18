@@ -39,8 +39,6 @@ import static android.view.View.VISIBLE;
 
 public class SearchChatActivity extends BaseMvpActivity implements SearchChatView {
 
-    private static final String TAG = SearchChatActivity.class.getSimpleName();
-
     private static final int ALL_FRAGMENT = 0;
     private static final int MESSAGE_FRAGMENT = 1;
     private static final int CHANNEL_FRAGMENT = 2;
@@ -90,7 +88,6 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
 
     @OnTextChanged(R.id.et_search)
     void onTextChanged(CharSequence text) {
-        Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
         mBtnClearSearch.setVisibility(!TextUtils.isEmpty(text) ? VISIBLE : GONE);
         mSearchText = text.toString();
         onContentChanged(mSearchText, mTabLayout.getSelectedTabPosition());
