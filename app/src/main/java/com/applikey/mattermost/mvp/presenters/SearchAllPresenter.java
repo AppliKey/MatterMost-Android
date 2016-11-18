@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -50,7 +51,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
     @Override
     public boolean isDataRequestValid(String text) {
-        return mChannelsIsFetched  && !TextUtils.isEmpty(text);
+        return mChannelsIsFetched && !TextUtils.isEmpty(text);
     }
 
     @Override
@@ -59,8 +60,10 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))
+                                .first()
                                 .doOnNext(channels -> addFilterChannels(channels, text)),
-                        mUserStorage.searchUsers(text), (items, users) -> {
+
+                        mUserStorage.searchUsers(text).first(), (items, users) -> {
 
                             final List<SearchItem> searchItemList = new ArrayList<>();
 
@@ -73,7 +76,8 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
                             return searchItemList;
                         })
-                        .flatMap(items -> getPostsObservable(text),
+                        .doOnNext(items -> Log.d(TAG, "doRequest2: " + items))
+                        .flatMap(items -> getPostsObservable(text).first(),
                                  (items, items2) -> {
                                      items.addAll(items2);
                                      return items;
