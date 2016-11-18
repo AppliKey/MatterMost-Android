@@ -13,6 +13,7 @@ import rx.Observable;
 public class TeamStorage {
 
     private static final String CHOSEN_TEAM_KEY = "chosen_team";
+    private static final String TAG = TeamStorage.class.getSimpleName();
 
     private final Db mDb;
 

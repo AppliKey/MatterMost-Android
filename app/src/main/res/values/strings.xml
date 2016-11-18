@@ -82,6 +82,7 @@
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
+    <string name="chat_you">You:</string>
     <string name="new_message">New Message</string>
     <string name="search">Search</string>
     <string name="create_chat_hint_name">Example: Project name, Bugs, Sales</string>
@@ -115,6 +116,7 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
+    <string name="no_results_found_try_again">No results found. Try again?</string>
     <string name="search_user_empty_state">This user could not be found</string>
 
 

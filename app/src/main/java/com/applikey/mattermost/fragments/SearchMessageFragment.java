@@ -1,26 +1,24 @@
 package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
-import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
-import com.applikey.mattermost.mvp.views.SearchChannelView;
+import com.applikey.mattermost.mvp.presenters.SearchMessagePresenter;
+import com.applikey.mattermost.mvp.views.SearchMessageView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-public class SearchChannelFragment extends SearchFragment implements SearchChannelView,
+public class SearchMessageFragment extends SearchFragment implements SearchMessageView,
         SearchAdapter.ClickListener {
 
-    private static final String TAG = SearchChannelFragment.class.getSimpleName();
-
     @InjectPresenter
-    SearchChannelPresenter mPresenter;
+    SearchMessagePresenter mPresenter;
 
-    public static SearchChannelFragment newInstance() {
-        return new SearchChannelFragment();
+    public static SearchMessageFragment newInstance() {
+        return new SearchMessageFragment();
     }
 
     @Override
@@ -33,9 +31,12 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
 
     @Override
     public void onItemClicked(SearchItem item) {
-
-        Log.d(TAG, "onItemClicked: ");
         mPresenter.handleItemClick(item);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.fragment_search_chat;
     }
 
 }
