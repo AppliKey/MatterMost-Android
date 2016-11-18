@@ -7,11 +7,6 @@ import android.util.AttributeSet;
 
 import com.applikey.mattermost.R;
 
-/**
- * @author Denis Kolesnik
- * @since 18.11.16
- */
-
 public class MaxHeightScrollView extends NestedScrollView {
 
     private int mMaxHeight = 0;
