@@ -13,6 +13,7 @@ import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import com.neovisionaries.ws.client.WebSocketFrame;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.URI;
@@ -91,7 +92,7 @@ public class MessagingSocket implements Socket {
                 emitter.setCancellation(() -> mWebSocket.removeListener(socketListener));
                 mWebSocket.connect();
                 Log.d(TAG, "Socket connected!");
-            } catch (Exception e) {
+            } catch (IOException | WebSocketException e) {
                 Log.e(TAG, "Socket error: ", e);
                 emitter.onError(e);
             }
