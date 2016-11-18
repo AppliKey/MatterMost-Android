@@ -116,4 +116,6 @@
     <dimen name="fragment_search_empty_state_margin_top">100dp</dimen>
     <dimen name="emoji_size">18sp</dimen>
     <dimen name="emoji_input_size">22sp</dimen>
+
+    <dimen name="send_message_field_max_height">112dp</dimen>
 </resources>
