@@ -50,7 +50,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
     @Override
     public boolean isDataRequestValid(String text) {
-        return mChannelsIsFetched  || !TextUtils.isEmpty(text);
+        return mChannelsIsFetched  && !TextUtils.isEmpty(text);
     }
 
     @Override

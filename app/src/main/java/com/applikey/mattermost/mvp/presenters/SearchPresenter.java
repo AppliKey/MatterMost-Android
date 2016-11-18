@@ -33,6 +33,8 @@ import rx.schedulers.Schedulers;
 
 public abstract class SearchPresenter<T extends SearchView> extends BasePresenter<T> {
 
+    private static final String TAG = SearchPresenter.class.getSimpleName();
+
     boolean mChannelsIsFetched = false;
 
     private List<Channel> mFetchedChannels = new ArrayList<>();
@@ -147,7 +149,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     }
 
     public void getData(String text){
-        if (!isDataRequestValid(text)) {
+        if (!isDataRequestValid(text.trim())) {
             return;
         }
         final SearchView view = getViewState();
