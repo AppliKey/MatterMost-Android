@@ -9,10 +9,12 @@ import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import javax.inject.Inject;
+
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class InviteNewMemberPresenter extends BasePresenter<InviteNewMemberView> {
@@ -42,16 +44,15 @@ public class InviteNewMemberPresenter extends BasePresenter<InviteNewMemberView>
 
         final Invite invite = new Invite(email, firstName, lastName);
         final InviteNewMembersRequest request = new InviteNewMembersRequest(invite);
-        mTeamStorage.getChosenTeam()
+        final Subscription subscription = mTeamStorage.getChosenTeam()
                 .first()
-                .subscribe(team ->
-                                mApi.inviteNewMember(team.getId(), request)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .first()
-                                        .subscribe((v) -> view.onSuccessfulInvitationSent(),
-                                                this::handleError),
-                        this::handleError);
+                .flatMap(team -> mApi.inviteNewMember(team.getId(), request)
+                        .subscribeOn(Schedulers.io()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((v) -> view.onSuccessfulInvitationSent(),
+                           this::handleError);
+
+        mSubscription.add(subscription);
     }
 
     private void handleError(Throwable throwable) {

@@ -8,14 +8,16 @@ import android.support.v7.widget.Toolbar;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.InviteNewMemberPresenter;
 import com.applikey.mattermost.mvp.views.InviteNewMemberView;
 import com.applikey.mattermost.utils.TextViewUtils;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class InviteNewMemberActivity extends BaseMvpActivity implements InviteNewMemberView {
 
@@ -95,7 +97,7 @@ public class InviteNewMemberActivity extends BaseMvpActivity implements InviteNe
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(getString(R.string.invite_new_member_capt));
+            actionBar.setTitle(R.string.invite_new_member_capt);
         }
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());

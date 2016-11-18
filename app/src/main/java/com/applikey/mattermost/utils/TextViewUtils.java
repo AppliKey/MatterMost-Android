@@ -5,7 +5,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.widget.TextView;
 
-public class TextViewUtils {
+public final class TextViewUtils {
 
     private TextViewUtils() {
     }
