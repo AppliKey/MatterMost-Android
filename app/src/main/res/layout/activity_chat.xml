@@ -133,7 +133,7 @@
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLines="3"
                 android:textColorHint="@color/textSecondary"
-                app:emojiSize="@dimen/emoji_size" />
+                app:emojiSize="@dimen/emoji_input_size" />
 
             <ImageView
                 android:id="@+id/iv_emoji"
