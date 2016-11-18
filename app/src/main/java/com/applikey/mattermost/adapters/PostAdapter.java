@@ -174,7 +174,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         TextView mTvDate;
 
         @Bind(R.id.tv_message)
-        ContentTextView mTvMessage;
+        TextView mTvMessage;
 
         @Bind(R.id.tv_timestamp)
         TextView mTvTimestamp;
