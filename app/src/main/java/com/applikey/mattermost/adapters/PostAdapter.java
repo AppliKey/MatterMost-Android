@@ -2,9 +2,7 @@ package com.applikey.mattermost.adapters;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v4.text.util.LinkifyCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
+import com.applikey.mattermost.views.ContentTextView;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.transitionseverywhere.TransitionManager;
 
@@ -262,7 +261,6 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(post.getAuthor()));
             mTvMessage.setText(post.getMessage());
-            LinkifyCompat.addLinks(mTvMessage, Linkify.WEB_URLS);
 
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);
