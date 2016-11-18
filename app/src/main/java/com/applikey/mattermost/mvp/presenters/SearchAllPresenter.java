@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -76,7 +75,6 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
                             return searchItemList;
                         })
-                        .doOnNext(items -> Log.d(TAG, "doRequest2: " + items))
                         .flatMap(items -> getPostsObservable(text).first(),
                                  (items, items2) -> {
                                      items.addAll(items2);
