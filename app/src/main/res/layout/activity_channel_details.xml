@@ -62,13 +62,21 @@
         <com.applikey.mattermost.views.SafeButton
             android:id="@+id/b_invite_member"
             style="@style/Button"
-            android:padding="@dimen/button_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/normal"
             android:layout_marginStart="@dimen/normal"
             android:layout_marginTop="@dimen/large"
             android:text="@string/invite_new_member" />
+
+        <Button
+            android:id="@+id/b_edit_channel"
+            style="@style/BorderlessButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/normal"
+            android:text="@string/edit_channel" />
 
     </LinearLayout>
 

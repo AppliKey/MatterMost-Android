@@ -4,8 +4,10 @@ import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
+import com.applikey.mattermost.models.channel.ChannelTitleRequest;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
@@ -15,6 +17,7 @@ import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
+import com.applikey.mattermost.models.post.PostSearchRequest;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
@@ -134,4 +137,15 @@ public interface Api {
 
     @POST("/api/v3/teams/{team_id}/invite_members")
     Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
+
+    @POST("api/v3/teams/{teamId}/channels/update")
+    Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
+            @Body ChannelTitleRequest request);
+
+    @POST("api/v3/teams/{teamId}/channels/update_purpose")
+    Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
+            @Body ChannelPurposeRequest request);
+
+    @POST("/api/v3/teams/{team_id}/posts/search")
+    Observable<PostResponse> searchPosts(@Path("team_id") String teamId, @Body PostSearchRequest request);
 }

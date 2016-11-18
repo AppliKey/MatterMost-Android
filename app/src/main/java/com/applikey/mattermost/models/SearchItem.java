@@ -10,8 +10,10 @@ public interface SearchItem {
 
     int USER = 0;
     int CHANNEL = 1;
+    int MESSAGE = 2;
+    int MESSAGE_CHANNEL = 3;
     @Retention(SOURCE)
-    @IntDef({CHANNEL, USER})
+    @IntDef({CHANNEL, USER, MESSAGE, MESSAGE_CHANNEL})
     @interface Type {
 
     }
