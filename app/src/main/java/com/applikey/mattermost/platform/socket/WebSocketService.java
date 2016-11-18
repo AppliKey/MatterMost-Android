@@ -35,7 +35,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class WebSocketService extends Service {
 
@@ -105,11 +104,7 @@ public class WebSocketService extends Service {
                         .toArray(new String[users.size()])))
                 .retryWhen(new RetryWhenNetwork(this))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(usersStatusesMap -> {
-                    Timber.d("updating users statuses");
-                    mUserStorage.updateUsersStatuses(usersStatusesMap);
-                })
-                .subscribe(ignore -> {}, mErrorHandler::handleError);
+                .subscribe(mUserStorage::updateUsersStatuses, mErrorHandler::handleError);
     }
 
     @Override
