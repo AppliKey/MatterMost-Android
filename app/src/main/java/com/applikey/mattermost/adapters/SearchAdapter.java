@@ -70,7 +70,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final int searchType = mDataSet.get(position).getSearchType();
 
         if (searchType == SearchItem.CHANNEL) {
-            ((GroupChatListViewHolder) vh).bind(mImageLoader, (Channel) mDataSet.get(position));
+            GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
+            viewHolder.bind(mImageLoader, (Channel) mDataSet.get(position));
+            viewHolder.setClickListener(this);
         } else if (searchType == SearchItem.USER) {
             ((UserViewHolder) vh).bind(mImageLoader, this, (User) mDataSet.get(position));
         } else if (searchType == SearchItem.MESSAGE) {
