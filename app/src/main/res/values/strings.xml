@@ -115,6 +115,7 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
+    <string name="search_user_empty_state">This user could not be found</string>
 
 
 </resources>
