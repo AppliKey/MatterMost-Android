@@ -14,8 +14,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
-public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMoreChannelsView {
+public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMoreChannelsView,
+                                                                         NotJoinedChannelsAdapter.OnNotJoinedChannelClick {
 
     @Bind(R.id.rv_more_channels)
     RecyclerView mRvNotJoinedChannels;
@@ -38,8 +40,14 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
         mAdapter.setChannels(notJoinedChannels);
     }
 
+    @Override
+    public void onChannelClick(Channel channel) {
+        Timber.d("onChannelClick, channel: %s", channel.getDisplayName());
+    }
+
     private void initView() {
-        mAdapter = new NotJoinedChannelsAdapter();
+        mAdapter = new NotJoinedChannelsAdapter(this);
         mRvNotJoinedChannels.setAdapter(mAdapter);
     }
+
 }

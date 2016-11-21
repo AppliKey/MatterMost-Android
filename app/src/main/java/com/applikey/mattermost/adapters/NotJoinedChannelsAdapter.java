@@ -15,6 +15,11 @@ import java.util.List;
 public class NotJoinedChannelsAdapter extends RecyclerView.Adapter<NotJoinedChannelsViewHolder> {
 
     private final List<Channel> mNotJoinedChannels = new ArrayList<>();
+    private final OnNotJoinedChannelClick mListener;
+
+    public NotJoinedChannelsAdapter(OnNotJoinedChannelClick listener) {
+        mListener = listener;
+    }
 
     public void addChannel(Channel channel) {
         mNotJoinedChannels.add(channel);
@@ -31,7 +36,14 @@ public class NotJoinedChannelsAdapter extends RecyclerView.Adapter<NotJoinedChan
     public NotJoinedChannelsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         final View view = layoutInflater.inflate(R.layout.list_item_more_channels, parent, false);
-        return new NotJoinedChannelsViewHolder(view);
+        final NotJoinedChannelsViewHolder viewHolder = new NotJoinedChannelsViewHolder(view);
+        viewHolder.itemView.setOnClickListener(v -> {
+            final int adapterPosition = viewHolder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                mListener.onChannelClick(mNotJoinedChannels.get(adapterPosition));
+            }
+        });
+        return viewHolder;
     }
 
     @Override
@@ -43,5 +55,9 @@ public class NotJoinedChannelsAdapter extends RecyclerView.Adapter<NotJoinedChan
     @Override
     public int getItemCount() {
         return mNotJoinedChannels.size();
+    }
+
+    public interface OnNotJoinedChannelClick {
+        void onChannelClick(Channel channel);
     }
 }
