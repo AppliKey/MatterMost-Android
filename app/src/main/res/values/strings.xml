@@ -130,6 +130,9 @@
     <string name="unknown_error">Something is wrong</string>
     <string name="no_results_found_try_again">No results found. Try again?</string>
     <string name="search_user_empty_state">This user could not be found</string>
+    <string name="find_more_channels">Find more channels</string>
+    <string name="quantity_one_member">%d member</string>
+    <string name="quantity_many_members">%d members</string>
 
 
 </resources>
