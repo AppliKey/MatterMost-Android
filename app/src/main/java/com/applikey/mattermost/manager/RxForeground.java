@@ -26,6 +26,16 @@ public class RxForeground {
         mApp = ((Application) context.getApplicationContext());
     }
 
+    /**
+     * Observe activity foreground status. Activity is on <b>foreground</b> when its <code>onResume</code> lifecycle callback fired
+     * and on <b>background</b> when its <code>onPause</code> fired.
+     *
+     * @param classes Activities' classes to observe foreground on.
+     * If <b>no</b> args provided observe <b>entire</b> application foreground
+     *
+     * @return RxJava Observable with foreground status.
+     * True if any of activities from args is on foreground false otherwise
+     */
     @SafeVarargs
     public final Observable<Boolean> observeForeground(@NonNull Class<? extends Activity>... classes) {
         final Observable<Boolean> observable = Observable.fromEmitter(emitter -> {

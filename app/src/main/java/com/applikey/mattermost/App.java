@@ -27,6 +27,8 @@ import timber.log.Timber;
 
 public class App extends Application {
 
+    private static final String TAG = "App";
+
     private static ApplicationComponent mComponent;
     private static UserComponent mUserComponent;
 
@@ -53,7 +55,7 @@ public class App extends Application {
 
         RxForeground.with(this)
                 .observeForeground(ChatListActivity.class, ChatActivity.class)
-                .doOnNext(observe -> Log.d("App", "Application is on " + (observe ? "foreground" : "background")))
+                .doOnNext(observe -> Log.d(TAG, "Chat activities are on " + (observe ? "foreground" : "background")))
                 .switchMap(foreground -> Observable.timer(foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_SEC, TimeUnit.MINUTES)
                         .map(tick -> foreground))
                 .subscribe(foreground -> {
