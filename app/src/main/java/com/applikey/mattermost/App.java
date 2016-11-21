@@ -29,7 +29,14 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Realm.init(this);
-        Fabric.with(this, new Crashlytics());
+
+        final Fabric fabric = new Fabric.Builder(this)
+                .kits(new Crashlytics())
+                .debuggable(false)
+                .build();
+
+        Fabric.with(fabric);
+
         KissTools.setContext(this);
         mComponent = DaggerApplicationComponent.builder()
                 .globalModule(new GlobalModule(this))
