@@ -32,7 +32,7 @@ public class App extends Application {
 
         final Fabric fabric = new Fabric.Builder(this)
                 .kits(new Crashlytics())
-                .debuggable(true)
+                .debuggable(false)
                 .build();
 
         Fabric.with(fabric);
