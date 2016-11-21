@@ -6,7 +6,12 @@ import com.applikey.mattermost.activities.ChooseServerActivity;
 import com.applikey.mattermost.fragments.BaseFragment;
 import com.applikey.mattermost.gcm.GcmMessageHandler;
 import com.applikey.mattermost.gcm.RegistrationIntentService;
-import com.applikey.mattermost.mvp.presenters.*;
+import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
+import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
+import com.applikey.mattermost.mvp.presenters.InviteNewMemberPresenter;
+import com.applikey.mattermost.mvp.presenters.LogInPresenter;
+import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
+import com.applikey.mattermost.mvp.presenters.SplashPresenter;
 
 import dagger.Component;
 

@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
-import rx.Observable;
 import io.realm.Realm;
+import rx.Observable;
 import timber.log.Timber;
 
 public class App extends Application {

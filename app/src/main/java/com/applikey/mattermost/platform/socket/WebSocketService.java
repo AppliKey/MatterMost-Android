@@ -96,7 +96,7 @@ public class WebSocketService extends Service {
     }
 
     private void startPollingUsersStatuses() {
-        mSubscriptions.add(Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
+        final Subscription pollStatusesObservable = Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(tick -> mUserStorage.listDirectProfiles().first())
                 .observeOn(Schedulers.io())
@@ -107,6 +107,7 @@ public class WebSocketService extends Service {
                 .retryWhen(new RetryWhenNetwork(this))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(mUserStorage::updateUsersStatuses, mErrorHandler::handleError);
+        mSubscriptions.add(pollStatusesObservable);
     }
 
     @Override
@@ -126,11 +127,6 @@ public class WebSocketService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    private void closeSocket() {
-        mMessagingSocket.close();
-        mCompositeSubscription.unsubscribe();
     }
 
     private void handleSocketEvent(WebSocketEvent event) {
