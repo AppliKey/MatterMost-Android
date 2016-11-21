@@ -1,17 +1,19 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.text.TextUtils;
+
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchChannelTextChanged;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
-import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.preferences.Prefs;
-import com.applikey.mattermost.web.ErrorHandler;
+import com.applikey.mattermost.mvp.views.SearchView;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,20 +25,11 @@ import rx.schedulers.Schedulers;
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
     @Inject
-    ChannelStorage mChannelStorage;
-
-    @Inject
-    Prefs mPrefs;
-
-    @Inject
     EventBus mEventBus;
 
     @Inject
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String mCurrentUserId;
-
-    @Inject
-    ErrorHandler mErrorHandler;
 
     public SearchChannelPresenter() {
         App.getUserComponent().inject(this);
@@ -49,27 +42,25 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
         mEventBus.unregister(this);
     }
 
-    public void getData(String text) {
-        if (!mChannelsIsFetched) {
-            return;
-        }
-        final SearchChannelView view = getViewState();
+    @Override
+    public boolean isDataRequestValid(String text) {
+        return mChannelsIsFetched  && !TextUtils.isEmpty(text);
+    }
+
+    @Override
+    public void doRequest(SearchView view, String text) {
+        mSubscription.clear();
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
                         .map(Channel::getList)
                         .observeOn(Schedulers.io())
                         .doOnNext(channels -> addFilterChannels(channels, text))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, mErrorHandler::handleError));
-    }
-
-    public void handleChannelClick(Channel channel) {
-        final SearchChannelView view = getViewState();
-        view.startChatView(channel);
+                        .subscribe(channels -> view.displayData(new ArrayList<>(channels)), mErrorHandler::handleError));
     }
 
     @Subscribe
-    public void on(SearchChannelTextChanged event) {
+    public void onInputTextChanged(SearchChannelTextChanged event) {
         final SearchChannelView view = getViewState();
         view.clearData();
         getData(event.getText());

@@ -328,7 +328,6 @@ public class Db {
 
         return query.findAllSortedAsync(sortedField)
                 .asObservable()
-                .filter(response -> !response.isEmpty())
                 .map(realm::copyFromRealm);
     }
 

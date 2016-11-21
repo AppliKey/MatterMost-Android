@@ -4,7 +4,9 @@ import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 @StateStrategyType(value = SingleStateStrategy.class)
-public interface SearchUserView extends SearchView {
+public interface SearchMessageView extends SearchView  {
+
+    void showLoading(boolean show);
 
     void clearData();
 

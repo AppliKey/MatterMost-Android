@@ -1,25 +1,23 @@
 package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.adapters.UserAdapter;
-import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.adapters.SearchAdapter;
+import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.views.SearchUserView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import java.util.List;
-
 public class SearchUserFragment extends SearchFragment implements SearchUserView,
-        UserAdapter.ClickListener {
+        SearchAdapter.ClickListener {
+
+    private static final String TAG = SearchUserFragment.class.getSimpleName();
 
     @InjectPresenter
     SearchUserPresenter mPresenter;
-
-    private UserAdapter mUserAdapter;
 
     public static SearchUserFragment newInstance() {
         return new SearchUserFragment();
@@ -28,23 +26,19 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView();
+        initView(this);
         mPresenter.getData("");
     }
 
     @Override
-    public void onItemClicked(User user) {
-        mPresenter.handleUserClick(user);
-    }
-
-    @Override
-    public void displayData(List<User> users) {
-        mUserAdapter.setDataSet(users);
+    public void onItemClicked(SearchItem item) {
+        Log.d(TAG, "onItemClicked: ");
+        mPresenter.handleItemClick(item);
     }
 
     @Override
     public void clearData() {
-        mUserAdapter.clear();
+        mAdapter.clear();
     }
 
     @Override
@@ -52,10 +46,4 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
         return R.layout.fragment_search_chat;
     }
 
-    private void initView() {
-        mUserAdapter = new UserAdapter(mImageLoader);
-        mUserAdapter.setOnClickListener(this);
-        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecycleView.setAdapter(mUserAdapter);
-    }
 }

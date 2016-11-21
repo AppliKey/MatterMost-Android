@@ -14,25 +14,25 @@
         app:contentInsetStartWithNavigation="0dp"
         app:navigationIcon="@drawable/ic_back">
 
-        <EditText
-            android:id="@+id/et_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:background="@null"
-            android:hint="@string/search_with_ellipsis"
-            android:textColorHint="@color/tabUnSelected"
-            android:textSize="@dimen/search_chat_toolbar_text_size" />
-
         <ImageButton
             android:id="@+id/btn_clear_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginEnd="@dimen/normal"
-            android:background="@android:color/transparent"
             android:padding="8dp"
-            android:src="@drawable/ic_close" />
+            android:layout_marginEnd="@dimen/normal"
+            android:src="@drawable/ic_close"
+            android:background="@android:color/transparent"
+            android:layout_gravity="end"/>
+
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="@dimen/margin_3x"
+            android:fontFamily="sans-serif"
+            style="@style/SearchEditText"
+            android:background="@null"/>
 
     </android.support.v7.widget.Toolbar>
 

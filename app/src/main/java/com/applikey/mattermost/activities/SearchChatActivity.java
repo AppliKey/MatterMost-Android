@@ -7,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -38,11 +39,10 @@ import static android.view.View.VISIBLE;
 
 public class SearchChatActivity extends BaseMvpActivity implements SearchChatView {
 
-    private static final String TAG = SearchChatActivity.class.getSimpleName();
-
     private static final int ALL_FRAGMENT = 0;
-    private static final int CHANNEL_FRAGMENT = 1;
-    private static final int USER_FRAGMENT = 2;
+    private static final int MESSAGE_FRAGMENT = 1;
+    private static final int CHANNEL_FRAGMENT = 2;
+    private static final int USER_FRAGMENT = 3;
 
     private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
 
@@ -88,7 +88,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
 
     @OnTextChanged(R.id.et_search)
     void onTextChanged(CharSequence text) {
-        Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
+        mBtnClearSearch.setVisibility(!TextUtils.isEmpty(text) ? VISIBLE : GONE);
         mSearchText = text.toString();
         onContentChanged(mSearchText, mTabLayout.getSelectedTabPosition());
     }
@@ -142,6 +142,9 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
                 break;
             case ALL_FRAGMENT:
                 mSearchChatPresenter.handleAllTextChanges(text);
+                break;
+            case MESSAGE_FRAGMENT:
+                mSearchChatPresenter.handleMessageTextChanges(text);
                 break;
         }
     }

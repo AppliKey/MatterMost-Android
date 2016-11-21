@@ -11,7 +11,10 @@ import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.mvp.presenters.BaseEditChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
+import com.applikey.mattermost.views.ChannelTypeView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import butterknife.Bind;
 
 public class CreateChannelActivity extends BaseEditChannelActivity
         implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
@@ -19,6 +22,8 @@ public class CreateChannelActivity extends BaseEditChannelActivity
     @InjectPresenter
     CreateChannelPresenter mPresenter;
 
+    @Bind(R.id.channel_type_view)
+    ChannelTypeView mChannelTypeView;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, CreateChannelActivity.class);
@@ -53,6 +58,11 @@ public class CreateChannelActivity extends BaseEditChannelActivity
     @Override
     protected BaseEditChannelPresenter getPresenter() {
         return mPresenter;
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_create_group_or_channel;
     }
 
     private void createChannel() {

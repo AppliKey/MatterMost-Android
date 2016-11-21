@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +22,6 @@ import com.applikey.mattermost.models.user.UserListParcelableWrapper;
 import com.applikey.mattermost.mvp.presenters.BaseEditChannelPresenter;
 import com.applikey.mattermost.mvp.views.BaseEditChannelView;
 import com.applikey.mattermost.views.AddedPeopleLayout;
-import com.applikey.mattermost.views.ChannelTypeView;
 
 import java.util.List;
 
@@ -48,9 +48,6 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
     @Bind(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
 
-    @Bind(R.id.channel_type_view)
-    ChannelTypeView mChannelTypeView;
-
     @Bind(R.id.btn_add_all)
     CheckedTextView mChBtnAddAll;
 
@@ -59,7 +56,7 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
 
-    private PeopleToNewChannelAdapter mAdapter;
+    protected PeopleToNewChannelAdapter mAdapter;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, CreateChannelActivity.class);
@@ -68,7 +65,7 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_group_or_channel);
+        setContentView(getLayoutRes());
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         mAddedPeopleLayout.setImageLoader(mImageLoader);
@@ -106,10 +103,10 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
 
     @Override
-    public void showEmptyChannelNameError() {
-        @StringRes final int errorRes = mChannelTypeView.isChecked()
-                ? R.string.error_private_group_name_empty
-                : R.string.error_channel_name_empty;
+    public void showEmptyChannelNameError(boolean isPublic) {
+        @StringRes final int errorRes = isPublic
+                ? R.string.error_channel_name_empty
+                : R.string.error_private_group_name_empty;
         showToast(errorRes);
     }
 
@@ -184,4 +181,7 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
     }
 
     protected abstract BaseEditChannelPresenter getPresenter();
+
+    @LayoutRes
+    protected abstract int getLayoutRes();
 }
