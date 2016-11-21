@@ -134,10 +134,10 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> channel.setDirectCollocutor(user))
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
-                .doOnNext(channel -> mChannelStorage.updateDirectChannelData(channel,
-                                                                             Collections.singletonMap(user.getId(),
-                                                                                                      user),
-                                                                             mPrefs.getCurrentUserId()))
+                .doOnNext(channel ->
+                                  mChannelStorage.updateDirectChannelData(channel,
+                                                                          Collections.singletonMap(user.getId(), user),
+                                                                          mPrefs.getCurrentUserId()))
                 .subscribe(channel -> {
                     view.startChatView(channel);
                     view.showLoading(false);
