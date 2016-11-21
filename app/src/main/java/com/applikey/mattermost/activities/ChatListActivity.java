@@ -78,6 +78,8 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         mEventBus.register(this);
 
         onNewIntent(getIntent());
+
+        mPresenter.loadInitInfo();
     }
 
     @Override
@@ -135,7 +137,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
                     mTabIndicatorModel.register(TabBehavior.getItemBehavior(tabIconIndex),
-                            (ImageView) notificationIcon);
+                                                (ImageView) notificationIcon);
                 }
             }
         }
@@ -193,7 +195,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         protected int getSelectedTabColor() {
             if (mSelectedTabColor == -1) {
                 mSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
-                        R.color.tabSelected);
+                                                           R.color.tabSelected);
             }
             return mSelectedTabColor;
         }
@@ -201,7 +203,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         protected int getUnSelectedTabColor() {
             if (mUnSelectedTabColor == -1) {
                 mUnSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
-                        R.color.tabUnSelected);
+                                                             R.color.tabUnSelected);
             }
             return mUnSelectedTabColor;
         }

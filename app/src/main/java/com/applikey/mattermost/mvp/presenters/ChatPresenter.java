@@ -188,9 +188,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                         .subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnNext(post -> mChannel.setLastPost(post))
-                .doOnNext(result -> mChannelStorage.updateLastPost(mChannel))
-                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError));
+                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()),
+                           mErrorHandler::handleError
+                ));
     }
 
     private List<Post> transform(PostResponse response, int offset) {

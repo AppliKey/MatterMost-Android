@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import io.fabric.sdk.android.Fabric;
 import rx.Observable;
+import io.realm.Realm;
 import timber.log.Timber;
 
 public class App extends Application {
@@ -38,7 +39,15 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+        Realm.init(this);
+
+        final Fabric fabric = new Fabric.Builder(this)
+                .kits(new Crashlytics())
+                .debuggable(false)
+                .build();
+
+        Fabric.with(fabric);
+
         KissTools.setContext(this);
         mComponent = DaggerApplicationComponent.builder()
                 .globalModule(new GlobalModule(this))

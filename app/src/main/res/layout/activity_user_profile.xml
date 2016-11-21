@@ -48,14 +48,13 @@
                 android:layout_marginEnd="@dimen/small"
                 tools:src="@drawable/indicator_status_idle" />
 
-            <com.devspark.robototextview.widget.RobotoTextView
+            <TextView
                 android:id="@+id/display_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="@color/textListPrimary"
                 android:textSize="@dimen/text_title_size"
-                app:typeface="roboto_regular"
                 tools:text="Denis Nikiforov" />
 
         </LinearLayout>
@@ -68,25 +67,23 @@
             android:layout_marginEnd="@dimen/normal"
             android:layout_marginStart="@dimen/normal"
             android:layout_marginTop="@dimen/large"
-            android:text="@string/direct_message"
-            app:typeface="roboto_regular" />
+            android:text="@string/direct_message" />
 
-        <com.devspark.robototextview.widget.RobotoTextView
+        <TextView
             style="@style/TextHeadingSecondary.Small.Capitalize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/large"
-            android:text="@string/email_capt"
-            app:typeface="roboto_regular" />
+            android:text="@string/email_capt" />
 
-        <com.devspark.robototextview.widget.RobotoTextView
+        <TextView
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/normal"
+            android:fontFamily="@string/font_light"
             android:textColor="@color/textListPrimary"
             android:textSize="@dimen/text_title_size"
-            app:typeface="roboto_light"
             tools:text="expample@gmail.com" />
 
     </LinearLayout>

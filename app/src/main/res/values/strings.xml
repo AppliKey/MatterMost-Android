@@ -11,7 +11,7 @@
     <string name="invalid_server_url">We could not connect to the Mattermost server or the server is running in an incompatible version</string>
     <string name="no_teams_received">Could not receive teams</string>
     <string name="please_enter_your_credentials">Please Enter Your Credentials</string>
-    <string name="email">Enter your email</string>
+    <string name="enter_your_email">Enter your email</string>
     <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
     <string name="unknown">UNKNOWN</string>
@@ -53,6 +53,7 @@
     <string name="message">Message…</string>
     <string name="loading">Loading…</string>
     <string name="no_posts_to_display">No Posts to Display :(</string>
+    <string name="no_users_to_display">No Users to Display :(</string>
     <string name="channel_preview_message_placeholder">No messages yet</string>
 
     <string name="start_new_direct_chat">Start new direct chat</string>
@@ -75,8 +76,13 @@
     <string name="error_private_group_name_empty">Please, name your private group</string>
     <string name="error_channel_already_created">Oops, this name is already taken</string>
 
+    <string name="edit_public_channel">Edit public channel</string>
+    <string name="edit_private_group">Edit private group</string>
+    <string name="edit_channel">Edit</string>
+
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
+    <string name="chat_you">You:</string>
     <string name="new_message">New Message</string>
     <string name="search">Search</string>
     <string name="create_chat_hint_name">Example: Project name, Bugs, Sales</string>
@@ -85,6 +91,17 @@
     <string name="added_members_title">Added members</string>
     <string name="settings_unread_tabs_content">Enable unread tabs</string>
     <string name="settings_unread_tabs_title">Unread tabs</string>
+
+    <string name="email">Email</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="send_invitation_capt">SEND INVITATION</string>
+    <string name="invitation_info">People invited automatically join the\n<b>Town Square</b> channel.</string>
+    <string name="invitation_sent">New member invitation has been sent</string>
+
+    <string name="error_email_empty">The entered email is empty</string>
+    <string name="error_email_invalid">The entered email is invalid</string>
+    <string name="error_invitation_sending_failed">Invitation sending failed</string>
 
     <array name="post_own_opinion_array">
         <item>Delete</item>
@@ -100,6 +117,7 @@
     <string name="search_with_ellipsis">Search…</string>
     <string name="new_group_or_channel">New group or channel</string>
     <string name="invite_new_member">Invite new member</string>
+    <string name="invite_new_member_capt">Invite New Member</string>
     <string name="all_channels">All channels</string>
     <string name="channel_display_name_format">#%s</string>
     <string name="members">Members</string>
@@ -110,6 +128,8 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
+    <string name="no_results_found_try_again">No results found. Try again?</string>
+    <string name="search_user_empty_state">This user could not be found</string>
 
 
 </resources>

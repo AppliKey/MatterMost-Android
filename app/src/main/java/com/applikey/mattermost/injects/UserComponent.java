@@ -2,8 +2,10 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
+import com.applikey.mattermost.fragments.SearchFragment;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.BaseEditChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelDetailsPresenter;
 import com.applikey.mattermost.mvp.presenters.ChannelListPresenter;
 import com.applikey.mattermost.mvp.presenters.ChatListScreenPresenter;
@@ -15,10 +17,12 @@ import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchAllPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchChatPresenter;
+import com.applikey.mattermost.mvp.presenters.SearchMessagePresenter;
 import com.applikey.mattermost.mvp.presenters.SearchUserPresenter;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.presenters.UnreadChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
+import com.applikey.mattermost.mvp.views.BaseEditChannelView;
 import com.applikey.mattermost.platform.socket.WebSocketService;
 
 import dagger.Subcomponent;
@@ -43,6 +47,8 @@ public interface UserComponent {
 
     void inject(CreateChannelPresenter presenter);
 
+    void inject(BaseEditChannelPresenter<BaseEditChannelView> presenter);
+
     void inject(SettingsPresenter presenter);
 
     void inject(WebSocketService service);
@@ -66,6 +72,10 @@ public interface UserComponent {
     void inject(ChatPresenter presenter);
 
     void inject(AddedMembersPresenter presenter);
+
+    void inject(SearchMessagePresenter searchMessagePresenter);
+
+    void inject(SearchFragment searchFragment);
 
     @Subcomponent.Builder
     interface Builder {

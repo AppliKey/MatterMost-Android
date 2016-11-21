@@ -51,7 +51,7 @@ public class GlobalModule {
     @Provides
     @PerApp
     Realm provideRealm() {
-        final RealmConfiguration config = new RealmConfiguration.Builder(mApplicationContext)
+        final RealmConfiguration config = new RealmConfiguration.Builder()
                 .name(Constants.REALM_NAME)
                 .schemaVersion(0)
                 .deleteRealmIfMigrationNeeded()

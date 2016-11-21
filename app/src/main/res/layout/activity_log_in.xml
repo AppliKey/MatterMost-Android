@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_email"
             android:ellipsize="end"
-            android:hint="@string/email"
+            android:hint="@string/enter_your_email"
             android:inputType="textEmailAddress"
             android:maxLines="1"
             android:text="@string/default_login_text" />
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_password"
             android:hint="@string/enter_your_password"
-            android:inputType="textPassword"
+            android:inputType="textVisiblePassword"
             android:maxLines="1"
             android:text="@string/default_password" />
 

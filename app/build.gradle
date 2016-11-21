@@ -43,10 +43,14 @@ android {
         versionCode 5
         versionName "0.2"
 
-        buildConfigField "boolean", "SHOULD_REPLACE_CREDENTIALS", project.hasProperty("replacecred") ? "${project.ext.get("replacecred")}" : 'false'
-        buildConfigField "String", "PRESET_SERVER", project.hasProperty("server") ? "\"${project.ext.get("server")}\"" : '\"\"'
-        buildConfigField "String", "USER_NAME", project.hasProperty("user.name") ? "\"${project.ext.get("user.name")}\"" : '\"\"'
-        buildConfigField "String", "USER_PASSWORD", project.hasProperty("user.password") ? "\"${project.ext.get("user.password")}\"" : '\"\"'
+        buildConfigField "boolean", "SHOULD_REPLACE_CREDENTIALS",
+                project.hasProperty("replacecred") ? "${project.ext.get("replacecred")}" : 'false'
+        buildConfigField "String", "PRESET_SERVER",
+                project.hasProperty("server") ? "\"${project.ext.get("server")}\"" : '\"\"'
+        buildConfigField "String", "USER_NAME",
+                project.hasProperty("user.name") ? "\"${project.ext.get("user.name")}\"" : '\"\"'
+        buildConfigField "String", "USER_PASSWORD",
+                project.hasProperty("user.password") ? "\"${project.ext.get("user.password")}\"" : '\"\"'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -102,12 +106,11 @@ dependencies {
     compile 'com.google.dagger:dagger:2.7'
 
     // web
-    compile "com.squareup.retrofit2:retrofit:2.0.2"
-    compile "com.squareup.retrofit2:converter-gson:2.0.2"
-    compile "com.squareup.retrofit2:adapter-rxjava:2.0.2"
-    compile "com.squareup.okhttp3:logging-interceptor:3.1.2"
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
-    compile "com.github.aurae.retrofit2:converter-logansquare:1.4.0"
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile "com.squareup.retrofit2:converter-gson:2.1.0"
+    compile "com.squareup.retrofit2:adapter-rxjava:2.1.0"
+    compile "com.squareup.okhttp3:logging-interceptor:3.4.2"
+    compile 'com.squareup.okhttp3:okhttp:3.4.2'
 
     // rx
     compile 'io.reactivex:rxandroid:1.2.1'
@@ -126,7 +129,6 @@ dependencies {
 
     // views
     compile 'com.tasomaniac:delayed-progress:0.3'
-    compile 'com.github.johnkil.android-robototextview:robototextview:2.5.0'
     compile('com.mikepenz:materialdrawer:5.6.0@aar') {
         transitive = true
     }
@@ -135,6 +137,7 @@ dependencies {
     compile 'com.arello-mobile:moxy:0.5.4'
     compile 'com.arello-mobile:moxy-android:0.5.4'
     apt 'com.arello-mobile:moxy-compiler:0.5.4'
+    
 
     // stetho
     compile 'com.facebook.stetho:stetho:1.4.1'
@@ -169,4 +172,7 @@ dependencies {
     //emoji
     compile 'com.vanniktech:emoji:0.4.0-SNAPSHOT'
     compile 'com.vdurmont:emoji-java:3.1.3'
+
+    //markdown
+    compile 'com.github.Commit451:bypasses:1.0.4'
 }

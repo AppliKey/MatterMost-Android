@@ -69,6 +69,12 @@
             android:name=".activities.UserProfileActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.EditChannelActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.InviteNewMemberActivity"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

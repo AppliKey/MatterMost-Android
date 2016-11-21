@@ -7,8 +7,10 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
@@ -21,7 +23,6 @@ import com.applikey.mattermost.mvp.views.SearchChatView;
 import com.applikey.mattermost.views.SearchTabBehavior;
 import com.applikey.mattermost.views.TabSelectedListener;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.widget.RobotoEditText;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -38,11 +39,10 @@ import static android.view.View.VISIBLE;
 
 public class SearchChatActivity extends BaseMvpActivity implements SearchChatView {
 
-    private static final String TAG = SearchChatActivity.class.getSimpleName();
-
     private static final int ALL_FRAGMENT = 0;
-    private static final int CHANNEL_FRAGMENT = 1;
-    private static final int USER_FRAGMENT = 2;
+    private static final int MESSAGE_FRAGMENT = 1;
+    private static final int CHANNEL_FRAGMENT = 2;
+    private static final int USER_FRAGMENT = 3;
 
     private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
 
@@ -56,7 +56,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
     TabLayout mTabLayout;
 
     @Bind(R.id.et_search)
-    RobotoEditText mEtSearch;
+    EditText mEtSearch;
 
     @Bind(R.id.btn_clear_search)
     ImageButton mBtnClearSearch;
@@ -88,7 +88,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
 
     @OnTextChanged(R.id.et_search)
     void onTextChanged(CharSequence text) {
-        Log.d(TAG, "onTextChanged: tab " + mTabLayout.getSelectedTabPosition());
+        mBtnClearSearch.setVisibility(!TextUtils.isEmpty(text) ? VISIBLE : GONE);
         mSearchText = text.toString();
         onContentChanged(mSearchText, mTabLayout.getSelectedTabPosition());
     }
@@ -116,7 +116,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
                     mTabIndicatorModel.register(SearchTabBehavior.values()[i + 1],
-                            (ImageView) notificationIcon);
+                                                (ImageView) notificationIcon);
                 }
             }
         }
@@ -142,6 +142,9 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
                 break;
             case ALL_FRAGMENT:
                 mSearchChatPresenter.handleAllTextChanges(text);
+                break;
+            case MESSAGE_FRAGMENT:
+                mSearchChatPresenter.handleMessageTextChanges(text);
                 break;
         }
     }
@@ -174,7 +177,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         protected int getSelectedTabColor() {
             if (mSelectedTabColor == -1) {
                 mSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
-                        R.color.tabSelected);
+                                                           R.color.tabSelected);
             }
             return mSelectedTabColor;
         }
@@ -182,7 +185,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
         protected int getUnSelectedTabColor() {
             if (mUnSelectedTabColor == -1) {
                 mUnSelectedTabColor = ContextCompat.getColor(SearchChatActivity.this,
-                        R.color.tabUnSelected);
+                                                             R.color.tabUnSelected);
             }
             return mUnSelectedTabColor;
         }

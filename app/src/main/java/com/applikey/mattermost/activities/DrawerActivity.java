@@ -1,6 +1,5 @@
 package com.applikey.mattermost.activities;
 
-
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,10 +11,8 @@ import android.view.View;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
-import com.applikey.mattermost.platform.socket.WebSocketService;
 import com.applikey.mattermost.utils.kissUtils.utils.SystemUtil;
 import com.arellomobile.mvp.presenter.InjectPresenter;
-import com.devspark.robototextview.util.RobotoTypefaceManager;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -25,14 +22,22 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private static final int ITEM_ALL_CHANNELS = 0;
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
-    private Drawer mDrawer;
+
     @InjectPresenter
     NavigationPresenter mPresenter;
 
+    private Drawer mDrawer;
+
     @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+    public void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         initDrawer();
+    }
+
+    @Override
+    public void startChannelCreating() {
+        startActivity(CreateChannelActivity.getIntent(this));
+        closeDrawer();
     }
 
     protected boolean showHamburger() {
@@ -46,18 +51,15 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     }
 
     private void initDrawer() {
-        final Typeface typeface = RobotoTypefaceManager.obtainTypeface(this,
-                RobotoTypefaceManager.Typeface.ROBOTO_REGULAR);
-
         final PrimaryDrawerItem mItemAllChannels = new PrimaryDrawerItem().withName(R.string.all_channels)
                 .withIdentifier(ITEM_ALL_CHANNELS)
-                .withTypeface(typeface);
+                .withTypeface(Typeface.SANS_SERIF);
         final PrimaryDrawerItem mItemInviteNewMember = new PrimaryDrawerItem().withName(R.string.invite_new_member)
                 .withIdentifier(ITEM_INVITE_MEMBER)
-                .withTypeface(typeface);
+                .withTypeface(Typeface.SANS_SERIF);
         final PrimaryDrawerItem mItemSettings = new PrimaryDrawerItem().withName(R.string.settings)
                 .withIdentifier(ITEM_SETTINGS)
-                .withTypeface(typeface);
+                .withTypeface(Typeface.SANS_SERIF);
 
         mDrawer = new DrawerBuilder().withActivity(this)
                 .withToolbar(getToolbar())
@@ -67,7 +69,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                         mItemAllChannels,
                         mItemInviteNewMember,
                         mItemSettings
-                )
+                               )
                 .withOnDrawerItemClickListener((view, position, drawerItem) -> {
                     itemScreen((int) drawerItem.getIdentifier());
                     return true;
@@ -104,6 +106,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                 }
                 break;
             case ITEM_INVITE_MEMBER:
+                startInviteNewMember();
                 break;
             case ITEM_SETTINGS:
                 startSettings();
@@ -112,14 +115,13 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         closeDrawer();
     }
 
-    private void startSettings() {
-        startActivity(SettingsActivity.getIntent(this));
+    private void startInviteNewMember() {
+        startActivity(InviteNewMemberActivity.getIntent(this));
         closeDrawer();
     }
 
-    @Override
-    public void startChannelCreating() {
-        startActivity(CreateChannelActivity.getIntent(this));
+    private void startSettings() {
+        startActivity(SettingsActivity.getIntent(this));
         closeDrawer();
     }
 }
