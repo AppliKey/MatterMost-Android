@@ -4,7 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.commands.Invite;
 import com.applikey.mattermost.models.commands.InviteNewMembersRequest;
 import com.applikey.mattermost.mvp.views.InviteNewMemberView;
-import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -23,7 +23,7 @@ public class InviteNewMemberPresenter extends BasePresenter<InviteNewMemberView>
     Api mApi;
 
     @Inject
-    TeamStorage mTeamStorage;
+    Prefs mPrefs;
 
     @Inject
     ErrorHandler mErrorHandler;
@@ -45,13 +45,11 @@ public class InviteNewMemberPresenter extends BasePresenter<InviteNewMemberView>
 
         final Invite invite = new Invite(email, firstName, lastName);
         final InviteNewMembersRequest request = new InviteNewMembersRequest(invite);
-        final Subscription subscription = mTeamStorage.getChosenTeam()
-                .first()
-                .flatMap(team -> mApi.inviteNewMember(team.getId(), request)
-                        .subscribeOn(Schedulers.io()))
+
+        final Subscription subscription = mApi.inviteNewMember(mPrefs.getCurrentTeamId(), request)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((v) -> view.onSuccessfulInvitationSent(),
-                           this::handleError);
+                .subscribe((v) -> view.onSuccessfulInvitationSent(), this::handleError);
 
         mSubscription.add(subscription);
     }
