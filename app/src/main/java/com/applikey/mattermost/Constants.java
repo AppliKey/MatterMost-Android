@@ -30,5 +30,5 @@ public class Constants {
 
     public static final String PERSISTENT_PREFS_FILE_NAME = "PersistentPrefs";
 
-    public static final long SOCKET_SERVICE_SHUTDOWN_THRESHOLD_SEC = 3;
+    public static final long SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES = 3;
 }
