@@ -14,7 +14,7 @@ import rx.Observable;
 
 public class RxForeground {
 
-    private static final String TAG = "ForegroundManager";
+    private static final String TAG = "RxForeground";
 
     private final Application mApp;
 

@@ -54,9 +54,8 @@ public class App extends Application {
         RxForeground.with(this)
                 .observeForeground(ChatListActivity.class, ChatActivity.class)
                 .doOnNext(observe -> Log.d("App", "Application is on " + (observe ? "foreground" : "background")))
-                .switchMap(foreground -> foreground
-                        ? Observable.just(true)
-                        : Observable.timer(10, TimeUnit.SECONDS).map(tick -> false))
+                .switchMap(foreground -> Observable.timer(foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_SEC, TimeUnit.MINUTES)
+                        .map(tick -> foreground))
                 .subscribe(foreground -> {
                     if (foreground) {
                         startService(WebSocketService.getIntent(this));
@@ -71,7 +70,6 @@ public class App extends Application {
         super.onTrimMemory(level);
         imageLoader.dropMemoryCache();
     }
-
 
     public static ApplicationComponent getComponent() {
         return mComponent;
