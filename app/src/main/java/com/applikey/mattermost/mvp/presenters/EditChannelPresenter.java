@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelTitleRequest;
+import com.applikey.mattermost.models.channel.InvitedUsersManager;
 import com.applikey.mattermost.mvp.views.EditChannelView;
 import com.arellomobile.mvp.InjectViewState;
 
@@ -22,19 +23,28 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
     }
 
     public void getInitialData(String channelId) {
-        final Subscription subscription = mChannelStorage.channelById(channelId)
+        final Subscription subscription = getUserList()
+                .toSortedList()
+                .doOnNext(users -> mInvitedUsersManager = new InvitedUsersManager(this, users))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(users -> getViewState().showAllUsers(users))
+                .flatMap(users -> mChannelStorage.channelById(channelId))
                 .first()
                 .doOnNext(channel -> mChannel = channel)
-                .subscribe(channel -> {
-                    getViewState().showChannelData(channel);
-                }, mErrorHandler::handleError);
+                .doOnNext(channel -> getViewState().showChannelData(channel))
+                .flatMap(channel -> mUserStorage.getChannelUsers(channel))
+                .doOnNext(users -> mInvitedUsersManager.setAlreadyMemberUsers(users))
+                .subscribe(users -> getViewState().showMembers(users),
+                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error))
+                );
         mSubscription.add(subscription);
     }
 
 
     public void updateChannel(String channelName, String channelDescription) {
         if (TextUtils.isEmpty(channelName)) {
-            getViewState().showEmptyChannelNameError();
+            getViewState().showEmptyChannelNameError(
+                    mChannel.getType().equals(Channel.ChannelType.PUBLIC.getRepresentation()));
             return;
         }
 
