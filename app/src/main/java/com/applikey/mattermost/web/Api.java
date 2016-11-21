@@ -12,6 +12,7 @@ import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
+import com.applikey.mattermost.models.commands.InviteNewMembersRequest;
 import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
@@ -131,8 +132,11 @@ public interface Api {
     Observable<Channel> createChannel(@Path("team_id") String teamId,
                                       @Body DirectChannelRequest request);
 
-    @GET("api/v3/teams/{team_id}/channels/more")
+    @GET("/api/v3/teams/{team_id}/channels/more")
     Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
+
+    @POST("/api/v3/teams/{team_id}/invite_members")
+    Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
 
     @POST("api/v3/teams/{teamId}/channels/update")
     Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,

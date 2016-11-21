@@ -12,6 +12,7 @@ import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
+import com.applikey.mattermost.models.commands.InviteNewMembersRequest;
 import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
@@ -146,9 +147,7 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Post> createPost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
-                                       @Body
-
-                                               PendingPost request) {
+                                       @Body PendingPost request) {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
@@ -167,9 +166,7 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
                                                    @Path("channel_id") String channelId,
-                                                   @Body
-
-                                                           RequestUserId userId) {
+                                                   @Body RequestUserId userId) {
         return getRealApi().addUserToChannel(teamId, channelId, userId);
     }
 
@@ -188,6 +185,11 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
         return getRealApi().getChannelsUserHasNotJoined(teamId);
+    }
+
+    @Override
+    public Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body) {
+        return getRealApi().inviteNewMember(teamId, body);
     }
 
     @Override

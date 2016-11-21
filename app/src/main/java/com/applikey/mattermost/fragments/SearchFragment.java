@@ -122,5 +122,4 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     public void clearData() {
         mAdapter.clear();
     }
-
 }

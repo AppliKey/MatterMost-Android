@@ -137,6 +137,7 @@ dependencies {
     compile 'com.arello-mobile:moxy:0.5.4'
     compile 'com.arello-mobile:moxy-android:0.5.4'
     apt 'com.arello-mobile:moxy-compiler:0.5.4'
+    
 
     // stetho
     compile 'com.facebook.stetho:stetho:1.4.1'
