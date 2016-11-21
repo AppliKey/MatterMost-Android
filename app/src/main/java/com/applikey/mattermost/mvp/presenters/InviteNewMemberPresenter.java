@@ -40,6 +40,7 @@ public class InviteNewMemberPresenter extends BasePresenter<InviteNewMemberView>
         }
         if (!StringUtil.isEmail(email)) {
             view.showInvalidEmailError();
+            return;
         }
 
         final Invite invite = new Invite(email, firstName, lastName);
