@@ -20,6 +20,7 @@ import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -130,13 +131,21 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     void createChannel(User user) {
         final SearchView view = getViewState();
         view.showLoading(true);
+
         final Subscription subscription = mTeamStorage.getChosenTeam()
                 .observeOn(Schedulers.io())
                 .flatMap(team -> mApi.createChannel(team.getId(),
                                                     new DirectChannelRequest(user.getId())),
                          (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(channel -> channel.setDirectCollocutor(user))
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.updateDirectChannelData(channel,
+                                                                             Collections
+                                                                                     .singletonMap(
+                                                                                     user.getId(),
+                                                                                     user),
+                                                                             mPrefs.getCurrentUserId()))
                 .subscribe(channel -> {
                     view.startChatView(channel);
                     view.showLoading(false);
@@ -148,7 +157,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         mSubscription.add(subscription);
     }
 
-    public void getData(String text){
+    public void getData(String text) {
         if (!isDataRequestValid(text.trim())) {
             return;
         }
