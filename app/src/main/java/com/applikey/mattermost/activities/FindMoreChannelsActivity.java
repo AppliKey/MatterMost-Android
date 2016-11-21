@@ -1,5 +1,7 @@
 package com.applikey.mattermost.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 
@@ -18,7 +20,6 @@ import timber.log.Timber;
 
 public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMoreChannelsView,
                                                                          NotJoinedChannelsAdapter.OnNotJoinedChannelClick {
-
     @Bind(R.id.rv_more_channels)
     RecyclerView mRvNotJoinedChannels;
 
@@ -26,6 +27,10 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
     FindMoreChannelsPresenter mPresenter;
 
     private NotJoinedChannelsAdapter mAdapter;
+
+    public static Intent getIntent(Context context) {
+        return new Intent(context, FindMoreChannelsActivity.class);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
