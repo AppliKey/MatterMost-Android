@@ -270,7 +270,7 @@ public class ChannelStorage {
                 });
     }
 
-    private void updateDirectChannelData(Channel channel,
+    public void updateDirectChannelData(Channel channel,
             Map<String, User> contacts,
             String currentUserId) {
         final String channelName = channel.getName();
