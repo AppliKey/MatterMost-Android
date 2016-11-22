@@ -42,9 +42,14 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
                 .flatMap(id -> mApi.getChannelsUserHasNotJoined(id))
                 .map(ChannelResponse::getChannels)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(channelsWithInfo -> {
-                    getViewState().showNotJoinedChannels(channelsWithInfo);
-                }, mErrorHandler::handleError);
+                .subscribe(
+                        getViewState()::showNotJoinedChannels,
+                        this::handleError);
         mSubscription.add(subscription);
+    }
+
+    private void handleError(Throwable e) {
+        mErrorHandler.handleError(e);
+        getViewState().showEmptyState();
     }
 }

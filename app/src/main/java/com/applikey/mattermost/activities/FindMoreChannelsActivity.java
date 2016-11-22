@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.NotJoinedChannelsAdapter;
@@ -21,12 +23,17 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMoreChannelsView,
-                                                                         NotJoinedChannelsAdapter.OnNotJoinedChannelClick {
+                                                                         NotJoinedChannelsAdapter
+                                                                                 .OnNotJoinedChannelClick {
+
     @Bind(R.id.rv_more_channels)
     RecyclerView mRvNotJoinedChannels;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Bind(R.id.tv_empty_state)
+    TextView mTvEmptyState;
 
     @InjectPresenter
     FindMoreChannelsPresenter mPresenter;
@@ -48,12 +55,23 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
 
     @Override
     public void showNotJoinedChannels(List<Channel> notJoinedChannels) {
+        hideEmptyState();
         mAdapter.setChannels(notJoinedChannels);
     }
 
     @Override
     public void onChannelClick(Channel channel) {
         Timber.d("onChannelClick, channel: %s", channel.getDisplayName());
+    }
+
+    @Override
+    public void showEmptyState() {
+        mTvEmptyState.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideEmptyState() {
+        mTvEmptyState.setVisibility(View.GONE);
     }
 
     @Override

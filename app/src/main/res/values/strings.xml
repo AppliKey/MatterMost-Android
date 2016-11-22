@@ -127,7 +127,7 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
-    <string name="no_results_found_try_again">No results found. Try again?</string>
+    <string name="empty_state">No results found. Try again?</string>
     <string name="search_user_empty_state">This user could not be found</string>
     <string name="find_more_channels">Find more channels</string>
     <string name="quantity_one_member">%d member</string>

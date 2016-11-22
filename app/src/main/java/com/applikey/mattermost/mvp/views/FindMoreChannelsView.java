@@ -10,4 +10,6 @@ import java.util.List;
 @StateStrategyType(SingleStateStrategy.class)
 public interface FindMoreChannelsView extends MvpView {
     void showNotJoinedChannels(List<Channel> notJoinedChannels);
+    void showEmptyState();
+    void hideEmptyState();
 }
