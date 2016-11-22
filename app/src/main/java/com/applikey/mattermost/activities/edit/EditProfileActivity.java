@@ -55,10 +55,13 @@ public class EditProfileActivity extends BaseMvpActivity implements EditProfileV
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: {
+            case android.R.id.home:
                 onBackPressed();
                 return true;
-            }
+            case R.id.action_apply:
+                mPresenter.editUser(mEtFirstName.getText().toString(), mEtLastName.getText().toString(),
+                                    mEtUsername.getText().toString(), mEtEmail.getText().toString());
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -73,8 +76,13 @@ public class EditProfileActivity extends BaseMvpActivity implements EditProfileV
     }
 
     @Override
-    public void onImageChosen(String uri) {
-        mImageLoader.displayCircularImage(new File(uri), mIvAvatar);
+    public void onImageChosen(File file) {
+        mImageLoader.displayCircularImage(file, mIvAvatar);
+    }
+
+    @Override
+    public void showError(String error) {
+        showToast(error);
     }
 
     private void initListeners() {

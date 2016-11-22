@@ -27,6 +27,10 @@ public class UserStorage {
         mDb.saveTransactional(directProfiles.values());
     }
 
+    public void saveUser(User user) {
+        mDb.saveTransactional(user);
+    }
+
     public void saveUsersStatuses(Map<String, User> directProfiles,
                                   Map<String, String> userStatuses) {
         addStatusData(directProfiles, userStatuses);

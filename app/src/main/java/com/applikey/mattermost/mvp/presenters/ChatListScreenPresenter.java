@@ -91,10 +91,14 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     public void loadInitInfo() {
         final Subscription subscription = mApi.getInitialLoad()
-                .map(InitLoadResponse::getPreferences)
                 .subscribeOn(Schedulers.io())
+                .map(InitLoadResponse::getPreferences)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mPreferenceStorage::save, mErrorHandler::handleError);
+                .doOnNext(mPreferenceStorage::save)
+                .observeOn(Schedulers.io())
+                .flatMap(v -> mApi.getMe())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mUserStorage::saveUser, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
