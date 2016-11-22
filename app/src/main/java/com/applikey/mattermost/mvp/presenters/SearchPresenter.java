@@ -94,7 +94,6 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 final User user = ((User) item);
                 mSubscription.add(mChannelStorage.getChannel(user.getId())
                                           .toObservable()
-                                          .observeOn(AndroidSchedulers.mainThread())
                                           .doOnError(t -> createChannel(user))
                                           .onErrorResumeNext(t -> Observable.empty())
                                           .subscribe(view::startChatView, mErrorHandler::handleError));
@@ -127,9 +126,9 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         final SearchView view = getViewState();
         view.showLoading(true);
 
-        final Subscription subscription = mTeamStorage.getChosenTeam()
+        final Subscription subscription = Observable.just(mPrefs.getCurrentTeamId())
                 .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.createChannel(team.getId(), new DirectChannelRequest(user.getId())),
+                .flatMap(teamId -> mApi.createChannel(teamId, new DirectChannelRequest(user.getId())),
                          (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> channel.setDirectCollocutor(user))
