@@ -45,8 +45,7 @@ public class Db {
 
     public <T extends RealmObject> Observable<List<T>> getObjectsQualifiedWithCopy(Class<T> tClass,
             String fieldName,
-            String[]
-                    fieldValue) {
+            String[] fieldValue) {
         return mRealm.where(tClass)
                 .in(fieldName, fieldValue)
                 .findAllAsync()
@@ -324,8 +323,7 @@ public class Db {
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
             tClass,
             String text,
-            String[]
-                    fields,
+            String[] fields,
             String sortedField) {
         final Realm realm = getRealm();
 
