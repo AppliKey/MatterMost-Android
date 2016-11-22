@@ -12,7 +12,6 @@ import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.ObjectNotFoundException;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -94,15 +93,11 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
             case SearchItem.USER:
                 final User user = ((User) item);
                 mSubscription.add(mChannelStorage.getChannel(user.getId())
+                                          .toObservable()
                                           .observeOn(AndroidSchedulers.mainThread())
-                                          // TODO CODE SMELLS
-                                          .doOnError(throwable -> {
-                                              if (throwable instanceof ObjectNotFoundException) {
-                                                  createChannel(user);
-                                              }
-                                          })
-                                          .subscribe(view::startChatView,
-                                                     mErrorHandler::handleError));
+                                          .doOnError(t -> createChannel(user))
+                                          .onErrorResumeNext(t -> Observable.empty())
+                                          .subscribe(view::startChatView, mErrorHandler::handleError));
                 break;
             case SearchItem.MESSAGE_CHANNEL:
                 view.startChatView(((Message) item).getChannel());
@@ -134,13 +129,13 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
 
         final Subscription subscription = mTeamStorage.getChosenTeam()
                 .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.createChannel(team.getId(),
-                                                    new DirectChannelRequest(user.getId())),
+                .flatMap(team -> mApi.createChannel(team.getId(), new DirectChannelRequest(user.getId())),
                          (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> channel.setDirectCollocutor(user))
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
-                .doOnNext(channel -> mChannelStorage.updateDirectChannelData(channel,
+                .doOnNext(channel ->
+                                  mChannelStorage.updateDirectChannelData(channel,
                                                                           Collections.singletonMap(user.getId(), user),
                                                                           mPrefs.getCurrentUserId()))
                 .subscribe(channel -> {

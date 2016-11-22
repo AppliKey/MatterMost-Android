@@ -78,7 +78,7 @@ public class MessagingSocket implements Socket {
                             Log.d(TAG, "Socket disconnected!");
                             emitter.onCompleted();
                         } else {
-                            Log.w(TAG, "Socket connection interrupted. Trying to reconnect...");
+                            Log.w(TAG, "Socket connection interrupted.");
                             emitter.onError(new SocketException("Connection interrupted"));
                         }
                     }
