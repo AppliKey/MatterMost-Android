@@ -15,7 +15,6 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
-import com.applikey.mattermost.views.ContentTextView;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.transitionseverywhere.TransitionManager;
 
