@@ -1,7 +1,6 @@
 package com.applikey.mattermost.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.applikey.mattermost.R;
@@ -32,7 +31,6 @@ public class SearchUserFragment extends SearchFragment implements SearchUserView
 
     @Override
     public void onItemClicked(SearchItem item) {
-        Log.d(TAG, "onItemClicked: ");
         mPresenter.handleItemClick(item);
     }
 
