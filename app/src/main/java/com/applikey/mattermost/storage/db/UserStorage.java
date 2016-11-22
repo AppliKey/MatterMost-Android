@@ -67,7 +67,7 @@ public class UserStorage {
     }
 
     public Single<User> getMe() {
-        return mDb.getObject(User.class, mPrefs.getCurrentUserId())
+        return mDb.getObjectAndCopy(User.class, mPrefs.getCurrentUserId())
                 .toSingle();
     }
 
