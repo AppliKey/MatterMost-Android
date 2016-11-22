@@ -48,6 +48,9 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     @SerializedName("update_at")
     private long updateAt;
 
+    @SerializedName("create_at")
+    private long createAt;
+
     // Application-specific fields
     private String profileImage;
 
@@ -108,6 +111,7 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         lastName = in.readString();
         lastActivityAt = in.readLong();
         updateAt = in.readLong();
+        createAt = in.readLong();
         profileImage = in.readString();
         status = in.readInt();
     }
@@ -121,6 +125,7 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         dest.writeString(lastName);
         dest.writeLong(lastActivityAt);
         dest.writeLong(updateAt);
+        dest.writeLong(createAt);
         dest.writeString(profileImage);
         dest.writeInt(status);
     }
@@ -214,6 +219,14 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         this.status = status;
     }
 
+    public long getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(long createAt) {
+        this.createAt = createAt;
+    }
+
     public static String getDisplayableName(@NonNull User user) {
         if (user == null) {
             return Constants.EMPTY_STRING;
@@ -248,7 +261,7 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         result = 31 * result + getLastName().hashCode();
         result = 31 * result + (int) (getLastActivityAt() ^ (getLastActivityAt() >>> 32));
         result = 31 * result + (int) (getUpdateAt() ^ (getUpdateAt() >>> 32));
-        result = 31 * result + getProfileImage().hashCode();
+        result = 31 * result + (int) (getCreateAt() ^ (getCreateAt() >>> 32));
         result = 31 * result + getStatus();
         return result;
     }
