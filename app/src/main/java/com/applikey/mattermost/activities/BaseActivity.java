@@ -33,10 +33,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 
     @Inject
-    EventBus mEventBus;
+    protected EventBus mEventBus;
 
     @Inject
-    ImageLoader mImageLoader;
+    protected ImageLoader mImageLoader;
 
     private ProgressDialog mProgressDialog;
 

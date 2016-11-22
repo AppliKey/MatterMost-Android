@@ -24,16 +24,21 @@ import com.applikey.mattermost.models.web.PingResponse;
 
 import java.util.Map;
 
+import okhttp3.MultipartBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
 
 public interface Api {
+
+    String MULTIPART_IMAGE_TAG = "image";
 
     @POST("/api/v3/users/login")
     Observable<Response<AuthenticationResponse>> authorize(
@@ -43,7 +48,7 @@ public interface Api {
     Observable<Map<String, Team>> listTeams();
 
     @GET("/api/v3/users/me")
-    Observable<Response> getMe();
+    Observable<User> getMe();
 
     @GET("/api/v3/users/initial_load")
     Observable<InitLoadResponse> getInitialLoad();
@@ -140,12 +145,19 @@ public interface Api {
 
     @POST("api/v3/teams/{teamId}/channels/update")
     Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
-            @Body ChannelTitleRequest request);
+                                           @Body ChannelTitleRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/update_purpose")
     Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
-            @Body ChannelPurposeRequest request);
+                                             @Body ChannelPurposeRequest request);
 
     @POST("/api/v3/teams/{team_id}/posts/search")
     Observable<PostResponse> searchPosts(@Path("team_id") String teamId, @Body PostSearchRequest request);
+
+    @Multipart
+    @POST("/api/v3/users/newimage")
+    Observable<Void> uploadImage(@Part MultipartBody.Part image);
+
+    @POST("/api/v3/users/update")
+    Observable<User> editUser(@Body User user);
 }
