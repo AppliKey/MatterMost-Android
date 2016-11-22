@@ -54,10 +54,9 @@ public final class ErrorHandler {
     public void handleError(Throwable throwable) {
         if (handleApiException(throwable)) {
             return;
+        } else if (isTimeoutException(throwable)) {
+            Toast.makeText(mContext, "Connection timeout", Toast.LENGTH_SHORT).show();
         }
-
-        throwable.printStackTrace();
-        Log.e(TAG, throwable.getMessage());
     }
 
     public void handleError(String message) {
