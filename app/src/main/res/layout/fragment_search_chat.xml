@@ -6,8 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:visibility="gone"
-        tools:visibility="visible"
+
         android:id="@+id/tv_empty_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,6 +19,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_items"
+        android:visibility="gone"
+        tools:visibility="visible"
         tools:listitem="@layout/list_item_search_user"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
