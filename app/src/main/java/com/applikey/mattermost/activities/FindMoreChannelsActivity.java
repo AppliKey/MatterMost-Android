@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -34,6 +35,9 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
 
     @Bind(R.id.tv_empty_state)
     TextView mTvEmptyState;
+
+    @Bind(R.id.refresh_find_more_channel)
+    SwipeRefreshLayout mRefreshFindMoreChannels;
 
     @InjectPresenter
     FindMoreChannelsPresenter mPresenter;
@@ -67,11 +71,23 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
     @Override
     public void showEmptyState() {
         mTvEmptyState.setVisibility(View.VISIBLE);
+        mRvNotJoinedChannels.setVisibility(View.GONE);
     }
 
     @Override
     public void hideEmptyState() {
         mTvEmptyState.setVisibility(View.GONE);
+        mRvNotJoinedChannels.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showLoading() {
+        if (!mRefreshFindMoreChannels.isRefreshing()) mRefreshFindMoreChannels.setRefreshing(true);
+    }
+
+    @Override
+    public void hideLoading() {
+        mRefreshFindMoreChannels.setRefreshing(false);
     }
 
     @Override
@@ -87,6 +103,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
     private void initView() {
         mAdapter = new NotJoinedChannelsAdapter(this);
         mRvNotJoinedChannels.setAdapter(mAdapter);
+        mRefreshFindMoreChannels.setOnRefreshListener(mPresenter::requestNotJoinedChannels);
     }
 
     private void initToolbar() {

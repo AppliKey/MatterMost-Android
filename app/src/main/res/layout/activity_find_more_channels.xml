@@ -22,26 +22,30 @@
             app:navigationIcon="@drawable/ic_back" />
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_find_more_channel"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_more_channels"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            tools:listitem="@layout/list_item_more_channels" />
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_empty_state"
-            style="@style/EmptyState"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/empty_state_margin_top"
-            android:text="@string/empty_state"
-            android:visibility="gone"
-            tools:visibility="visible" />
-    </FrameLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_more_channels"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                tools:listitem="@layout/list_item_more_channels" />
 
+            <TextView
+                android:id="@+id/tv_empty_state"
+                style="@style/EmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/empty_state_margin_top"
+                android:text="@string/empty_state"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>
