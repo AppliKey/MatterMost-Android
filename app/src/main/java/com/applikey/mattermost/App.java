@@ -15,6 +15,7 @@ import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
+import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.concurrent.TimeUnit;
@@ -47,6 +48,7 @@ public class App extends Application {
                 .build();
 
         Fabric.with(fabric);
+        RxPaparazzo.register(this);
 
         KissTools.setContext(this);
         mComponent = DaggerApplicationComponent.builder()
