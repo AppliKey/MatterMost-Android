@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.NotJoinedChannelsAdapter;
@@ -23,6 +25,9 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
     @Bind(R.id.rv_more_channels)
     RecyclerView mRvNotJoinedChannels;
 
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
+
     @InjectPresenter
     FindMoreChannelsPresenter mPresenter;
 
@@ -38,6 +43,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
         setContentView(R.layout.activity_find_more_channels);
         ButterKnife.bind(this);
         initView();
+        initToolbar();
     }
 
     @Override
@@ -50,9 +56,24 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
         Timber.d("onChannelClick, channel: %s", channel.getDisplayName());
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void initView() {
         mAdapter = new NotJoinedChannelsAdapter(this);
         mRvNotJoinedChannels.setAdapter(mAdapter);
+    }
+
+    private void initToolbar() {
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 }

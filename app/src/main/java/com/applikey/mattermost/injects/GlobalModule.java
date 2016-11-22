@@ -134,8 +134,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    TeamStorage provideTeamStorage(Db db) {
-        return new TeamStorage(db);
+    TeamStorage provideTeamStorage(Db db, Prefs prefs) {
+        return new TeamStorage(db, prefs);
     }
 
     @Provides

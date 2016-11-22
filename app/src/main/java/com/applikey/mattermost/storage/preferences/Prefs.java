@@ -6,6 +6,9 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 
 import com.applikey.mattermost.Constants;
+import com.f2prateek.rx.preferences.RxSharedPreferences;
+
+import rx.Observable;
 
 /**
  * Storage, which uses {@link SharedPreferences} to store simple values.
@@ -19,9 +22,11 @@ public class Prefs {
     private static final String KEY_GCM_TOKEN = Constants.PACKAGE_NAME + ".GCM_TOKEN";
 
     private final SharedPreferences mSharedPreferences;
+    private final RxSharedPreferences mRxSharedPreferences;
 
     public Prefs(Context context) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mRxSharedPreferences = RxSharedPreferences.create(mSharedPreferences);
     }
 
     @Nullable
@@ -76,8 +81,8 @@ public class Prefs {
         mSharedPreferences.edit().putBoolean(key, value).apply();
     }
 
-    public String getValue(String key) {
-        return mSharedPreferences.getString(key, null);
+    public Observable<String> getValue(String key) {
+        return mRxSharedPreferences.getString(key).asObservable();
     }
 
     public boolean getValue(String key, boolean defValue) {

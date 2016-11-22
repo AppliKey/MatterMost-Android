@@ -18,14 +18,4 @@
         android:textColor="@android:color/black"
         android:textSize="@dimen/list_element_text_size"
         tools:text = "#cool_chat"/>
-
-    <TextView
-        android:id="@+id/tv_more_channel_members_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
-        android:textSize="@dimen/list_item_secondary_text"
-        android:layout_gravity="end|center_vertical"
-        tools:text = "69 members"/>
-
 </FrameLayout>
