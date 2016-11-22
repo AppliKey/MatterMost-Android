@@ -127,10 +127,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <CheckedTextView
-                android:id="@+id/btn_add_all"
-                style="@style/Button"
-                android:layout_width="@dimen/button_width"
+            <Button
+                android:id="@+id/btn_delete_channel"
+                style="@style/GrayButton"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="@dimen/normal"
@@ -138,7 +138,7 @@
                 android:background="@drawable/bg_button_add_all"
                 android:checked="true"
                 android:gravity="center"
-                android:text="@string/button_add_all"
+                android:text="@string/action_delete_channel"
                 android:textAlignment="gravity" />
 
         </LinearLayout>

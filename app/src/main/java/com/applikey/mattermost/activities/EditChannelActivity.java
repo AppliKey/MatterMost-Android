@@ -19,6 +19,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 public class EditChannelActivity extends BaseEditChannelActivity implements EditChannelView {
 
@@ -46,7 +47,6 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
         mMembersLayout.setImageLoader(mImageLoader);
     }
 
-
     @Override
     public void showChannelData(Channel channel) {
         mEtChannelName.setText(channel.getDisplayName());
@@ -59,10 +59,9 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
         setTitle(getResources().getString(title));
     }
 
-    private void initParameters() {
-        final Bundle extras = getIntent().getExtras();
-        final String channelId = extras.getString(CHANNEL_ID_KEY);
-        mPresenter.getInitialData(channelId);
+    @OnClick(R.id.btn_delete_channel)
+    public void onDeleteChannelClick() {
+        mPresenter.deleteChannel();
     }
 
     @Override
@@ -81,6 +80,14 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     }
 
     @Override
+    public void onChannelDeleted() {
+        final Intent intent = new Intent(this, ChatListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_create_channel) {
             updateChannel();
@@ -94,6 +101,12 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     public void showMembers(List<User> users) {
         mAdapter.setAlreadyMemberUsers(users);
         mMembersLayout.showUsers(users);
+    }
+
+    private void initParameters() {
+        final Bundle extras = getIntent().getExtras();
+        final String channelId = extras.getString(CHANNEL_ID_KEY);
+        mPresenter.getInitialData(channelId);
     }
 
     private void updateChannel() {

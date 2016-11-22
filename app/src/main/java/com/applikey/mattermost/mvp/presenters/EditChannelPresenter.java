@@ -56,15 +56,34 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
 
         final ChannelTitleRequest channelTitleRequest = new ChannelTitleRequest(mChannel);
         channelTitleRequest.setDisplayName(channelName);
+        channelTitleRequest.setTeamId(mPrefs.getCurrentTeamId());
         final ChannelPurposeRequest channelPurposeRequest = new ChannelPurposeRequest(
                 mChannel.getId(), channelDescription);
         updateChannel(channelTitleRequest, channelPurposeRequest);
     }
 
-    private void updateChannel(ChannelTitleRequest channelTitleRequest,
-            ChannelPurposeRequest channelPurposeRequest) {
+    public void deleteChannel() {
         String teamId = mPrefs.getCurrentTeamId();
         String channelId = mChannel.getId();
+        deleteChannel(teamId, channelId);
+    }
+
+    private void deleteChannel(String teamId, String channelId) {
+        mApi.deleteChannel(teamId, channelId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(deleteChannelResponse ->
+                        mChannelStorage.deleteChannel(deleteChannelResponse.getId()))
+                .toCompletable()
+                .subscribe(() -> getViewState().onChannelDeleted(),
+                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
+    }
+
+
+    private void updateChannel(ChannelTitleRequest channelTitleRequest,
+            ChannelPurposeRequest channelPurposeRequest) {
+        String teamId = channelTitleRequest.getTeamId();
+        String channelId = channelPurposeRequest.getChannelId();
         mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

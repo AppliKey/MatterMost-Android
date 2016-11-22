@@ -17,4 +17,6 @@ public interface EditChannelView extends BaseEditChannelView {
     void showMembers(List<User> users);
 
     void onChannelUpdated();
+
+    void onChannelDeleted();
 }
