@@ -62,7 +62,8 @@ public class Db {
                 .equalTo(fieldName, fieldValue)
                 .findFirstAsync()
                 .<T>asObservable()
-                .filter(o -> o.isLoaded() && o.isValid());
+                .filter(o -> o.isLoaded() && o.isValid())
+                .first();
     }
 
     // FIXME Duplicated

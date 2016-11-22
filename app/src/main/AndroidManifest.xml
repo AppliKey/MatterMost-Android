@@ -75,6 +75,10 @@
         <activity
             android:name=".activities.InviteNewMemberActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.edit.EditProfileActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

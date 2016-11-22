@@ -175,4 +175,7 @@ dependencies {
 
     //markdown
     compile 'com.github.Commit451:bypasses:1.0.4'
+
+    //rxpaparazzo
+    compile "com.github.miguelbcr:RxPaparazzo:0.3.2"
 }
