@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -135,6 +136,10 @@ public final class ErrorHandler {
 
     private boolean isHttpError(Throwable e) {
         return e instanceof HttpException;
+    }
+
+    private boolean isTimeoutException(Throwable e) {
+        return e instanceof SocketTimeoutException;
     }
 
     private void handleUnauthorizedException() {
