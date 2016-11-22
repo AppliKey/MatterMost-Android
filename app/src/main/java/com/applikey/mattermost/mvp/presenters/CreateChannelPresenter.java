@@ -39,6 +39,11 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
         mSubscription.add(subscription);
     }
 
+    @Override
+    public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
+        getViewState().setButtonAddAllState(isAllAlreadyInvited);
+    }
+
     public void createChannel(String channelName,
             String channelDescription,
             boolean isPublicChannel) {

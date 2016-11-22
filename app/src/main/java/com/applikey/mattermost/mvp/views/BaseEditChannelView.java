@@ -16,6 +16,5 @@ public interface BaseEditChannelView extends MvpView {
     void showAllUsers(List<User> allUsers);
     void showEmptyChannelNameError(boolean isPublic);
     void showAddedUsers(List<User> users);
-    void setButtonAddAllState(boolean isAllAlreadyInvited);
     void showError(String error);
 }

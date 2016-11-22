@@ -5,8 +5,6 @@ import android.util.Log;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.channel.ExtraInfo;
-import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -17,9 +15,7 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
@@ -58,22 +54,14 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
 
         mSubscription.add(mChannelStorage.channelById(channelId)
                 .doOnNext(channel -> mChannel = channel)
-                .subscribe(view::showBaseDetails, mErrorHandler::handleError));
+                .doOnNext(view::showBaseDetails)
+                .map(Channel::getUsers)
+                .subscribe(view::showMembers, mErrorHandler::handleError));
 
         mMetaDataManager.isFavoriteChannel(channelId)
                 .doOnNext(favorite -> mIsFavorite = favorite)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
-
-        mSubscription.add(mApi.getChannelExtra(mPrefs.getCurrentTeamId(), channelId)
-                .subscribeOn(Schedulers.io())
-                .map(ExtraInfo::getMembers)
-                .flatMap(Observable::from)
-                .map(MemberInfo::getId)
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(ids -> mUserStorage.findUsers(ids))
-                .subscribe(view::showMembers, mErrorHandler::handleError));
     }
 
     @Override

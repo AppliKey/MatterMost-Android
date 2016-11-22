@@ -6,9 +6,11 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelTitleRequest;
 import com.applikey.mattermost.models.channel.InvitedUsersManager;
+import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.mvp.views.EditChannelView;
 import com.arellomobile.mvp.InjectViewState;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -20,6 +22,10 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
 
     public EditChannelPresenter() {
         super();
+    }
+
+    @Override
+    public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
     }
 
     public void getInitialData(String channelId) {
@@ -58,6 +64,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
     private void updateChannel(ChannelTitleRequest channelTitleRequest,
             ChannelPurposeRequest channelPurposeRequest) {
         String teamId = mPrefs.getCurrentTeamId();
+        String channelId = mChannel.getId();
         mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -66,9 +73,19 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
                 .flatMap(channel -> mApi.updateChannelPurpose(teamId, channelPurposeRequest))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()))
+                .observeOn(Schedulers.io())
+                .flatMap(user -> mApi.addUserToChannel(teamId, channelId,
+                        new RequestUserId(user.getId())), (user, membership) -> user)
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(users -> {
+                    users.addAll(mInvitedUsersManager.getAlreadyMemberUsers());
+                    return users;
+                })
+                .doOnNext(users -> mChannelStorage.setUsers(channelId, users))
                 .toCompletable()
                 .subscribe(() -> getViewState().onChannelUpdated(),
                         error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
     }
-
 }

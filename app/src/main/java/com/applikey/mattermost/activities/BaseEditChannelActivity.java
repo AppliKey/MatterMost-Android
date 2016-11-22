@@ -11,8 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
 
 import com.applikey.mattermost.R;
@@ -47,9 +45,6 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @Bind(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
-
-    @Bind(R.id.btn_add_all)
-    CheckedTextView mChBtnAddAll;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -138,17 +133,6 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
         showToast(error);
     }
 
-    @OnClick(R.id.btn_add_all)
-    public void onClickButtonAddAll(CheckedTextView chBtnAddAll) {
-        if (chBtnAddAll.isChecked()) {
-            chBtnAddAll.setText(R.string.cancel);
-            getPresenter().inviteAll();
-        } else {
-            chBtnAddAll.setText(R.string.button_add_all);
-            getPresenter().revertInviteAll();
-        }
-        chBtnAddAll.setChecked(!chBtnAddAll.isChecked());
-    }
 
     @OnClick(R.id.added_people_layout)
     public void onAddedUsersPanelClick() {
@@ -157,16 +141,6 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
     }
 
-    @Override
-    public void setButtonAddAllState(boolean isAllAlreadyInvited) {
-        if (isAllAlreadyInvited) {
-            mChBtnAddAll.setVisibility(View.GONE);
-        } else {
-            mChBtnAddAll.setVisibility(View.VISIBLE);
-            mChBtnAddAll.setChecked(true);
-            mChBtnAddAll.setText(R.string.button_add_all);
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

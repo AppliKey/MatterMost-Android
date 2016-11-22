@@ -21,7 +21,7 @@ import javax.inject.Named;
 
 import rx.Observable;
 
-public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends BasePresenter<V>
+public abstract class BaseEditChannelPresenter<V extends BaseEditChannelView> extends BasePresenter<V>
         implements InvitedUsersManager.OnInvitedListener {
 
     @Inject
@@ -106,11 +106,6 @@ public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends Bas
         if (mInvitedUsersManager != null) {
             mInvitedUsersManager.setAlreadyInvitedUsers(data);
         }
-    }
-
-    @Override
-    public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
-        getViewState().setButtonAddAllState(isAllAlreadyInvited);
     }
 
 }
