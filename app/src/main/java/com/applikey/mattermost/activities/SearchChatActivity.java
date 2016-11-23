@@ -100,6 +100,7 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
 
     private void initView() {
 
+        mBtnClearSearch.setVisibility(GONE);
         final SearchChatAdapter mPagerAdapter = new SearchChatAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
 

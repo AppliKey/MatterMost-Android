@@ -44,7 +44,7 @@ public final class ErrorHandler {
 
     @Inject
     public ErrorHandler(Context context, SettingsManager settingsManager,
-            StorageDestroyer storageDestroyer, Gson gson) {
+                        StorageDestroyer storageDestroyer, Gson gson) {
         mContext = context;
         mSettingsManager = settingsManager;
         mStorageDestroyer = storageDestroyer;
@@ -68,13 +68,14 @@ public final class ErrorHandler {
         return errors
                 .doOnNext(error -> Log.e(TAG, "Socket error: " + error.getMessage()))
                 .debounce(10, TimeUnit.SECONDS, Schedulers.immediate())
-                .doOnNext(next -> Log.d(TAG, "Socket reconnect attempt #" + attemptCount.incrementAndGet() + ", start listening to network status"))
+                .doOnNext(next -> Log.d(TAG, "Socket reconnect attempt #" + attemptCount.incrementAndGet()
+                        + ", start listening to network status"))
                 .switchMap(error -> ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status))
                 .doOnNext(next -> Log.d(TAG, "Network is available, reconnect started!"));
     }
 
     private boolean handleApiException(Throwable throwable) {
-        if (isHttpError(throwable)) {
+        if (isHttpException(throwable)) {
             final HttpException exception = (HttpException) throwable;
             if (exception.code() == HttpCode.UNAUTHORIZED) {
                 handleUnauthorizedException();
@@ -84,23 +85,30 @@ public final class ErrorHandler {
         return false;
     }
 
-    public String getErrorMessage(Throwable e) {
-        String errorMessage = mContext.getString(R.string.unknown_error);
-        if (isHttpError(e)) {
-            final HttpException httpException = (HttpException) e;
+    @Nullable
+    public RequestError getRequestError(Throwable throwable) {
+        RequestError requestError = null;
+        if (isHttpException(throwable)) {
+            final HttpException httpException = (HttpException) throwable;
             if (isHttpExceptionWithCode(httpException, HttpCode.INTERNAL_SERVER_ERROR)) {
                 final Response<?> responseBody = httpException.response();
                 try {
-                    final RequestError requestError = getErrorModel(responseBody, mJsonErrorAdapter);
-                    if (requestError != null) {
-                        errorMessage = getErrorMessage(requestError, requestError.getMessage());
-                    }
+                    requestError = getErrorModel(responseBody, mJsonErrorAdapter);
                 } catch (IOException ioe) {
                     Timber.e(ioe);
                 }
             }
         } else {
-            handleError(e);
+            handleError(throwable);
+        }
+        return requestError;
+    }
+
+    public String getErrorMessage(Throwable throwable) {
+        String errorMessage = mContext.getString(R.string.unknown_error);
+        final RequestError requestError = getRequestError(throwable);
+        if (requestError != null) {
+            errorMessage = requestError.getMessage();
         }
         return errorMessage;
     }
@@ -133,7 +141,7 @@ public final class ErrorHandler {
         return e.code() == code;
     }
 
-    private boolean isHttpError(Throwable e) {
+    private boolean isHttpException(Throwable e) {
         return e instanceof HttpException;
     }
 

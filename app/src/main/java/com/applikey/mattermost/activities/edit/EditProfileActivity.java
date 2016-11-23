@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities.edit;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,8 +60,12 @@ public class EditProfileActivity extends BaseMvpActivity implements EditProfileV
                 onBackPressed();
                 return true;
             case R.id.action_apply:
-                mPresenter.editUser(mEtFirstName.getText().toString(), mEtLastName.getText().toString(),
-                                    mEtUsername.getText().toString(), mEtEmail.getText().toString());
+                final EditProfilePresenter.UserModel userModel = new EditProfilePresenter.UserModel(
+                        mEtFirstName.getText().toString(),
+                        mEtLastName.getText().toString(),
+                        mEtUsername.getText().toString(),
+                        mEtEmail.getText().toString());
+                mPresenter.commitChanges(userModel);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -81,8 +86,28 @@ public class EditProfileActivity extends BaseMvpActivity implements EditProfileV
     }
 
     @Override
+    public void showUsernameValidationError(@Nullable String cause) {
+        mEtUsername.setError(cause != null ? cause : getString(R.string.error_username_invalid));
+    }
+
+    @Override
+    public void showEmailValidationError(@Nullable String cause) {
+        mEtEmail.setError(cause != null ? cause : getString(R.string.error_email_invalid));
+    }
+
+    @Override
     public void showError(String error) {
         showToast(error);
+    }
+
+    @Override
+    public void showLoading() {
+        showLoadingDialog();
+    }
+
+    @Override
+    public void hideLoading() {
+        hideLoadingDialog();
     }
 
     private void initListeners() {

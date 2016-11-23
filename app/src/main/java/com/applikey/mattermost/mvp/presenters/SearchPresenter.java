@@ -149,11 +149,11 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     }
 
     public void getData(String text) {
+        final SearchView view = getViewState();
+        view.setEmptyState(true);
         if (!isDataRequestValid(text.trim())) {
             return;
         }
-        final SearchView view = getViewState();
-        view.setEmptyState(true);
         doRequest(view, text);
     }
 
