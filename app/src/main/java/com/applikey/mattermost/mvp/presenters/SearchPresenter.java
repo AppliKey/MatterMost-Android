@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.SearchItem;
@@ -72,7 +71,6 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                     mChannelsIsFetched = true;
                     getData(mSearchString);
                 }, throwable -> {
-                    mChannelsIsFetched = true;
                     mErrorHandler.handleError(throwable);
                 });
         mSubscription.add(subscription);
