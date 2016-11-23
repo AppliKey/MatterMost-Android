@@ -6,12 +6,16 @@ import android.support.annotation.Nullable;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.web.RequestError;
 import com.applikey.mattermost.mvp.presenters.BasePresenter;
 import com.applikey.mattermost.mvp.views.edit.EditProfileView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.rx.RxUtils;
+import com.applikey.mattermost.utils.validation.ValidationUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.applikey.mattermost.web.MattermostErrorIds;
 import com.arellomobile.mvp.InjectViewState;
 import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
 
@@ -23,6 +27,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -72,25 +77,58 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
     }
 
     public void commitChanges(UserModel userModel) {
-        //TODO add validation
-        //TODO add progress
+        final EditProfileView view = getViewState();
+        final String email = userModel.getEmail();
+        final String username = userModel.getUsername();
 
-        mUser.setFirstName(userModel.getFirstName());
-        mUser.setLastName(userModel.getLastName());
-        mUser.setUsername(userModel.getUsername());
-        mUser.setEmail(userModel.getEmail());
+        final Subscription subscription =
+                Single.zip(ValidationUtil.validateEmail(email)
+                                   .doOnSuccess(emailResult -> {
+                                       if (!emailResult) {
+                                           view.showEmailValidationError(null);
+                                       }
+                                   }),
+                           ValidationUtil.validateUsername(username)
+                                   .doOnSuccess(usernameResult -> {
+                                       if (!usernameResult) {
+                                           view.showUsernameValidationError(null);
+                                       }
+                                   }), (emailResult, usernameResult) -> emailResult && usernameResult)
+                        .toObservable()
+                        .filter(result -> result)
+                        .doOnNext(ignored -> {
+                            mUser.setFirstName(userModel.getFirstName());
+                            mUser.setLastName(userModel.getLastName());
+                            mUser.setUsername(username);
+                            mUser.setEmail(email);
+                        })
+                        .subscribe(ignored -> uploadUser(), mErrorHandler::handleError);
 
-        uploadUser();
+        mSubscription.add(subscription);
     }
 
     private void uploadUser() {
+        final EditProfileView view = getViewState();
+
         final Subscription subscription = mApi.editUser(mUser)
                 .flatMap(user -> mImage != null ? uploadImage() : Observable.just(user))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
+                .compose(RxUtils.applyProgress(view::showLoading, view::hideLoading))
                 .subscribe(user -> {
                     mUserStorage.saveUser(user);
-                }, throwable -> getViewState().showError(mErrorHandler.getErrorMessage(throwable)));
+                }, throwable -> {
+                    RequestError requestError = mErrorHandler.getRequestError(throwable);
+                    if (requestError != null) {
+
+                        if (requestError.getId().equals(MattermostErrorIds.USERNAME_INVALID)) {
+                            view.showUsernameValidationError(requestError.getMessage());
+                        }
+                        if (requestError.getId().equals(MattermostErrorIds.EMAIL_INVALID)) {
+                            view.showEmailValidationError(requestError.getMessage());
+                        }
+                    }
+                });
 
         mSubscription.add(subscription);
     }

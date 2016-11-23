@@ -3,9 +3,9 @@ package com.applikey.mattermost.utils.rx;
 import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
 
 public class RxUtils {
 
@@ -17,9 +17,11 @@ public class RxUtils {
 
     /**
      * Execute action on UI thread, then switch observable to another thread
+     *
      * @param action Action, which is performed on UI thread
      * @param scheduler Switch scheduler
      * @param <T> Type of action return result
+     *
      * @return
      */
     public static <T> Observable.Transformer<T, T> doOnUi(Action1<T> action, Scheduler scheduler) {
@@ -31,8 +33,10 @@ public class RxUtils {
 
     /**
      * Execute action on UI thread, then switch observable to IO thread
+     *
      * @param action Action, which is performed on UI thread
      * @param <T> Type of action return result
+     *
      * @return
      */
     public static <T> Observable.Transformer<T, T> doOnUi(Action1<T> action) {
@@ -40,6 +44,16 @@ public class RxUtils {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(action)
                 .observeOn(Schedulers.io());
+    }
+
+    /**
+     * Execute two actions on UI thread
+     */
+    public static <T> Observable.Transformer<T, T> applyProgress(Action0 beforeRun, Action0 afterRun) {
+        return tObservable -> tObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(beforeRun)
+                .doOnTerminate(afterRun);
     }
 
 }
