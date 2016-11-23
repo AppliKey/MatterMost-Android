@@ -36,6 +36,7 @@ import retrofit2.http.Field;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
+import rx.Single;
 
 public class ApiDelegate implements Api {
 
@@ -185,7 +186,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
+    public Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
         return getRealApi().getChannelsUserHasNotJoined(teamId);
     }
 

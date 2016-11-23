@@ -23,9 +23,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMoreChannelsView,
-                                                                         NotJoinedChannelsAdapter
-                                                                                 .OnNotJoinedChannelClick {
+public class FindMoreChannelsActivity extends BaseMvpActivity
+        implements FindMoreChannelsView, NotJoinedChannelsAdapter.OnNotJoinedChannelClickListener {
 
     @Bind(R.id.rv_more_channels)
     RecyclerView mRvNotJoinedChannels;
@@ -82,7 +81,9 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
 
     @Override
     public void showLoading() {
-        if (!mRefreshFindMoreChannels.isRefreshing()) mRefreshFindMoreChannels.setRefreshing(true);
+        if (!mRefreshFindMoreChannels.isRefreshing()) {
+            mRefreshFindMoreChannels.setRefreshing(true);
+        }
     }
 
     @Override
@@ -108,7 +109,6 @@ public class FindMoreChannelsActivity extends BaseMvpActivity implements FindMor
 
     private void initToolbar() {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 }

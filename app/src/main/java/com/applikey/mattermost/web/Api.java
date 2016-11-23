@@ -35,6 +35,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
+import rx.Single;
 
 public interface Api {
 
@@ -138,7 +139,7 @@ public interface Api {
                                       @Body DirectChannelRequest request);
 
     @GET("/api/v3/teams/{team_id}/channels/more")
-    Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
+    Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
 
     @POST("/api/v3/teams/{team_id}/invite_members")
     Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);

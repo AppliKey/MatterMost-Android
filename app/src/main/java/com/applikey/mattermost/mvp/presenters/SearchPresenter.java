@@ -4,11 +4,11 @@ import android.text.TextUtils;
 
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
-import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -58,17 +58,17 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     ErrorHandler mErrorHandler;
 
     public void requestNotJoinedChannels() {
-        mSubscription.add(mTeamStorage.getChosenTeam()
-                                  .map(Team::getId)
-                                  .observeOn(Schedulers.io())
-                                  .flatMap(id -> mApi.getChannelsUserHasNotJoined(id),
-                                           (id, channelResponse) -> channelResponse)
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(channelResponse -> {
-                                      mFetchedChannels = channelResponse.getChannels();
-                                      mChannelsIsFetched = true;
-                                      getData("");
-                                  }, mErrorHandler::handleError));
+        final Subscription subscription = mTeamStorage.getTeamId()
+                .observeOn(Schedulers.io())
+                .flatMap(id -> mApi.getChannelsUserHasNotJoined(id))
+                .map(ChannelResponse::getChannels)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(channels -> {
+                    mFetchedChannels = channels;
+                    mChannelsIsFetched = true;
+                    getData("");
+                }, mErrorHandler::handleError);
+        mSubscription.add(subscription);
     }
 
     List<Channel> addFilterChannels(List<Channel> channels, String text) {
@@ -122,7 +122,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .toList();
     }
 
-    void createChannel(User user) {
+    private void createChannel(User user) {
         final SearchView view = getViewState();
         view.showLoading(true);
 
