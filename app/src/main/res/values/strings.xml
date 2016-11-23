@@ -120,7 +120,6 @@
     <string name="new_group_or_channel">New group or channel</string>
     <string name="invite_new_member">Invite new member</string>
     <string name="invite_new_member_capt">Invite New Member</string>
-    <string name="all_channels">All channels</string>
     <string name="channel_display_name_format">#%s</string>
     <string name="members">Members</string>
     <string name="make_favorite">Make favorite</string>
@@ -130,8 +129,12 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
-    <string name="no_results_found_try_again">No results found. Try again?</string>
+    <string name="empty_state">No results found. Try again?</string>
     <string name="search_user_empty_state">This user could not be found</string>
+    <string name="find_more_channels">Find more channels</string>
+    <string name="quantity_one_member">%d member</string>
+    <string name="quantity_many_members">%d members</string>
+    <string name="public_channel_name">#%s</string>
 
 
 </resources>
