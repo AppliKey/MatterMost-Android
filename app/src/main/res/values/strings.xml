@@ -103,6 +103,7 @@
 
     <string name="error_email_empty">The entered email is empty</string>
     <string name="error_email_invalid">The entered email is invalid</string>
+    <string name="error_username_invalid">The entered username is invalid</string>
     <string name="error_invitation_sending_failed">Invitation sending failed</string>
 
     <array name="post_own_opinion_array">
