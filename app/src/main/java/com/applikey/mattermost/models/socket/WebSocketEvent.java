@@ -5,6 +5,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class WebSocketEvent {
 
+    public static final String EVENT_STATUS_CHANGE = "status_change";
+    public static final String EVENT_TYPING = "typing";
+    public static final String EVENT_CHANNEL_VIEWED = "channel_viewed";
+    public static final String EVENT_CHANNEL_DELETED = "channel_deleted";
+    public static final String EVENT_USER_ADDED = "user_added";
+    public static final String EVENT_USER_REMOVED = "user_removed";
+    public static final String EVENT_POST_EDITED = "post_edited";
+    public static final String EVENT_POST_DELETED = "post_deleted";
+    public static final String EVENT_POST_POSTED = "posted";
+
     @SerializedName("string_id")
     private String teamId;
 
@@ -43,7 +53,8 @@ public class WebSocketEvent {
     }
 
     public String getEvent() {
-        return event;
+        // Mattermost Old API fix
+        return event == null ? action : event;
     }
 
     public String getAction() {

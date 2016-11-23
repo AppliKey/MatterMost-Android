@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.interactor.MessagingInteractor;
 import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.platform.socket.MessagingSocket;
 import com.applikey.mattermost.platform.socket.Socket;
@@ -16,13 +17,16 @@ import com.applikey.mattermost.storage.preferences.PersistentPrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
+import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.BearerTokenFactory;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.google.gson.Gson;
 
 import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
 
 @Module
 @PerUser
@@ -43,8 +47,8 @@ public class UserModule {
 
     @Provides
     @PerUser
-    ChannelStorage provideChannelStorage(Db db, Prefs prefs, MetaDataManager metaDataManager) {
-        return new ChannelStorage(db, prefs, metaDataManager);
+    ChannelStorage provideChannelStorage(Db db, Prefs prefs, MetaDataManager metaDataManager, Scheduler dbScheduler) {
+        return new ChannelStorage(db, prefs, metaDataManager, dbScheduler);
     }
 
     @Provides
@@ -79,6 +83,19 @@ public class UserModule {
         baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
         baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
         return new MessagingSocket(bearerTokenFactory, gson, Uri.parse(baseUrl));
+    }
+
+    @Provides
+    @PerUser
+    MessagingInteractor provideMessagingInteractor(Context context,
+            ChannelStorage channelStorage,
+            UserStorage userStorage,
+            PostStorage postStorage,
+            Socket messagingSocket, Api api, Gson gson, ErrorHandler errorHandler) {
+        return new MessagingInteractor(context,
+                channelStorage,
+                userStorage,
+                postStorage, messagingSocket, api, gson, errorHandler);
     }
 
 }

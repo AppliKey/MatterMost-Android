@@ -1,6 +1,7 @@
 package com.applikey.mattermost.injects;
 
 import android.content.Context;
+import android.os.HandlerThread;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
@@ -32,6 +33,8 @@ import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
 
 @Module
 public class GlobalModule {
@@ -46,6 +49,14 @@ public class GlobalModule {
     @PerApp
     EventBus provideEventBus() {
         return EventBus.getDefault();
+    }
+
+    @Provides
+    @PerApp
+    Scheduler provideDbScheduler() {
+        final HandlerThread bgThread = new HandlerThread("dbThread");
+        bgThread.start();
+        return AndroidSchedulers.from(bgThread.getLooper());
     }
 
     @Provides
