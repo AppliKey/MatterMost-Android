@@ -127,6 +127,8 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
                         if (requestError.getId().equals(MattermostErrorIds.EMAIL_INVALID)) {
                             view.showEmailValidationError(requestError.getMessage());
                         }
+                    } else {
+                        mErrorHandler.handleError(throwable);
                     }
                 });
 
