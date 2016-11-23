@@ -26,5 +26,5 @@ public interface ChatView extends MvpView {
 
     void showTitle(String title);
 
-    void showEmpty();
+    void showEmpty(boolean show);
 }

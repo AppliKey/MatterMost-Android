@@ -159,22 +159,21 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onDataReady(RealmResults<Post> posts) {
-        hideEmptyState();
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
                 mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
-                                   channelType, mChannelLastViewed, onPostLongClick);
-
-        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchData(mChannelId));
+                channelType, mChannelLastViewed, onPostLongClick);
 
         mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
+
+        mSrlChat.setOnRefreshListener(() -> mPresenter.fetchNextPage(mAdapter.getItemCount()));
     }
 
     @Override
-    public void showEmpty() {
-        displayEmptyState();
+    public void showEmpty(boolean show) {
+        mTvEmptyState.setVisibility(show ? VISIBLE : GONE);
     }
 
     @Override
@@ -242,16 +241,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mRvMessages.scrollToPosition(0);
     }
 
-    private void displayEmptyState() {
-        mRvMessages.setVisibility(GONE);
-        mTvEmptyState.setVisibility(VISIBLE);
-    }
-
-    private void hideEmptyState() {
-        mRvMessages.setVisibility(VISIBLE);
-        mTvEmptyState.setVisibility(GONE);
-    }
-
     private void displayReply() {
         mLlReply.setVisibility(VISIBLE);
         mViewReplySeparator.setVisibility(VISIBLE);
@@ -306,8 +295,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.delete,
-                                   (dialog1, which1) -> mPresenter.deleteMessage(
-                                           channelId, post))
+                        (dialog1, which1) -> mPresenter.deleteMessage(
+                                channelId, post))
                 .show();
     }
 
@@ -347,11 +336,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mIvReplyClose.setOnClickListener(v -> hideReply());
     }
 
-    private final RecyclerView.OnScrollListener mPaginationListener
-            = new PaginationScrollListener() {
+    private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override
         public void onLoad() {
-            mPresenter.fetchData(mChannelId);
+            mPresenter.fetchNextPage(mAdapter.getItemCount());
         }
     };
 
