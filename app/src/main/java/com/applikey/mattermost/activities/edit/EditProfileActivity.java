@@ -59,8 +59,11 @@ public class EditProfileActivity extends BaseMvpActivity implements EditProfileV
                 onBackPressed();
                 return true;
             case R.id.action_apply:
-                mPresenter.editUser(mEtFirstName.getText().toString(), mEtLastName.getText().toString(),
-                                    mEtUsername.getText().toString(), mEtEmail.getText().toString());
+                EditProfilePresenter.UserModel userModel = new EditProfilePresenter.UserModel(mEtFirstName.getText().toString(),
+                                                           mEtLastName.getText().toString(),
+                                                           mEtUsername.getText().toString(),
+                                                           mEtEmail.getText().toString());
+                mPresenter.commitChanges(userModel);
                 return true;
         }
         return super.onOptionsItemSelected(item);

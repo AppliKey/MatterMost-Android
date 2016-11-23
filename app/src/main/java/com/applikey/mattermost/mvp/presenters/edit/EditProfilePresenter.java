@@ -71,13 +71,14 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
         mSubscription.add(subscription);
     }
 
-    public void editUser(String firstName, String lastName, String userName, String email) {
+    public void commitChanges(UserModel userModel) {
         //TODO add validation
         //TODO add progress
-        mUser.setFirstName(firstName);
-        mUser.setLastName(lastName);
-        mUser.setUsername(userName);
-        mUser.setEmail(email);
+
+        mUser.setFirstName(userModel.getFirstName());
+        mUser.setLastName(userModel.getLastName());
+        mUser.setUsername(userModel.getUsername());
+        mUser.setEmail(userModel.getEmail());
 
         uploadUser();
     }
@@ -101,5 +102,36 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
 
         return mApi.uploadImage(imagePart)
                 .flatMap(v -> mApi.getMe());
+    }
+
+    public static class UserModel {
+
+        private String firstName;
+        private String lastName;
+        private String username;
+        private String email;
+
+        public UserModel(String firstName, String lastName, String username, String email) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.username = username;
+            this.email = email;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
     }
 }
