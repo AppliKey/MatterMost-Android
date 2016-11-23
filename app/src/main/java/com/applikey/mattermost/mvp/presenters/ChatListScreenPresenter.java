@@ -134,8 +134,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     private Observable<StartupFetchResult> fetchStartup(String teamId) {
         return Observable.zip(mApi.listChannels(teamId), mApi.getTeamProfiles(teamId),
-                              (channelResponse, contacts) -> transform(channelResponse, contacts,
-                                                                       teamId))
+                (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(response -> mUserStorage.saveUsers(response.getDirectProfiles()))
@@ -163,7 +162,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> contacts, String teamId) {
+            Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 
