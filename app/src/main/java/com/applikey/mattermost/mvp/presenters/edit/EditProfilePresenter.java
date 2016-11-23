@@ -118,7 +118,7 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
                 .subscribe(user -> {
                     mUserStorage.saveUser(user);
                 }, throwable -> {
-                    RequestError requestError = mErrorHandler.getRequestError(throwable);
+                    final RequestError requestError = mErrorHandler.getRequestError(throwable);
                     if (requestError != null) {
 
                         if (requestError.getId().equals(MattermostErrorIds.USERNAME_INVALID)) {

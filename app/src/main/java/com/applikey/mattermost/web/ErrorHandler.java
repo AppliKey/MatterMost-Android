@@ -106,7 +106,7 @@ public final class ErrorHandler {
 
     public String getErrorMessage(Throwable throwable) {
         String errorMessage = mContext.getString(R.string.unknown_error);
-        RequestError requestError = getRequestError(throwable);
+        final RequestError requestError = getRequestError(throwable);
         if (requestError != null) {
             errorMessage = requestError.getMessage();
         }

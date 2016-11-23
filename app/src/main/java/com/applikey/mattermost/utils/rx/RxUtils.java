@@ -48,6 +48,7 @@ public class RxUtils {
 
     /**
      * Execute two actions on UI thread
+     * Use STRICTLY before .subscribe
      */
     public static <T> Observable.Transformer<T, T> applyProgress(Action0 beforeRun, Action0 afterRun) {
         return tObservable -> tObservable
