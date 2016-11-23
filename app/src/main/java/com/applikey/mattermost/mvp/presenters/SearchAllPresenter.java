@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -82,14 +83,18 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
                                  })
                         .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(view::displayData, mErrorHandler::handleError));
+                        .subscribe(items -> {
+                            Log.d(TAG, "doRequest: " + text);
+                            view.displayData(items);
+                        }, mErrorHandler::handleError));
     }
 
     @Subscribe
     public void onInputTextChanged(SearchAllTextChanged event) {
+        mSearchString = event.getText();
         final SearchAllView view = getViewState();
         view.clearData();
-        getData(event.getText());
+        getData(mSearchString);
     }
 
 }

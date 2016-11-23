@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
@@ -28,7 +27,6 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
         super.onViewCreated(view, savedInstanceState);
         initView(this);
         mPresenter.requestNotJoinedChannels();
-        mPresenter.getData(Constants.EMPTY_STRING);
     }
 
     @Override

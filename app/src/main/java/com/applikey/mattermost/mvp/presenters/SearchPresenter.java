@@ -1,7 +1,9 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -57,6 +59,8 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     @Inject
     ErrorHandler mErrorHandler;
 
+    protected String mSearchString = Constants.EMPTY_STRING;
+
     public void requestNotJoinedChannels() {
         final Subscription subscription = mTeamStorage.getTeamId()
                 .observeOn(Schedulers.io())
@@ -66,8 +70,11 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .subscribe(channels -> {
                     mFetchedChannels = channels;
                     mChannelsIsFetched = true;
-                    getData("");
-                }, mErrorHandler::handleError);
+                    getData(mSearchString);
+                }, throwable -> {
+                    mChannelsIsFetched = true;
+                    mErrorHandler.handleError(throwable);
+                });
         mSubscription.add(subscription);
     }
 
@@ -152,6 +159,8 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         final SearchView view = getViewState();
         view.setEmptyState(true);
         if (!isDataRequestValid(text.trim())) {
+            mSubscription.clear();
+            view.displayData(null);
             return;
         }
         doRequest(view, text);
