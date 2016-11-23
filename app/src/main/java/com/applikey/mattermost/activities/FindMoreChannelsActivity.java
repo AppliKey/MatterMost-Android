@@ -64,6 +64,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
 
     @Override
     public void onChannelClick(Channel channel) {
+        startActivity(ChatActivity.getIntent(this, channel, true));
         Timber.d("onChannelClick, channel: %s", channel.getDisplayName());
     }
 

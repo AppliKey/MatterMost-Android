@@ -27,4 +27,6 @@ public interface ChatView extends MvpView {
     void showTitle(String title);
 
     void showEmpty(boolean show);
+
+    void showJoiningInterface(String channelName);
 }

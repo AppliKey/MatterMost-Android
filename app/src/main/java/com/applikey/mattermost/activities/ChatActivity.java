@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -53,7 +54,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
 
-    private static final String ACTION_JOIN_TO_CHANNEL_KEy = "join-to-channel";
+    private static final String CHANNEL_NAME = "channel-name";
+
+    private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
 
     private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
@@ -100,6 +103,18 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Bind(R.id.root_view)
     View rootView;
 
+    @Bind(R.id.btn_join_channel)
+    Button mBtnJoinChat;
+
+    @Bind(R.id.tv_join_offer)
+    TextView mTvJoinOffer;
+
+    @Bind(R.id.join_layout)
+    LinearLayout mJoinLayout;
+
+    @Bind(R.id.l_message)
+    LinearLayout mMessageLayout;
+
     private String mRootId;
 
     private String mChannelId;
@@ -112,32 +127,32 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private EmojiPopup mEmojiPopup;
 
+
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra(CHANNEL_ID_KEY, channel.getId());
         intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
         intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
+        intent.putExtra(CHANNEL_NAME, channel.getDisplayName());
         return intent;
     }
 
     /**
-     * Start
-     * @param context
-     * @param channedId
-     * @return
+     * Start ChatActivity to join to public channel
+     * @param context Context
+     * @param channel Channel
+     * @return Intent
      */
-    public static Intent getIntent(Context context, String channedId) {
-        Intent intent = new Intent();
+    public static Intent getIntent(Context context, Channel channel, boolean isJoining) {
+        final Intent intent = getIntent(context, channel);
+        intent.putExtra(ACTION_JOIN_TO_CHANNEL_KEY, isJoining);
         return intent;
-        //TODO
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_chat);
-
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
         mEmojiPopup = EmojiPopup.Builder
@@ -147,9 +162,25 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setOnEmojiPopupDismissListener(() -> mIvEmojicon.setSelected(false))
                 .build(mEtMessage);
 
-        initParameters();
+        final boolean isJoiningToChannel = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
+        if (isJoiningToChannel) {
+            final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
+            showJoiningInterface(channelName);
+        } else {
+            initParameters();
+            mPresenter.getInitialData(mChannelId);
+        }
         initView();
-        mPresenter.getInitialData(mChannelId);
+    }
+
+    @Override
+    public void showJoiningInterface(String channelName) {
+        mSrlChat.setEnabled(false);
+        mJoinLayout.setVisibility(VISIBLE);
+        mRvMessages.setVisibility(GONE);
+        mTvJoinOffer.setText(getString(R.string.join_offer, channelName));
+        mMessageLayout.setClickable(false);
+
     }
 
     @Override

@@ -135,6 +135,8 @@
     <string name="quantity_one_member">%d member</string>
     <string name="quantity_many_members">%d members</string>
     <string name="public_channel_name">#%s</string>
+    <string name="join">Join</string>
+    <string name="join_offer">Do you want to join #%s?</string>
 
 
 </resources>
