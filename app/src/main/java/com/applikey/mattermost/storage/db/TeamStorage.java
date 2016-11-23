@@ -9,6 +9,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Single;
 
 // TODO RealmObjectStorage abstraction
 // TODO Review API
@@ -44,7 +45,7 @@ public class TeamStorage {
         });
     }
 
-    public Observable<String> getTeamId() {
+    public Single<String> getTeamId() {
         return mPrefs.getValue(KEY_TEAM_ID);
     }
 

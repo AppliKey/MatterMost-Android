@@ -15,15 +15,15 @@ import java.util.List;
 public class NotJoinedChannelsAdapter extends RecyclerView.Adapter<NotJoinedChannelsViewHolder> {
 
     private final List<Channel> mNotJoinedChannels = new ArrayList<>();
-    private final OnNotJoinedChannelClick mListener;
+    private final OnNotJoinedChannelClickListener mListener;
 
-    public NotJoinedChannelsAdapter(OnNotJoinedChannelClick listener) {
+    public NotJoinedChannelsAdapter(OnNotJoinedChannelClickListener listener) {
         mListener = listener;
     }
 
     public void addChannel(Channel channel) {
         mNotJoinedChannels.add(channel);
-        notifyDataSetChanged();
+        notifyItemInserted(mNotJoinedChannels.indexOf(channel));
     }
 
     public void setChannels(List<Channel> channels) {
@@ -57,7 +57,7 @@ public class NotJoinedChannelsAdapter extends RecyclerView.Adapter<NotJoinedChan
         return mNotJoinedChannels.size();
     }
 
-    public interface OnNotJoinedChannelClick {
+    public interface OnNotJoinedChannelClickListener {
         void onChannelClick(Channel channel);
     }
 }

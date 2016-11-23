@@ -1,6 +1,5 @@
 package com.applikey.mattermost.manager.metadata;
 
-
 import android.support.annotation.WorkerThread;
 
 import com.applikey.mattermost.models.user.UserMetaData;
@@ -37,7 +36,7 @@ public class MetaDataManager {
     private void initUserMetaData() {
         mPersistentPrefs.getUsersMetaData()
                 .subscribeOn(Schedulers.io())
-                .first()
+                .toObservable()
                 .flatMap(Observable::from)
                 .filter(userMetadata -> userMetadata.isSame(generateMetaDataKey()))
                 .firstOrDefault(new UserMetaData(generateMetaDataKey()))

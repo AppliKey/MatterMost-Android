@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <plurals name="members_count">
-        <item quantity="one">@string/quantity_one_member</item>
-        <item quantity="other">@string/quantity_many_members</item>
-    </plurals>
-</resources>

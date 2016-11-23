@@ -13,7 +13,6 @@
         android:id="@+id/tv_more_channel_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
         android:layout_gravity="start|center_vertical"
         android:textColor="@android:color/black"
         android:textSize="@dimen/list_element_text_size"

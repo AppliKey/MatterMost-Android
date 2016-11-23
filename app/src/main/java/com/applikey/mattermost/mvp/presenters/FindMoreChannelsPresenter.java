@@ -13,7 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -50,7 +50,7 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
         mSubscription.add(subscription);
     }
 
-    private Observable<List<Channel>> getNotJoinedChannels() {
+    private Single<List<Channel>> getNotJoinedChannels() {
         return  mTeamStorage.getTeamId()
                 .observeOn(Schedulers.io())
                 .flatMap(mApi::getChannelsUserHasNotJoined)
