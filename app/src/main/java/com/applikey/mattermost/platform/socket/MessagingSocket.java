@@ -52,7 +52,7 @@ public class MessagingSocket implements Socket {
 
                     @Override
                     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-                        Log.e(TAG, "WebSocket Error: ", cause);
+                        Log.e(TAG, "WebSocket Error: " + cause.getMessage());
                         switch (cause.getError()) {
                             case SOCKET_CONNECT_ERROR:
                                 emitter.onError(new ConnectException("Unable to establish connection"));
@@ -92,7 +92,7 @@ public class MessagingSocket implements Socket {
                 mWebSocket.connect();
                 Log.d(TAG, "Socket connected!");
             } catch (Exception e) {
-                Log.e(TAG, "Socket error: ", e);
+                Log.e(TAG, "Socket error: " + e.getMessage());
                 emitter.onError(e);
             }
         }, Emitter.BackpressureMode.BUFFER);
