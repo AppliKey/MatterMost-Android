@@ -53,6 +53,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
 
+    private static final String ACTION_JOIN_TO_CHANNEL_KEy = "join-to-channel";
+
     private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
     @Bind(R.id.toolbar)
@@ -116,6 +118,18 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
         intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         return intent;
+    }
+
+    /**
+     * Start
+     * @param context
+     * @param channedId
+     * @return
+     */
+    public static Intent getIntent(Context context, String channedId) {
+        Intent intent = new Intent();
+        return intent;
+        //TODO
     }
 
     @Override
