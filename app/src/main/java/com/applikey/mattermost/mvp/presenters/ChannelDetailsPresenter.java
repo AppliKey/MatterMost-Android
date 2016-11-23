@@ -86,4 +86,14 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     public void onEditChannel() {
         getViewState().openEditChannel(mChannel);
     }
+
+    public void leaveChannel() {
+        mSubscription.add(mApi.leaveChannel(mPrefs.getCurrentTeamId(), mChannel.getId())
+                                  .subscribeOn(Schedulers.io())
+                                  .subscribe(aVoid -> {
+                                      Log.d(TAG, "leaveChannel: LEAVE");
+                                  }, throwable -> mErrorHandler.handleError(throwable)));
+    }
+
+
 }

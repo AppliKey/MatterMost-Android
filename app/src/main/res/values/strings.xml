@@ -81,6 +81,7 @@
     <string name="edit_public_channel">Edit public channel</string>
     <string name="edit_private_group">Edit private group</string>
     <string name="edit_channel">Edit</string>
+    <string name="leave_channel">Leave</string>
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
