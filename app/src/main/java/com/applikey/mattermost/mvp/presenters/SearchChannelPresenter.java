@@ -25,6 +25,8 @@ import rx.schedulers.Schedulers;
 @InjectViewState
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
+    private static final String TAG = SearchChannelPresenter.class.getSimpleName();
+
     @Inject
     EventBus mEventBus;
 
@@ -63,8 +65,9 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
     @Subscribe
     public void onInputTextChanged(SearchChannelTextChanged event) {
+        mSearchString = event.getText();
         final SearchChannelView view = getViewState();
         view.clearData();
-        getData(event.getText());
+        getData(mSearchString);
     }
 }
