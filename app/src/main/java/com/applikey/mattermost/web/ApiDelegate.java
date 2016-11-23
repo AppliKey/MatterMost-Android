@@ -213,6 +213,12 @@ public class ApiDelegate implements Api {
     }
 
     @Override
+    public Observable<Void> leaveChannel(@Path("team_id") String teamId,
+                                         @Path("channel_id") String channelId) {
+        return getRealApi().leaveChannel(teamId, channelId);
+    }
+
+    @Override
     public Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
                                                   @Body ChannelTitleRequest request) {
         return getRealApi().updateChannelTitle(teamId, request);
