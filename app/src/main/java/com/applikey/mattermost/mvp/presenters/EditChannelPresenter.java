@@ -63,8 +63,8 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
     }
 
     public void deleteChannel() {
-        String teamId = mPrefs.getCurrentTeamId();
-        String channelId = mChannel.getId();
+        final String teamId = mPrefs.getCurrentTeamId();
+        final String channelId = mChannel.getId();
         deleteChannel(teamId, channelId);
     }
 
@@ -82,8 +82,8 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
 
     private void updateChannel(ChannelTitleRequest channelTitleRequest,
             ChannelPurposeRequest channelPurposeRequest) {
-        String teamId = channelTitleRequest.getTeamId();
-        String channelId = channelPurposeRequest.getChannelId();
+        final String teamId = channelTitleRequest.getTeamId();
+        final String channelId = channelPurposeRequest.getChannelId();
         mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

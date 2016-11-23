@@ -31,6 +31,8 @@ import butterknife.OnTextChanged;
 public abstract class BaseEditChannelActivity extends BaseMvpActivity
         implements BaseEditChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
 
+    private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
+
     @Bind(R.id.et_channel_name)
     EditText mEtChannelName;
 
@@ -48,8 +50,6 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-
-    private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
 
     protected PeopleToNewChannelAdapter mAdapter;
 
@@ -130,6 +130,7 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @Override
     public void showError(String error) {
+        hideLoadingDialog();
         showToast(error);
     }
 
@@ -158,4 +159,10 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @LayoutRes
     protected abstract int getLayoutRes();
+
+    @Override
+    public void showLoadingDialog() {
+        hideKeyboard();
+        super.showLoadingDialog();
+    }
 }

@@ -1,9 +1,11 @@
 package com.applikey.mattermost.activities;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -34,6 +36,8 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     @InjectPresenter
     EditChannelPresenter mPresenter;
 
+    private Dialog mConfirmationDialog;
+
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, EditChannelActivity.class);
         intent.putExtra(CHANNEL_ID_KEY, channel.getId());
@@ -51,7 +55,7 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     public void showChannelData(Channel channel) {
         mEtChannelName.setText(channel.getDisplayName());
         mEtChannelDescription.setText(channel.getPurpose());
-        boolean isPrivate = channel.getType()
+        final boolean isPrivate = channel.getType()
                 .equals(Channel.ChannelType.PRIVATE.getRepresentation());
         @StringRes final int title = isPrivate
                 ? R.string.edit_private_group
@@ -61,7 +65,26 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
 
     @OnClick(R.id.btn_delete_channel)
     public void onDeleteChannelClick() {
-        mPresenter.deleteChannel();
+        showConfirmationDialog();
+    }
+
+    private void showConfirmationDialog() {
+        mConfirmationDialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.action_delete_channel)
+                .setMessage(R.string.delete_channel_confirm_dialog_msg)
+                .setPositiveButton(R.string.delete, (dialog, which) -> {
+                    showLoadingDialog();
+                    mPresenter.deleteChannel();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .create();
+        mConfirmationDialog.show();
+    }
+
+    @OnClick(R.id.members_layout)
+    void onMembersPanelClick() {
+        hideLoadingDialog();
+        startActivity(AddedMembersActivity.getIntent(this, mMembersLayout.getUsers(), false));
     }
 
     @Override
@@ -76,11 +99,13 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
 
     @Override
     public void onChannelUpdated() {
+        hideLoadingDialog();
         finish();
     }
 
     @Override
     public void onChannelDeleted() {
+        hideLoadingDialog();
         final Intent intent = new Intent(this, ChatListActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
@@ -110,6 +135,7 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     }
 
     private void updateChannel() {
+        showLoadingDialog();
         final String channelName = mEtChannelName.getText().toString().trim();
         final String channelDescription = mEtChannelDescription.getText().toString().trim();
         mPresenter.updateChannel(channelName, channelDescription);

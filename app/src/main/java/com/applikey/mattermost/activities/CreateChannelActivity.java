@@ -72,6 +72,7 @@ public class CreateChannelActivity extends BaseEditChannelActivity
     }
 
     private void createChannel() {
+        showLoadingDialog();
         final String channelName = mEtChannelName.getText().toString().trim();
         final String channelDescription = mEtChannelDescription.getText().toString().trim();
         final boolean isPublicChannel = !mChannelTypeView.isChecked();
@@ -81,6 +82,7 @@ public class CreateChannelActivity extends BaseEditChannelActivity
 
     @Override
     public void onChannelCreated() {
+        hideLoadingDialog();
         finish();
     }
 

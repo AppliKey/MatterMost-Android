@@ -50,18 +50,18 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     }
 
     public void getInitialData(String channelId) {
-        final ChannelDetailsView view = getViewState();
-
         mSubscription.add(mChannelStorage.channelById(channelId)
                 .doOnNext(channel -> mChannel = channel)
-                .doOnNext(view::showBaseDetails)
+                .doOnNext(channel -> getViewState().showBaseDetails(channel))
                 .map(Channel::getUsers)
-                .subscribe(view::showMembers, mErrorHandler::handleError));
+                .subscribe(users -> getViewState().showMembers(users),
+                        mErrorHandler::handleError));
 
         mMetaDataManager.isFavoriteChannel(channelId)
                 .doOnNext(favorite -> mIsFavorite = favorite)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
+                .subscribe(favorite -> getViewState().onMakeFavorite(favorite),
+                        mErrorHandler::handleError);
     }
 
     @Override
