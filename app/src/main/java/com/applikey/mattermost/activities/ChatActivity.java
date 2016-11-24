@@ -139,6 +139,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mPresenter.fetchAfterRestart();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.NONE, MENU_ITEM_SEARCH, Menu.NONE, R.string.search)
                 .setIcon(R.drawable.ic_search)
@@ -162,7 +168,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
                 mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
-                channelType, mChannelLastViewed, onPostLongClick);
+                                   channelType, mChannelLastViewed, onPostLongClick);
 
         mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
@@ -295,8 +301,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.delete,
-                        (dialog1, which1) -> mPresenter.deleteMessage(
-                                channelId, post))
+                                   (dialog1, which1) -> mPresenter.deleteMessage(
+                                           channelId, post))
                 .show();
     }
 
