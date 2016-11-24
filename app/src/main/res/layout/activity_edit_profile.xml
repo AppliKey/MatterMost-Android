@@ -24,8 +24,6 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/large"
-        android:layout_marginBottom="@dimen/large"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -33,7 +31,9 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/large"
+            android:paddingTop="@dimen/large">
 
             <ImageView
                 android:id="@+id/iv_avatar"
