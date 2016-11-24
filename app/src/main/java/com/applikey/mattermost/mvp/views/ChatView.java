@@ -20,6 +20,8 @@ public interface ChatView extends MvpView {
 
     void onMessageSent(long createdAt);
 
+    void onChannelJoined();
+
     void openChannelDetails(Channel channel);
 
     void openUserProfile(User user);

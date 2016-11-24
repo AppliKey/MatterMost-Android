@@ -132,7 +132,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                          (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> channel.setDirectCollocutor(user))
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .doOnNext(channel ->
                                   mChannelStorage.updateDirectChannelData(channel,
                                                                           Collections.singletonMap(user.getId(), user),

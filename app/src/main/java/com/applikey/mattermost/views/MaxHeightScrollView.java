@@ -27,8 +27,7 @@ public class MaxHeightScrollView extends NestedScrollView {
 
 
     private void init(AttributeSet attrs) {
-        TypedArray a = getContext().obtainStyledAttributes(attrs,
-                R.styleable.MaxHeightScrollView);
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.MaxHeightScrollView);
         mMaxHeight = a.getDimensionPixelSize(R.styleable.MaxHeightScrollView_maxHeight,
                 Integer.MAX_VALUE);
     }

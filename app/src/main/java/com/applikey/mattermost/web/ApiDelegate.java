@@ -251,7 +251,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Channel> joinToChannel(String teamId, String channelId) {
+    public Single<Channel> joinToChannel(String teamId, String channelId) {
         return getRealApi().joinToChannel(teamId, channelId);
     }
 }

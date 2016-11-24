@@ -101,9 +101,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private void itemScreen(int id) {
         switch (id) {
             case ITEM_FIND_MORE_CHANNELS:
-/*                if (!(this instanceof ChatListActivity)) {
-                    finish();
-                }*/
                 findMoreChannels();
                 break;
             case ITEM_INVITE_MEMBER:

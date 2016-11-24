@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -30,6 +31,7 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
+import com.applikey.mattermost.utils.view.ViewUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.vanniktech.emoji.EmojiEditText;
@@ -115,6 +117,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Bind(R.id.l_message)
     LinearLayout mMessageLayout;
 
+    @Bind(R.id.chat_layout)
+    ViewGroup mChatLayout;
+
     private String mRootId;
 
     private String mChannelId;
@@ -127,7 +132,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private EmojiPopup mEmojiPopup;
 
-
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
         intent.putExtra(CHANNEL_ID_KEY, channel.getId());
@@ -139,9 +143,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     /**
      * Start ChatActivity to join to public channel
-     * @param context Context
-     * @param channel Channel
-     * @return Intent
      */
     public static Intent getIntent(Context context, Channel channel, boolean isJoining) {
         final Intent intent = getIntent(context, channel);
@@ -155,6 +156,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         setContentView(R.layout.activity_chat);
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
+
         mEmojiPopup = EmojiPopup.Builder
                 .fromRootView(rootView)
                 .setOnSoftKeyboardCloseListener(() -> mEmojiPopup.dismiss())
@@ -163,24 +165,28 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .build(mEtMessage);
 
         final boolean isJoiningToChannel = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
+        mChannelId = getIntent().getStringExtra(CHANNEL_ID_KEY);
+        mPresenter.getInitialData(mChannelId);
+
         if (isJoiningToChannel) {
             final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
             showJoiningInterface(channelName);
         } else {
-            initParameters();
-            mPresenter.getInitialData(mChannelId);
+            mPresenter.loadMessages(mChannelId);
         }
+
+        initParameters();
         initView();
     }
 
     @Override
     public void showJoiningInterface(String channelName) {
-        mSrlChat.setEnabled(false);
+        mSrlChat.setVisibility(GONE);
         mJoinLayout.setVisibility(VISIBLE);
-        mRvMessages.setVisibility(GONE);
-        mTvJoinOffer.setText(getString(R.string.join_offer, channelName));
-        mMessageLayout.setClickable(false);
 
+        ViewUtil.setEnabledInDept(mChatLayout, false);
+
+        mTvJoinOffer.setText(getString(R.string.join_offer, channelName));
     }
 
     @Override
@@ -207,7 +213,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
                 mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
-                channelType, mChannelLastViewed, onPostLongClick);
+                                   channelType, mChannelLastViewed, onPostLongClick);
 
         mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
@@ -218,7 +224,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void showEmpty(boolean show) {
+        mSrlChat.setVisibility(show ? GONE : VISIBLE);
         mTvEmptyState.setVisibility(show ? VISIBLE : GONE);
+
     }
 
     @Override
@@ -237,6 +245,16 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mAdapter.setLastViewed(createdAt);
         scrollToStart();
         hideReply();
+    }
+
+    @Override
+    public void onChannelJoined() {
+        mSrlChat.setVisibility(VISIBLE);
+        mJoinLayout.setVisibility(View.GONE);
+
+        ViewUtil.setEnabledInDept(mChatLayout, true);
+
+        mPresenter.loadMessages(mChannelId);
     }
 
     @Override
@@ -277,8 +295,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         }
     }
 
+    @OnClick(R.id.btn_join_channel)
+    public void onClickJoinChat() {
+        mPresenter.joinToChannel(mChannelId);
+    }
+
     @OnClick(R.id.iv_emoji)
-    public void onClickEmoji(ImageView imageView) {
+    public void onClickEmoji() {
         mEmojiPopup.toggle();
     }
 
@@ -340,8 +363,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.delete,
-                        (dialog1, which1) -> mPresenter.deleteMessage(
-                                channelId, post))
+                                   (dialog1, which1) -> mPresenter.deleteMessage(
+                                           channelId, post))
                 .show();
     }
 
@@ -353,7 +376,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private void initParameters() {
         final Bundle extras = getIntent().getExtras();
-        mChannelId = extras.getString(CHANNEL_ID_KEY);
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
         mChannelLastViewed = extras.getLong(CHANNEL_LAST_VIEWED_KEY);
     }

@@ -31,7 +31,6 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
         mSubscription.add(subscription);
     }
 
-
     public void updateChannel(String channelName, String channelDescription) {
         if (TextUtils.isEmpty(channelName)) {
             getViewState().showEmptyChannelNameError();
@@ -51,11 +50,11 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
         mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .observeOn(Schedulers.io())
                 .flatMap(channel -> mApi.updateChannelPurpose(teamId, channelPurposeRequest))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .toCompletable()
                 .subscribe(() -> getViewState().onChannelUpdated(),
                         error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
