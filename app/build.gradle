@@ -118,7 +118,6 @@ dependencies {
     compile 'com.trello:rxlifecycle:0.4.0'
     compile 'com.trello:rxlifecycle-components:0.4.0'
     compile 'com.github.pwittchen:reactivenetwork:0.2.0'
-    compile 'com.f2prateek.rx.preferences:rx-preferences:1.0.2'
 
     // eventbus
     compile 'org.greenrobot:eventbus:3.0.0'
@@ -137,10 +136,11 @@ dependencies {
     compile 'com.arello-mobile:moxy:0.5.4'
     compile 'com.arello-mobile:moxy-android:0.5.4'
     apt 'com.arello-mobile:moxy-compiler:0.5.4'
+    
 
     // stetho
     compile 'com.facebook.stetho:stetho:1.4.1'
-    compile 'com.uphyca:stetho_realm:0.9.0'
+    compile 'com.uphyca:stetho_realm:2.0.0'
     compile 'com.facebook.stetho:stetho-okhttp3:1.4.1'
     //logging
     compile 'com.jakewharton.timber:timber:4.3.1'
@@ -174,4 +174,7 @@ dependencies {
 
     //markdown
     compile 'com.github.Commit451:bypasses:1.0.4'
+
+    //rxpaparazzo
+    compile "com.github.miguelbcr:RxPaparazzo:0.3.2"
 }

@@ -1,6 +1,5 @@
 package com.applikey.mattermost;
 
-
 public class Constants {
 
     // TODO replace with actual package name
@@ -28,5 +27,9 @@ public class Constants {
 
     public static final String EMPTY_STRING = "";
 
+    public static final String MIME_TYPE_IMAGE = "image/*";
+
     public static final String PERSISTENT_PREFS_FILE_NAME = "PersistentPrefs";
+
+    public static final long SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES = 3;
 }

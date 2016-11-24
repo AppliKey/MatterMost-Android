@@ -11,7 +11,7 @@
     <string name="invalid_server_url">We could not connect to the Mattermost server or the server is running in an incompatible version</string>
     <string name="no_teams_received">Could not receive teams</string>
     <string name="please_enter_your_credentials">Please Enter Your Credentials</string>
-    <string name="email">Enter your email</string>
+    <string name="enter_your_email">Enter your email</string>
     <string name="sign_in">Sign In</string>
     <string name="password">Password</string>
     <string name="unknown">UNKNOWN</string>
@@ -45,6 +45,7 @@
     <string name="no_favorite_chats_available">No Favorite Chats Available</string>
 
     <string name="action_search">Search</string>
+    <string name="action_apply">Apply</string>
 
     <string name="default_server_text" />
     <string name="default_login_text" />
@@ -61,6 +62,7 @@
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
     <string name="create_channel_title_name">Name</string>
+    <string name="username">Username</string>
     <string name="private_channel">Private</string>
     <string name="public_channel">Public</string>
     <string name="create_channel_description_title">Purpose</string>
@@ -94,6 +96,18 @@
     <string name="settings_unread_tabs_content">Enable unread tabs</string>
     <string name="settings_unread_tabs_title">Unread tabs</string>
 
+    <string name="email">Email</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="send_invitation_capt">SEND INVITATION</string>
+    <string name="invitation_info">People invited automatically join the\n<b>Town Square</b> channel.</string>
+    <string name="invitation_sent">New member invitation has been sent</string>
+
+    <string name="error_email_empty">The entered email is empty</string>
+    <string name="error_email_invalid">The entered email is invalid</string>
+    <string name="error_username_invalid">The entered username is invalid</string>
+    <string name="error_invitation_sending_failed">Invitation sending failed</string>
+
     <array name="post_own_opinion_array">
         <item>Delete</item>
         <item>Edit</item>
@@ -108,7 +122,7 @@
     <string name="search_with_ellipsis">Search…</string>
     <string name="new_group_or_channel">New group or channel</string>
     <string name="invite_new_member">Invite new member</string>
-    <string name="all_channels">All channels</string>
+    <string name="invite_new_member_capt">Invite New Member</string>
     <string name="channel_display_name_format">#%s</string>
     <string name="members">Members</string>
     <string name="make_favorite">Make favorite</string>
@@ -118,7 +132,12 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
-    <string name="no_results_found_try_again">No results found. Try again?</string>
+    <string name="empty_state">No results found. Try again?</string>
+    <string name="search_user_empty_state">This user could not be found</string>
+    <string name="find_more_channels">Find more channels</string>
+    <string name="quantity_one_member">%d member</string>
+    <string name="quantity_many_members">%d members</string>
+    <string name="public_channel_name">#%s</string>
 
 
 </resources>

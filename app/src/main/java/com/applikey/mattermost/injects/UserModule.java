@@ -49,8 +49,8 @@ public class UserModule {
 
     @Provides
     @PerUser
-    UserStorage provideUserStorage(Db db, ImagePathHelper imagePathHelper) {
-        return new UserStorage(db, imagePathHelper);
+    UserStorage provideUserStorage(Db db, Prefs prefs, ImagePathHelper imagePathHelper) {
+        return new UserStorage(db, prefs, imagePathHelper);
     }
 
     @Provides

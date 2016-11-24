@@ -8,6 +8,7 @@ import com.applikey.mattermost.gcm.GcmMessageHandler;
 import com.applikey.mattermost.gcm.RegistrationIntentService;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.presenters.ChooseTeamPresenter;
+import com.applikey.mattermost.mvp.presenters.InviteNewMemberPresenter;
 import com.applikey.mattermost.mvp.presenters.LogInPresenter;
 import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.presenters.SplashPresenter;
@@ -21,7 +22,6 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     // Components
-
     void inject(BaseFragment fragment);
 
     void inject(BaseActivity baseActivity);
@@ -40,6 +40,8 @@ public interface ApplicationComponent {
     void inject(ChooseTeamPresenter presenter);
 
     void inject(RestorePasswordPresenter presenter);
+
+    void inject(InviteNewMemberPresenter presenter);
 
     // Services
     void inject(RegistrationIntentService service);

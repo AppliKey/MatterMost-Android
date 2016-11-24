@@ -38,6 +38,9 @@
 
     <dimen name="login_screen_content_margin_top">140dp</dimen>
 
+    <dimen name="invite_screen_content_margin_top">40dp</dimen>
+    <dimen name="invite_screen_item_margin">30dp</dimen>
+
     <dimen name="teams_screen_headers_margin_bottom">72dp</dimen>
 
     <dimen name="image_button_dimen">48dp</dimen>
@@ -113,9 +116,10 @@
     <dimen name="button_text_size">14sp</dimen>
     <dimen name="button_height">40dp</dimen>
     <dimen name="button_width">180dp</dimen>
-    <dimen name="fragment_search_empty_state_margin_top">100dp</dimen>
+    <dimen name="empty_state_margin_top">100dp</dimen>
     <dimen name="emoji_size">18sp</dimen>
     <dimen name="emoji_input_size">22sp</dimen>
+    <dimen name="list_element_text_size">18sp</dimen>
 
     <dimen name="send_message_field_max_height">112dp</dimen>
 </resources>

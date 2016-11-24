@@ -2,17 +2,17 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
 
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
-import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
-import com.applikey.mattermost.storage.db.ObjectNotFoundException;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -20,6 +20,7 @@ import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -57,18 +58,22 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     @Inject
     ErrorHandler mErrorHandler;
 
+    protected String mSearchString = Constants.EMPTY_STRING;
+
     public void requestNotJoinedChannels() {
-        mSubscription.add(mTeamStorage.getChosenTeam()
-                                  .map(Team::getId)
-                                  .observeOn(Schedulers.io())
-                                  .flatMap(id -> mApi.getChannelsUserHasNotJoined(id),
-                                           (id, channelResponse) -> channelResponse)
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(channelResponse -> {
-                                      mFetchedChannels = channelResponse.getChannels();
-                                      mChannelsIsFetched = true;
-                                      getData("");
-                                  }, mErrorHandler::handleError));
+        final Subscription subscription = mTeamStorage.getTeamId()
+                .observeOn(Schedulers.io())
+                .flatMap(id -> mApi.getChannelsUserHasNotJoined(id))
+                .map(ChannelResponse::getChannels)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(channels -> {
+                    mFetchedChannels = channels;
+                    mChannelsIsFetched = true;
+                    getData(mSearchString);
+                }, throwable -> {
+                    mErrorHandler.handleError(throwable);
+                });
+        mSubscription.add(subscription);
     }
 
     List<Channel> addFilterChannels(List<Channel> channels, String text) {
@@ -93,15 +98,10 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
             case SearchItem.USER:
                 final User user = ((User) item);
                 mSubscription.add(mChannelStorage.getChannel(user.getId())
-                                          .observeOn(AndroidSchedulers.mainThread())
-                                          // TODO CODE SMELLS
-                                          .doOnError(throwable -> {
-                                              if (throwable instanceof ObjectNotFoundException) {
-                                                  createChannel(user);
-                                              }
-                                          })
-                                          .subscribe(view::startChatView,
-                                                     mErrorHandler::handleError));
+                                          .toObservable()
+                                          .doOnError(t -> createChannel(user))
+                                          .onErrorResumeNext(t -> Observable.empty())
+                                          .subscribe(view::startChatView, mErrorHandler::handleError));
                 break;
             case SearchItem.MESSAGE_CHANNEL:
                 view.startChatView(((Message) item).getChannel());
@@ -127,16 +127,21 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .toList();
     }
 
-    void createChannel(User user) {
+    private void createChannel(User user) {
         final SearchView view = getViewState();
         view.showLoading(true);
-        final Subscription subscription = mTeamStorage.getChosenTeam()
+
+        final Subscription subscription = Observable.just(mPrefs.getCurrentTeamId())
                 .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.createChannel(team.getId(),
-                                                    new DirectChannelRequest(user.getId())),
+                .flatMap(teamId -> mApi.createChannel(teamId, new DirectChannelRequest(user.getId())),
                          (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(channel -> channel.setDirectCollocutor(user))
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel ->
+                                  mChannelStorage.updateDirectChannelData(channel,
+                                                                          Collections.singletonMap(user.getId(), user),
+                                                                          mPrefs.getCurrentUserId()))
                 .subscribe(channel -> {
                     view.startChatView(channel);
                     view.showLoading(false);
@@ -148,12 +153,14 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         mSubscription.add(subscription);
     }
 
-    public void getData(String text){
-        if (!isDataRequestValid(text.trim())) {
-            return;
-        }
+    public void getData(String text) {
         final SearchView view = getViewState();
         view.setEmptyState(true);
+        if (!isDataRequestValid(text.trim())) {
+            mSubscription.clear();
+            view.displayData(null);
+            return;
+        }
         doRequest(view, text);
     }
 

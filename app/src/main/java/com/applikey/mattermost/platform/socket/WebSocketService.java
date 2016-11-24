@@ -35,7 +35,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class WebSocketService extends Service {
 
@@ -44,6 +43,7 @@ public class WebSocketService extends Service {
     private static final String EVENT_STATUS_CHANGE = "status_change";
     private static final String EVENT_TYPING = "typing";
     private static final String EVENT_MESSAGE_POSTED = "posted";
+    private static final String EVENT_CHANNEL_VIEWED = "channel_viewed";
 
     @Inject
     PostStorage mPostStorage;
@@ -67,8 +67,7 @@ public class WebSocketService extends Service {
     Gson mGson;
 
     private Handler mHandler;
-    private CompositeSubscription mCompositeSubscription;
-    private Subscription mPollingSubscription;
+    private CompositeSubscription mSubscriptions;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, WebSocketService.class);
@@ -78,24 +77,26 @@ public class WebSocketService extends Service {
     public void onCreate() {
         super.onCreate();
         App.getUserComponent().inject(this);
+        Log.d(TAG, "Service started");
 
         mHandler = new Handler(Looper.getMainLooper());
-        mCompositeSubscription = new CompositeSubscription();
+        mSubscriptions = new CompositeSubscription();
 
         openSocket();
         startPollingUsersStatuses();
     }
 
     private void openSocket() {
-        mCompositeSubscription.add(mMessagingSocket.listen()
+        final Subscription socketSubscription = mMessagingSocket.listen()
                 .subscribeOn(Schedulers.io())
                 .retryWhen(mErrorHandler::tryReconnectSocket)
                 .observeOn(Schedulers.computation())
-                .subscribe(this::handleSocketEvent, mErrorHandler::handleError));
+                .subscribe(this::handleSocketEvent, mErrorHandler::handleError);
+        mSubscriptions.add(socketSubscription);
     }
 
     private void startPollingUsersStatuses() {
-        mPollingSubscription = Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
+        final Subscription pollStatusesObservable = Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(tick -> mUserStorage.listDirectProfiles().first())
                 .observeOn(Schedulers.io())
@@ -105,36 +106,27 @@ public class WebSocketService extends Service {
                         .toArray(new String[users.size()])))
                 .retryWhen(new RetryWhenNetwork(this))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(usersStatusesMap -> {
-                    Timber.d("updating users statuses");
-                    mUserStorage.updateUsersStatuses(usersStatusesMap);
-                })
-                .subscribe(ignore -> {}, mErrorHandler::handleError);
+                .subscribe(mUserStorage::updateUsersStatuses, mErrorHandler::handleError);
+        mSubscriptions.add(pollStatusesObservable);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "Service stopped");
 
-        closeSocket();
-        if (mPollingSubscription != null && !mPollingSubscription.isUnsubscribed()) {
-            mPollingSubscription.unsubscribe();
-        }
+        mMessagingSocket.close();
+        mSubscriptions.unsubscribe();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    private void closeSocket() {
-        mMessagingSocket.close();
-        mCompositeSubscription.unsubscribe();
     }
 
     private void handleSocketEvent(WebSocketEvent event) {
@@ -147,7 +139,7 @@ public class WebSocketService extends Service {
         Log.d(TAG, "Got event: " + eventType);
 
         switch (eventType) {
-            case EVENT_MESSAGE_POSTED: {
+            case EVENT_MESSAGE_POSTED:
                 final Post post = extractPostFromSocket(event);
                 Log.d(TAG, "Post message: " + post.getMessage());
                 mHandler.post(() -> {
@@ -157,7 +149,12 @@ public class WebSocketService extends Service {
                             .doOnNext(channel -> channel.setLastPost(post))
                             .subscribe(mChannelStorage::updateLastPost, mErrorHandler::handleError);
                 });
-            }
+                break;
+
+            case EVENT_CHANNEL_VIEWED:
+                Log.d(TAG, "View channel: " + event.getChannelId());
+                mHandler.post(() -> mChannelStorage.updateLastViewedAt(event.getChannelId()));
+                break;
         }
     }
 

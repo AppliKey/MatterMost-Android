@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 
 import com.applikey.mattermost.Constants;
 
+import rx.Single;
+
 /**
  * Storage, which uses {@link SharedPreferences} to store simple values.
  */
@@ -76,8 +78,8 @@ public class Prefs {
         mSharedPreferences.edit().putBoolean(key, value).apply();
     }
 
-    public String getValue(String key) {
-        return mSharedPreferences.getString(key, null);
+    public Single<String> getValue(String key) {
+        return Single.defer(() -> Single.just(mSharedPreferences.getString(key, null)));
     }
 
     public boolean getValue(String key, boolean defValue) {

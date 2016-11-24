@@ -19,17 +19,25 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
 public abstract class DrawerActivity extends BaseMvpActivity implements NavigationView {
 
-    private static final int ITEM_ALL_CHANNELS = 0;
+    private static final int ITEM_FIND_MORE_CHANNELS = 0;
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
-    private Drawer mDrawer;
+
     @InjectPresenter
     NavigationPresenter mPresenter;
 
+    private Drawer mDrawer;
+
     @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+    public void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         initDrawer();
+    }
+
+    @Override
+    public void startChannelCreating() {
+        startActivity(CreateChannelActivity.getIntent(this));
+        closeDrawer();
     }
 
     protected boolean showHamburger() {
@@ -43,8 +51,8 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     }
 
     private void initDrawer() {
-        final PrimaryDrawerItem mItemAllChannels = new PrimaryDrawerItem().withName(R.string.all_channels)
-                .withIdentifier(ITEM_ALL_CHANNELS)
+        final PrimaryDrawerItem mItemAllChannels = new PrimaryDrawerItem().withName(R.string.find_more_channels)
+                .withIdentifier(ITEM_FIND_MORE_CHANNELS)
                 .withTypeface(Typeface.SANS_SERIF);
         final PrimaryDrawerItem mItemInviteNewMember = new PrimaryDrawerItem().withName(R.string.invite_new_member)
                 .withIdentifier(ITEM_INVITE_MEMBER)
@@ -92,12 +100,14 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
 
     private void itemScreen(int id) {
         switch (id) {
-            case ITEM_ALL_CHANNELS:
-                if (!(this instanceof ChatListActivity)) {
+            case ITEM_FIND_MORE_CHANNELS:
+/*                if (!(this instanceof ChatListActivity)) {
                     finish();
-                }
+                }*/
+                findMoreChannels();
                 break;
             case ITEM_INVITE_MEMBER:
+                startInviteNewMember();
                 break;
             case ITEM_SETTINGS:
                 startSettings();
@@ -106,14 +116,18 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         closeDrawer();
     }
 
-    private void startSettings() {
-        startActivity(SettingsActivity.getIntent(this));
+    private void findMoreChannels() {
+        startActivity(FindMoreChannelsActivity.getIntent(this));
         closeDrawer();
     }
 
-    @Override
-    public void startChannelCreating() {
-        startActivity(CreateChannelActivity.getIntent(this));
+    private void startInviteNewMember() {
+        startActivity(InviteNewMemberActivity.getIntent(this));
+        closeDrawer();
+    }
+
+    private void startSettings() {
+        startActivity(SettingsActivity.getIntent(this));
         closeDrawer();
     }
 }

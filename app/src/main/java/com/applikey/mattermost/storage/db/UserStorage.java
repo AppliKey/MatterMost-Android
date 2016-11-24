@@ -2,26 +2,34 @@ package com.applikey.mattermost.storage.db;
 
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 
 import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Single;
 
 public class UserStorage {
 
     private final Db mDb;
+    private final Prefs mPrefs;
     private final ImagePathHelper mImagePathHelper;
 
-    public UserStorage(Db db, ImagePathHelper imagePathHelper) {
+    public UserStorage(Db db, Prefs prefs, ImagePathHelper imagePathHelper) {
         mDb = db;
+        mPrefs = prefs;
         mImagePathHelper = imagePathHelper;
     }
 
     public void saveUsers(Map<String, User> directProfiles) {
         addImagePathInfo(directProfiles);
         mDb.saveTransactional(directProfiles.values());
+    }
+
+    public void saveUser(User user) {
+        mDb.saveTransactional(user);
     }
 
     public void saveUsersStatuses(Map<String, User> directProfiles,
@@ -67,6 +75,11 @@ public class UserStorage {
         return Observable.from(channel.getUsers())
                 .map(mDb::copyFromRealm)
                 .toList();
+    }
+
+    public Single<User> getMe() {
+        return mDb.getObjectAndCopy(User.class, mPrefs.getCurrentUserId())
+                .toSingle();
     }
 
     private void addImagePathInfo(Map<String, User> users) {

@@ -17,7 +17,7 @@ public class ChannelRequest {
     private final String type;
 
     public ChannelRequest(String name, String purpose, String type) {
-        this.name = name.toLowerCase();
+        this.name = name.toLowerCase().replaceAll("\\s+", "-");
         this.displayName = name;
         this.purpose = purpose;
         this.type = type;

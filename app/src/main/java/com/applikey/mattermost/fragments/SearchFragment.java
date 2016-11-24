@@ -101,12 +101,13 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
 
     @Override
     public void displayData(List<SearchItem> items) {
-        setEmptyState(items.isEmpty());
-        Log.d(TAG, "displayData size:" + items.size());
-        for (SearchItem searchItem : items) {
-            Log.d(TAG, "displayData: " + searchItem);
+        Log.d(TAG, "displayData: " + items);
+        if(items == null || items.isEmpty()) {
+            setEmptyState(true);
+        } else {
+            setEmptyState(false);
+            mAdapter.setDataSet(items);
         }
-        mAdapter.setDataSet(items);
     }
 
     public void setEmptyState(boolean isEmpty){
@@ -122,5 +123,4 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     public void clearData() {
         mAdapter.clear();
     }
-
 }

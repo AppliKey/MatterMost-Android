@@ -11,7 +11,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
@@ -50,6 +52,9 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Bind(R.id.tv_empty_state)
+    TextView mTvEmptyState;
 
     protected PeopleToNewChannelAdapter mAdapter;
 
@@ -125,6 +130,7 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @Override
     public void showAllUsers(List<User> allUsers) {
+        showEmptyState(allUsers.isEmpty());
         mAdapter.addUsers(allUsers);
     }
 
@@ -153,6 +159,17 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void showEmptyState(boolean isEmpty) {
+        if (isEmpty) {
+            mRvPeoples.setVisibility(View.GONE);
+            mTvEmptyState.setVisibility(View.VISIBLE);
+        } else {
+            mRvPeoples.setVisibility(View.VISIBLE);
+            mTvEmptyState.setVisibility(View.GONE);
+        }
     }
 
     protected abstract BaseEditChannelPresenter getPresenter();

@@ -252,7 +252,18 @@ public class ChannelStorage {
             }
         });
 
+        saveAndDeleteRemovedChannels(channels);
+    }
+
+    private void saveAndDeleteRemovedChannels(List<Channel> channels) {
         mDb.saveTransactional(restoreChannels(channels));
+        mDb.doTransactional(realm -> {
+            final String[] ids = Stream.of(channels).map(Channel::getId).toArray(String[]::new);
+            if (ids.length == 0) {
+                return;
+            }
+            realm.where(Channel.class).not().in(Channel.FIELD_ID, ids).findAll().deleteAllFromRealm();
+        });
     }
 
     public Single<Channel> getChannel(String id) {
@@ -277,7 +288,7 @@ public class ChannelStorage {
                 });
     }
 
-    private void updateDirectChannelData(Channel channel,
+    public void updateDirectChannelData(Channel channel,
             Map<String, User> contacts,
             String currentUserId) {
         final String channelName = channel.getName();

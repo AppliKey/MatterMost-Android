@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
-        android:visibility="gone"
-        tools:visibility="visible"
         android:id="@+id/tv_empty_state"
+        style="@style/EmptyState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/fragment_search_empty_state_margin_top"
-        android:textColor="@color/textlink_disabled"
-        android:textSize="@dimen/text_title_size"
-        android:gravity="center"
-        android:fontFamily="sans-serif"
-        android:text="@string/no_results_found_try_again"/>
+        android:layout_marginTop="@dimen/empty_state_margin_top"
+        android:text="@string/empty_state" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_items"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:listitem="@layout/list_item_search_user"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

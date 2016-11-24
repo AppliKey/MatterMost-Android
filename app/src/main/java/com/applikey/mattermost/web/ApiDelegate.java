@@ -13,6 +13,7 @@ import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
+import com.applikey.mattermost.models.commands.InviteNewMembersRequest;
 import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
@@ -25,6 +26,7 @@ import com.applikey.mattermost.utils.PrimitiveConverterFactory;
 
 import java.util.Map;
 
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -32,8 +34,10 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
+import rx.Single;
 
 public class ApiDelegate implements Api {
 
@@ -60,7 +64,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response> getMe() {
+    public Observable<User> getMe() {
         return getRealApi().getMe();
     }
 
@@ -147,9 +151,7 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Post> createPost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
-                                       @Body
-
-                                               PendingPost request) {
+                                       @Body PendingPost request) {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
@@ -168,9 +170,7 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
                                                    @Path("channel_id") String channelId,
-                                                   @Body
-
-                                                           RequestUserId userId) {
+                                                   @Body RequestUserId userId) {
         return getRealApi().addUserToChannel(teamId, channelId, userId);
     }
 
@@ -192,9 +192,13 @@ public class ApiDelegate implements Api {
         return getRealApi().deleteChannel(teamId, channelId);
     }
 
-    @Override
-    public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
+    public Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
         return getRealApi().getChannelsUserHasNotJoined(teamId);
+    }
+
+    @Override
+    public Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body) {
+        return getRealApi().inviteNewMember(teamId, body);
     }
 
     @Override
@@ -204,14 +208,26 @@ public class ApiDelegate implements Api {
     }
 
     @Override
+    public Observable<Void> uploadImage(
+            @Part MultipartBody.Part image) {
+
+        return getRealApi().uploadImage(image);
+    }
+
+    @Override
+    public Observable<User> editUser(@Body User user) {
+        return getRealApi().editUser(user);
+    }
+
+    @Override
     public Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
-            @Body ChannelTitleRequest request) {
+                                                  @Body ChannelTitleRequest request) {
         return getRealApi().updateChannelTitle(teamId, request);
     }
 
     @Override
     public Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
-            @Body ChannelPurposeRequest request) {
+                                                    @Body ChannelPurposeRequest request) {
         return getRealApi().updateChannelPurpose(teamId, request);
     }
 

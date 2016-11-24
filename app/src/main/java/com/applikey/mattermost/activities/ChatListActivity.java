@@ -77,7 +77,6 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         initView();
         mEventBus.register(this);
 
-        startService(WebSocketService.getIntent(this));
         onNewIntent(getIntent());
 
         mPresenter.loadInitInfo();
