@@ -1,5 +1,6 @@
 package com.applikey.mattermost.storage.db;
 
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
@@ -32,7 +33,7 @@ public class UserStorage {
     }
 
     public void saveUsersStatuses(Map<String, User> directProfiles,
-                                  Map<String, String> userStatuses) {
+            Map<String, String> userStatuses) {
         addStatusData(directProfiles, userStatuses);
         mDb.saveTransactional(directProfiles.values());
     }
@@ -60,14 +61,20 @@ public class UserStorage {
 
     public Observable<List<User>> searchUsers(String text) {
         return mDb.listRealmObjectsFilteredSorted(User.class, text,
-                                                  new String[] {User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME},
-                                                  User.FIELD_USERNAME);
+                new String[] {User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME},
+                User.FIELD_USERNAME);
     }
 
     public Observable<List<User>> findUsers(List<String> ids) {
         String[] idsArray = new String[ids.size()];
         idsArray = ids.toArray(idsArray);
         return mDb.getObjectsQualifiedWithCopy(User.class, User.FIELD_NAME_ID, idsArray);
+    }
+
+    public Observable<List<User>> getChannelUsers(Channel channel) {
+        return Observable.from(channel.getUsers())
+                .map(mDb::copyFromRealm)
+                .toList();
     }
 
     public Single<User> getMe() {

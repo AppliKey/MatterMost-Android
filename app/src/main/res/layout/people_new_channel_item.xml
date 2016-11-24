@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:paddingBottom="@dimen/pending_people_item_bottom_margin"
-    android:paddingEnd="@dimen/list_item_margin"
-    android:paddingStart="@dimen/list_item_margin"
+    android:paddingEnd="@dimen/more"
+    android:paddingStart="@dimen/more"
     android:paddingTop="@dimen/pending_people_item_top_margin">
 
     <ImageView

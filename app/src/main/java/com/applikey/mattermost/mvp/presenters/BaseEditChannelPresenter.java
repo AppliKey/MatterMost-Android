@@ -20,10 +20,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 
-public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends BasePresenter<V>
+public abstract class BaseEditChannelPresenter<V extends BaseEditChannelView> extends BasePresenter<V>
         implements InvitedUsersManager.OnInvitedListener {
 
     @Inject
@@ -54,20 +52,7 @@ public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends Bas
         App.getUserComponent().inject((BaseEditChannelPresenter<BaseEditChannelView>) this);
     }
 
-    @Override
-    public void onFirstViewAttach() {
-        final Subscription subscription = getUserList()
-                .toSortedList()
-                .doOnNext(users -> mInvitedUsersManager = new InvitedUsersManager(this, users))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        results -> getViewState().showAllUsers(results),
-                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error))
-                );
-        mSubscription.add(subscription);
-    }
-
-    private Observable<User> getUserList() {
+    protected Observable<User> getUserList() {
         return mUserStorage.listDirectProfiles()
                 .first()
                 .flatMap(Observable::from)
@@ -121,11 +106,6 @@ public class BaseEditChannelPresenter<V extends BaseEditChannelView> extends Bas
         if (mInvitedUsersManager != null) {
             mInvitedUsersManager.setAlreadyInvitedUsers(data);
         }
-    }
-
-    @Override
-    public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
-        getViewState().setButtonAddAllState(isAllAlreadyInvited);
     }
 
 }

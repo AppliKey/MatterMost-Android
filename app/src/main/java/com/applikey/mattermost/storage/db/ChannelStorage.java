@@ -88,10 +88,13 @@ public class ChannelStorage {
     public Observable<RealmResults<Channel>> listFavorite() {
         return mMetaDataManager.getFavoriteChannels()
                 .doOnNext(strings -> Log.d(TAG, "listFavorite: " + strings))
-                .map(ids -> ids.isEmpty() ? new String[] {"null"} : ids.toArray(new String[ids.size()]))
+                .map(ids -> ids.isEmpty()
+                        ? new String[] {"null"}
+                        : ids.toArray(new String[ids.size()]))
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
-                        ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME));
+                .flatMap(
+                        ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
+                                ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME));
     }
 
     public Observable<Channel> channelById(String id) {
@@ -269,6 +272,10 @@ public class ChannelStorage {
 
     public void saveChannel(Channel channel) {
         mDb.saveTransactional(channel);
+    }
+
+    public void delete(String channelId) {
+        mDb.deleteTransactional(Channel.class, channelId);
     }
 
     private List<Channel> restoreChannels(List<Channel> channels) {

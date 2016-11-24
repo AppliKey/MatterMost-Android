@@ -70,6 +70,8 @@
     <string name="added_people_count" translatable="false">+%1$d</string>
     <string name="button_add_all">Add all</string>
     <string name="action_create_channel">Create channel</string>
+    <string name="action_delete_channel">Delete channel</string>
+    <string name="delete_channel_confirm_dialog_msg">Are you sure you want to delete this channel?</string>
     <string name="new_public_channel">New public channel</string>
     <string name="new_private_group">New private group</string>
     <string name="post_delete">Post Delete</string>

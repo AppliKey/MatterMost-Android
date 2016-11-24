@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/AppToolbar"
-            app:contentInsetStartWithNavigation="48dp"
             app:navigationIcon="@drawable/ic_back" />
     </android.support.design.widget.AppBarLayout>
 
@@ -30,22 +29,13 @@
             android:animateLayoutChanges="true"
             android:orientation="vertical">
 
-            <com.applikey.mattermost.views.ChannelTypeView
-                android:id="@+id/channel_type_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/create_channel_type_bottom_margin"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/list_item_margin"
-                android:layout_marginTop="@dimen/large"
-                android:gravity="center" />
-
             <TextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/list_item_margin"
                 android:layout_marginStart="@dimen/more"
+                android:layout_marginTop="@dimen/large"
                 android:text="@string/create_channel_title_name" />
 
             <EditText
@@ -81,6 +71,26 @@
                 android:inputType="textMultiLine" />
 
             <TextView
+                android:id="@+id/members_text"
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
+                android:layout_marginTop="@dimen/create_channel_label_top_margin"
+                android:text="@string/members" />
+
+            <com.applikey.mattermost.views.AddedPeopleLayout
+                android:id="@+id/members_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/added_people_layout_item_height"
+                android:layout_marginBottom="@dimen/normal"
+                android:layout_marginEnd="@dimen/more"
+                android:layout_marginStart="@dimen/more"
+                android:layout_marginTop="@dimen/large"
+                app:min_item_right_margin="@dimen/added_people_layout_item_right_margin" />
+
+            <TextView
                 android:id="@+id/add_members_text"
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
@@ -104,6 +114,7 @@
                 android:id="@+id/et_search_people"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal"
                 android:layout_marginEnd="@dimen/list_item_margin"
                 android:layout_marginStart="@dimen/list_item_margin"
                 android:drawableEnd="@drawable/ic_search"
@@ -111,19 +122,6 @@
                 android:hint="@string/search_people_for_channel_hint"
                 android:paddingBottom="@dimen/edit_text_bottom_padding" />
 
-            <CheckedTextView
-                android:id="@+id/btn_add_all"
-                style="@style/Button"
-                android:layout_width="@dimen/button_width"
-                android:layout_height="@dimen/button_height"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="@dimen/normal"
-                android:layout_marginTop="@dimen/normal"
-                android:background="@drawable/bg_button_add_all"
-                android:checked="true"
-                android:gravity="center"
-                android:text="@string/button_add_all"
-                android:textAlignment="gravity" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -144,6 +142,24 @@
                     android:layout_height="wrap_content" />
 
             </FrameLayout>
+
+            <Button
+                android:id="@+id/btn_delete_channel"
+                style="@style/GrayButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/normal"
+                android:layout_marginTop="@dimen/normal"
+                android:background="@drawable/bg_button_add_all"
+                android:checked="true"
+                android:gravity="center"
+                android:text="@string/action_delete_channel"
+                android:textAlignment="gravity" />
+
         </LinearLayout>
+
+
     </android.support.v4.widget.NestedScrollView>
+
 </LinearLayout>

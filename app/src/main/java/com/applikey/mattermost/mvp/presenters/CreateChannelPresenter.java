@@ -6,6 +6,7 @@ import com.applikey.mattermost.models.channel.AddedUser;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.CreatedChannel;
+import com.applikey.mattermost.models.channel.InvitedUsersManager;
 import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
@@ -25,11 +26,29 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
         super();
     }
 
+    @Override
+    public void onFirstViewAttach() {
+        final Subscription subscription = getUserList()
+                .toSortedList()
+                .doOnNext(users -> mInvitedUsersManager = new InvitedUsersManager(this, users))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        results -> getViewState().showAllUsers(results),
+                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error))
+                );
+        mSubscription.add(subscription);
+    }
+
+    @Override
+    public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
+        getViewState().setButtonAddAllState(isAllAlreadyInvited);
+    }
+
     public void createChannel(String channelName,
             String channelDescription,
             boolean isPublicChannel) {
         if (TextUtils.isEmpty(channelName)) {
-            getViewState().showEmptyChannelNameError();
+            getViewState().showEmptyChannelNameError(isPublicChannel);
             return;
         }
 
