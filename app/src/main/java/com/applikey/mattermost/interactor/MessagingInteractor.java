@@ -10,8 +10,6 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.post.Post;
-import com.applikey.mattermost.models.socket.MessagePostedEventData;
-import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.platform.socket.Socket;
@@ -21,7 +19,6 @@ import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import java.util.concurrent.TimeUnit;
 
@@ -74,8 +71,7 @@ public class MessagingInteractor {
     public Observable<WebSocketEvent> listenMessagingSocket() {
         return mMessagingSocket.listen()
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation())
-                .doOnNext(this::handleSocketEvent);
+                .doOnNext(event -> Log.d(TAG, "listenMessagingSocket: event: " + event.getEvent()));
     }
 
     private void handleSocketEvent(WebSocketEvent event) {
@@ -85,7 +81,7 @@ public class MessagingInteractor {
 
         switch (eventType) {
             case WebSocketEvent.EVENT_POST_POSTED:
-                final Post post = extractPostFromSocketEvent(event);
+                final Post post = event.getProps().getPost();
                 Log.d(TAG, "Post message: " + post.getMessage());
                 mHandler.post(() -> {
                     mPostStorage.save(post);
@@ -103,20 +99,6 @@ public class MessagingInteractor {
                 });
                 break;
         }
-    }
-
-    private Post extractPostFromSocketEvent(WebSocketEvent event) {
-        final JsonObject eventData = event.getData();
-        final String postObject;
-        if (eventData != null) {
-            final MessagePostedEventData data = mGson.fromJson(eventData, MessagePostedEventData.class);
-            postObject = data.getPostObject();
-        } else {
-            final JsonObject eventProps = event.getProps();
-            final Props props = mGson.fromJson(eventProps, Props.class);
-            postObject = props.getPost();
-        }
-        return mGson.fromJson(postObject, Post.class);
     }
 
 }

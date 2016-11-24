@@ -57,9 +57,10 @@ public class ChannelStorage {
                 return realm.where(Channel.class).equalTo("id", id).findFirst().asObservable();
             }
         })
-                .map(channel -> realmReference.get().copyFromRealm(channel))
                 .subscribeOn(mDbScheduler)
                 .unsubscribeOn(mDbScheduler)
+                .filter(channel -> channel.isLoaded() && channel.isValid())
+                .map(channel -> realmReference.get().copyFromRealm(channel))
                 .doOnUnsubscribe(() -> realmReference.get().close());
     }
 
