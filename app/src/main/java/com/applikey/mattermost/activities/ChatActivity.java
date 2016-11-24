@@ -300,9 +300,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         builder.setTitle(R.string.post_delete)
                 .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
                 .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.delete,
-                                   (dialog1, which1) -> mPresenter.deleteMessage(
-                                           channelId, post))
+                .setPositiveButton(R.string.delete, (dialog1, which1) -> mPresenter.deleteMessage(channelId, post))
                 .show();
     }
 
