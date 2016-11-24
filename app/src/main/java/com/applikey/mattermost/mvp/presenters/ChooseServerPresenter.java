@@ -69,8 +69,8 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
         mPrefs.setCurrentServerUrl(fullServerUrl);
 
-        mPersistentPrefs.saveServerUrl(fullServerUrl)
-                .subscribe();
+        mSubscription.add(mPersistentPrefs.saveServerUrl(fullServerUrl)
+                .subscribe());
 
         mSubscription.add(mApi.ping()
                                   .subscribeOn(Schedulers.io())
