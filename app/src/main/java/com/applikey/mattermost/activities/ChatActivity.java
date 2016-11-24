@@ -60,8 +60,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
 
-    private static final int MENU_ITEM_SEARCH = Menu.FIRST;
-
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
@@ -187,25 +185,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         ViewUtil.setEnabledInDept(mChatLayout, false);
 
         mTvJoinOffer.setText(getString(R.string.join_offer, channelName));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE, MENU_ITEM_SEARCH, Menu.NONE, R.string.search)
-                .setIcon(R.drawable.ic_search)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case MENU_ITEM_SEARCH:
-                //presenter.search()
-                return true;
-            default:
-                return false;
-        }
     }
 
     @Override
