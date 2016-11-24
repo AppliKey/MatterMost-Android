@@ -8,6 +8,7 @@ import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ChannelTitleRequest;
+import com.applikey.mattermost.models.channel.DeleteChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
@@ -186,6 +187,11 @@ public class ApiDelegate implements Api {
     }
 
     @Override
+    public Observable<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
+            @Path("channelId") String channelId) {
+        return getRealApi().deleteChannel(teamId, channelId);
+    }
+
     public Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
         return getRealApi().getChannelsUserHasNotJoined(teamId);
     }

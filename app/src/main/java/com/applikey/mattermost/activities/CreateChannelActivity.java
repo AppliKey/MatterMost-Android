@@ -5,13 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckedTextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PeopleToNewChannelAdapter;
 import com.applikey.mattermost.mvp.presenters.BaseEditChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
+import com.applikey.mattermost.views.ChannelTypeView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+
+import butterknife.Bind;
+import butterknife.OnClick;
 
 public class CreateChannelActivity extends BaseEditChannelActivity
         implements CreateChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
@@ -19,6 +25,11 @@ public class CreateChannelActivity extends BaseEditChannelActivity
     @InjectPresenter
     CreateChannelPresenter mPresenter;
 
+    @Bind(R.id.channel_type_view)
+    ChannelTypeView mChannelTypeView;
+
+    @Bind(R.id.btn_add_all)
+    CheckedTextView mChBtnAddAll;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, CreateChannelActivity.class);
@@ -55,7 +66,13 @@ public class CreateChannelActivity extends BaseEditChannelActivity
         return mPresenter;
     }
 
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_create_group_or_channel;
+    }
+
     private void createChannel() {
+        showLoadingDialog();
         final String channelName = mEtChannelName.getText().toString().trim();
         final String channelDescription = mEtChannelDescription.getText().toString().trim();
         final boolean isPublicChannel = !mChannelTypeView.isChecked();
@@ -65,7 +82,33 @@ public class CreateChannelActivity extends BaseEditChannelActivity
 
     @Override
     public void onChannelCreated() {
+        hideLoadingDialog();
         finish();
+    }
+
+
+    @Override
+    public void setButtonAddAllState(boolean isAllAlreadyInvited) {
+        if (isAllAlreadyInvited) {
+            mChBtnAddAll.setVisibility(View.GONE);
+        } else {
+            mChBtnAddAll.setVisibility(View.VISIBLE);
+            mChBtnAddAll.setChecked(true);
+            mChBtnAddAll.setText(R.string.button_add_all);
+        }
+    }
+
+
+    @OnClick(R.id.btn_add_all)
+    public void onClickButtonAddAll(CheckedTextView chBtnAddAll) {
+        if (chBtnAddAll.isChecked()) {
+            chBtnAddAll.setText(R.string.cancel);
+            getPresenter().inviteAll();
+        } else {
+            chBtnAddAll.setText(R.string.button_add_all);
+            getPresenter().revertInviteAll();
+        }
+        chBtnAddAll.setChecked(!chBtnAddAll.isChecked());
     }
 
 }
