@@ -95,10 +95,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public void setDataSet(List<SearchItem> dataSet) {
-        mDataSet.clear();
-        for (SearchItem searchItem : dataSet) {
-            mDataSet.add(searchItem);
-        }
+        mDataSet = dataSet;
         notifyDataSetChanged();
     }
 

@@ -6,4 +6,5 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 @StateStrategyType(value = AddToEndSingleStrategy.class)
 public interface CreateChannelView extends BaseEditChannelView {
     void onChannelCreated();
+    void setButtonAddAllState(boolean isAllAlreadyInvited);
 }
