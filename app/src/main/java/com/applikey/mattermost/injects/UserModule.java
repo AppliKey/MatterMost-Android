@@ -1,6 +1,5 @@
 package com.applikey.mattermost.injects;
 
-import android.content.Context;
 import android.net.Uri;
 
 import com.applikey.mattermost.Constants;
@@ -33,12 +32,6 @@ public class UserModule {
     @Named(Constants.CURRENT_USER_QUALIFIER)
     String provideCurrentUserId(Prefs mPrefs) {
         return mPrefs.getCurrentUserId();
-    }
-
-    @Provides
-    @PerUser
-    PersistentPrefs providePersistencePrefs(Context context, Gson gson) {
-        return new PersistentPrefs(context, gson);
     }
 
     @Provides

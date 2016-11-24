@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.applikey.mattermost.R;
@@ -22,7 +23,7 @@ import butterknife.OnClick;
 public class ChooseServerActivity extends BaseMvpActivity implements ChooseServerView {
 
     @Bind(R.id.et_server)
-    EditText mEtServerUrl;
+    AutoCompleteTextView mEtServerUrl;
 
     @Bind(R.id.b_proceed)
     Button mBtnProceed;
@@ -54,12 +55,6 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mPresenter.getInitialData();
-    }
-
-    @Override
     public void showValidationError() {
         hideLoadingDialog();
         final String message = getResources().getString(R.string.invalid_server_url);
@@ -75,6 +70,13 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     @Override
     public void showPresetServer(String url) {
         mEtServerUrl.setText(url);
+    }
+
+    @Override
+    public void setAutoCompleteServers(String[] urls) {
+        final ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, urls);
+        mEtServerUrl.setAdapter(adapter);
     }
 
     @OnClick(R.id.b_proceed)
