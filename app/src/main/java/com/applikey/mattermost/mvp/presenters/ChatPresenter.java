@@ -82,9 +82,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     public void loadMessages(String channelId) {
         final ChatView view = getViewState();
         mSubscription.add(mPostStorage.listByChannel(channelId)
-                .first()
-                .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
-                .subscribe(view::onDataReady, mErrorHandler::handleError));
+                                  .first()
+                                  .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
+                                  .subscribe(view::onDataReady, mErrorHandler::handleError));
     }
 
     public void channelNameClick() {
@@ -139,6 +139,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                                   .observeOn(AndroidSchedulers.mainThread())
                                   .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                                   .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                                  .doOnNext(post -> getViewState().showEmpty(false))
                                   .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()),
                                              mErrorHandler::handleError));
     }
