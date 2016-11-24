@@ -98,7 +98,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         if (!mFirstFetched) {
             return;
         }
-        fetchPage(0, true);
+        fetchPage(0, false);
     }
 
     public void fetchFirstPageWithClear() {
@@ -183,12 +183,15 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                                   .subscribeOn(Schedulers.io())
                                   .switchIfEmpty(Observable.empty())
                                   .map(postResponse -> new ArrayList<>(postResponse.getPosts().values()))
+                                  .doOnNext(posts -> posts.sort(Post::COMPARATOR_BY_CREATE_AT))
                                   .observeOn(AndroidSchedulers.mainThread())
                                   .subscribe(posts -> {
                                       getViewState().showProgress(false);
                                       if (clear) {
                                           clearChat();
-                                          mChannelStorage.setLastPost(mChannel, posts.get(posts.size() - 1));
+                                      }
+                                      if (totalItems == 0 && posts.size() > 0) {
+                                          mChannelStorage.setLastPost(mChannel, posts.get(0));
                                       }
                                       mFirstFetched = true;
                                       mPostStorage.saveAll(posts);
@@ -199,7 +202,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     private void clearChat() {
-        final String lastPostId = mChannel.getLastPost() != null ? mChannel.getLastPost().getId() : null;
-        mPostStorage.deleteAllByChannelUnless(mChannel.getId(), lastPostId);
+        mPostStorage.deleteAllByChannel(mChannel.getId());
     }
 }

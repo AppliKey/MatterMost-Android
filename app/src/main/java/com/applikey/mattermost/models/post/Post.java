@@ -7,18 +7,15 @@ import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 import com.vdurmont.emoji.EmojiParser;
 
-import java.util.Comparator;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Post extends RealmObject implements SearchItem{
+public class Post extends RealmObject implements SearchItem {
 
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
-    public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
-            -> o2.getPriority() - o1.getPriority();
+
     @PrimaryKey
     @SerializedName("id")
     private String id;
@@ -139,29 +136,39 @@ public class Post extends RealmObject implements SearchItem{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         final Post post = (Post) o;
 
-        if (getCreatedAt() != post.getCreatedAt())
+        if (getCreatedAt() != post.getCreatedAt()) {
             return false;
-        if (getParentId() != null && !getParentId().equals(post.getParentId()))
+        }
+        if (getParentId() != null && !getParentId().equals(post.getParentId())) {
             return false;
-        if (getRootId() != null && !getRootId().equals(post.getRootId()))
+        }
+        if (getRootId() != null && !getRootId().equals(post.getRootId())) {
             return false;
-        if (getPriority() != post.getPriority())
+        }
+        if (getPriority() != post.getPriority()) {
             return false;
-        if (!getId().equals(post.getId()))
+        }
+        if (!getId().equals(post.getId())) {
             return false;
-        if (!getChannelId().equals(post.getChannelId()))
+        }
+        if (!getChannelId().equals(post.getChannelId())) {
             return false;
-        if (!getUserId().equals(post.getUserId()))
+        }
+        if (!getUserId().equals(post.getUserId())) {
             return false;
-        if (!getMessage().equals(post.getMessage()))
+        }
+        if (!getMessage().equals(post.getMessage())) {
             return false;
+        }
         return getAuthor() != null
                 ? getAuthor().equals(post.getAuthor())
                 : post.getAuthor() == null;
@@ -170,5 +177,9 @@ public class Post extends RealmObject implements SearchItem{
     @Override
     public int getSearchType() {
         return MESSAGE;
+    }
+
+    public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
+        return (int) (post2.getCreatedAt() - post1.getCreatedAt());
     }
 }

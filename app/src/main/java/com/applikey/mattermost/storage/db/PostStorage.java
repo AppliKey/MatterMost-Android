@@ -73,10 +73,9 @@ public class PostStorage {
                 channelId, Post.FIELD_NAME_CHANNEL_CREATE_AT);
     }
 
-    public void deleteAllByChannelUnless(String channelId, String lastPost) {
+    public void deleteAllByChannel(String channelId) {
         mDb.doTransactional(realm -> realm.where(Post.class)
                 .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
-                .notEqualTo(Post.FIELD_NAME_ID, lastPost)
                 .findAll()
                 .deleteAllFromRealm());
     }
