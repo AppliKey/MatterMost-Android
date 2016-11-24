@@ -26,6 +26,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
 
     @Override
     public void onAllAlreadyInvited(boolean isAllAlreadyInvited) {
+        //Do nothing
     }
 
     public void getInitialData(String channelId) {
@@ -69,14 +70,15 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
     }
 
     private void deleteChannel(String teamId, String channelId) {
-        mApi.deleteChannel(teamId, channelId)
+        final Subscription subscription = mApi.deleteChannel(teamId, channelId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(deleteChannelResponse ->
-                        mChannelStorage.deleteChannel(deleteChannelResponse.getId()))
+                        mChannelStorage.delete(deleteChannelResponse.getId()))
                 .toCompletable()
                 .subscribe(() -> getViewState().onChannelDeleted(),
                         error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
+        mSubscription.add(subscription);
     }
 
 
@@ -84,7 +86,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
             ChannelPurposeRequest channelPurposeRequest) {
         final String teamId = channelTitleRequest.getTeamId();
         final String channelId = channelPurposeRequest.getChannelId();
-        mApi.updateChannelTitle(teamId, channelTitleRequest)
+        final Subscription subscription = mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> mChannelStorage.saveChannel(channel))
@@ -106,5 +108,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
                 .toCompletable()
                 .subscribe(() -> getViewState().onChannelUpdated(),
                         error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
+        mSubscription.add(subscription);
+
     }
 }

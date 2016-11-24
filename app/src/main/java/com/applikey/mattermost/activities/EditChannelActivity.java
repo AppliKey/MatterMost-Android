@@ -36,7 +36,6 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     @InjectPresenter
     EditChannelPresenter mPresenter;
 
-    private Dialog mConfirmationDialog;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, EditChannelActivity.class);
@@ -69,7 +68,7 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     }
 
     private void showConfirmationDialog() {
-        mConfirmationDialog = new AlertDialog.Builder(this)
+        Dialog confirmationDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.action_delete_channel)
                 .setMessage(R.string.delete_channel_confirm_dialog_msg)
                 .setPositiveButton(R.string.delete, (dialog, which) -> {
@@ -78,7 +77,7 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .create();
-        mConfirmationDialog.show();
+        confirmationDialog.show();
     }
 
     @OnClick(R.id.members_layout)

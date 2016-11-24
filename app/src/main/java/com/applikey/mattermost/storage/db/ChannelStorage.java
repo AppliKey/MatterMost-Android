@@ -274,7 +274,7 @@ public class ChannelStorage {
         mDb.saveTransactional(channel);
     }
 
-    public void deleteChannel(String channelId) {
+    public void delete(String channelId) {
         mDb.deleteTransactional(Channel.class, channelId);
     }
 
