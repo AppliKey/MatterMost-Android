@@ -136,5 +136,4 @@
         <item name="android:textSize">@dimen/text_title_size</item>
         <item name="android:gravity">center</item>
     </style>
-
 </resources>

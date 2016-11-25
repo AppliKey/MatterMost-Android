@@ -21,7 +21,6 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class FindMoreChannelsActivity extends BaseMvpActivity
         implements FindMoreChannelsView, NotJoinedChannelsAdapter.OnNotJoinedChannelClickListener {
@@ -57,6 +56,12 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.requestNotJoinedChannels();
+    }
+
+    @Override
     public void showNotJoinedChannels(List<Channel> notJoinedChannels) {
         hideEmptyState();
         mAdapter.setChannels(notJoinedChannels);
@@ -64,7 +69,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
 
     @Override
     public void onChannelClick(Channel channel) {
-        Timber.d("onChannelClick, channel: %s", channel.getDisplayName());
+        startActivity(ChatActivity.getIntent(this, channel, true));
     }
 
     @Override

@@ -78,8 +78,11 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
 
     public void commitChanges(UserModel userModel) {
         final EditProfileView view = getViewState();
-        final String email = userModel.getEmail();
-        final String username = userModel.getUsername();
+
+        final String firstName = userModel.getFirstName().trim();
+        final String lastName = userModel.getFirstName().trim();
+        final String email = userModel.getEmail().trim();
+        final String username = userModel.getUsername().trim();
 
         final Subscription subscription =
                 Single.zip(ValidationUtil.validateEmail(email)
@@ -97,8 +100,8 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
                         .toObservable()
                         .filter(result -> result)
                         .doOnNext(ignored -> {
-                            mUser.setFirstName(userModel.getFirstName());
-                            mUser.setLastName(userModel.getLastName());
+                            mUser.setFirstName(firstName);
+                            mUser.setLastName(lastName);
                             mUser.setUsername(username);
                             mUser.setEmail(email);
                         })

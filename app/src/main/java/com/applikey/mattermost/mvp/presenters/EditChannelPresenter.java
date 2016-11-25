@@ -42,11 +42,10 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
                 .flatMap(channel -> mUserStorage.getChannelUsers(channel))
                 .doOnNext(users -> mInvitedUsersManager.setAlreadyMemberUsers(users))
                 .subscribe(users -> getViewState().showMembers(users),
-                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error))
-                );
+                           error -> getViewState().showError(mErrorHandler.getErrorMessage(error))
+                          );
         mSubscription.add(subscription);
     }
-
 
     public void updateChannel(String channelName, String channelDescription) {
         if (TextUtils.isEmpty(channelName)) {
@@ -74,30 +73,30 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(deleteChannelResponse ->
-                        mChannelStorage.delete(deleteChannelResponse.getId()))
+                                  mChannelStorage.delete(deleteChannelResponse.getId()))
                 .toCompletable()
                 .subscribe(() -> getViewState().onChannelDeleted(),
-                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
+                           error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
     }
 
-
     private void updateChannel(ChannelTitleRequest channelTitleRequest,
-            ChannelPurposeRequest channelPurposeRequest) {
+                               ChannelPurposeRequest channelPurposeRequest) {
         final String teamId = channelTitleRequest.getTeamId();
         final String channelId = channelPurposeRequest.getChannelId();
+
         final Subscription subscription = mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .observeOn(Schedulers.io())
                 .flatMap(channel -> mApi.updateChannelPurpose(teamId, channelPurposeRequest))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()))
                 .observeOn(Schedulers.io())
                 .flatMap(user -> mApi.addUserToChannel(teamId, channelId,
-                        new RequestUserId(user.getId())), (user, membership) -> user)
+                                                       new RequestUserId(user.getId())), (user, membership) -> user)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(users -> {
@@ -107,7 +106,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
                 .doOnNext(users -> mChannelStorage.setUsers(channelId, users))
                 .toCompletable()
                 .subscribe(() -> getViewState().onChannelUpdated(),
-                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
+                           error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
 
     }
