@@ -10,8 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -52,8 +50,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private static final String CHANNEL_TYPE_KEY = "channel-type";
 
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
-
-    private static final int MENU_ITEM_SEARCH = Menu.FIRST;
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -142,25 +138,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     public void onStart() {
         super.onStart();
         mPresenter.fetchAfterRestart();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE, MENU_ITEM_SEARCH, Menu.NONE, R.string.search)
-                .setIcon(R.drawable.ic_search)
-                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case MENU_ITEM_SEARCH:
-                //presenter.search()
-                return true;
-            default:
-                return false;
-        }
     }
 
     @Override
