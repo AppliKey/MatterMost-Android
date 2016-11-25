@@ -7,7 +7,7 @@ import android.view.View;
 
 public class InsetItemDecoration extends RecyclerView.ItemDecoration {
 
-    private int mInset;
+    private final int mInset;
 
     public InsetItemDecoration(int inset) {
         this.mInset = inset;

@@ -125,5 +125,5 @@
     <dimen name="send_message_field_max_height">112dp</dimen>
 
     <dimen name="channel_horizontal_margin">30dp</dimen>
-    <dimen name="channel_horizontal_margin_edit_text_fix">26dp</dimen>
+    <dimen name="channel_horizontal_margin_edit_text">26dp</dimen>
 </resources>
