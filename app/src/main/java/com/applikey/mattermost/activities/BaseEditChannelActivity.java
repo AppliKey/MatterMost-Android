@@ -104,6 +104,7 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @Override
     public void showEmptyChannelNameError(boolean isPublic) {
+        hideLoadingDialog();
         @StringRes final int errorRes = isPublic
                 ? R.string.error_channel_name_empty
                 : R.string.error_private_group_name_empty;
