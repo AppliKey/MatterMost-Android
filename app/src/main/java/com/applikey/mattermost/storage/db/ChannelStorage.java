@@ -112,6 +112,10 @@ public class ChannelStorage {
         mDb.saveTransactional(channel);
     }
 
+    public void save(List<Channel> channels) {
+        mDb.saveTransactional(channels);
+    }
+
     public Observable<List<Membership>> listMembership() {
         return mDb.listRealmObjects(Membership.class);
     }

@@ -30,6 +30,9 @@ public class GroupChatListViewHolder extends BaseChatListViewHolder {
     @Bind(R.id.iv_fourth)
     ImageView mIvFourth;
 
+    @Bind(R.id.iv_channel_icon)
+    ImageView mIvChannelIcon;
+
     @Bind(R.id.ccv_fourth)
     CircleCounterView mCcvFourth;
 
@@ -60,6 +63,16 @@ public class GroupChatListViewHolder extends BaseChatListViewHolder {
         } else {
             mIvFourth.setVisibility(View.GONE);
             mCcvFourth.setVisibility(View.GONE);
+        }
+        setChannelIconVisibility(channel);
+    }
+
+    private void setChannelIconVisibility(Channel channel) {
+        final String type = channel.getType();
+        if (Channel.ChannelType.PRIVATE.getRepresentation().equals(type)) {
+            mIvChannelIcon.setVisibility(View.VISIBLE);
+        } else {
+            mIvChannelIcon.setVisibility(View.GONE);
         }
     }
 

@@ -4,6 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.mvp.views.FindMoreChannelsView;
+import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -29,16 +30,13 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
     TeamStorage mTeamStorage;
 
     @Inject
+    ChannelStorage mChannelStorage;
+
+    @Inject
     ErrorHandler mErrorHandler;
 
     public FindMoreChannelsPresenter() {
         App.getUserComponent().inject(this);
-    }
-
-    @Override
-    protected void onFirstViewAttach() {
-        super.onFirstViewAttach();
-        requestNotJoinedChannels();
     }
 
     public void requestNotJoinedChannels() {
@@ -46,12 +44,13 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
         getViewState().showLoading();
         final Subscription subscription = getNotJoinedChannels()
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(mChannelStorage::save)
                 .subscribe(this::showResult, this::handleError);
         mSubscription.add(subscription);
     }
 
     private Single<List<Channel>> getNotJoinedChannels() {
-        return  mTeamStorage.getTeamId()
+        return mTeamStorage.getTeamId()
                 .observeOn(Schedulers.io())
                 .flatMap(mApi::getChannelsUserHasNotJoined)
                 .map(ChannelResponse::getChannels);

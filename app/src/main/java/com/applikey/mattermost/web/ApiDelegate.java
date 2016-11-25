@@ -255,4 +255,9 @@ public class ApiDelegate implements Api {
     private boolean isSameServerRequested(String requestedServer) {
         return serverUrl != null && serverUrl.equals(requestedServer);
     }
+
+    @Override
+    public Single<Channel> joinToChannel(String teamId, String channelId) {
+        return getRealApi().joinToChannel(teamId, channelId);
+    }
 }
