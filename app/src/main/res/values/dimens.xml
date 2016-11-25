@@ -16,6 +16,7 @@
 
     <dimen name="edit_text_bottom_padding">20dp</dimen>
     <dimen name="edit_text_push_right">4dp</dimen>
+    <dimen name="edit_text_fix_margin">-4dp</dimen>
 
     <dimen name="margin_3x">48dp</dimen>
     <dimen name="margin_4x">64dp</dimen>
@@ -122,4 +123,7 @@
     <dimen name="list_element_text_size">18sp</dimen>
 
     <dimen name="send_message_field_max_height">112dp</dimen>
+
+    <dimen name="channel_horizontal_margin">30dp</dimen>
+    <dimen name="channel_horizontal_margin_edit_text">26dp</dimen>
 </resources>
