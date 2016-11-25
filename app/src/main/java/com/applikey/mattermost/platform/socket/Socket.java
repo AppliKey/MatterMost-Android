@@ -11,6 +11,4 @@ public interface Socket {
 
     boolean isOpen();
 
-    void close();
-
 }

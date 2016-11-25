@@ -64,6 +64,32 @@ public class ChannelStorage {
                 .doOnUnsubscribe(() -> realmReference.get().close());
     }
 
+    public void updateLastPost(String channelId, Post post) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post persistedPost = realm.copyToRealmOrUpdate(post);
+            final Channel channel = realm.where(Channel.class).equalTo("id", channelId).findFirst();
+            if (channel == null) {
+                return;
+            }
+            channel.setLastPost(persistedPost);
+        });
+        realmInstance.close();
+    }
+
+    public void updateViewedAt(String channelId) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Channel channel = realm.where(Channel.class).equalTo("id", channelId).findFirst();
+            if (channel == null) {
+                return;
+            }
+            channel.setHasUnreadMessages(false);
+            channel.setLastViewedAt(channel.getLastActivityTime());
+        });
+        realmInstance.close();
+    }
+
     // TODO Duplicate
     public Observable<Channel> findByIdAndCopy(String id) {
         return mDb.getObjectAndCopy(Channel.class, id);

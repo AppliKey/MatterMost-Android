@@ -19,7 +19,6 @@ import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.BearerTokenFactory;
-import com.applikey.mattermost.web.ErrorHandler;
 import com.google.gson.Gson;
 
 import javax.inject.Named;
@@ -87,15 +86,14 @@ public class UserModule {
 
     @Provides
     @PerUser
-    MessagingInteractor provideMessagingInteractor(Context context,
-            ChannelStorage channelStorage,
+    MessagingInteractor provideMessagingInteractor(ChannelStorage channelStorage,
             UserStorage userStorage,
             PostStorage postStorage,
-            Socket messagingSocket, Api api, Gson gson, ErrorHandler errorHandler) {
-        return new MessagingInteractor(context,
+            Socket messagingSocket, Api api) {
+        return new MessagingInteractor(
                 channelStorage,
                 userStorage,
-                postStorage, messagingSocket, api, gson, errorHandler);
+                postStorage, messagingSocket, api);
     }
 
 }

@@ -3,7 +3,6 @@ package com.applikey.mattermost.platform.socket;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -28,7 +27,6 @@ public class WebSocketService extends Service {
     @Inject
     MessagingInteractor mMessagingInteractor;
 
-    private Handler mHandler;
     private CompositeSubscription mSubscriptions;
 
     public static Intent getIntent(Context context) {
@@ -50,7 +48,7 @@ public class WebSocketService extends Service {
     private void openSocket() {
         final Subscription socketSubscription = mMessagingInteractor.listenMessagingSocket()
                 .retryWhen(mErrorHandler::tryReconnectSocket)
-                .subscribe(event -> Log.d(TAG, "Event received: " + event.getEvent()), mErrorHandler::handleError);
+                .subscribe(event -> Log.d(TAG, "Socket event received: " + event.getEvent()), mErrorHandler::handleError);
         mSubscriptions.add(socketSubscription);
     }
 
@@ -58,7 +56,7 @@ public class WebSocketService extends Service {
         final Subscription pollStatusesObservable = mMessagingInteractor.pollUserStatuses()
                 .retryWhen(new RetryWhenNetwork(this))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(updated -> Log.d(TAG, "Statuses updated"), mErrorHandler::handleError);
+                .subscribe(updated -> Log.d(TAG, "Users statuses updated"), mErrorHandler::handleError);
         mSubscriptions.add(pollStatusesObservable);
     }
 
