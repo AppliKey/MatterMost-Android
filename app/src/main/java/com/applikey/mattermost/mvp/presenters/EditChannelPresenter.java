@@ -89,11 +89,11 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
         final Subscription subscription = mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .observeOn(Schedulers.io())
                 .flatMap(channel -> mApi.updateChannelPurpose(teamId, channelPurposeRequest))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()))
                 .observeOn(Schedulers.io())
                 .flatMap(user -> mApi.addUserToChannel(teamId, channelId,
