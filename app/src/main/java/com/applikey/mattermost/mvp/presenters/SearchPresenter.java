@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -63,9 +64,13 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                                   .observeOn(Schedulers.io())
                                   .flatMap(id -> mApi.getChannelsUserHasNotJoined(id),
                                            (id, channelResponse) -> channelResponse)
+                                  .map(ChannelResponse::getChannels)
+                                  .flatMap(Observable::from)
+                                  .doOnNext(channel -> channel.setJoined(true))
+                                  .toList()
                                   .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(channelResponse -> {
-                                      mFetchedChannels = channelResponse.getChannels();
+                                  .subscribe(channels -> {
+                                      mFetchedChannels = channels;
                                       mChannelsIsFetched = true;
                                       getData("");
                                   }, mErrorHandler::handleError));

@@ -62,6 +62,9 @@ public class Channel extends RealmObject implements SearchItem {
     @SerializedName("create_at")
     private long createdAt;
 
+    //if we are fetching not joined channels, we should set it to false
+    private boolean isJoined = true;
+
     // TODO: 04.11.16 NEED DETAILED REVIEW
     // Application-specific fields
     private String previewImagePath;
@@ -100,6 +103,14 @@ public class Channel extends RealmObject implements SearchItem {
         }
         this.lastActivityTime = Math.max(createdAt, lastPostAt);
         rebuildHasUnreadMessages();
+    }
+
+    public boolean isJoined() {
+        return isJoined;
+    }
+
+    public void setJoined(boolean joined) {
+        isJoined = joined;
     }
 
     public User getDirectCollocutor() {
