@@ -13,7 +13,6 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +48,10 @@ public class ChannelStorage {
 
     public Observable<Channel> directChannel(String userId) {
         return mDb.getObjectQualified(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
+    }
+
+    public void removeChannelAsync(Channel channel) {
+        mDb.removeAsync(Channel.class, Channel.FIELD_ID, channel.getId());
     }
 
     public Observable<List<Channel>> list() {

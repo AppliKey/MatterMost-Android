@@ -88,12 +88,21 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     }
 
     public void leaveChannel() {
+        final ChannelDetailsView view = getViewState();
+        view.showProgress(true);
         mSubscription.add(mApi.leaveChannel(mPrefs.getCurrentTeamId(), mChannel.getId())
                                   .subscribeOn(Schedulers.io())
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .doOnNext(aVoid -> mChannelStorage.removeChannelAsync(mChannel))
                                   .subscribe(aVoid -> {
-                                      Log.d(TAG, "leaveChannel: LEAVE");
-                                  }, throwable -> mErrorHandler.handleError(throwable)));
+                                      Log.d(TAG, "leaveChannel: SUCCESS");
+                                      view.showProgress(false);
+                                      view.backToMainActivity();
+                                  }, throwable -> {
+                                      Log.d(TAG, "leaveChannel: " + throwable);
+                                      mErrorHandler.handleError(throwable);
+                                      view.showProgress(false);
+                                  }));
     }
-
 
 }
