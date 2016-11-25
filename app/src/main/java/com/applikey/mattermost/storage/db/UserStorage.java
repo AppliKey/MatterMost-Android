@@ -1,5 +1,6 @@
 package com.applikey.mattermost.storage.db;
 
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -23,17 +24,18 @@ public class UserStorage {
         mImagePathHelper = imagePathHelper;
     }
 
-    public void saveUsers(Map<String, User> directProfiles) {
+    public void save(Map<String, User> directProfiles) {
         addImagePathInfo(directProfiles);
         mDb.saveTransactional(directProfiles.values());
     }
 
-    public void saveUser(User user) {
+    public void save(User user) {
+        addImagePathInfo(user);
         mDb.saveTransactional(user);
     }
 
     public void saveUsersStatuses(Map<String, User> directProfiles,
-            Map<String, String> userStatuses) {
+                                  Map<String, String> userStatuses) {
         addStatusData(directProfiles, userStatuses);
         mDb.saveTransactional(directProfiles.values());
     }
@@ -61,8 +63,8 @@ public class UserStorage {
 
     public Observable<List<User>> searchUsers(String text) {
         return mDb.listRealmObjectsFilteredSorted(User.class, text,
-                new String[] {User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME},
-                User.FIELD_USERNAME);
+                                                  new String[] {User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME},
+                                                  User.FIELD_USERNAME);
     }
 
     public Observable<List<User>> findUsers(List<String> ids) {
@@ -83,9 +85,11 @@ public class UserStorage {
     }
 
     private void addImagePathInfo(Map<String, User> users) {
-        for (User user : users.values()) {
-            user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
-        }
+        Stream.of(users).forEach(user -> addImagePathInfo(user.getValue()));
+    }
+
+    private void addImagePathInfo(User user) {
+        user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
     }
 
     private void addStatusData(Map<String, User> directProfiles, Map<String, String> userStatuses) {

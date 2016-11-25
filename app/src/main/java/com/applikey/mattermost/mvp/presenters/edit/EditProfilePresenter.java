@@ -16,6 +16,7 @@ import com.applikey.mattermost.utils.validation.ValidationUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.MattermostErrorIds;
+import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.InjectViewState;
 import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
 
@@ -40,6 +41,7 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
     @Inject UserStorage mUserStorage;
     @Inject ErrorHandler mErrorHandler;
     @Inject Prefs mPrefs;
+    @Inject ImageLoader mImageLoader;
 
     @Nullable private File mImage;
 
@@ -115,12 +117,11 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
 
         final Subscription subscription = mApi.editUser(mUser)
                 .flatMap(user -> mImage != null ? uploadImage() : Observable.just(user))
+                .flatMap(v -> mApi.getMe())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .compose(RxUtils.applyProgress(view::showLoading, view::hideLoading))
-                .subscribe(user -> {
-                    mUserStorage.saveUser(user);
-                }, throwable -> {
+                .subscribe(mUserStorage::save, throwable -> {
                     final RequestError requestError = mErrorHandler.getRequestError(throwable);
                     if (requestError != null) {
 
@@ -138,13 +139,12 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
         mSubscription.add(subscription);
     }
 
-    private Observable<User> uploadImage() {
+    private Observable<Void> uploadImage() {
         MultipartBody.Part imagePart = MultipartBody.
                 Part.createFormData(Api.MULTIPART_IMAGE_TAG, mImage.getName(),
                                     RequestBody.create(MediaType.parse(Constants.MIME_TYPE_IMAGE), mImage));
 
-        return mApi.uploadImage(imagePart)
-                .flatMap(v -> mApi.getMe());
+        return mApi.uploadImage(imagePart);
     }
 
     public static class UserModel {
