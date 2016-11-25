@@ -1,6 +1,5 @@
 package com.applikey.mattermost.activities;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
@@ -13,6 +12,7 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.injects.ApplicationComponent;
 import com.applikey.mattermost.utils.kissUtils.utils.CommonUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.ToastUtil;
+import com.applikey.mattermost.views.ProgressDialogCompat;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.ActivityLifecycleProvider;
@@ -38,7 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
     @Inject
     protected ImageLoader mImageLoader;
 
-    private ProgressDialog mProgressDialog;
+    private ProgressDialogCompat mProgressDialog;
 
     public void showToast(@NonNull String text) {
         ToastUtil.show(text);
@@ -119,8 +119,13 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
             return;
         }
 
-        mProgressDialog = ProgressDialog.show(this, null, getString(R.string.please_wait), true,
-                false);
+        mProgressDialog = new ProgressDialogCompat(this);
+        mProgressDialog.setMessage(getString(R.string.please_wait));
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setTint(R.color.colorAccent);
+
+        showLoadingDialog();
     }
 
     public void hideLoadingDialog() {
