@@ -65,9 +65,6 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
 
     @Subscribe
     public void onInputTextChanged(SearchChannelTextChanged event) {
-        mSearchString = event.getText();
-        final SearchChannelView view = getViewState();
-        view.clearData();
-        getData(mSearchString);
+        super.onInputTextChanged(event);
     }
 }

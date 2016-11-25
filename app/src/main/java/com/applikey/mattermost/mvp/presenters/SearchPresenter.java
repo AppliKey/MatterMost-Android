@@ -3,6 +3,7 @@ package com.applikey.mattermost.mvp.presenters;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.events.SearchTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -164,6 +165,16 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         doRequest(view, text);
     }
 
+    protected void onInputTextChanged(SearchTextChanged event) {
+        String text = event.getText();
+        if(mSearchString.equals(text)){
+            return;
+        }
+        mSearchString = text;
+        final SearchView view = getViewState();
+        view.clearData();
+        getData(mSearchString);
+    }
     public abstract boolean isDataRequestValid(String text);
 
     public abstract void doRequest(SearchView view, String text);
