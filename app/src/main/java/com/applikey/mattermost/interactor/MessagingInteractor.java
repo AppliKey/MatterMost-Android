@@ -4,6 +4,7 @@ package com.applikey.mattermost.interactor;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.platform.socket.Socket;
@@ -19,6 +20,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_CHANNEL_VIEWED;
+import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_EDITED;
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_POSTED;
 
 public class MessagingInteractor {
@@ -59,9 +61,12 @@ public class MessagingInteractor {
         return mMessagingSocket.listen()
                 .subscribeOn(Schedulers.io())
                 .doOnNext(event -> {
+                    final Post post = event.getProps().getPost();
                     if (EVENT_POST_POSTED.equals(event.getEvent())) {
-                        mChannelStorage.updateLastPost(event.getChannelId(), event.getProps().getPost());
-                    } else if (EVENT_CHANNEL_VIEWED.equals(event.getEvent())) {
+                        mChannelStorage.updateLastPost(event.getChannelId(), post);
+                    } else if (EVENT_POST_EDITED.equals(event.getEvent())) {
+                        mPostStorage.saveSync(post); // FIXME: 25.11.16 for some reason doesn't update Channels' and Posts' RealmResults in Adapters
+                    }else if (EVENT_CHANNEL_VIEWED.equals(event.getEvent())) {
                         mChannelStorage.updateViewedAt(event.getChannelId());
                     }
                 });

@@ -14,7 +14,6 @@ import com.applikey.mattermost.web.ErrorHandler;
 import javax.inject.Inject;
 
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class WebSocketService extends Service {
@@ -41,11 +40,11 @@ public class WebSocketService extends Service {
 
         mSubscriptions = new CompositeSubscription();
 
-        openSocket();
+        listenSocket();
         startPollingUsersStatuses();
     }
 
-    private void openSocket() {
+    private void listenSocket() {
         final Subscription socketSubscription = mMessagingInteractor.listenMessagingSocket()
                 .retryWhen(mErrorHandler::tryReconnectSocket)
                 .subscribe(event -> Log.d(TAG, "Socket event received: " + event.getEvent()), mErrorHandler::handleError);
@@ -55,7 +54,6 @@ public class WebSocketService extends Service {
     private void startPollingUsersStatuses() {
         final Subscription pollStatusesObservable = mMessagingInteractor.pollUserStatuses()
                 .retryWhen(new RetryWhenNetwork(this))
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(updated -> Log.d(TAG, "Users statuses updated"), mErrorHandler::handleError);
         mSubscriptions.add(pollStatusesObservable);
     }

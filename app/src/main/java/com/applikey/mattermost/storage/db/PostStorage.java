@@ -7,6 +7,7 @@ import com.applikey.mattermost.models.user.User;
 
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
 
@@ -44,6 +45,12 @@ public class PostStorage {
                 realmPost.setRootPost(rootPost);
             }
         });
+    }
+
+    public void saveSync(Post post) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> realm.insertOrUpdate(post));
+        realmInstance.close();
     }
 
     public void save(Post post) {
