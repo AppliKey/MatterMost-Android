@@ -34,8 +34,8 @@ public class ImageViewCompat extends AppCompatImageView {
 
     private void init(Context context, @Nullable AttributeSet attributeSet, int defStyle) {
         if (attributeSet != null) {
-            TypedArray typedArray = context.obtainStyledAttributes(attributeSet, R.styleable.ImageViewCompat, defStyle,
-                                                                   0);
+            final TypedArray typedArray =
+                    context.obtainStyledAttributes(attributeSet, R.styleable.ImageViewCompat, defStyle, 0);
             try {
                 mColorStateList = typedArray.getColorStateList(R.styleable.ImageViewCompat_backgroundColorState);
             } finally {
@@ -50,7 +50,7 @@ public class ImageViewCompat extends AppCompatImageView {
     }
 
     private void initColorStateList() {
-        Drawable drawable = DrawableCompat.wrap(getDrawable());
+        final Drawable drawable = DrawableCompat.wrap(getDrawable());
         DrawableCompat.setTintList(drawable, mColorStateList);
         setImageDrawable(drawable);
     }
