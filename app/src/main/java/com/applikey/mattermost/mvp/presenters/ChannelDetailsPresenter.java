@@ -16,6 +16,7 @@ import com.arellomobile.mvp.InjectViewState;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
@@ -81,6 +82,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
         mSubscription.add(mApi.leaveChannel(mPrefs.getCurrentTeamId(), mChannel.getId())
                                   .subscribeOn(Schedulers.io())
                                   .observeOn(AndroidSchedulers.mainThread())
+                                  .toObservable()
                                   .doOnNext(aVoid -> mChannelStorage.removeChannelAsync(mChannel))
                                   .subscribe(aVoid -> {
                                       Log.d(TAG, "leaveChannel: SUCCESS");

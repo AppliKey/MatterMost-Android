@@ -62,14 +62,12 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     protected String mSearchString = Constants.EMPTY_STRING;
 
     public void requestNotJoinedChannels() {
-        mSubscription.add(mTeamStorage.getChosenTeam()
-                                  .map(Team::getId)
-                                  .observeOn(Schedulers.io())
-                                  .flatMap(id -> mApi.getChannelsUserHasNotJoined(id),
-                                           (id, channelResponse) -> channelResponse)
+        mSubscription.add(mApi.getChannelsUserHasNotJoined(mPrefs.getCurrentTeamId())
+                                  .subscribeOn(Schedulers.io())
                                   .map(ChannelResponse::getChannels)
+                                  .toObservable()
                                   .flatMap(Observable::from)
-                                  .doOnNext(channel -> channel.setJoined(true))
+                                  .doOnNext(channel -> channel.setJoined(false))
                                   .toList()
                                   .observeOn(AndroidSchedulers.mainThread())
                                   .subscribe(channels -> {
@@ -93,7 +91,8 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         final SearchView view = getViewState();
         switch (item.getSearchType()) {
             case SearchItem.CHANNEL:
-                view.startChatView((Channel) item);
+                Channel channel = (Channel) item;
+                view.startChatView(channel);
                 break;
             case SearchItem.MESSAGE:
                 view.startChatView(((Message) item).getChannel());

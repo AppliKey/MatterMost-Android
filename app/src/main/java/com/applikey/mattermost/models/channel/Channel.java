@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.channel;
 
+import android.util.Log;
+
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -36,6 +38,8 @@ public class Channel extends RealmObject implements SearchItem {
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
 
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
+
+    private static final String TAG = Channel.class.getSimpleName();
 
     @PrimaryKey
     @SerializedName(FIELD_ID)
@@ -106,6 +110,7 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     public boolean isJoined() {
+        Log.d(TAG, "isJoined: " + isJoined);
         return isJoined;
     }
 

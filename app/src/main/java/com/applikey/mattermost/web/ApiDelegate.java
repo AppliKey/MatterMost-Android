@@ -34,7 +34,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
@@ -221,7 +220,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Void> leaveChannel(@Path("team_id") String teamId,
+    public Single<Void> leaveChannel(@Path("team_id") String teamId,
                                          @Path("channel_id") String channelId) {
         return getRealApi().leaveChannel(teamId, channelId);
     }
