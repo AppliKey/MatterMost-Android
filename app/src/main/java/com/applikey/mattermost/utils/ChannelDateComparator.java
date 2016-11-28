@@ -5,10 +5,6 @@ import com.applikey.mattermost.models.channel.Channel;
 
 import java.util.Comparator;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class ChannelDateComparator implements Comparator<SearchItem> {
 
     @Override

@@ -326,4 +326,9 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     public int getSearchType() {
         return USER;
     }
+
+    @Override
+    public int getSortPriority() {
+        return PRIORITY_USER;
+    }
 }

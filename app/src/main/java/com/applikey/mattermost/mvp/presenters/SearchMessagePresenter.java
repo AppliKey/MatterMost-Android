@@ -61,7 +61,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
                                   .doOnNext(messages -> Collections.sort(messages, new MessageDateComparator()))
                                   .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                                   .subscribe(view::displayData,
-                                             throwable -> mErrorHandler.handleError(throwable))
+                                             mErrorHandler::handleError)
                          );
     }
 

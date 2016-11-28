@@ -7,10 +7,6 @@ import com.applikey.mattermost.models.user.User;
 
 import java.util.Comparator;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class MessageDateComparator implements Comparator<SearchItem> {
 
     @Override

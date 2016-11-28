@@ -12,6 +12,11 @@ public interface SearchItem {
     int CHANNEL = 1;
     int MESSAGE = 2;
     int MESSAGE_CHANNEL = 3;
+
+    int PRIORITY_USER = 0;
+    int PRIORITY_MESSAGE = 1;
+    int PRIORITY_CHANNEL = 2;
+
     @Retention(SOURCE)
     @IntDef({CHANNEL, USER, MESSAGE, MESSAGE_CHANNEL})
     @interface Type {
@@ -20,5 +25,7 @@ public interface SearchItem {
 
     @Type
     int getSearchType();
+
+    int getSortPriority();
 
 }

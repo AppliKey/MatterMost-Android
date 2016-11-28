@@ -222,6 +222,11 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     @Override
+    public int getSortPriority() {
+        return PRIORITY_CHANNEL;
+    }
+
+    @Override
     public int hashCode() {
         int result = getId().hashCode();
         result = 31 * result + getType().hashCode();
