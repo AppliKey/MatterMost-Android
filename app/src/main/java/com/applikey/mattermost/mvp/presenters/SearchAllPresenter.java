@@ -10,12 +10,14 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchAllView;
 import com.applikey.mattermost.mvp.views.SearchView;
+import com.applikey.mattermost.utils.MessageDateComparator;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -80,6 +82,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
                                      items.addAll(items2);
                                      return items;
                                  })
+                        .doOnNext(items -> Collections.sort(items, new MessageDateComparator()))
                         .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayData, mErrorHandler::handleError));
