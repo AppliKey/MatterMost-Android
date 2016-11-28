@@ -9,12 +9,14 @@ import com.applikey.mattermost.mvp.views.SearchMessageView;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.MessageDateComparator;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -56,9 +58,10 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     public void doRequest(SearchView view, String text) {
         mSubscription.clear();
         mSubscription.add(getPostsObservable(text)
+                                  .doOnNext(messages -> Collections.sort(messages, new MessageDateComparator()))
                                   .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                                   .subscribe(view::displayData,
-                                             mErrorHandler::handleError)
+                                             throwable -> mErrorHandler.handleError(throwable))
                          );
     }
 
