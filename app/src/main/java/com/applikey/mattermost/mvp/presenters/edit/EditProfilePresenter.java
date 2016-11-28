@@ -20,8 +20,6 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.InjectViewState;
 import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.File;
 
 import javax.inject.Inject;
@@ -44,7 +42,6 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
     @Inject ErrorHandler mErrorHandler;
     @Inject Prefs mPrefs;
     @Inject ImageLoader mImageLoader;
-    @Inject EventBus mEventBus;
 
     @Nullable private File mImage;
 
