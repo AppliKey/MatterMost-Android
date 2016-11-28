@@ -64,9 +64,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
 
     @Subscribe
     public void onInputTextChanged(SearchMessageTextChanged event) {
-        final SearchMessageView view = getViewState();
-        view.clearData();
-        getData(event.getText());
+        super.onInputTextChanged(event);
     }
 
 }

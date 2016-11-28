@@ -3,11 +3,13 @@ package com.applikey.mattermost.web;
 import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.auth.RestorePasswordRequest;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ChannelTitleRequest;
+import com.applikey.mattermost.models.channel.DeleteChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
@@ -36,6 +38,7 @@ import retrofit2.http.Field;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
+import rx.Single;
 
 public class ApiDelegate implements Api {
 
@@ -92,8 +95,8 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<Void>> sendPasswordReset(@Field("email") String email) {
-        return getRealApi().sendPasswordReset(email);
+    public Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request) {
+        return getRealApi().sendPasswordReset(request);
     }
 
     @Override
@@ -185,7 +188,12 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
+    public Observable<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
+            @Path("channelId") String channelId) {
+        return getRealApi().deleteChannel(teamId, channelId);
+    }
+
+    public Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId) {
         return getRealApi().getChannelsUserHasNotJoined(teamId);
     }
 
@@ -253,5 +261,10 @@ public class ApiDelegate implements Api {
 
     private boolean isSameServerRequested(String requestedServer) {
         return serverUrl != null && serverUrl.equals(requestedServer);
+    }
+
+    @Override
+    public Single<Channel> joinToChannel(String teamId, String channelId) {
+        return getRealApi().joinToChannel(teamId, channelId);
     }
 }

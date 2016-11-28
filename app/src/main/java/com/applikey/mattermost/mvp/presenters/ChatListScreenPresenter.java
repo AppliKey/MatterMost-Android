@@ -98,7 +98,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .observeOn(Schedulers.io())
                 .flatMap(v -> mApi.getMe())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mUserStorage::saveUser, mErrorHandler::handleError);
+                .subscribe(mUserStorage::save, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
@@ -134,11 +134,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     private Observable<StartupFetchResult> fetchStartup(String teamId) {
         return Observable.zip(mApi.listChannels(teamId), mApi.getTeamProfiles(teamId),
-                              (channelResponse, contacts) -> transform(channelResponse, contacts,
-                                                                       teamId))
+                (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(response -> mUserStorage.saveUsers(response.getDirectProfiles()))
+                .doOnNext(response -> mUserStorage.save(response.getDirectProfiles()))
                 .doOnNext(response -> mChannelStorage.saveChannelResponse(
                         response.getChannelResponse(),
                         response.getDirectProfiles()));
@@ -163,7 +162,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> contacts, String teamId) {
+            Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 

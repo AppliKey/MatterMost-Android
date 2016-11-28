@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchChannelTextChanged;
+import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
 import com.applikey.mattermost.mvp.views.SearchView;
@@ -23,6 +24,8 @@ import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
+
+    private static final String TAG = SearchChannelPresenter.class.getSimpleName();
 
     @Inject
     EventBus mEventBus;
@@ -56,13 +59,12 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
                         .observeOn(Schedulers.io())
                         .doOnNext(channels -> addFilterChannels(channels, text))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(channels -> view.displayData(new ArrayList<>(channels)), mErrorHandler::handleError));
+                        .map(ArrayList<SearchItem>::new)
+                        .subscribe(view::displayData, mErrorHandler::handleError));
     }
 
     @Subscribe
     public void onInputTextChanged(SearchChannelTextChanged event) {
-        final SearchChannelView view = getViewState();
-        view.clearData();
-        getData(event.getText());
+        super.onInputTextChanged(event);
     }
 }

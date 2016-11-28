@@ -1,5 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
+import com.annimon.stream.Stream;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
@@ -22,12 +24,13 @@ public class UserStorage {
         mImagePathHelper = imagePathHelper;
     }
 
-    public void saveUsers(Map<String, User> directProfiles) {
+    public void save(Map<String, User> directProfiles) {
         addImagePathInfo(directProfiles);
         mDb.saveTransactional(directProfiles.values());
     }
 
-    public void saveUser(User user) {
+    public void save(User user) {
+        addImagePathInfo(user);
         mDb.saveTransactional(user);
     }
 
@@ -70,15 +73,23 @@ public class UserStorage {
         return mDb.getObjectsQualifiedWithCopy(User.class, User.FIELD_NAME_ID, idsArray);
     }
 
+    public Observable<List<User>> getChannelUsers(Channel channel) {
+        return Observable.from(channel.getUsers())
+                .map(mDb::copyFromRealm)
+                .toList();
+    }
+
     public Single<User> getMe() {
         return mDb.getObjectAndCopy(User.class, mPrefs.getCurrentUserId())
                 .toSingle();
     }
 
     private void addImagePathInfo(Map<String, User> users) {
-        for (User user : users.values()) {
-            user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
-        }
+        Stream.of(users).forEach(user -> addImagePathInfo(user.getValue()));
+    }
+
+    private void addImagePathInfo(User user) {
+        user.setProfileImage(mImagePathHelper.getProfilePicPath(user.getId()));
     }
 
     private void addStatusData(Map<String, User> directProfiles, Map<String, String> userStatuses) {

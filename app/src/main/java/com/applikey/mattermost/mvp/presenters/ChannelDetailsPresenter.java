@@ -5,8 +5,6 @@ import android.util.Log;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.channel.ExtraInfo;
-import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -17,9 +15,7 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
@@ -54,26 +50,18 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     }
 
     public void getInitialData(String channelId) {
-        final ChannelDetailsView view = getViewState();
-
         mSubscription.add(mChannelStorage.channelById(channelId)
                 .doOnNext(channel -> mChannel = channel)
-                .subscribe(view::showBaseDetails, mErrorHandler::handleError));
+                .doOnNext(channel -> getViewState().showBaseDetails(channel))
+                .map(Channel::getUsers)
+                .subscribe(users -> getViewState().showMembers(users),
+                        mErrorHandler::handleError));
 
         mMetaDataManager.isFavoriteChannel(channelId)
                 .doOnNext(favorite -> mIsFavorite = favorite)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
-
-        mSubscription.add(mApi.getChannelExtra(mPrefs.getCurrentTeamId(), channelId)
-                .subscribeOn(Schedulers.io())
-                .map(ExtraInfo::getMembers)
-                .flatMap(Observable::from)
-                .map(MemberInfo::getId)
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(ids -> mUserStorage.findUsers(ids))
-                .subscribe(view::showMembers, mErrorHandler::handleError));
+                .subscribe(favorite -> getViewState().onMakeFavorite(favorite),
+                        mErrorHandler::handleError);
     }
 
     @Override

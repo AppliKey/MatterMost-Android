@@ -35,25 +35,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/create_channel_type_bottom_margin"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/list_item_margin"
-                android:layout_marginTop="@dimen/large"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/channel_horizontal_margin"
                 android:gravity="center" />
 
             <TextView
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/more"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
                 android:text="@string/create_channel_title_name" />
 
             <EditText
                 android:id="@+id/et_channel_name"
+                style="@style/EditTextPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/list_item_margin"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin_edit_text"
+                android:layout_marginStart="@dimen/channel_horizontal_margin_edit_text"
                 android:fontFamily="@string/font_light"
                 android:hint="@string/create_chat_hint_name"
                 android:inputType="textEmailAddress"
@@ -64,17 +65,18 @@
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/more"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
                 android:text="@string/create_channel_description_title" />
 
             <EditText
                 android:id="@+id/et_channel_description"
+                style="@style/EditTextPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/list_item_margin"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin_edit_text"
+                android:layout_marginStart="@dimen/channel_horizontal_margin_edit_text"
                 android:fontFamily="sans-serif-light"
                 android:gravity="top|start"
                 android:hint="@string/create_private_group_description_hint"
@@ -85,8 +87,8 @@
                 style="@style/TextHeadingSecondary.Small.Capitalize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/more"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
                 android:text="@string/add_members" />
 
@@ -95,17 +97,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/added_people_layout_item_height"
                 android:layout_marginBottom="@dimen/normal"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/list_item_margin"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
                 android:layout_marginTop="@dimen/large"
                 app:min_item_right_margin="@dimen/added_people_layout_item_right_margin" />
 
             <EditText
                 android:id="@+id/et_search_people"
+                style="@style/EditTextPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/list_item_margin"
-                android:layout_marginStart="@dimen/list_item_margin"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin_edit_text"
+                android:layout_marginStart="@dimen/channel_horizontal_margin_edit_text"
                 android:drawableEnd="@drawable/ic_search"
                 android:fontFamily="@string/font_light"
                 android:hint="@string/search_people_for_channel_hint"

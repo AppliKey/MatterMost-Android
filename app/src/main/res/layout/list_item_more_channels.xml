@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/large"
+    android:paddingEnd="@dimen/large"
+    android:paddingTop="@dimen/normal"
+    android:paddingBottom="@dimen/normal"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/tv_more_channel_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/list_element_text_size"
+        tools:text = "#cool_chat"/>
+</FrameLayout>

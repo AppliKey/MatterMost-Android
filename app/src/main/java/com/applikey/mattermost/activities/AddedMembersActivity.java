@@ -19,12 +19,14 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.user.UserListParcelableWrapper;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.views.AddedMembersView;
+import com.applikey.mattermost.views.InsetItemDecoration;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.BindDimen;
 import butterknife.ButterKnife;
 
 public class AddedMembersActivity extends BaseMvpActivity
@@ -46,9 +48,14 @@ public class AddedMembersActivity extends BaseMvpActivity
     @Bind(R.id.text_empty)
     TextView mTextEmpty;
 
+    @BindDimen(R.dimen.list_item_margin)
+    int mInset;
+
     private PeopleToNewChannelAdapter mAdapter;
 
-    public static Intent getIntent(Context context, List<User> alreadyAddedUsers, boolean editable) {
+    public static Intent getIntent(Context context,
+            List<User> alreadyAddedUsers,
+            boolean editable) {
         final List<String> ids = Stream.of(alreadyAddedUsers)
                 .map(User::getId).collect(Collectors.toList());
 
@@ -71,6 +78,7 @@ public class AddedMembersActivity extends BaseMvpActivity
         mPresenter.setData(alreadyAddedUsers);
         mAdapter = new PeopleToNewChannelAdapter(editable, this, mImageLoader);
         mRvAddedMembers.setAdapter(mAdapter);
+        mRvAddedMembers.addItemDecoration(new InsetItemDecoration(mInset));
         setTitle(R.string.added_members_title);
     }
 
@@ -118,7 +126,8 @@ public class AddedMembersActivity extends BaseMvpActivity
     @Override
     public void onBackPressed() {
         final Intent intent = new Intent();
-        final UserListParcelableWrapper wrapper = new UserListParcelableWrapper(mPresenter.getInvitedUsers());
+        final UserListParcelableWrapper wrapper = new UserListParcelableWrapper(
+                mPresenter.getInvitedUsers());
         intent.putExtra(USERS_IDS_KEY, wrapper);
         setResult(RESULT_OK, intent);
         super.onBackPressed();

@@ -118,7 +118,6 @@ dependencies {
     compile 'com.trello:rxlifecycle:0.4.0'
     compile 'com.trello:rxlifecycle-components:0.4.0'
     compile 'com.github.pwittchen:reactivenetwork:0.2.0'
-    compile 'com.f2prateek.rx.preferences:rx-preferences:1.0.2'
 
     // eventbus
     compile 'org.greenrobot:eventbus:3.0.0'
@@ -159,6 +158,10 @@ dependencies {
 
     // lint
     compile 'nl.littlerobots.rxlint:rxlint:1.0'
+
+    //leak canary
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 
     // gcm
     compile 'com.google.android.gms:play-services-gcm:9.8.0'

@@ -6,12 +6,17 @@ import android.support.annotation.Nullable;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.web.RequestError;
 import com.applikey.mattermost.mvp.presenters.BasePresenter;
 import com.applikey.mattermost.mvp.views.edit.EditProfileView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.rx.RxUtils;
+import com.applikey.mattermost.utils.validation.ValidationUtil;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
+import com.applikey.mattermost.web.MattermostErrorIds;
+import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.InjectViewState;
 import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
 
@@ -23,6 +28,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -35,6 +41,7 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
     @Inject UserStorage mUserStorage;
     @Inject ErrorHandler mErrorHandler;
     @Inject Prefs mPrefs;
+    @Inject ImageLoader mImageLoader;
 
     @Nullable private File mImage;
 
@@ -72,36 +79,74 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
     }
 
     public void commitChanges(UserModel userModel) {
-        //TODO add validation
-        //TODO add progress
+        final EditProfileView view = getViewState();
 
-        mUser.setFirstName(userModel.getFirstName());
-        mUser.setLastName(userModel.getLastName());
-        mUser.setUsername(userModel.getUsername());
-        mUser.setEmail(userModel.getEmail());
+        final String firstName = userModel.getFirstName().trim();
+        final String lastName = userModel.getFirstName().trim();
+        final String email = userModel.getEmail().trim();
+        final String username = userModel.getUsername().trim();
 
-        uploadUser();
-    }
-
-    private void uploadUser() {
-        final Subscription subscription = mApi.editUser(mUser)
-                .flatMap(user -> mImage != null ? uploadImage() : Observable.just(user))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(user -> {
-                    mUserStorage.saveUser(user);
-                }, throwable -> getViewState().showError(mErrorHandler.getErrorMessage(throwable)));
+        final Subscription subscription =
+                Single.zip(ValidationUtil.validateEmail(email)
+                                   .doOnSuccess(emailResult -> {
+                                       if (!emailResult) {
+                                           view.showEmailValidationError(null);
+                                       }
+                                   }),
+                           ValidationUtil.validateUsername(username)
+                                   .doOnSuccess(usernameResult -> {
+                                       if (!usernameResult) {
+                                           view.showUsernameValidationError(null);
+                                       }
+                                   }), (emailResult, usernameResult) -> emailResult && usernameResult)
+                        .toObservable()
+                        .filter(result -> result)
+                        .doOnNext(ignored -> {
+                            mUser.setFirstName(firstName);
+                            mUser.setLastName(lastName);
+                            mUser.setUsername(username);
+                            mUser.setEmail(email);
+                        })
+                        .subscribe(ignored -> uploadUser(), mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
 
-    private Observable<User> uploadImage() {
+    private void uploadUser() {
+        final EditProfileView view = getViewState();
+
+        final Subscription subscription = mApi.editUser(mUser)
+                .flatMap(user -> mImage != null ? uploadImage() : Observable.just(user))
+                .flatMap(v -> mApi.getMe())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .compose(RxUtils.applyProgress(view::showLoading, view::hideLoading))
+                .subscribe(mUserStorage::save, throwable -> {
+                    final RequestError requestError = mErrorHandler.getRequestError(throwable);
+                    if (requestError != null) {
+
+                        if (requestError.getId().equals(MattermostErrorIds.USERNAME_INVALID)) {
+                            view.showUsernameValidationError(requestError.getMessage());
+                        }
+                        if (requestError.getId().equals(MattermostErrorIds.EMAIL_INVALID)) {
+                            view.showEmailValidationError(requestError.getMessage());
+                        }
+                    } else {
+                        mErrorHandler.handleError(throwable);
+                    }
+                });
+
+        mSubscription.add(subscription);
+    }
+
+    private Observable<Void> uploadImage() {
         MultipartBody.Part imagePart = MultipartBody.
                 Part.createFormData(Api.MULTIPART_IMAGE_TAG, mImage.getName(),
                                     RequestBody.create(MediaType.parse(Constants.MIME_TYPE_IMAGE), mImage));
 
         return mApi.uploadImage(imagePart)
-                .flatMap(v -> mApi.getMe());
+                .doOnNext(ignored -> mImageLoader.dropMemoryCache())
+                .doOnNext(ignored -> mImageLoader.invalidateCache(mUser.getProfileImage()));
     }
 
     public static class UserModel {

@@ -3,11 +3,13 @@ package com.applikey.mattermost.web;
 import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.auth.RestorePasswordRequest;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.ChannelTitleRequest;
+import com.applikey.mattermost.models.channel.DeleteChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
@@ -27,14 +29,13 @@ import java.util.Map;
 import okhttp3.MultipartBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
+import rx.Single;
 
 public interface Api {
 
@@ -66,8 +67,7 @@ public interface Api {
     Observable<Map<String, String>> getUserStatuses();
 
     @POST("/api/v3/users/send_password_reset")
-    @FormUrlEncoded
-    Observable<Response<Void>> sendPasswordReset(@Field("email") String email);
+    Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
     Observable<Void> deletePost(@Path("teamId") String teamId,
@@ -137,8 +137,12 @@ public interface Api {
     Observable<Channel> createChannel(@Path("team_id") String teamId,
                                       @Body DirectChannelRequest request);
 
+    @POST("api/v3/teams/{teamId}/channels/{channelId}/delete")
+    Observable<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
+                                                    @Path("channelId") String channelId);
+
     @GET("/api/v3/teams/{team_id}/channels/more")
-    Observable<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
+    Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
 
     @POST("/api/v3/teams/{team_id}/invite_members")
     Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
@@ -161,6 +165,6 @@ public interface Api {
     @POST("/api/v3/users/update")
     Observable<User> editUser(@Body User user);
 
-    @POST("/api/v3/teams/{team_id}/channels/{channel_id}/leave")
-    Observable<Void> leaveChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId);
+    @POST("/api/v3/teams/{team_id}/channels/{channel_id}/join")
+    Single<Channel> joinToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId);
 }

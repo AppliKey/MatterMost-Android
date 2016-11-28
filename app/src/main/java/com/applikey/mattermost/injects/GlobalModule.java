@@ -7,6 +7,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.preferences.PersistentPrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
@@ -134,8 +135,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    TeamStorage provideTeamStorage(Db db) {
-        return new TeamStorage(db);
+    TeamStorage provideTeamStorage(Db db, Prefs prefs) {
+        return new TeamStorage(db, prefs);
     }
 
     @Provides
@@ -154,5 +155,11 @@ public class GlobalModule {
     @PerApp
     Gson provideGson() {
         return new Gson();
+    }
+
+    @Provides
+    @PerApp
+    PersistentPrefs providePersistencePrefs(Context context, Gson gson) {
+        return new PersistentPrefs(context, gson);
     }
 }

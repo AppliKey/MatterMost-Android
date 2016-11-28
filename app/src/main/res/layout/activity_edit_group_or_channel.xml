@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/AppToolbar"
+            app:navigationIcon="@drawable/ic_back" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/channel_horizontal_margin"
+                android:text="@string/create_channel_title_name" />
+
+            <EditText
+                android:id="@+id/et_channel_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin_edit_text"
+                android:layout_marginStart="@dimen/channel_horizontal_margin_edit_text"
+                android:fontFamily="@string/font_light"
+                android:hint="@string/create_chat_hint_name"
+                android:inputType="textEmailAddress"
+                android:lines="1"
+                android:maxLines="1" />
+
+            <TextView
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/create_channel_label_top_margin"
+                android:text="@string/create_channel_description_title" />
+
+            <EditText
+                android:id="@+id/et_channel_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin_edit_text"
+                android:layout_marginStart="@dimen/channel_horizontal_margin_edit_text"
+                android:fontFamily="sans-serif-light"
+                android:gravity="top|start"
+                android:hint="@string/create_private_group_description_hint"
+                android:inputType="textMultiLine" />
+
+            <TextView
+                android:id="@+id/members_text"
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/create_channel_label_top_margin"
+                android:text="@string/members" />
+
+            <com.applikey.mattermost.views.AddedPeopleLayout
+                android:id="@+id/members_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/added_people_layout_item_height"
+                android:layout_marginBottom="@dimen/normal"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/large"
+                app:min_item_right_margin="@dimen/added_people_layout_item_right_margin" />
+
+            <TextView
+                android:id="@+id/add_members_text"
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/create_channel_label_top_margin"
+                android:text="@string/add_members" />
+
+            <com.applikey.mattermost.views.AddedPeopleLayout
+                android:id="@+id/added_people_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/added_people_layout_item_height"
+                android:layout_marginBottom="@dimen/normal"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/large"
+                app:min_item_right_margin="@dimen/added_people_layout_item_right_margin" />
+
+            <EditText
+                android:id="@+id/et_search_people"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/normal"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin_edit_text"
+                android:layout_marginStart="@dimen/channel_horizontal_margin_edit_text"
+                android:drawableEnd="@drawable/ic_search"
+                android:fontFamily="@string/font_light"
+                android:hint="@string/search_people_for_channel_hint"
+                android:paddingBottom="@dimen/edit_text_bottom_padding" />
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_empty_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/small"
+                    android:text="@string/search_user_empty_state"
+                    android:visibility="gone" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_peoples"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btn_delete_channel"
+                style="@style/GrayButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_height"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="@dimen/normal"
+                android:layout_marginTop="@dimen/normal"
+                android:background="@drawable/bg_button_add_all"
+                android:checked="true"
+                android:gravity="center"
+                android:text="@string/action_delete_channel"
+                android:textAlignment="gravity" />
+
+        </LinearLayout>
+
+
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>

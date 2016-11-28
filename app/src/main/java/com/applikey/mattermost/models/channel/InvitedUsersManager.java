@@ -9,12 +9,14 @@ public class InvitedUsersManager {
 
     private final List<User> mTeamMembers;
     private List<User> mInvitedUsers;
+    private List<User> mAlreadyMemberUsers;
     private Command mInviteAllCommand;
     private final OnInvitedListener mOnInvitedListener;
 
     public InvitedUsersManager(OnInvitedListener listener, List<User> teamMembers) {
         mTeamMembers = teamMembers;
         mInvitedUsers = new ArrayList<>();
+        mAlreadyMemberUsers = new ArrayList<>();
         mOnInvitedListener = listener;
     }
 
@@ -45,7 +47,18 @@ public class InvitedUsersManager {
         mOnInvitedListener.onAllAlreadyInvited(alreadyInvitedUsers.size() == mTeamMembers.size());
     }
 
+    public List<User> getAlreadyMemberUsers() {
+        return mAlreadyMemberUsers;
+    }
+
+    public void setAlreadyMemberUsers(List<User> alreadyMemberUsers) {
+        mAlreadyMemberUsers = alreadyMemberUsers;
+    }
+
     public void operateWithUser(User user) {
+        if (mAlreadyMemberUsers.contains(user)) {
+            return;
+        }
         if (mInvitedUsers.contains(user)) {
             revertInvite(user);
         } else {
@@ -69,6 +82,7 @@ public class InvitedUsersManager {
     }
 
     public interface OnInvitedListener {
+
         void onInvited(User user);
 
         void onInvitedAll(List<User> users);
