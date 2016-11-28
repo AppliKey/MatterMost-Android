@@ -1,6 +1,5 @@
 package com.applikey.mattermost.fragments;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,10 +24,7 @@ public abstract class BaseFragment extends RxFragment {
     @Inject
     EventBus mEventBus;
 
-    @Inject
-    ImageLoader mImageLoader;
-
-    private ProgressDialog mProgressDialog;
+    @Inject ImageLoader mImageLoader;
 
     public void showToast(@NonNull String text) {
         ToastUtil.show(text);

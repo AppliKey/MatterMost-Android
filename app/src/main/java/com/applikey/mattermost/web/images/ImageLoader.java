@@ -12,6 +12,8 @@ public interface ImageLoader {
 
     Observable<Bitmap> getBitmapObservable(@NonNull String url);
 
+    void invalidateCache(String url);
+
     void displayImage(@NonNull String url, @NonNull ImageView imageView);
 
     void displayCircularImage(@NonNull File file, @NonNull ImageView imageView);

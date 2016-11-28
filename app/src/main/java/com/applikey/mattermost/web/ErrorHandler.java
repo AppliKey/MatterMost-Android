@@ -92,7 +92,7 @@ public final class ErrorHandler {
         RequestError requestError = null;
         if (isHttpException(throwable)) {
             final HttpException httpException = (HttpException) throwable;
-            if (isHttpExceptionWithCode(httpException, HttpCode.INTERNAL_SERVER_ERROR)) {
+            if (isHttpExceptionWithCode(httpException, HttpCode.INTERNAL_SERVER_ERROR, HttpCode.BAD_REQUEST)) {
                 final Response<?> responseBody = httpException.response();
                 try {
                     requestError = getErrorModel(responseBody, mJsonErrorAdapter);
@@ -139,8 +139,13 @@ public final class ErrorHandler {
         return parser.fromJson(responseBody.string());
     }
 
-    private boolean isHttpExceptionWithCode(HttpException e, int code) {
-        return e.code() == code;
+    private boolean isHttpExceptionWithCode(HttpException e, int... codes) {
+        for (int code : codes) {
+            if (code == e.code()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isHttpException(Throwable e) {

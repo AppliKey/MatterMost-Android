@@ -16,6 +16,7 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
+import com.squareup.leakcanary.LeakCanary;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.concurrent.TimeUnit;
@@ -49,6 +50,7 @@ public class App extends Application {
 
         Fabric.with(fabric);
         RxPaparazzo.register(this);
+        LeakCanary.install(this);
 
         KissTools.setContext(this);
         mComponent = DaggerApplicationComponent.builder()
@@ -67,12 +69,15 @@ public class App extends Application {
         RxForeground.with(this)
                 .observeForeground(ChatListActivity.class, ChatActivity.class)
                 .doOnNext(observe -> Log.d(TAG, "Chat activities are on " + (observe ? "foreground" : "background")))
-                .switchMap(foreground -> Observable.timer(foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MINUTES)
+                .switchMap(foreground -> Observable.timer(
+                        foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MILLISECONDS)
                         .map(tick -> foreground))
                 .subscribe(foreground -> {
                     if (foreground) {
+                        Log.d("foreground", "onForeground");
                         startService(WebSocketService.getIntent(this));
                     } else {
+                        Log.d("foreground", "onBackground");
                         stopService(WebSocketService.getIntent(this));
                     }
                 }, Throwable::printStackTrace);
