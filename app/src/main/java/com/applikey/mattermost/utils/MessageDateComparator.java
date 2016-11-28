@@ -15,11 +15,11 @@ public class MessageDateComparator implements Comparator<SearchItem> {
     public int compare(SearchItem o1, SearchItem o2) {
         final Message message1 = (Message) o1;
         final Message message2 = (Message) o2;
-        final long lastPost1 = message1.getChannel().getLastPostAt();
-        final long lastPost2 = message2.getChannel().getLastPostAt();
+        final Long lastPost1 = message1.getChannel().getLastPostAt();
+        final Long lastPost2 = message2.getChannel().getLastPostAt();
         if(lastPost1 == 0 || lastPost2 == 0){
             return (int) (message2.getChannel().getCreatedAt() - message1.getChannel().getCreatedAt());
         }
-        return (int) (lastPost2 - lastPost1);
+        return lastPost2.compareTo(lastPost1);
     }
 }
