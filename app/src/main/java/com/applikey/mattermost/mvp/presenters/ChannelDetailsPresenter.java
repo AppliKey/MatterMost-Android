@@ -85,13 +85,12 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
                                   .toObservable()
                                   .doOnNext(aVoid -> mChannelStorage.removeChannelAsync(mChannel))
                                   .subscribe(aVoid -> {
-                                      Log.d(TAG, "leaveChannel: SUCCESS");
                                       view.showProgress(false);
                                       view.backToMainActivity();
                                   }, throwable -> {
-                                      Log.d(TAG, "leaveChannel: " + throwable);
-                                      mErrorHandler.handleError(throwable);
+                                      throwable.printStackTrace();
                                       view.showProgress(false);
+                                      mErrorHandler.handleError(throwable);
                                   }));
     }
 
