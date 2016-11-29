@@ -69,13 +69,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         App.getUserComponent().inject(this);
     }
 
-    public void applyInitialViewState() {
-        final Subscription subscription = mTeamStorage.getChosenTeam()
-                .subscribe(team -> getViewState().setToolbarTitle(team.getDisplayName()), mErrorHandler::handleError);
-
-        mSubscription.add(subscription);
-    }
-
     public void preloadChannel(String channelId) {
         final Subscription subscription =
                 Observable.amb(mChannelStorage.channelById(channelId), mTeamStorage.getChosenTeam()
@@ -119,10 +112,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        final ChatListScreenView view = getViewState();
 
         final Subscription subscription = mTeamStorage.getChosenTeam()
-                .doOnNext(team -> view.setToolbarTitle(team.getDisplayName()))
+                .doOnNext(team -> getViewState().setToolbarTitle(team.getDisplayName()))
                 .map(Team::getId)
                 .flatMap(this::fetchStartup)
                 .doOnNext(this::fetchUserStatus)

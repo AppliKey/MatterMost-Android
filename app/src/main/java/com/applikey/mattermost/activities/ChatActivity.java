@@ -10,8 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -178,6 +176,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mPresenter.fetchAfterRestart();
+    }
+
     public void showJoiningInterface(String channelName) {
         mSrlChat.setVisibility(GONE);
         mJoinLayout.setVisibility(VISIBLE);
@@ -205,7 +208,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     public void showEmpty(boolean show) {
         mSrlChat.setVisibility(show ? GONE : VISIBLE);
         mTvEmptyState.setVisibility(show ? VISIBLE : GONE);
-
     }
 
     @Override
@@ -341,6 +343,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         builder.setTitle(R.string.post_delete)
                 .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
                 .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.delete, (dialog1, which1) -> mPresenter.deleteMessage(channelId, post))
                 .setPositiveButton(R.string.delete,
                                    (dialog1, which1) -> mPresenter.deleteMessage(
                                            channelId, post))

@@ -182,8 +182,8 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     }
 
     private void initView() {
-        mPresenter.applyInitialViewState();
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(null);
     }
 
     private class ChatListTabSelectedListener extends TabSelectedListener {
