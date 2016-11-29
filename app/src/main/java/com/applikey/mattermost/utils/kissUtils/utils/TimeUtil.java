@@ -13,6 +13,7 @@ import android.text.format.DateUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @SuppressLint("SimpleDateFormat")
 public class TimeUtil {
@@ -34,7 +35,7 @@ public class TimeUtil {
         if (TextUtils.isEmpty(time)) {
             return 0;
         }
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.US);
         long modified = 0;
         try {
             final Date date = dateFormat.parse(time);
@@ -46,31 +47,31 @@ public class TimeUtil {
     }
 
     public static String format(long time) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT, Locale.US);
         final Date date = new Date(time);
         return dateFormat.format(date);
     }
 
     public static String formatTimeOnly(long time) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT_TIME_ONLY);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT_TIME_ONLY, Locale.US);
         final Date date = new Date(time);
         return dateFormat.format(date);
     }
 
     public static String formatDateOnly(long time) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT_DATE_ONLY);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT_DATE_ONLY, Locale.US);
         final Date date = new Date(time);
         return dateFormat.format(date);
     }
 
     public static String formatDateOnlyChannel(long time) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(CHANNEL_DATE_FORMAT);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(CHANNEL_DATE_FORMAT, Locale.US);
         final Date date = new Date(time);
         return dateFormat.format(date);
     }
 
     public static String formatDateTime(long time) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT_DATE_TIME);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(DEFAULT_FORMAT_DATE_TIME, Locale.US);
         final Date date = new Date(time);
         return dateFormat.format(date);
     }
@@ -113,7 +114,7 @@ public class TimeUtil {
     }
 
     public static String format(long time, String format) {
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.US);
         final Date date = new Date(time);
         return dateFormat.format(date);
     }
@@ -122,7 +123,7 @@ public class TimeUtil {
         if (TextUtils.isEmpty(format) || date == null) {
             return null;
         }
-        final SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.US);
         return dateFormat.format(date);
     }
 
@@ -137,7 +138,7 @@ public class TimeUtil {
     public static String utcToLocal(String utcTime) {
         String localTime = null;
         try {
-            final SimpleDateFormat dateFormat = new SimpleDateFormat(UTC_FORMAT);
+            final SimpleDateFormat dateFormat = new SimpleDateFormat(UTC_FORMAT, Locale.US);
             final Date date = dateFormat.parse(utcTime);
             dateFormat.applyPattern(DEFAULT_FORMAT);
             localTime = dateFormat.format(date);

@@ -18,6 +18,7 @@ import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -56,6 +57,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     private Channel mChannel;
     private String mTeamId;
+
+    private boolean mFirstFetched = false;
 
     public ChatPresenter() {
         App.getUserComponent().inject(this);
@@ -103,7 +106,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         }
     }
 
-    public void fetchFirstPage() {
+    public void fetchAfterRestart() {
+        if (!mFirstFetched) {
+            return;
+        }
+        fetchPage(0, false);
+    }
+
+    public void fetchFirstPageWithClear() {
         fetchPage(0, true);
     }
 
@@ -200,29 +210,34 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mNotificationManager.dismissNotification(channelId);
     }
 
-    private void fetchPage(int totalItems, boolean isFirst) {
-        final ChatView view = getViewState();
+    private void fetchPage(int totalItems, boolean clear) {
+        getViewState().showProgress(true);
         final String channelId = mChannel.getId();
-
-        final Subscription subscribe = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
-                .switchIfEmpty(Observable.empty())
-                .map(postResponse -> new ArrayList<>(postResponse.getPosts().values()))
+        final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
                 .subscribeOn(Schedulers.io())
+                .switchIfEmpty(Observable.empty())
+                .map(postResponse -> postResponse.getPosts().values())
+                .map(ArrayList::new)
+                .doOnNext(posts -> Collections.sort(posts, Post::COMPARATOR_BY_CREATE_AT))
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxUtils.applyProgress(view::showProgress, view::hideProgress))
                 .subscribe(posts -> {
-                    if (isFirst) {
+                    getViewState().showProgress(false);
+                    if (clear) {
                         clearChat();
                     }
+                    if (totalItems == 0 && !posts.isEmpty()) {
+                        mChannelStorage.setLastPost(mChannel, posts.get(posts.size() - 1));
+                    }
+                    mFirstFetched = true;
                     mPostStorage.saveAll(posts);
                 }, error -> {
+                    getViewState().showProgress(false);
+                    mErrorHandler.handleError(error);
                 });
-
-        mSubscription.add(subscribe);
+        mSubscription.add(subscription);
     }
 
     private void clearChat() {
-        final String lastPostId = mChannel.getLastPost() != null ? mChannel.getLastPost().getId() : null;
-        mPostStorage.deleteAllByChannelUnless(mChannel.getId(), lastPostId);
+        mPostStorage.deleteAllByChannel(mChannel.getId());
     }
 }

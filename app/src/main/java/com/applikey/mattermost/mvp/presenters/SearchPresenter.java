@@ -30,7 +30,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public abstract class SearchPresenter<T extends SearchView> extends BasePresenter<T> {
@@ -71,9 +70,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                     mFetchedChannels = channels;
                     mChannelsIsFetched = true;
                     getData(mSearchString);
-                }, throwable -> {
-                    mErrorHandler.handleError(throwable);
-                });
+                }, throwable -> mErrorHandler.handleError(throwable));
         mSubscription.add(subscription);
     }
 
@@ -121,9 +118,9 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
                          Message::new)
                 .flatMap(item -> mUserStorage.getDirectProfile(item.getPost().getUserId()).first(),
-                         (Func2<Message, User, SearchItem>) (message, user) -> {
+                         (message, user) -> {
                              message.setUser(user);
-                             return message;
+                             return (SearchItem) message;
                          })
                 .toList();
     }
