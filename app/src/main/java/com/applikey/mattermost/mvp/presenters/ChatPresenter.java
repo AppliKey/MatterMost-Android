@@ -211,7 +211,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                     if (clear) {
                         clearChat();
                     }
-                    if (totalItems == 0 && posts.size() > 0) {
+                    if (totalItems == 0 && !posts.isEmpty()) {
                         mChannelStorage.setLastPost(mChannel, posts.get(posts.size() - 1));
                     }
                     mFirstFetched = true;
