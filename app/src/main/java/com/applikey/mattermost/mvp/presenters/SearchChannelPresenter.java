@@ -9,12 +9,14 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
 import com.applikey.mattermost.mvp.views.SearchView;
+import com.applikey.mattermost.utils.ChannelDateComparator;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -59,6 +61,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
                         .observeOn(Schedulers.io())
                         .doOnNext(channels -> addFilterChannels(channels, text))
                         .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(items -> Collections.sort(items, new ChannelDateComparator()))
                         .map(ArrayList<SearchItem>::new)
                         .subscribe(view::displayData, mErrorHandler::handleError));
     }
