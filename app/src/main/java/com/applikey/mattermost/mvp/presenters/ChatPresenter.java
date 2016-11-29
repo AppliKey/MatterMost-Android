@@ -17,6 +17,7 @@ import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -198,26 +199,28 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private void fetchPage(int totalItems, boolean clear) {
         getViewState().showProgress(true);
         final String channelId = mChannel.getId();
-        mSubscription.add(mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
-                                  .subscribeOn(Schedulers.io())
-                                  .switchIfEmpty(Observable.empty())
-                                  .map(postResponse -> new ArrayList<>(postResponse.getPosts().values()))
-                                  .doOnNext(posts -> posts.sort(Post::COMPARATOR_BY_CREATE_AT))
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(posts -> {
-                                      getViewState().showProgress(false);
-                                      if (clear) {
-                                          clearChat();
-                                      }
-                                      if (totalItems == 0 && posts.size() > 0) {
-                                          mChannelStorage.setLastPost(mChannel, posts.get(posts.size() - 1));
-                                      }
-                                      mFirstFetched = true;
-                                      mPostStorage.saveAll(posts);
-                                  }, error -> {
-                                      getViewState().showProgress(false);
-                                      mErrorHandler.handleError(error);
-                                  }));
+        final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
+                .subscribeOn(Schedulers.io())
+                .switchIfEmpty(Observable.empty())
+                .map(postResponse -> postResponse.getPosts().values())
+                .map(ArrayList::new)
+                .doOnNext(posts -> Collections.sort(posts, Post::COMPARATOR_BY_CREATE_AT))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(posts -> {
+                    getViewState().showProgress(false);
+                    if (clear) {
+                        clearChat();
+                    }
+                    if (totalItems == 0 && posts.size() > 0) {
+                        mChannelStorage.setLastPost(mChannel, posts.get(posts.size() - 1));
+                    }
+                    mFirstFetched = true;
+                    mPostStorage.saveAll(posts);
+                }, error -> {
+                    getViewState().showProgress(false);
+                    mErrorHandler.handleError(error);
+                });
+        mSubscription.add(subscription);
     }
 
     private void clearChat() {
