@@ -89,7 +89,7 @@
             android:layout_marginStart="@dimen/edit_text_align"
             android:layout_marginTop="@dimen/margin_default"
             android:padding="@dimen/button_padding"
-            android:text="@string/restore_password_capt" />
+            android:text="@string/forgot_password" />
 
     </RelativeLayout>
 </RelativeLayout>
