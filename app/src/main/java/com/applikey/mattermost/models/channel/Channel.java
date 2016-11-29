@@ -238,6 +238,28 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     @Override
+    public int getSortPriority() {
+        return PRIORITY_CHANNEL;
+    }
+
+    @Override
+    public int compareByDate(SearchItem item) {
+        final int priorityDifference = item.getSortPriority() - this.getSortPriority();
+
+        if (priorityDifference != 0) {
+            return priorityDifference;
+        }
+
+        long lastPost1 = 0L;
+        long lastPost2 = 0L;
+        final Channel channel1 = this;
+        final Channel channel2 = (Channel) item;
+        lastPost1 = channel1.getLastPostAt();
+        lastPost2 = channel2.getLastPostAt();
+        return (int) (lastPost2 - lastPost1);
+    }
+
+    @Override
     public int hashCode() {
         int result = getId().hashCode();
         result = 31 * result + getType().hashCode();
