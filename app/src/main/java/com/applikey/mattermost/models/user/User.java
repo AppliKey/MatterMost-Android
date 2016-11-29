@@ -13,10 +13,13 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
 
-public class User extends RealmObject implements Comparable<User>, Searchable<String>, Parcelable, SearchItem {
+@RealmClass
+public class User extends RealmObject implements RealmModel, Comparable<User>, Searchable<String>, Parcelable, SearchItem {
 
     public static final String FIELD_NAME_ID = "id";
 
@@ -331,4 +334,15 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     public int getSortPriority() {
         return PRIORITY_USER;
     }
+
+    @Override
+    public int compareByDate(SearchItem item) {
+        final int priorityDifference = item.getSortPriority() - this.getSortPriority();
+
+        if(priorityDifference != 0) {
+            return priorityDifference;
+        }
+        return 0;
+    }
+
 }

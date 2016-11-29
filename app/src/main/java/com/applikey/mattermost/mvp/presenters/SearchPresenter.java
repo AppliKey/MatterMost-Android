@@ -70,9 +70,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                     mFetchedChannels = channels;
                     mChannelsIsFetched = true;
                     getData(mSearchString);
-                }, throwable -> {
-                    mErrorHandler.handleError(throwable);
-                });
+                }, throwable -> mErrorHandler.handleError(throwable));
         mSubscription.add(subscription);
     }
 

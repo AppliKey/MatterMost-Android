@@ -28,4 +28,6 @@ public interface SearchItem {
 
     int getSortPriority();
 
+
+    abstract int compareByDate(SearchItem item);
 }

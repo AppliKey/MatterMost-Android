@@ -176,4 +176,9 @@ public class Post extends RealmObject implements SearchItem{
     public int getSortPriority() {
         return PRIORITY_MESSAGE;
     }
+
+    @Override
+    public int compareByDate(SearchItem item) {
+        return 0;
+    }
 }
