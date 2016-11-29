@@ -61,6 +61,7 @@ public class Channel extends RealmObject implements SearchItem {
     private long createdAt;
 
     //if we are fetching not joined channels, we should set it to false
+    // TODO: 29.11.16 We should move it out from this model
     private boolean isJoined = true;
 
     // TODO: 04.11.16 NEED DETAILED REVIEW

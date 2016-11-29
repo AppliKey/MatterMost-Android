@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
+// TODO: 29.11.16 It needs refactoring. We should use composition instead inheritance
 public interface SearchItem {
 
     int USER = 0;
@@ -33,5 +34,5 @@ public interface SearchItem {
 
     int getSortPriority();
 
-    abstract int compareByDate(SearchItem item);
+    int compareByDate(SearchItem item);
 }
