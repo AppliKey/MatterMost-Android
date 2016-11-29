@@ -3,7 +3,6 @@ package com.applikey.mattermost.injects;
 import android.net.Uri;
 
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.platform.socket.MessagingSocket;
 import com.applikey.mattermost.platform.socket.Socket;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -36,8 +35,8 @@ public class UserModule {
 
     @Provides
     @PerUser
-    ChannelStorage provideChannelStorage(Db db, Prefs prefs, MetaDataManager metaDataManager) {
-        return new ChannelStorage(db, prefs, metaDataManager);
+    ChannelStorage provideChannelStorage(Db db, Prefs prefs) {
+        return new ChannelStorage(db, prefs);
     }
 
     @Provides
@@ -56,12 +55,6 @@ public class UserModule {
     @PerUser
     PreferenceStorage providePreferenceStorage(Db db, Prefs prefs) {
         return new PreferenceStorage(db, prefs);
-    }
-
-    @Provides
-    @PerUser
-    MetaDataManager provideMetadataManager(Prefs prefs, PersistentPrefs persistentPrefs) {
-        return new MetaDataManager(prefs, persistentPrefs);
     }
 
     @Provides

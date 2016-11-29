@@ -216,8 +216,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    public void showProgress(boolean enabled) {
-        mSrlChat.setRefreshing(enabled);
+    public void showProgress() {
+        mSrlChat.setRefreshing(true);
+    }
+
+    @Override
+    public void hideProgress() {
+        mSrlChat.setRefreshing(false);
     }
 
     @Override

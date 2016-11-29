@@ -1,10 +1,8 @@
 package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.annimon.stream.Stream;
-import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
@@ -20,7 +18,6 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class ChannelStorage {
 
@@ -29,12 +26,10 @@ public class ChannelStorage {
     private final Db mDb;
 
     private final Prefs mPrefs;
-    private final MetaDataManager mMetaDataManager;
 
-    public ChannelStorage(final Db db, final Prefs prefs, final MetaDataManager metaDataManager) {
+    public ChannelStorage(final Db db, final Prefs prefs) {
         mDb = db;
         mPrefs = prefs;
-        mMetaDataManager = metaDataManager;
     }
 
     // TODO Duplicate
@@ -84,17 +79,10 @@ public class ChannelStorage {
                 .first();
     }
 
-    //Realm doesn't support empty array for operation "in"
     public Observable<RealmResults<Channel>> listFavorite() {
-        return mMetaDataManager.getFavoriteChannels()
-                .doOnNext(strings -> Log.d(TAG, "listFavorite: " + strings))
-                .map(ids -> ids.isEmpty()
-                        ? new String[] {"null"}
-                        : ids.toArray(new String[ids.size()]))
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
-                                                                     ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                        .first());
+        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class,
+                                                             Channel.IS_FAVORITE, true,
+                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<Channel> channelById(String id) {
@@ -127,6 +115,13 @@ public class ChannelStorage {
     public void updateLastPost(Channel channel) {
         final Post lastPost = channel.getLastPost();
         setLastPost(channel, lastPost);
+    }
+
+    public void setFavorite(Channel channel, boolean isFavorite) {
+        mDb.updateTransactional(Channel.class, channel.getId(), (channel1, realm) -> {
+            channel1.setFavorite(isFavorite);
+            return true;
+        });
     }
 
     public void setLastPost(Channel channel, Post lastPost) {
@@ -282,6 +277,7 @@ public class ChannelStorage {
                                       channel.setUsers(storedChannel.getUsers());
                                       channel.setLastPost(storedChannel.getLastPost());
                                       channel.updateLastActivityTime();
+                                      channel.setFavorite(storedChannel.isFavorite());
                                       return true;
                                   });
     }

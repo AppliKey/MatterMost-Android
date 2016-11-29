@@ -12,6 +12,7 @@ import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.rx.RxUtils;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
@@ -69,25 +70,31 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         updateLastViewedAt(channelId);
 
-        mSubscription.add(mChannelStorage.channelById(channelId)
-                                  .distinctUntilChanged()
-                                  .doOnNext(channel -> mChannel = channel)
-                                  .doOnNext(channel -> fetchFirstPageWithClear())
-                                  .map(channel -> {
-                                      final String prefix = !mChannel.getType()
-                                              .equals(Channel.ChannelType.DIRECT.getRepresentation())
-                                              ? CHANNEL_PREFIX : DIRECT_PREFIX;
-                                      return prefix + channel.getDisplayName();
-                                  })
-                                  .subscribe(view::showTitle, mErrorHandler::handleError));
+        final Subscription subscribe = mChannelStorage.channelById(channelId)
+                .distinctUntilChanged()
+                .doOnNext(channel -> mChannel = channel)
+                .doOnNext(channel -> fetchFirstPageWithClear())
+                .map(channel -> {
+                    final String prefix = !mChannel.getType()
+                            .equals(Channel.ChannelType.DIRECT.getRepresentation())
+                            ? CHANNEL_PREFIX : DIRECT_PREFIX;
+                    return prefix + channel.getDisplayName();
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::showTitle, mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     public void loadMessages(String channelId) {
         final ChatView view = getViewState();
-        mSubscription.add(mPostStorage.listByChannel(channelId)
-                                  .first()
-                                  .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
-                                  .subscribe(view::onDataReady, mErrorHandler::handleError));
+        final Subscription subscribe = mPostStorage.listByChannel(channelId)
+                .first()
+                .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::onDataReady, mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     public void channelNameClick() {
@@ -115,22 +122,25 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void deleteMessage(String channelId, Post post) {
-        mSubscription.add(mApi.deletePost(mTeamId, channelId, post.getId())
-                                  .subscribeOn(Schedulers.io())
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .doOnNext(posts -> mPostStorage.delete(post))
-                                  .doOnNext(posts -> mChannel.setLastPost(null))
-                                  .subscribe(posts -> mChannelStorage.updateLastPost(mChannel),
-                                             mErrorHandler::handleError));
+        final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(posts -> mPostStorage.delete(post))
+                .doOnNext(posts -> mChannel.setLastPost(null))
+                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     public void editMessage(String channelId, Post post, String newMessage) {
         final Post finalPost = mPostStorage.copyFromDb(post);
         finalPost.setMessage(newMessage);
-        mSubscription.add(mApi.updatePost(mTeamId, channelId, finalPost)
-                                  .subscribeOn(Schedulers.io())
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(posts -> mPostStorage.update(finalPost), mErrorHandler::handleError));
+        final Subscription subscribe = mApi.updatePost(mTeamId, channelId, finalPost)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(posts -> mPostStorage.update(finalPost), mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     public void sendMessage(String channelId, String message) {
@@ -144,14 +154,15 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                                                         message, "", pendingId);
 
-        mSubscription.add(mApi.createPost(mTeamId, channelId, pendingPost)
-                                  .subscribeOn(Schedulers.io())
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                                  .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
-                                  .doOnNext(post -> getViewState().showEmpty(false))
-                                  .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()),
-                                             mErrorHandler::handleError));
+        final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
+                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                .doOnNext(post -> getViewState().showEmpty(false))
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     public void sendReplyMessage(String channelId, String message, String mRootId) {
@@ -162,14 +173,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
                                                         message, "", pendingId, mRootId, mRootId);
 
-        mSubscription.add(mApi.createPost(mTeamId, channelId, pendingPost)
-                                  .subscribeOn(Schedulers.io())
-                                  .observeOn(AndroidSchedulers.mainThread())
-                                  .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                                  .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
-                                  .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()),
-                                             mErrorHandler::handleError
-                                            ));
+        final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
+                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     public void joinToChannel(String channelId) {
@@ -186,19 +197,23 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     private void updateLastViewedAt(String channelId) {
         // Does not belong to UI
-        mApi.updateLastViewedAt(mTeamId, channelId)
-                .subscribeOn(Schedulers.io())
+        final Subscription subscribe = mApi.updateLastViewedAt(mTeamId, channelId)
                 .toCompletable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
                 }, mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
 
         mChannelStorage.updateLastViewedAt(channelId);
         mNotificationManager.dismissNotification(channelId);
     }
 
     private void fetchPage(int totalItems, boolean clear) {
-        getViewState().showProgress(true);
         final String channelId = mChannel.getId();
+        final ChatView view = getViewState();
+
         final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
                 .subscribeOn(Schedulers.io())
                 .switchIfEmpty(Observable.empty())
@@ -206,8 +221,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .map(ArrayList::new)
                 .doOnNext(posts -> Collections.sort(posts, Post::COMPARATOR_BY_CREATE_AT))
                 .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applyProgress(view::showProgress, view::hideProgress))
                 .subscribe(posts -> {
-                    getViewState().showProgress(false);
                     if (clear) {
                         clearChat();
                     }
@@ -217,7 +232,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                     mFirstFetched = true;
                     mPostStorage.saveAll(posts);
                 }, error -> {
-                    getViewState().showProgress(false);
                     mErrorHandler.handleError(error);
                 });
         mSubscription.add(subscription);
