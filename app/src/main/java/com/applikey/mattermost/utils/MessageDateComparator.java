@@ -8,10 +8,9 @@ public class MessageDateComparator implements Comparator<SearchItem> {
 
     @Override
     public int compare(SearchItem o1, SearchItem o2) {
-
         final int priorityDifference = o2.getSortPriority() - o1.getSortPriority();
 
-        if(priorityDifference != 0) {
+        if (priorityDifference != 0) {
             return priorityDifference;
         }
 

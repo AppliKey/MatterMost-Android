@@ -38,6 +38,8 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     @Inject
     ErrorHandler mErrorHandler;
 
+    private final MessageDateComparator mDateComparator = new MessageDateComparator();
+
     public SearchMessagePresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
@@ -58,7 +60,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     public void doRequest(SearchView view, String text) {
         mSubscription.clear();
         mSubscription.add(getPostsObservable(text)
-                                  .doOnNext(messages -> Collections.sort(messages, new MessageDateComparator()))
+                                  .doOnNext(messages -> Collections.sort(messages, mDateComparator))
                                   .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                                   .subscribe(view::displayData,
                                              mErrorHandler::handleError)

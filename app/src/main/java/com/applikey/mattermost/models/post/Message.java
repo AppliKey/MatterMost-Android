@@ -56,11 +56,11 @@ public class Message implements SearchItem {
     public int compareByDate(SearchItem item) {
         final int priorityDifference = item.getSortPriority() - this.getSortPriority();
 
-        if(priorityDifference != 0) {
+        if (priorityDifference != 0) {
             return priorityDifference;
         }
-        Long lastPost1 = 0L;
-        Long lastPost2 = 0L;
+        long lastPost1 = 0L;
+        long lastPost2 = 0L;
         final Message message1 = this;
         final Message message2 = (Message) item;
         lastPost1 = message1.getChannel().getLastPostAt();
@@ -71,7 +71,7 @@ public class Message implements SearchItem {
                     .getCreatedAt();
         }
 
-        return lastPost2.compareTo(lastPost1);
+        return (int) (lastPost2 - lastPost1);
     }
 
     @Override
