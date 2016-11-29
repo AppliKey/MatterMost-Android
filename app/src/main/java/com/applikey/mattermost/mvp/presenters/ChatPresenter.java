@@ -73,7 +73,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mChannelStorage.channelById(channelId)
                 .distinctUntilChanged()
                 .doOnNext(channel -> mChannel = channel)
-                .doOnNext(channel -> fetchFirstPage())
+                .doOnNext(channel -> fetchFirstPageWithClear())
                 .map(channel -> {
                     final String prefix = !mChannel.getType()
                             .equals(Channel.ChannelType.DIRECT.getRepresentation())
@@ -211,8 +211,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     private void fetchPage(int totalItems, boolean clear) {
-        getViewState().showProgress(true);
         final String channelId = mChannel.getId();
+        final ChatView view = getViewState();
+
         final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
                 .subscribeOn(Schedulers.io())
                 .switchIfEmpty(Observable.empty())
@@ -220,8 +221,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .map(ArrayList::new)
                 .doOnNext(posts -> Collections.sort(posts, Post::COMPARATOR_BY_CREATE_AT))
                 .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtils.applyProgress(view::showProgress, view::hideProgress))
                 .subscribe(posts -> {
-                    getViewState().showProgress(false);
                     if (clear) {
                         clearChat();
                     }
@@ -231,7 +232,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                     mFirstFetched = true;
                     mPostStorage.saveAll(posts);
                 }, error -> {
-                    getViewState().showProgress(false);
                     mErrorHandler.handleError(error);
                 });
         mSubscription.add(subscription);
