@@ -72,7 +72,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                                   .subscribe(channels -> {
                                       mFetchedChannels = channels;
                                       mChannelsIsFetched = true;
-                                      getData("");
+                                      getData(mSearchString);
                                   }, mErrorHandler::handleError));
     }
 
