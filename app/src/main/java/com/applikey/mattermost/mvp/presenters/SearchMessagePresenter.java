@@ -9,12 +9,14 @@ import com.applikey.mattermost.mvp.views.SearchMessageView;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.MessageDateComparator;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -36,6 +38,8 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     @Inject
     ErrorHandler mErrorHandler;
 
+    private final MessageDateComparator mDateComparator = new MessageDateComparator();
+
     public SearchMessagePresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
@@ -56,6 +60,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     public void doRequest(SearchView view, String text) {
         mSubscription.clear();
         mSubscription.add(getPostsObservable(text)
+                                  .doOnNext(messages -> Collections.sort(messages, mDateComparator))
                                   .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                                   .subscribe(view::displayData,
                                              mErrorHandler::handleError)
@@ -64,10 +69,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
 
     @Subscribe
     public void onInputTextChanged(SearchMessageTextChanged event) {
-        mSearchString = event.getText();
-        final SearchMessageView view = getViewState();
-        view.clearData();
-        getData(mSearchString);
+        super.onInputTextChanged(event);
     }
 
 }

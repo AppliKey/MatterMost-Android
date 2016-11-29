@@ -91,7 +91,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .observeOn(Schedulers.io())
                 .flatMap(v -> mApi.getMe())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mUserStorage::saveUser, mErrorHandler::handleError);
+                .subscribe(mUserStorage::save, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
@@ -129,7 +129,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(response -> mUserStorage.saveUsers(response.getDirectProfiles()))
+                .doOnNext(response -> mUserStorage.save(response.getDirectProfiles()))
                 .doOnNext(response -> mChannelStorage.saveChannelResponse(
                         response.getChannelResponse(),
                         response.getDirectProfiles()));

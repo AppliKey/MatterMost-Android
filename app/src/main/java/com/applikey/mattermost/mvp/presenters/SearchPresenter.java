@@ -3,6 +3,7 @@ package com.applikey.mattermost.mvp.presenters;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.events.SearchTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -29,7 +30,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public abstract class SearchPresenter<T extends SearchView> extends BasePresenter<T> {
@@ -70,9 +70,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                     mFetchedChannels = channels;
                     mChannelsIsFetched = true;
                     getData(mSearchString);
-                }, throwable -> {
-                    mErrorHandler.handleError(throwable);
-                });
+                }, throwable -> mErrorHandler.handleError(throwable));
         mSubscription.add(subscription);
     }
 
@@ -120,9 +118,9 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
                          Message::new)
                 .flatMap(item -> mUserStorage.getDirectProfile(item.getPost().getUserId()).first(),
-                         (Func2<Message, User, SearchItem>) (message, user) -> {
+                         (message, user) -> {
                              message.setUser(user);
-                             return message;
+                             return (SearchItem) message;
                          })
                 .toList();
     }
@@ -164,6 +162,16 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         doRequest(view, text);
     }
 
+    protected void onInputTextChanged(SearchTextChanged event) {
+        String text = event.getText();
+        if(mSearchString.equals(text)){
+            return;
+        }
+        mSearchString = text;
+        final SearchView view = getViewState();
+        view.clearData();
+        getData(mSearchString);
+    }
     public abstract boolean isDataRequestValid(String text);
 
     public abstract void doRequest(SearchView view, String text);

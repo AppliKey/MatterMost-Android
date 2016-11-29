@@ -3,6 +3,7 @@ package com.applikey.mattermost.web;
 import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.auth.RestorePasswordRequest;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelRequest;
@@ -94,8 +95,8 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<Void>> sendPasswordReset(@Field("email") String email) {
-        return getRealApi().sendPasswordReset(email);
+    public Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request) {
+        return getRealApi().sendPasswordReset(request);
     }
 
     @Override

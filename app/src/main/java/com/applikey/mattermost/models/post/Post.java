@@ -182,4 +182,14 @@ public class Post extends RealmObject implements SearchItem {
     public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
         return (int) (post1.getCreatedAt() - post2.getCreatedAt());
     }
+
+    @Override
+    public int getSortPriority() {
+        return PRIORITY_MESSAGE;
+    }
+
+    @Override
+    public int compareByDate(SearchItem item) {
+        return 0;
+    }
 }
