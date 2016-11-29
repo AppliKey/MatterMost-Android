@@ -52,7 +52,7 @@
 
     <string name="message">Message…</string>
     <string name="loading">Loading…</string>
-    <string name="no_posts_to_display">No Posts to Display :(</string>
+    <string name="no_messages_here_yet">No messages here yet</string>
     <string name="no_users_to_display">No Users to Display :(</string>
     <string name="channel_preview_message_placeholder">No messages yet</string>
 
