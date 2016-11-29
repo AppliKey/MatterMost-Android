@@ -13,13 +13,9 @@ public abstract class BasePresenter<T extends MvpView> extends MvpPresenter<T> {
 
     protected CompositeSubscription mSubscription = new CompositeSubscription();
 
-    private void unSubscribe() {
-        mSubscription.clear();
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unSubscribe();
+        mSubscription.clear();
     }
 }

@@ -74,10 +74,8 @@ public class App extends Application {
                         .map(tick -> foreground))
                 .subscribe(foreground -> {
                     if (foreground) {
-                        Log.d("foreground", "onForeground");
                         startService(WebSocketService.getIntent(this));
                     } else {
-                        Log.d("foreground", "onBackground");
                         stopService(WebSocketService.getIntent(this));
                     }
                 }, Throwable::printStackTrace);
