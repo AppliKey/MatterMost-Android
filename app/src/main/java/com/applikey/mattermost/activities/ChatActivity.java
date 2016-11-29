@@ -10,8 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -214,8 +212,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    public void showProgress(boolean enabled) {
-        mSrlChat.setRefreshing(enabled);
+    public void showProgress() {
+        mSrlChat.setRefreshing(true);
+    }
+
+    @Override
+    public void hideProgress() {
+        mSrlChat.setRefreshing(false);
     }
 
     @Override
