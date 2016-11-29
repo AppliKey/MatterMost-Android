@@ -7,7 +7,6 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchAllTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchAllView;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.utils.MessageDateComparator;
@@ -67,14 +66,8 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
                         mUserStorage.searchUsers(text).first(), (items, users) -> {
 
                             final List<SearchItem> searchItemList = new ArrayList<>();
-
-                            for (Channel item : items) {
-                                searchItemList.add(item);
-                            }
-                            for (User user : users) {
-                                searchItemList.add(user);
-                            }
-
+                            searchItemList.addAll(items);
+                            searchItemList.addAll(users);
                             return searchItemList;
                         })
                         .flatMap(items -> getPostsObservable(text).first(),
