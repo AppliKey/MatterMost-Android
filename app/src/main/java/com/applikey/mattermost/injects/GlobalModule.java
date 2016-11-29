@@ -53,7 +53,6 @@ public class GlobalModule {
     @PerApp
     Realm provideRealm() {
         final RealmConfiguration config = new RealmConfiguration.Builder()
-                .name(Constants.REALM_NAME)
                 .schemaVersion(0)
                 .deleteRealmIfMigrationNeeded()
                 .build();
