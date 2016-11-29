@@ -5,9 +5,7 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.Constants;
-import com.applikey.mattermost.models.user.UserMetaData;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,25 +30,6 @@ public class PersistentPrefs {
         mGson = gson;
 
         mSharedPreferences = context.getSharedPreferences(Constants.PERSISTENT_PREFS_FILE_NAME, Context.MODE_PRIVATE);
-    }
-
-    public Single<Set<UserMetaData>> getUsersMetaData() {
-        return Single.defer(() -> Single.just(mSharedPreferences.getString(KEY_USERS_METADATA, "")))
-                .map(string -> mGson.fromJson(string, new TypeToken<Set<UserMetaData>>() {
-                }.getType()))
-                .map(o -> (Set<UserMetaData>) o)
-                .map(usersMetaData -> usersMetaData == null ? new HashSet<>() : usersMetaData);
-    }
-
-    public Completable saveUserMetaData(UserMetaData userMetaData) {
-        return getUsersMetaData()
-                .doOnSuccess(usersMetaData -> {
-                    usersMetaData.remove(userMetaData);
-                    usersMetaData.add(userMetaData);
-                })
-                .map(mGson::toJson)
-                .doOnSuccess(string -> mSharedPreferences.edit().putString(KEY_USERS_METADATA, string).apply())
-                .toCompletable();
     }
 
     public Single<Set<String>> getServerUrls() {

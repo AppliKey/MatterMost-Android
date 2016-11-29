@@ -22,19 +22,13 @@ public class Channel extends RealmObject implements SearchItem {
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
 
     public static final String FIELD_NAME_TYPE = "type";
-
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
-
     public static final String FIELD_NAME = "name";
-
     public static final String FIELD_ID = "id";
-
+    public static final String IS_FAVORITE = "isFavorite";
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
-
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
-
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
-
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
     @PrimaryKey
@@ -83,6 +77,8 @@ public class Channel extends RealmObject implements SearchItem {
     // Index field, which contains the time of the last message or creation time. Used by Realm,
     // as it can not compare multiple fields
     private long lastActivityTime;
+
+    private boolean isFavorite;
 
     private RealmList<User> mUsers = new RealmList<>();
 
@@ -214,6 +210,14 @@ public class Channel extends RealmObject implements SearchItem {
     public void setUsers(List<User> users) {
         mUsers.clear();
         mUsers.addAll(users);
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 
     @Override
