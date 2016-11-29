@@ -37,10 +37,6 @@ public class ChannelStorage {
         mMetaDataManager = metaDataManager;
     }
 
-    public Observable<Channel> findById(String id) {
-        return mDb.getObject(Channel.class, id);
-    }
-
     // TODO Duplicate
     public Observable<Channel> findByIdAndCopy(String id) {
         return mDb.getObjectAndCopy(Channel.class, id);
@@ -93,7 +89,8 @@ public class ChannelStorage {
                         : ids.toArray(new String[ids.size()]))
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
-                                                                     ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME));
+                                                                     ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                        .first());
     }
 
     public Observable<Channel> channelById(String id) {
@@ -110,8 +107,6 @@ public class ChannelStorage {
                                                     Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
-
-    //TODO Save channel after create
 
     public void save(Channel channel) {
         mDb.saveTransactional(channel);
