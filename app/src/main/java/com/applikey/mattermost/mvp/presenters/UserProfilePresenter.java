@@ -57,7 +57,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
 
     @Override
     public void toggleFavorite() {
-        boolean state = !mChannel.isFavorite();
+        final boolean state = !mChannel.isFavorite();
 
         mChannelStorage.setFavorite(mChannel, state);
         getViewState().onMakeFavorite(state);
