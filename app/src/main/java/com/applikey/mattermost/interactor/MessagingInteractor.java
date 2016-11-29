@@ -20,6 +20,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_CHANNEL_VIEWED;
+import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_DELETED;
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_EDITED;
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_POSTED;
 
@@ -62,12 +63,15 @@ public class MessagingInteractor {
                 .subscribeOn(Schedulers.io())
                 .doOnNext(event -> {
                     final Post post = event.getProps().getPost();
-                    if (EVENT_POST_POSTED.equals(event.getEvent())) {
+                    final String socketEvent = event.getEvent();
+                    if (EVENT_POST_POSTED.equals(socketEvent)) {
                         mChannelStorage.updateLastPost(event.getChannelId(), post);
-                    } else if (EVENT_POST_EDITED.equals(event.getEvent())) {
-                        mPostStorage.saveSync(post); // FIXME: 25.11.16 for some reason doesn't update Channels' and Posts' RealmResults in Adapters
-                    }else if (EVENT_CHANNEL_VIEWED.equals(event.getEvent())) {
+                    } else if (EVENT_POST_EDITED.equals(socketEvent)) {
+                        mPostStorage.saveSync(post);
+                    } else if (EVENT_CHANNEL_VIEWED.equals(socketEvent)) {
                         mChannelStorage.updateViewedAt(event.getChannelId());
+                    } else if (EVENT_POST_DELETED.equals(socketEvent)) {
+                        mPostStorage.deleteSync(post);
                     }
                 });
     }

@@ -2,6 +2,7 @@ package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
 
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 
 public class PostStorage {
@@ -47,9 +49,41 @@ public class PostStorage {
         });
     }
 
+    public void deleteSync(Post post) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post removalPost = realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, post.getId()).findFirst();
+            if (removalPost == null) {
+                return;
+            }
+
+            removalPost.deleteFromRealm();
+
+            final Post lastPost = realm.where(Post.class)
+                    .equalTo(Post.FIELD_NAME_CHANNEL_ID, post.getChannelId())
+                    .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING)
+                    .first();
+
+            if (lastPost == null) {
+                return;
+            }
+
+            final Channel channel = realm.where(Channel.class)
+                    .equalTo(Channel.FIELD_ID, post.getChannelId())
+                    .findFirst();
+
+            if (channel == null) {
+                return;
+            }
+
+            channel.setLastPost(lastPost);
+        });
+        realmInstance.close();
+    }
+
     public void saveSync(Post post) {
         final Realm realmInstance = Realm.getDefaultInstance();
-        realmInstance.executeTransaction(realm -> realm.insertOrUpdate(post));
+        realmInstance.executeTransaction(realm -> realm.copyToRealmOrUpdate(post));
         realmInstance.close();
     }
 

@@ -77,6 +77,32 @@ public class ChannelStorage {
         realmInstance.close();
     }
 
+    public void updateLastPost(String channelId) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post lastPost = realm.where(Post.class)
+                    .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
+                    .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING)
+                    .first();
+
+            if (lastPost == null) {
+                return;
+            }
+
+            final Channel channel = realm.where(Channel.class)
+                    .equalTo(Channel.FIELD_ID, channelId)
+                    .findFirst();
+
+            if (channel == null) {
+                return;
+            }
+
+            channel.setLastPost(lastPost);
+
+        });
+        realmInstance.close();
+    }
+
     public void updateViewedAt(String channelId) {
         final Realm realmInstance = Realm.getDefaultInstance();
         realmInstance.executeTransaction(realm -> {
