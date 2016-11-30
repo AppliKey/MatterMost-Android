@@ -7,7 +7,8 @@
     android:orientation="horizontal"
     android:paddingEnd="@dimen/list_item_margin"
     android:paddingStart="@dimen/list_item_margin"
-    android:paddingTop="@dimen/user_item_top_padding">
+    android:paddingTop="@dimen/user_item_vertical_padding"
+    android:paddingBottom="@dimen/user_item_vertical_padding">
 
     <ImageView
         android:id="@+id/iv_preview_image"
