@@ -45,8 +45,7 @@ public class Db {
 
     public <T extends RealmObject> Observable<List<T>> getObjectsQualifiedWithCopy(Class<T> tClass,
                                                                                    String fieldName,
-                                                                                   String[]
-                                                                                           fieldValue) {
+                                                                                   String[] fieldValue) {
         return mRealm.where(tClass)
                 .in(fieldName, fieldValue)
                 .findAllAsync()
@@ -62,7 +61,8 @@ public class Db {
                 .equalTo(fieldName, fieldValue)
                 .findFirstAsync()
                 .<T>asObservable()
-                .filter(o -> o.isLoaded() && o.isValid());
+                .filter(o -> o.isLoaded() && o.isValid())
+                .first();
     }
 
     // FIXME Duplicated
@@ -80,6 +80,14 @@ public class Db {
         return mRealm.copyFromRealm(object);
     }
 
+    public <T extends RealmObject> void removeAsync(Class tClass, String field, String value) {
+        mRealm.executeTransaction(realm -> realm.where(tClass)
+                .equalTo(field, value)
+                .findAll()
+                .deleteAllFromRealm());
+
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
                                                             String id,
@@ -90,16 +98,24 @@ public class Db {
         });
     }
 
-    public <T extends RealmObject, V> void updateMapTransactional(Map<String, V> valuesMap, Class<T> clazz, Action3<T, V, Realm> updateFunc) {
+    public <T extends RealmObject, V> void updateMapTransactional(Map<String, V> valuesMap,
+                                                                  Class<T> clazz,
+                                                                  Action3<T, V, Realm> updateFunc) {
         mRealm.executeTransactionAsync(realm -> Stream.of(valuesMap.entrySet())
                 .forEach(entry -> {
                     final T object = realm.where(clazz).equalTo("id", entry.getKey()).findFirst();
-                    updateFunc.call(object, entry.getValue(),  realm);
+                    updateFunc.call(object, entry.getValue(), realm);
                 }));
     }
 
     public void doTransactional(Action1<Realm> update) {
         mRealm.executeTransactionAsync(update::call);
+    }
+
+    public <T extends RealmObject> void deleteTransactional(Class<T> tClass, String id) {
+        mRealm.executeTransactionAsync(realm -> {
+            realm.where(tClass).equalTo("id", id).findFirst().deleteFromRealm();
+        });
     }
 
     public void deleteTransactional(final RealmObject realmObject) {
@@ -197,6 +213,34 @@ public class Db {
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedWithEmpty(
+            Class<T> tClass,
+            String fieldName,
+            String value,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedWithEmpty(
+            Class<T> tClass,
+            String fieldName,
+            boolean value,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(
@@ -309,8 +353,7 @@ public class Db {
     public <T extends RealmObject> Observable<List<T>> listRealmObjectsFilteredSorted(Class<T>
                                                                                               tClass,
                                                                                       String text,
-                                                                                      String[]
-                                                                                              fields,
+                                                                                      String[] fields,
                                                                                       String sortedField) {
         final Realm realm = getRealm();
 
@@ -361,6 +404,5 @@ public class Db {
     private Realm getRealm() {
         return mRealm;
     }
-
 
 }

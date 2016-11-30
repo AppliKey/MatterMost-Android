@@ -7,12 +7,30 @@
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
+    <style name="SearchViewBar" parent="AppToolbar">
+        <item name="homeAsUpIndicator">@drawable/ic_back</item>
+        <item name="searchViewStyle">@style/SearchView</item>
+    </style>
+
+    <style name="SearchView" parent="Widget.AppCompat.Light.SearchView">
+        <item name="queryBackground">@null</item>
+        <item name="submitBackground">@null</item>
+        <item name="searchHintIcon">@null</item>
+    </style>
+
     <style name="Button" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:clickable">true</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:background">@drawable/round_button_gradient</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
+    </style>
+
+    <style name="GrayButton" parent="Button">
+        <item name="android:paddingStart">@dimen/normal</item>
+        <item name="android:paddingEnd">@dimen/normal</item>
+        <item name="android:minWidth">@dimen/button_width</item>
+        <item name="android:background">@drawable/round_button_gray</item>
     </style>
 
     <style name="AppToolbar" parent="Base.ThemeOverlay.AppCompat.Light">
@@ -102,14 +120,14 @@
     </style>
 
     <style name="SearchEditText">
-        <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/search_chat_toolbar_text_size</item>
-        <item name="android:lines">1</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:hint">@string/search_with_ellipsis</item>
         <item name="android:textColorHint">@color/tabUnSelected</item>
-        <item name="android:layout_gravity">start</item>
         <item name="android:textColor">@color/textlink_enabled</item>
     </style>
-    
+
+    <style name="EmptyState">
+        <item name="android:textColor">@color/textlink_disabled</item>
+        <item name="android:textSize">@dimen/text_title_size</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>

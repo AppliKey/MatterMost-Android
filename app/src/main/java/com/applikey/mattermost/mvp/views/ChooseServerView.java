@@ -12,4 +12,6 @@ public interface ChooseServerView extends MvpView {
     void onValidServerChosen();
 
     void showPresetServer(String url);
+
+    void setAutoCompleteServers(String[] urls);
 }

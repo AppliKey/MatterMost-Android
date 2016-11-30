@@ -13,16 +13,19 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class User extends RealmObject implements Comparable<User>, Searchable<String>, Parcelable, SearchItem {
+public class User extends RealmObject
+        implements RealmModel, Comparable<User>, Searchable<String>, Parcelable, SearchItem {
 
     public static final String FIELD_NAME_ID = "id";
 
     public static final String FIELD_USERNAME = "username";
 
     public static final String FIRST_NAME = "firstName";
+
     public static final String LAST_NAME = "lastName";
 
     @PrimaryKey
@@ -48,6 +51,9 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     @SerializedName("update_at")
     private long updateAt;
 
+    @SerializedName("create_at")
+    private long createAt;
+
     // Application-specific fields
     private String profileImage;
 
@@ -64,6 +70,7 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
                     put("online", ONLINE);
                     put("away", AWAY);
                 }};
+
         private final int drawableId;
 
         Status(int drawableId) {
@@ -87,8 +94,8 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     }
 
     public User(String id, String username, String email, String firstName,
-            String lastName, long lastActivityAt, long updateAt,
-            String profileImage, int status) {
+                String lastName, long lastActivityAt, long updateAt,
+                String profileImage, int status) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -108,6 +115,7 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         lastName = in.readString();
         lastActivityAt = in.readLong();
         updateAt = in.readLong();
+        createAt = in.readLong();
         profileImage = in.readString();
         status = in.readInt();
     }
@@ -121,6 +129,7 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         dest.writeString(lastName);
         dest.writeLong(lastActivityAt);
         dest.writeLong(updateAt);
+        dest.writeLong(createAt);
         dest.writeString(profileImage);
         dest.writeInt(status);
     }
@@ -214,6 +223,14 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         this.status = status;
     }
 
+    public long getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(long createAt) {
+        this.createAt = createAt;
+    }
+
     public static String getDisplayableName(@NonNull User user) {
         if (user == null) {
             return Constants.EMPTY_STRING;
@@ -248,30 +265,37 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
         result = 31 * result + getLastName().hashCode();
         result = 31 * result + (int) (getLastActivityAt() ^ (getLastActivityAt() >>> 32));
         result = 31 * result + (int) (getUpdateAt() ^ (getUpdateAt() >>> 32));
-        result = 31 * result + getProfileImage().hashCode();
+        result = 31 * result + (int) (getCreateAt() ^ (getCreateAt() >>> 32));
         result = 31 * result + getStatus();
         return result;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         final User user = (User) o;
 
-        if (!getId().equals(user.getId()))
+        if (!getId().equals(user.getId())) {
             return false;
-        if (!getUsername().equals(user.getUsername()))
+        }
+        if (!getUsername().equals(user.getUsername())) {
             return false;
-        if (!getEmail().equals(user.getEmail()))
+        }
+        if (!getEmail().equals(user.getEmail())) {
             return false;
-        if (!getFirstName().equals(user.getFirstName()))
+        }
+        if (!getFirstName().equals(user.getFirstName())) {
             return false;
-        if (!getLastName().equals(user.getLastName()))
+        }
+        if (!getLastName().equals(user.getLastName())) {
             return false;
+        }
         return getProfileImage().equals(user.getProfileImage());
 
     }
@@ -283,8 +307,9 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
 
     @Override
     public int compareTo(@NonNull User o) {
-        if (this == o)
+        if (this == o) {
             return 0;
+        }
         final String thisUserDisplayableNameIgnoreCase = User.getDisplayableName(this)
                 .toLowerCase();
         final String otherUserDisplayableNameIgnoreCase = User.getDisplayableName(o).toLowerCase();
@@ -313,4 +338,15 @@ public class User extends RealmObject implements Comparable<User>, Searchable<St
     public int getSearchType() {
         return USER;
     }
+
+    @Override
+    public int getSortPriority() {
+        return PRIORITY_USER;
+    }
+
+    @Override
+    public int compareByDate(SearchItem item) {
+        return item.getSortPriority() - this.getSortPriority();
+    }
+
 }

@@ -1,12 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
-
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.channel.ExtraInfo;
-import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.mvp.views.ChannelDetailsView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -17,7 +12,6 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -42,48 +36,50 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     @Inject
     Prefs mPrefs;
 
-    @Inject
-    MetaDataManager mMetaDataManager;
-
     private Channel mChannel;
-
-    private boolean mIsFavorite;
 
     public ChannelDetailsPresenter() {
         App.getUserComponent().inject(this);
     }
 
     public void getInitialData(String channelId) {
-        final ChannelDetailsView view = getViewState();
-
         mSubscription.add(mChannelStorage.channelById(channelId)
-                .doOnNext(channel -> mChannel = channel)
-                .subscribe(view::showBaseDetails, mErrorHandler::handleError));
-
-        mMetaDataManager.isFavoriteChannel(channelId)
-                .doOnNext(favorite -> mIsFavorite = favorite)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
-
-        mSubscription.add(mApi.getChannelExtra(mPrefs.getCurrentTeamId(), channelId)
-                .subscribeOn(Schedulers.io())
-                .map(ExtraInfo::getMembers)
-                .flatMap(Observable::from)
-                .map(MemberInfo::getId)
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(ids -> mUserStorage.findUsers(ids))
-                .subscribe(view::showMembers, mErrorHandler::handleError));
+                                  .doOnNext(channel -> mChannel = channel)
+                                  .doOnNext(channel -> getViewState().showBaseDetails(channel))
+                                  .doOnNext(channel -> getViewState().onMakeFavorite(channel.isFavorite()))
+                                  .map(Channel::getUsers)
+                                  .subscribe(users -> getViewState().showMembers(users),
+                                             mErrorHandler::handleError));
     }
 
     @Override
     public void toggleFavorite() {
-        Log.d(TAG, "toggleFavorite: " + !mIsFavorite);
-        mSubscription.add(mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
-                .subscribe());
+        final boolean state = !mChannel.isFavorite();
+
+        mChannelStorage.setFavorite(mChannel, state);
+        getViewState().onMakeFavorite(state);
     }
 
     public void onEditChannel() {
         getViewState().openEditChannel(mChannel);
     }
+
+    public void leaveChannel() {
+        final ChannelDetailsView view = getViewState();
+        view.showProgress(true);
+        mSubscription.add(mApi.leaveChannel(mPrefs.getCurrentTeamId(), mChannel.getId())
+                                  .subscribeOn(Schedulers.io())
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .toObservable()
+                                  .doOnNext(aVoid -> mChannelStorage.removeChannelAsync(mChannel))
+                                  .subscribe(aVoid -> {
+                                      view.showProgress(false);
+                                      view.backToMainActivity();
+                                  }, throwable -> {
+                                      throwable.printStackTrace();
+                                      view.showProgress(false);
+                                      mErrorHandler.handleError(throwable);
+                                  }));
+    }
+
 }

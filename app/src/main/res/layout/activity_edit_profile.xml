@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:menu="menu_edit_profile">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="@string/edit_profile" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/large"
+            android:paddingTop="@dimen/large">
+
+            <ImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="@dimen/avatar_large_size"
+                android:layout_height="@dimen/avatar_large_size"
+                android:layout_gravity="center_horizontal"
+                android:background="?selectableItemBackgroundBorderless"
+                tools:src="@drawable/no_resource" />
+
+            <TextView
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
+                android:layout_marginTop="@dimen/large"
+                android:text="@string/first_name" />
+
+            <EditText
+                android:id="@+id/et_first_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
+                android:fontFamily="@string/font_light"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+
+            <TextView
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
+                android:layout_marginTop="@dimen/large"
+                android:text="@string/last_name" />
+
+            <EditText
+                android:id="@+id/et_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
+                android:fontFamily="@string/font_light"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+
+            <TextView
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
+                android:layout_marginTop="@dimen/large"
+                android:text="@string/username" />
+
+            <EditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
+                android:fontFamily="@string/font_light"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+
+            <TextView
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/more"
+                android:layout_marginTop="@dimen/large"
+                android:text="@string/email" />
+
+            <EditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/list_item_margin"
+                android:layout_marginStart="@dimen/list_item_margin"
+                android:fontFamily="@string/font_light"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+        </LinearLayout>
+    </ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

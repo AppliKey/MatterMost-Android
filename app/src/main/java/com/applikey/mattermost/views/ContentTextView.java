@@ -31,6 +31,11 @@ public class ContentTextView extends EmojiTextView {
 
     @Override
     public void setText(CharSequence rawText, BufferType type) {
+        if (isInEditMode()) {
+            super.setText(rawText, type);
+            return;
+        }
+
         final CharSequence text = rawText == null ? "" : rawText;
         final CharSequence parsedMarkdownText = getParsedMarkdownText(text.toString());
         super.setText(parsedMarkdownText, type);

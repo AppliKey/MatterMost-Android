@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.channel;
 
+import android.util.Log;
+
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -22,20 +24,16 @@ public class Channel extends RealmObject implements SearchItem {
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
 
     public static final String FIELD_NAME_TYPE = "type";
-
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
-
     public static final String FIELD_NAME = "name";
-
     public static final String FIELD_ID = "id";
-
+    public static final String IS_FAVORITE = "isFavorite";
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
-
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
-
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
-
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
+
+    private static final String TAG = Channel.class.getSimpleName();
 
     @PrimaryKey
     @SerializedName(FIELD_ID)
@@ -62,6 +60,10 @@ public class Channel extends RealmObject implements SearchItem {
     @SerializedName("create_at")
     private long createdAt;
 
+    //if we are fetching not joined channels, we should set it to false
+    // TODO: 29.11.16 We should move it out from this model
+    private boolean isJoined = true;
+
     // TODO: 04.11.16 NEED DETAILED REVIEW
     // Application-specific fields
     private String previewImagePath;
@@ -84,6 +86,8 @@ public class Channel extends RealmObject implements SearchItem {
     // as it can not compare multiple fields
     private long lastActivityTime;
 
+    private boolean isFavorite;
+
     private RealmList<User> mUsers = new RealmList<>();
 
     public long getLastActivityTime() {
@@ -100,6 +104,15 @@ public class Channel extends RealmObject implements SearchItem {
         }
         this.lastActivityTime = Math.max(createdAt, lastPostAt);
         rebuildHasUnreadMessages();
+    }
+
+    public boolean isJoined() {
+        Log.d(TAG, "isJoined: " + isJoined);
+        return isJoined;
+    }
+
+    public void setJoined(boolean joined) {
+        isJoined = joined;
     }
 
     public User getDirectCollocutor() {
@@ -216,9 +229,39 @@ public class Channel extends RealmObject implements SearchItem {
         mUsers.addAll(users);
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public int getSearchType() {
         return CHANNEL;
+    }
+
+    @Override
+    public int getSortPriority() {
+        return PRIORITY_CHANNEL;
+    }
+
+    @Override
+    public int compareByDate(SearchItem item) {
+        final int priorityDifference = item.getSortPriority() - this.getSortPriority();
+
+        if (priorityDifference != 0) {
+            return priorityDifference;
+        }
+
+        long lastPost1 = 0L;
+        long lastPost2 = 0L;
+        final Channel channel1 = this;
+        final Channel channel2 = (Channel) item;
+        lastPost1 = channel1.getLastPostAt();
+        lastPost2 = channel2.getLastPostAt();
+        return (int) (lastPost2 - lastPost1);
     }
 
     @Override

@@ -128,6 +128,16 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
         mPresenter.onEditChannel();
     }
 
+    @OnClick(R.id.btn_leave_channel)
+    public void onLeaveChannelClick() {
+        mPresenter.leaveChannel();
+    }
+
+    @Override
+    public void backToMainActivity() {
+        startActivity(ChatListActivity.getIntent(this));
+    }
+
     @OnClick(R.id.added_people_layout)
     void onAddedUsersPanelClick() {
         startActivity(AddedMembersActivity.getIntent(this, mAddedPeopleLayout.getUsers(), false));

@@ -2,6 +2,7 @@ package com.applikey.mattermost.adapters.viewholders;
 
 import android.view.View;
 
+import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.channel.viewholder.GroupChatListViewHolder;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
@@ -23,8 +24,9 @@ public class MessageChannelViewHolder extends GroupChatListViewHolder {
 
         final Post post = message.getPost();
 
-        final String messageText = getAuthorPrefix(itemView.getContext(), message)
-                + post.getMessage();
+        final String messageText = itemView.getContext()
+                .getString(R.string.message_preview_format, getAuthorPrefix(itemView.getContext(), message),
+                           post.getMessage());
 
         getMessagePreview().setText(messageText);
         setClickListener(listener);

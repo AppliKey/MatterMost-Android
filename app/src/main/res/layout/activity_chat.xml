@@ -15,28 +15,28 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            app:contentInsetStartWithNavigation="60dp"
-            app:elevation="2dp" />
+            app:contentInsetStartWithNavigation="60dp" />
 
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize"
+        android:gravity="center"
         android:orientation="vertical">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/srl_chat"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/background"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_weight="1">
 
-            <FrameLayout
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/srl_chat"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:background="@color/background"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_messages"
@@ -45,136 +45,31 @@
                     android:scrollbars="vertical"
                     tools:listitem="@layout/list_item_post_my" />
 
-                <TextView
-                    android:id="@+id/tv_empty_state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/no_posts_to_display" />
+            </android.support.v4.widget.SwipeRefreshLayout>
 
-            </FrameLayout>
+            <TextView
+                android:id="@+id/tv_empty_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/no_messages_here_yet"
+                android:visibility="gone" />
 
-        </android.support.v4.widget.SwipeRefreshLayout>
+            <include
+                android:id="@+id/join_layout"
+                layout="@layout/layout_join_channel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
 
-        <LinearLayout
+        </FrameLayout>
+
+        <include
+            android:id="@+id/chat_layout"
+            layout="@layout/layout_chat_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:animateLayoutChanges="true"
-            android:orientation="vertical">
+            android:layout_height="wrap_content" />
 
-            <LinearLayout
-                android:id="@+id/ll_reply"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/image_button_dimen_large"
-                android:background="@android:color/white"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <com.applikey.mattermost.views.ContentTextView
-                    android:id="@+id/tv_reply_message"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/normal"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:drawablePadding="@dimen/small"
-                    android:drawableStart="@drawable/line"
-                    android:ellipsize="end"
-                    android:fontFamily="sans-serif-light"
-                    android:gravity="center_vertical"
-                    android:maxLines="1"
-                    android:textSize="@dimen/text_primary_button"
-                    app:emojiSize="@dimen/emoji_size"
-                    tools:text="User Message" />
-
-                <ImageView
-                    android:id="@+id/iv_reply_close"
-                    style="@style/ImageButton"
-                    android:layout_width="@dimen/image_button_dimen_large"
-                    android:layout_height="@dimen/image_button_dimen_large"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_close" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/view_reply_separator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/separator_list"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-            <LinearLayout
-                android:id="@+id/l_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/iv_attach"
-                    style="@style/ImageButton"
-                    android:layout_width="@dimen/image_button_dimen_large"
-                    android:layout_height="@dimen/image_button_dimen_large"
-                    android:layout_gravity="bottom"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_attach" />
-
-                <com.applikey.mattermost.views.MaxHeightScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:overScrollMode="never"
-                    app:maxHeight="@dimen/send_message_field_max_height">
-
-                    <com.vanniktech.emoji.EmojiEditText
-                        android:id="@+id/et_message"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/small"
-                        android:background="@null"
-                        android:fontFamily="sans-serif-light"
-                        android:gravity="center_vertical"
-                        android:hint="@string/message"
-                        android:imeOptions="actionSend"
-                        android:minHeight="@dimen/image_button_dimen_large"
-                        android:paddingBottom="@dimen/normal"
-                        android:paddingTop="@dimen/normal"
-                        android:textColorHint="@color/textSecondary"
-                        app:emojiSize="@dimen/emoji_input_size" />
-                </com.applikey.mattermost.views.MaxHeightScrollView>
-
-
-                <ImageView
-                    android:id="@+id/iv_emoji"
-                    style="@style/ImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginBottom="@dimen/normal"
-                    android:layout_marginTop="@dimen/normal"
-                    android:button="@drawable/ic_emoji"
-                    android:gravity="center"
-                    android:padding="0dp"
-                    android:src="@drawable/bg_emoji_button" />
-
-                <ImageView
-                    android:id="@+id/iv_send_message"
-                    style="@style/ImageButton"
-                    android:layout_width="@dimen/image_button_dimen_large"
-                    android:layout_height="@dimen/image_button_dimen_large"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="0"
-                    android:scaleType="center"
-                    android:src="@drawable/ic_send" />
-
-            </LinearLayout>
-        </LinearLayout>
     </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

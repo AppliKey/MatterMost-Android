@@ -6,9 +6,9 @@ import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.activities.edit.EditProfileActivity;
 import com.applikey.mattermost.mvp.presenters.SettingsPresenter;
 import com.applikey.mattermost.mvp.views.SettingsView;
 import com.applikey.mattermost.platform.socket.WebSocketService;
@@ -57,9 +57,7 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     @Override
     public void logout() {
         stopService(WebSocketService.getIntent(this));
-        final Intent intent = new Intent(this, ChooseServerActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        startActivity(ChooseServerActivity.getIntent(this, true));
     }
 
     @Override
@@ -79,6 +77,6 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
 
     @OnClick(R.id.btn_edit_profile)
     void onClickEditProfile() {
-        Toast.makeText(this, "Edit profile not implemented yet", Toast.LENGTH_SHORT).show();
+        startActivity(EditProfileActivity.getIntent(this));
     }
 }

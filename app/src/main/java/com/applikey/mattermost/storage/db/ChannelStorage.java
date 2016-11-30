@@ -1,10 +1,8 @@
 package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.annimon.stream.Stream;
-import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
@@ -36,10 +34,9 @@ public class ChannelStorage {
     private final MetaDataManager mMetaDataManager;
     private final Scheduler mDbScheduler;
 
-    public ChannelStorage(final Db db, final Prefs prefs, final MetaDataManager metaDataManager, Scheduler dbScheduler) {
+    public ChannelStorage(final Db db, final Prefs prefs, Scheduler dbScheduler) {
         mDb = db;
         mPrefs = prefs;
-        mMetaDataManager = metaDataManager;
         mDbScheduler = dbScheduler;
     }
 
@@ -125,48 +122,48 @@ public class ChannelStorage {
         return mDb.getObjectQualified(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
     }
 
+    public void removeChannelAsync(Channel channel) {
+        mDb.removeAsync(Channel.class, Channel.FIELD_ID, channel.getId());
+    }
+
     public Observable<List<Channel>> list() {
         return mDb.listRealmObjects(Channel.class);
     }
 
     public Observable<RealmResults<Channel>> listUndirected(String name) {
         return mDb.resultRealmObjectsFilteredSortedExcluded(Channel.class, Channel.FIELD_NAME,
-                name,
-                Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.DIRECT
-                        .getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                            name,
+                                                            Channel.FIELD_NAME_TYPE,
+                                                            Channel.ChannelType.DIRECT
+                                                                    .getRepresentation(),
+                                                            Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PUBLIC.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                                                    Channel.ChannelType.PUBLIC.getRepresentation(),
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.PRIVATE.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                                                    Channel.ChannelType.PRIVATE.getRepresentation(),
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                Channel.ChannelType.DIRECT.getRepresentation(),
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                                                    Channel.ChannelType.DIRECT.getRepresentation(),
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
-    //Realm doesn't support empty array for operation "in"
     public Observable<RealmResults<Channel>> listFavorite() {
-        return mMetaDataManager.getFavoriteChannels()
-                .doOnNext(strings -> Log.d(TAG, "listFavorite: " + strings))
-                .map(ids -> ids.isEmpty() ? new String[] {"null"} : ids.toArray(new String[ids.size()]))
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
-                        ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME));
+        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class,
+                                                             Channel.IS_FAVORITE, true,
+                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<Channel> channelById(String id) {
@@ -179,15 +176,17 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listUnread() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                true,
-                Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
+                                                    true,
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
                 .first();
     }
 
-    //TODO Save channel after create
-
     public void save(Channel channel) {
         mDb.saveTransactional(channel);
+    }
+
+    public void save(List<Channel> channels) {
+        mDb.saveTransactional(channels);
     }
 
     public Observable<List<Membership>> listMembership() {
@@ -197,6 +196,13 @@ public class ChannelStorage {
     public void updateLastPost(Channel channel) {
         final Post lastPost = channel.getLastPost();
         setLastPost(channel, lastPost);
+    }
+
+    public void setFavorite(Channel channel, boolean isFavorite) {
+        mDb.updateTransactional(Channel.class, channel.getId(), (channel1, realm) -> {
+            channel1.setFavorite(isFavorite);
+            return true;
+        });
     }
 
     public void setLastPost(Channel channel, Post lastPost) {
@@ -324,30 +330,42 @@ public class ChannelStorage {
             }
         });
 
+        saveAndDeleteRemovedChannels(channels);
+    }
+
+    private void saveAndDeleteRemovedChannels(List<Channel> channels) {
         mDb.saveTransactional(restoreChannels(channels));
+        mDb.doTransactional(realm -> {
+            final String[] ids = Stream.of(channels).map(Channel::getId).toArray(String[]::new);
+            if (ids.length == 0) {
+                return;
+            }
+            realm.where(Channel.class).not().in(Channel.FIELD_ID, ids).findAll().deleteAllFromRealm();
+        });
     }
 
     public Single<Channel> getChannel(String id) {
         return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
     }
 
-    public void saveChannel(Channel channel) {
-        mDb.saveTransactional(channel);
+    public void delete(String channelId) {
+        mDb.deleteTransactional(Channel.class, channelId);
     }
 
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
-                (channel, storedChannel) -> {
-                    channel.setUsers(storedChannel.getUsers());
-                    channel.setLastPost(storedChannel.getLastPost());
-                    channel.updateLastActivityTime();
-                    return true;
-                });
+                                  (channel, storedChannel) -> {
+                                      channel.setUsers(storedChannel.getUsers());
+                                      channel.setLastPost(storedChannel.getLastPost());
+                                      channel.updateLastActivityTime();
+                                      channel.setFavorite(storedChannel.isFavorite());
+                                      return true;
+                                  });
     }
 
     public void updateDirectChannelData(Channel channel,
-            Map<String, User> contacts,
-            String currentUserId) {
+                                        Map<String, User> contacts,
+                                        String currentUserId) {
         final String channelName = channel.getName();
         final String otherUserId = extractOtherUserId(channelName, currentUserId);
 

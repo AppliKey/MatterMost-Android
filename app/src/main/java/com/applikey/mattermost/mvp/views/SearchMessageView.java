@@ -8,6 +8,4 @@ public interface SearchMessageView extends SearchView  {
 
     void showLoading(boolean show);
 
-    void clearData();
-
 }

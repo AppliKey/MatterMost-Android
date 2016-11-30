@@ -8,8 +8,11 @@ import android.widget.ImageView;
 import com.applikey.mattermost.utils.image.PicassoCircularTransformation;
 import com.applikey.mattermost.utils.rx.RetryWithDelay;
 import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
+
+import java.io.File;
 
 import okhttp3.OkHttpClient;
 import rx.Observable;
@@ -33,13 +36,23 @@ public class PicassoImageLoader implements ImageLoader {
     }
 
     @Override
+    public void invalidateCache(String url) {
+        picasso.invalidate(url);
+    }
+
+    @Override
     public void displayImage(@NonNull String url, @NonNull ImageView imageView) {
         picasso.load(url).into(imageView);
     }
 
     @Override
+    public void displayCircularImage(@NonNull File file, @NonNull ImageView imageView) {
+        picasso.load(file).transform(transformation).into(imageView);
+    }
+
+    @Override
     public void displayCircularImage(@NonNull String url, @NonNull ImageView imageView) {
-        picasso.load(url).transform(transformation).into(imageView);
+        picasso.load(url).networkPolicy(NetworkPolicy.NO_CACHE).transform(transformation).into(imageView);
     }
 
     @Override

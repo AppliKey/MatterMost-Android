@@ -3,6 +3,7 @@ package com.applikey.mattermost.adapters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private final Channel.ChannelType mChannelType;
 
     private long mLastViewed;
-    private int mNewMessageIndicatorPosition = -1;
+    private String mNewMessageIndicatorId = "";
 
     public PostAdapter(Context context,
                        RealmResults<Post> posts,
@@ -104,14 +105,14 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost)
                 || !isPostsSameAuthor(post, previousPost);
 
-        final boolean mNewMessageIndicatorShowed = mNewMessageIndicatorPosition != -1;
+        final boolean mNewMessageIndicatorShowed = !TextUtils.isEmpty(mNewMessageIndicatorId);
         final boolean showNewMessageIndicator = (!mNewMessageIndicatorShowed &&
                 mLastViewed < post.getCreatedAt() &&
-                !isLastPost && nextPost.getCreatedAt() < mLastViewed) /*||
-                mNewMessageIndicatorPosition == holder.getAdapterPosition()*/;
+                !isLastPost && nextPost.getCreatedAt() < mLastViewed) ||
+                TextUtils.equals(mNewMessageIndicatorId, post.getId());
 
         if (showNewMessageIndicator) {
-            mNewMessageIndicatorPosition = holder.getAdapterPosition();
+            mNewMessageIndicatorId = post.getId();
         }
 
         holder.bindHeader(showNewMessageIndicator, showDate);
@@ -260,6 +261,10 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(post.getAuthor()));
             mTvMessage.setText(post.getMessage());
+            mTvMessage.setOnLongClickListener(v -> {
+                itemView.performLongClick();
+                return true;
+            });
 
             mTvName.setVisibility(showAuthor ? View.VISIBLE : View.GONE);
             mTvTimestamp.setVisibility(showTime ? View.VISIBLE : View.GONE);

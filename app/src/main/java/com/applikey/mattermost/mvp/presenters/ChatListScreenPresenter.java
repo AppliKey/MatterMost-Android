@@ -69,13 +69,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         App.getUserComponent().inject(this);
     }
 
-    public void applyInitialViewState() {
-        final Subscription subscription = mTeamStorage.getChosenTeam()
-                .subscribe(team -> getViewState().setToolbarTitle(team.getDisplayName()), mErrorHandler::handleError);
-
-        mSubscription.add(subscription);
-    }
-
     public void preloadChannel(String channelId) {
         final Subscription subscription =
                 Observable.amb(mChannelStorage.channelById(channelId), mTeamStorage.getChosenTeam()
@@ -91,10 +84,14 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     public void loadInitInfo() {
         final Subscription subscription = mApi.getInitialLoad()
-                .map(InitLoadResponse::getPreferences)
                 .subscribeOn(Schedulers.io())
+                .map(InitLoadResponse::getPreferences)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mPreferenceStorage::save, mErrorHandler::handleError);
+                .doOnNext(mPreferenceStorage::save)
+                .observeOn(Schedulers.io())
+                .flatMap(v -> mApi.getMe())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mUserStorage::save, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
@@ -115,10 +112,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        final ChatListScreenView view = getViewState();
 
         final Subscription subscription = mTeamStorage.getChosenTeam()
-                .doOnNext(team -> view.setToolbarTitle(team.getDisplayName()))
+                .doOnNext(team -> getViewState().setToolbarTitle(team.getDisplayName()))
                 .map(Team::getId)
                 .flatMap(this::fetchStartup)
                 .doOnNext(this::fetchUserStatus)
@@ -130,11 +126,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     private Observable<StartupFetchResult> fetchStartup(String teamId) {
         return Observable.zip(mApi.listChannels(teamId), mApi.getTeamProfiles(teamId),
-                              (channelResponse, contacts) -> transform(channelResponse, contacts,
-                                                                       teamId))
+                (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(response -> mUserStorage.saveUsers(response.getDirectProfiles()))
+                .doOnNext(response -> mUserStorage.save(response.getDirectProfiles()))
                 .doOnNext(response -> mChannelStorage.saveChannelResponse(
                         response.getChannelResponse(),
                         response.getDirectProfiles()));
@@ -159,7 +154,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private StartupFetchResult transform(ChannelResponse channelResponse,
-                                         Map<String, User> contacts, String teamId) {
+            Map<String, User> contacts, String teamId) {
         return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 

@@ -9,17 +9,13 @@ import rx.subscriptions.CompositeSubscription;
  * Simplifies getting view. Assumes that we don't care if there are multiple views
  * attached and get the random one.
  */
-/* package */ abstract class BasePresenter<T extends MvpView> extends MvpPresenter<T> {
+public abstract class BasePresenter<T extends MvpView> extends MvpPresenter<T> {
 
-    /* package */ CompositeSubscription mSubscription = new CompositeSubscription();
-
-    private void unSubscribe() {
-        mSubscription.clear();
-    }
+    protected CompositeSubscription mSubscription = new CompositeSubscription();
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unSubscribe();
+        mSubscription.clear();
     }
 }

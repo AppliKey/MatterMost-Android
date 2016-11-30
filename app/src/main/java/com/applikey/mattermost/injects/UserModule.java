@@ -1,6 +1,5 @@
 package com.applikey.mattermost.injects;
 
-import android.content.Context;
 import android.net.Uri;
 
 import com.applikey.mattermost.Constants;
@@ -40,20 +39,14 @@ public class UserModule {
 
     @Provides
     @PerUser
-    PersistentPrefs providePersistencePrefs(Context context, Gson gson) {
-        return new PersistentPrefs(context, gson);
+    ChannelStorage provideChannelStorage(Db db, Prefs prefs) {
+        return new ChannelStorage(db, prefs);
     }
 
     @Provides
     @PerUser
-    ChannelStorage provideChannelStorage(Db db, Prefs prefs, MetaDataManager metaDataManager, Scheduler dbScheduler) {
-        return new ChannelStorage(db, prefs, metaDataManager, dbScheduler);
-    }
-
-    @Provides
-    @PerUser
-    UserStorage provideUserStorage(Db db, ImagePathHelper imagePathHelper) {
-        return new UserStorage(db, imagePathHelper);
+    UserStorage provideUserStorage(Db db, Prefs prefs, ImagePathHelper imagePathHelper) {
+        return new UserStorage(db, prefs, imagePathHelper);
     }
 
     @Provides
@@ -66,12 +59,6 @@ public class UserModule {
     @PerUser
     PreferenceStorage providePreferenceStorage(Db db, Prefs prefs) {
         return new PreferenceStorage(db, prefs);
-    }
-
-    @Provides
-    @PerUser
-    MetaDataManager provideMetadataManager(Prefs prefs, PersistentPrefs persistentPrefs) {
-        return new MetaDataManager(prefs, persistentPrefs);
     }
 
     @Provides

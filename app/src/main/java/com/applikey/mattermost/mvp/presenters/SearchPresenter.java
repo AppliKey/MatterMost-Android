@@ -2,13 +2,15 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
 
+import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.events.SearchTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
-import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -28,7 +30,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public abstract class SearchPresenter<T extends SearchView> extends BasePresenter<T> {
@@ -57,17 +58,21 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     @Inject
     ErrorHandler mErrorHandler;
 
+    protected String mSearchString = Constants.EMPTY_STRING;
+
     public void requestNotJoinedChannels() {
-        mSubscription.add(mTeamStorage.getChosenTeam()
-                                  .map(Team::getId)
-                                  .observeOn(Schedulers.io())
-                                  .flatMap(id -> mApi.getChannelsUserHasNotJoined(id),
-                                           (id, channelResponse) -> channelResponse)
+        mSubscription.add(mApi.getChannelsUserHasNotJoined(mPrefs.getCurrentTeamId())
+                                  .subscribeOn(Schedulers.io())
+                                  .map(ChannelResponse::getChannels)
+                                  .toObservable()
+                                  .flatMap(Observable::from)
+                                  .doOnNext(channel -> channel.setJoined(false))
+                                  .toList()
                                   .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(channelResponse -> {
-                                      mFetchedChannels = channelResponse.getChannels();
+                                  .subscribe(channels -> {
+                                      mFetchedChannels = channels;
                                       mChannelsIsFetched = true;
-                                      getData("");
+                                      getData(mSearchString);
                                   }, mErrorHandler::handleError));
     }
 
@@ -94,7 +99,6 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 final User user = ((User) item);
                 mSubscription.add(mChannelStorage.getChannel(user.getId())
                                           .toObservable()
-                                          .observeOn(AndroidSchedulers.mainThread())
                                           .doOnError(t -> createChannel(user))
                                           .onErrorResumeNext(t -> Observable.empty())
                                           .subscribe(view::startChatView, mErrorHandler::handleError));
@@ -116,24 +120,24 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
                          Message::new)
                 .flatMap(item -> mUserStorage.getDirectProfile(item.getPost().getUserId()).first(),
-                         (Func2<Message, User, SearchItem>) (message, user) -> {
+                         (message, user) -> {
                              message.setUser(user);
-                             return message;
+                             return (SearchItem) message;
                          })
                 .toList();
     }
 
-    void createChannel(User user) {
+    private void createChannel(User user) {
         final SearchView view = getViewState();
         view.showLoading(true);
 
-        final Subscription subscription = mTeamStorage.getChosenTeam()
+        final Subscription subscription = Observable.just(mPrefs.getCurrentTeamId())
                 .observeOn(Schedulers.io())
-                .flatMap(team -> mApi.createChannel(team.getId(), new DirectChannelRequest(user.getId())),
+                .flatMap(teamId -> mApi.createChannel(teamId, new DirectChannelRequest(user.getId())),
                          (team, channel) -> channel)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(channel -> channel.setDirectCollocutor(user))
-                .doOnNext(channel -> mChannelStorage.saveChannel(channel))
+                .doOnNext(channel -> mChannelStorage.save(channel))
                 .doOnNext(channel ->
                                   mChannelStorage.updateDirectChannelData(channel,
                                                                           Collections.singletonMap(user.getId(), user),
@@ -150,14 +154,26 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     }
 
     public void getData(String text) {
-        if (!isDataRequestValid(text.trim())) {
-            return;
-        }
         final SearchView view = getViewState();
         view.setEmptyState(true);
+        if (!isDataRequestValid(text.trim())) {
+            mSubscription.clear();
+            view.displayData(null);
+            return;
+        }
         doRequest(view, text);
     }
 
+    protected void onInputTextChanged(SearchTextChanged event) {
+        String text = event.getText();
+        if(mSearchString.equals(text)){
+            return;
+        }
+        mSearchString = text;
+        final SearchView view = getViewState();
+        view.clearData();
+        getData(mSearchString);
+    }
     public abstract boolean isDataRequestValid(String text);
 
     public abstract void doRequest(SearchView view, String text);

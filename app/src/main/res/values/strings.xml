@@ -22,8 +22,7 @@
     <string name="password_capt">PASSWORD</string>
     <string name="content_descr_back">Back</string>
     <string name="enter_your_password">Enter your password</string>
-    <string name="forgot_password_capt">FORGOT PASSWORD</string>
-    <string name="restore_password_capt">RESTORE PASSWORD</string>
+    <string name="forgot_password">Forgot Password</string>
     <string name="reply">Reply</string>
     <string name="new_message_received">New message received"</string>
 
@@ -45,6 +44,7 @@
     <string name="no_favorite_chats_available">No Favorite Chats Available</string>
 
     <string name="action_search">Search</string>
+    <string name="action_apply">Apply</string>
 
     <string name="default_server_text" />
     <string name="default_login_text" />
@@ -52,7 +52,7 @@
 
     <string name="message">Message…</string>
     <string name="loading">Loading…</string>
-    <string name="no_posts_to_display">No Posts to Display :(</string>
+    <string name="no_messages_here_yet">No messages here yet</string>
     <string name="no_users_to_display">No Users to Display :(</string>
     <string name="channel_preview_message_placeholder">No messages yet</string>
 
@@ -61,6 +61,7 @@
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
     <string name="create_channel_title_name">Name</string>
+    <string name="username">Username</string>
     <string name="private_channel">Private</string>
     <string name="public_channel">Public</string>
     <string name="create_channel_description_title">Purpose</string>
@@ -68,10 +69,12 @@
     <string name="added_people_count" translatable="false">+%1$d</string>
     <string name="button_add_all">Add all</string>
     <string name="action_create_channel">Create channel</string>
+    <string name="action_delete_channel">Delete channel</string>
+    <string name="delete_channel_confirm_dialog_msg">Are you sure you want to delete this channel?</string>
     <string name="new_public_channel">New public channel</string>
     <string name="new_private_group">New private group</string>
-    <string name="post_delete">Post Delete</string>
-    <string name="are_you_sure_you_want_to_delete_this_post">Are you sure you want to delete this post?</string>
+    <string name="post_delete">Message Delete</string>
+    <string name="are_you_sure_you_want_to_delete_this_post">Are you sure you want to delete this message?</string>
     <string name="error_channel_name_empty">Please, name your channel</string>
     <string name="error_private_group_name_empty">Please, name your private group</string>
     <string name="error_channel_already_created">Oops, this name is already taken</string>
@@ -79,6 +82,7 @@
     <string name="edit_public_channel">Edit public channel</string>
     <string name="edit_private_group">Edit private group</string>
     <string name="edit_channel">Edit</string>
+    <string name="leave_channel">Leave</string>
 
     <string name="channel_post_author_name_format">%s:\u0020</string>
     <string name="you">You</string>
@@ -101,6 +105,7 @@
 
     <string name="error_email_empty">The entered email is empty</string>
     <string name="error_email_invalid">The entered email is invalid</string>
+    <string name="error_username_invalid">The entered username is invalid</string>
     <string name="error_invitation_sending_failed">Invitation sending failed</string>
 
     <array name="post_own_opinion_array">
@@ -118,7 +123,6 @@
     <string name="new_group_or_channel">New group or channel</string>
     <string name="invite_new_member">Invite new member</string>
     <string name="invite_new_member_capt">Invite New Member</string>
-    <string name="all_channels">All channels</string>
     <string name="channel_display_name_format">#%s</string>
     <string name="members">Members</string>
     <string name="make_favorite">Make favorite</string>
@@ -128,8 +132,15 @@
     <string name="button_clear">Cancel</string>
     <string name="direct_message">Direct message</string>
     <string name="unknown_error">Something is wrong</string>
-    <string name="no_results_found_try_again">No results found. Try again?</string>
+    <string name="empty_state">No results found. Try again?</string>
     <string name="search_user_empty_state">This user could not be found</string>
+    <string name="find_more_channels">Find more channels</string>
+    <string name="quantity_one_member">%d member</string>
+    <string name="quantity_many_members">%d members</string>
+    <string name="public_channel_name">#%s</string>
+    <string name="message_preview_format">%1$s %2$s</string>
+    <string name="join">Join</string>
+    <string name="join_offer">Do you want to join #%s?</string>
 
 
 </resources>

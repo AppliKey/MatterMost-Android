@@ -4,6 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.BuildConfig;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.preferences.PersistentPrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -30,6 +31,9 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
     Prefs mPrefs;
 
     @Inject
+    PersistentPrefs mPersistentPrefs;
+
+    @Inject
     TeamStorage teamStorage;
 
     @Inject
@@ -39,15 +43,10 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
         App.getComponent().inject(this);
     }
 
-    public void getInitialData() {
-        final String presetServer = BuildConfig.PRESET_SERVER;
-        final boolean shouldReplaceCredentials = BuildConfig.SHOULD_REPLACE_CREDENTIALS;
-
-        // We assume that if username is set, we also set password
-        //noinspection ConstantConditions,PointlessBooleanExpression
-        if (shouldReplaceCredentials && presetServer != null && !presetServer.isEmpty()) {
-            getViewState().showPresetServer(presetServer);
-        }
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        getInitialData();
     }
 
     public void chooseServer(String httpPrefix, String serverUrl) {
@@ -70,13 +69,34 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
         mPrefs.setCurrentServerUrl(fullServerUrl);
 
+        mSubscription.add(mPersistentPrefs.saveServerUrl(fullServerUrl)
+                .subscribe());
+
         mSubscription.add(mApi.ping()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pingResponse -> view.onValidServerChosen(), throwable -> {
-                    mErrorHandler.get().handleError(throwable);
-                    view.showValidationError();
-                }));
+                                  .subscribeOn(Schedulers.io())
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .subscribe(pingResponse -> view.onValidServerChosen(), throwable -> {
+                                      mErrorHandler.get().handleError(throwable);
+                                      view.showValidationError();
+                                  }));
+    }
+
+    private void getInitialData() {
+        mSubscription.add(mPersistentPrefs.getServerUrls()
+                                  .map(urls -> urls.toArray(new String[urls.size()]))
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .subscribe(getViewState()::setAutoCompleteServers,
+                                             throwable -> mErrorHandler.get().handleError(throwable)));
+
+        final String presetServer = BuildConfig.PRESET_SERVER;
+        final boolean shouldReplaceCredentials = BuildConfig.SHOULD_REPLACE_CREDENTIALS;
+
+        // We assume that if username is set, we also set password
+        //noinspection ConstantConditions,PointlessBooleanExpression
+        if (shouldReplaceCredentials && presetServer != null && !presetServer.isEmpty()) {
+            getViewState().showPresetServer(presetServer);
+        }
+
     }
 
     // We validate the same way Retrofit does
@@ -84,7 +104,7 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
         if (serverUrl == null || serverUrl.trim().isEmpty()) {
             return false;
         }
-        HttpUrl url;
+        final HttpUrl url;
         try {
             url = HttpUrl.parse(serverUrl);
         } catch (Exception ignored) {

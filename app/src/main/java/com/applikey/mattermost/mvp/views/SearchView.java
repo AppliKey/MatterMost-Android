@@ -19,4 +19,6 @@ public interface SearchView extends MvpView {
 
     void displayData(List<SearchItem> items);
 
+    void clearData();
+
 }

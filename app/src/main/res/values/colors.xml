@@ -3,6 +3,7 @@
     <color name="colorPrimary">#9E9E9E</color>
     <color name="colorPrimaryDark">#616161</color>
     <color name="colorAccent">#64b0ff</color>
+    <color name="colorAccentDisabled">#4D64b0ff</color>
 
     <color name="primaryStart">#63cdff</color>
     <color name="primaryEnd">#6794ff</color>
@@ -17,6 +18,9 @@
 
     <color name="textPrimary">@android:color/black</color>
     <color name="textSecondary">@android:color/darker_gray</color>
+
+    <color name="colorAttachment">#242933</color>
+    <color name="colorAttachmentDisabled">#4D242933</color>
 
     <color name="textListPrimary">#242933</color>
     <color name="textListSecondary">#919499</color>

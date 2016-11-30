@@ -110,7 +110,14 @@ public class PostStorage {
     }
 
     public Observable<RealmResults<Post>> listByChannel(String channelId) {
-        return mDb.resultRealmObjectsFilteredSorted(Post.class, Post.FIELD_NAME_CHANNEL_ID,
-                                                    channelId, Post.FIELD_NAME_CHANNEL_CREATE_AT);
+        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Post.class, Post.FIELD_NAME_CHANNEL_ID,
+                channelId, Post.FIELD_NAME_CHANNEL_CREATE_AT);
+    }
+
+    public void deleteAllByChannel(String channelId) {
+        mDb.doTransactional(realm -> realm.where(Post.class)
+                .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
+                .findAll()
+                .deleteAllFromRealm());
     }
 }

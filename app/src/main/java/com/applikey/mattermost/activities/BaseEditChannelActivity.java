@@ -3,6 +3,7 @@ package com.applikey.mattermost.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +12,6 @@ import android.text.Editable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -22,7 +22,6 @@ import com.applikey.mattermost.models.user.UserListParcelableWrapper;
 import com.applikey.mattermost.mvp.presenters.BaseEditChannelPresenter;
 import com.applikey.mattermost.mvp.views.BaseEditChannelView;
 import com.applikey.mattermost.views.AddedPeopleLayout;
-import com.applikey.mattermost.views.ChannelTypeView;
 
 import java.util.List;
 
@@ -33,6 +32,8 @@ import butterknife.OnTextChanged;
 
 public abstract class BaseEditChannelActivity extends BaseMvpActivity
         implements BaseEditChannelView, PeopleToNewChannelAdapter.OnUserChosenListener {
+
+    private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
 
     @Bind(R.id.et_channel_name)
     EditText mEtChannelName;
@@ -49,21 +50,13 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
     @Bind(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
 
-    @Bind(R.id.channel_type_view)
-    ChannelTypeView mChannelTypeView;
-
-    @Bind(R.id.btn_add_all)
-    CheckedTextView mChBtnAddAll;
-
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
     @Bind(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
-    private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
-
-    private PeopleToNewChannelAdapter mAdapter;
+    protected PeopleToNewChannelAdapter mAdapter;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, CreateChannelActivity.class);
@@ -72,7 +65,7 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_group_or_channel);
+        setContentView(getLayoutRes());
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         mAddedPeopleLayout.setImageLoader(mImageLoader);
@@ -110,10 +103,11 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
 
     @Override
-    public void showEmptyChannelNameError() {
-        @StringRes final int errorRes = mChannelTypeView.isChecked()
-                ? R.string.error_private_group_name_empty
-                : R.string.error_channel_name_empty;
+    public void showEmptyChannelNameError(boolean isPublic) {
+        hideLoadingDialog();
+        @StringRes final int errorRes = isPublic
+                ? R.string.error_channel_name_empty
+                : R.string.error_private_group_name_empty;
         showToast(errorRes);
     }
 
@@ -143,20 +137,10 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     @Override
     public void showError(String error) {
+        hideLoadingDialog();
         showToast(error);
     }
 
-    @OnClick(R.id.btn_add_all)
-    public void onClickButtonAddAll(CheckedTextView chBtnAddAll) {
-        if (chBtnAddAll.isChecked()) {
-            chBtnAddAll.setText(R.string.cancel);
-            getPresenter().inviteAll();
-        } else {
-            chBtnAddAll.setText(R.string.button_add_all);
-            getPresenter().revertInviteAll();
-        }
-        chBtnAddAll.setChecked(!chBtnAddAll.isChecked());
-    }
 
     @OnClick(R.id.added_people_layout)
     public void onAddedUsersPanelClick() {
@@ -165,16 +149,6 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
         startActivityForResult(intent, REQUEST_ADDED_MEMBERS_DIALOG);
     }
 
-    @Override
-    public void setButtonAddAllState(boolean isAllAlreadyInvited) {
-        if (isAllAlreadyInvited) {
-            mChBtnAddAll.setVisibility(View.GONE);
-        } else {
-            mChBtnAddAll.setVisibility(View.VISIBLE);
-            mChBtnAddAll.setChecked(true);
-            mChBtnAddAll.setText(R.string.button_add_all);
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -200,4 +174,13 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
     }
 
     protected abstract BaseEditChannelPresenter getPresenter();
+
+    @LayoutRes
+    protected abstract int getLayoutRes();
+
+    @Override
+    public void showLoadingDialog() {
+        hideKeyboard();
+        super.showLoadingDialog();
+    }
 }

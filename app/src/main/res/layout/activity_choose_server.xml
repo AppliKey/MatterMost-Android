@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingStart="@dimen/activity_horizontal_margin_fixed_text"
     android:paddingEnd="@dimen/activity_horizontal_margin_fixed_text"
+    android:paddingStart="@dimen/activity_horizontal_margin_fixed_text"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".activities.ChooseServerActivity">
 
@@ -37,8 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_subheading"
-        android:paddingStart="@dimen/edit_text_align"
         android:paddingEnd="@dimen/edit_text_align"
+        android:paddingStart="@dimen/edit_text_align"
         android:text="@string/enter_server_url_capt" />
 
     <Spinner
@@ -50,7 +50,7 @@
         android:entries="@array/http_types"
         android:visibility="gone" />
 
-    <EditText
+    <android.support.v7.widget.AppCompatAutoCompleteTextView
         android:id="@id/et_server"
         style="@style/EditTextPrimary"
         android:layout_width="match_parent"
@@ -65,11 +65,11 @@
     <com.applikey.mattermost.views.SafeButton
         android:id="@+id/b_proceed"
         style="@style/Button"
-        android:layout_marginStart="@dimen/edit_text_align"
-        android:layout_marginEnd="@dimen/edit_text_align"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/edit_text_align"
+        android:layout_marginStart="@dimen/edit_text_align"
         android:layout_marginTop="@dimen/margin_default"
         android:text="@string/next" />
 

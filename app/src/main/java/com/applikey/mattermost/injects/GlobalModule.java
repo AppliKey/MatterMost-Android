@@ -10,6 +10,7 @@ import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
+import com.applikey.mattermost.storage.preferences.PersistentPrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
@@ -71,7 +72,6 @@ public class GlobalModule {
     @PerApp
     Realm provideRealm() {
         final RealmConfiguration config = new RealmConfiguration.Builder()
-                .name(Constants.REALM_NAME)
                 .schemaVersion(0)
                 .deleteRealmIfMigrationNeeded()
                 .build();
@@ -153,8 +153,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    TeamStorage provideTeamStorage(Db db) {
-        return new TeamStorage(db);
+    TeamStorage provideTeamStorage(Db db, Prefs prefs) {
+        return new TeamStorage(db, prefs);
     }
 
     @Provides
@@ -195,5 +195,11 @@ public class GlobalModule {
         socketEventTypeAdapter.setGson(gson);
 
         return gson;
+    }
+
+    @Provides
+    @PerApp
+    PersistentPrefs providePersistencePrefs(Context context, Gson gson) {
+        return new PersistentPrefs(context, gson);
     }
 }
