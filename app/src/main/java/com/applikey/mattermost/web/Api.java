@@ -167,4 +167,8 @@ public interface Api {
 
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/join")
     Single<Channel> joinToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId);
+
+    @POST("/api/v3/teams/{team_id}/channels/{channel_id}/leave")
+    Single<Void> leaveChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId);
+
 }

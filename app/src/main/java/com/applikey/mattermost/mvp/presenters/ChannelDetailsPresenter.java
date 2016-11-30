@@ -12,6 +12,9 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 @InjectViewState
 public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
         implements FavoriteablePresenter {
@@ -60,4 +63,23 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     public void onEditChannel() {
         getViewState().openEditChannel(mChannel);
     }
+
+    public void leaveChannel() {
+        final ChannelDetailsView view = getViewState();
+        view.showProgress(true);
+        mSubscription.add(mApi.leaveChannel(mPrefs.getCurrentTeamId(), mChannel.getId())
+                                  .subscribeOn(Schedulers.io())
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .toObservable()
+                                  .doOnNext(aVoid -> mChannelStorage.removeChannelAsync(mChannel))
+                                  .subscribe(aVoid -> {
+                                      view.showProgress(false);
+                                      view.backToMainActivity();
+                                  }, throwable -> {
+                                      throwable.printStackTrace();
+                                      view.showProgress(false);
+                                      mErrorHandler.handleError(throwable);
+                                  }));
+    }
+
 }

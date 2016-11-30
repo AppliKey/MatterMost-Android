@@ -80,6 +80,14 @@ public class Db {
         return mRealm.copyFromRealm(object);
     }
 
+    public <T extends RealmObject> void removeAsync(Class tClass, String field, String value) {
+        mRealm.executeTransaction(realm -> realm.where(tClass)
+                .equalTo(field, value)
+                .findAll()
+                .deleteAllFromRealm());
+
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
                                                             String id,

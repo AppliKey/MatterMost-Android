@@ -75,7 +75,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     }
 
     public void startChatView(Channel channel) {
-        getActivity().startActivity(ChatActivity.getIntent(getContext(), channel));
+        getActivity().startActivity(ChatActivity.getIntent(getContext(), channel, !channel.isJoined()));
     }
 
     @Override

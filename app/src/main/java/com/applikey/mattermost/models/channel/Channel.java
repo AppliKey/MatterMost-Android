@@ -1,5 +1,7 @@
 package com.applikey.mattermost.models.channel;
 
+import android.util.Log;
+
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -31,6 +33,8 @@ public class Channel extends RealmObject implements SearchItem {
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
+    private static final String TAG = Channel.class.getSimpleName();
+
     @PrimaryKey
     @SerializedName(FIELD_ID)
     private String id;
@@ -55,6 +59,10 @@ public class Channel extends RealmObject implements SearchItem {
 
     @SerializedName("create_at")
     private long createdAt;
+
+    //if we are fetching not joined channels, we should set it to false
+    // TODO: 29.11.16 We should move it out from this model
+    private boolean isJoined = true;
 
     // TODO: 04.11.16 NEED DETAILED REVIEW
     // Application-specific fields
@@ -96,6 +104,15 @@ public class Channel extends RealmObject implements SearchItem {
         }
         this.lastActivityTime = Math.max(createdAt, lastPostAt);
         rebuildHasUnreadMessages();
+    }
+
+    public boolean isJoined() {
+        Log.d(TAG, "isJoined: " + isJoined);
+        return isJoined;
+    }
+
+    public void setJoined(boolean joined) {
+        isJoined = joined;
     }
 
     public User getDirectCollocutor() {

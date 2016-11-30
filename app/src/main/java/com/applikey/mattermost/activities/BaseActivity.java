@@ -133,4 +133,12 @@ public abstract class BaseActivity extends AppCompatActivity implements Activity
             mProgressDialog.dismiss();
         }
     }
+
+    public void showProgress(boolean show) {
+        if(show) {
+            showLoadingDialog();
+        } else {
+            hideLoadingDialog();
+        }
+    }
 }

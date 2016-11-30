@@ -61,17 +61,19 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     protected String mSearchString = Constants.EMPTY_STRING;
 
     public void requestNotJoinedChannels() {
-        final Subscription subscription = mTeamStorage.getTeamId()
-                .observeOn(Schedulers.io())
-                .flatMap(id -> mApi.getChannelsUserHasNotJoined(id))
-                .map(ChannelResponse::getChannels)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(channels -> {
-                    mFetchedChannels = channels;
-                    mChannelsIsFetched = true;
-                    getData(mSearchString);
-                }, throwable -> mErrorHandler.handleError(throwable));
-        mSubscription.add(subscription);
+        mSubscription.add(mApi.getChannelsUserHasNotJoined(mPrefs.getCurrentTeamId())
+                                  .subscribeOn(Schedulers.io())
+                                  .map(ChannelResponse::getChannels)
+                                  .toObservable()
+                                  .flatMap(Observable::from)
+                                  .doOnNext(channel -> channel.setJoined(false))
+                                  .toList()
+                                  .observeOn(AndroidSchedulers.mainThread())
+                                  .subscribe(channels -> {
+                                      mFetchedChannels = channels;
+                                      mChannelsIsFetched = true;
+                                      getData(mSearchString);
+                                  }, mErrorHandler::handleError));
     }
 
     List<Channel> addFilterChannels(List<Channel> channels, String text) {

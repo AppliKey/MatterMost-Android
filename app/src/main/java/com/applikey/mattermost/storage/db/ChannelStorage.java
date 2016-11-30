@@ -41,6 +41,10 @@ public class ChannelStorage {
         return mDb.getObjectQualified(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
     }
 
+    public void removeChannelAsync(Channel channel) {
+        mDb.removeAsync(Channel.class, Channel.FIELD_ID, channel.getId());
+    }
+
     public Observable<List<Channel>> list() {
         return mDb.listRealmObjects(Channel.class);
     }
