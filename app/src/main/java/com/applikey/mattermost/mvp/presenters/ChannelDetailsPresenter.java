@@ -56,7 +56,7 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
     public void toggleFavorite() {
         final boolean state = !mChannel.isFavorite();
 
-        mChannelStorage.setFavorite(mChannel, state);
+        mChannelStorage.setFavorite(mChannel.getId(), state);
         getViewState().onMakeFavorite(state);
     }
 

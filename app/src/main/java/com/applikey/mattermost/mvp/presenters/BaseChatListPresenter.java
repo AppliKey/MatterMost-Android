@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -120,16 +119,11 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         final Observable<String> channelObservable =
                 Observable.fromEmitter(emitter -> mChannelEmitter = emitter, Emitter.BackpressureMode.BUFFER);
 
-        final long timeout = 1;
-        final long timeShift = 1;
-
         final Subscription subscribe = channelObservable
                 .observeOn(Schedulers.io())
                 .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
-                .buffer(timeout, timeShift, TimeUnit.SECONDS)
-                .filter(posts -> !posts.isEmpty())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> mChannelStorage.updateLastPosts(posts), mErrorHandler::handleError);
+                .subscribe(post -> mChannelStorage.updateLastPosts(post), mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
     }
