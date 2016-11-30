@@ -73,8 +73,8 @@
     <string name="delete_channel_confirm_dialog_msg">Are you sure you want to delete this channel?</string>
     <string name="new_public_channel">New public channel</string>
     <string name="new_private_group">New private group</string>
-    <string name="post_delete">Post Delete</string>
-    <string name="are_you_sure_you_want_to_delete_this_post">Are you sure you want to delete this post?</string>
+    <string name="post_delete">Message Delete</string>
+    <string name="are_you_sure_you_want_to_delete_this_post">Are you sure you want to delete this message?</string>
     <string name="error_channel_name_empty">Please, name your channel</string>
     <string name="error_private_group_name_empty">Please, name your private group</string>
     <string name="error_channel_already_created">Oops, this name is already taken</string>
