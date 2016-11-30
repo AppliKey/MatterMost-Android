@@ -96,7 +96,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
         mRvChannels.setVisibility(View.VISIBLE);
         mTvEmptyState.setVisibility(View.GONE);
         final BaseChatListAdapter adapter = getAdapter(channels);
-        adapter.setOnClickListener(this);
+        adapter.setChannelListener(this);
         mRvChannels.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvChannels.setAdapter(adapter);
     }

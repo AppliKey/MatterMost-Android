@@ -96,14 +96,15 @@ public class WebSocketService extends Service {
     }
 
     private void startPollingUsersStatuses() {
-        final Subscription pollStatusesObservable = Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
+        final Subscription pollStatusesObservable = Observable.interval(Constants.POLLING_PERIOD_SECONDS,
+                                                                        TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(tick -> mUserStorage.listDirectProfiles().first())
                 .observeOn(Schedulers.io())
                 .flatMap(users -> mApi.getUserStatusesCompatible(Stream.of(users)
-                        .map(User::getId)
-                        .collect(Collectors.toList())
-                        .toArray(new String[users.size()])))
+                                                                         .map(User::getId)
+                                                                         .collect(Collectors.toList())
+                                                                         .toArray(new String[users.size()])))
                 .retryWhen(new RetryWhenNetwork(this))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(mUserStorage::updateUsersStatuses, mErrorHandler::handleError);
