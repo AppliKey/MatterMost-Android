@@ -21,7 +21,6 @@ import io.realm.Sort;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Single;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func0;
 
 public class ChannelStorage {
@@ -31,7 +30,6 @@ public class ChannelStorage {
     private final Db mDb;
 
     private final Prefs mPrefs;
-    private final MetaDataManager mMetaDataManager;
     private final Scheduler mDbScheduler;
 
     public ChannelStorage(final Db db, final Prefs prefs, Scheduler dbScheduler) {
