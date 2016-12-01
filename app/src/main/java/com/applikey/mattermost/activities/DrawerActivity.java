@@ -5,18 +5,23 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.applikey.mattermost.App;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+
+import javax.inject.Inject;
 
 public abstract class DrawerActivity extends BaseMvpActivity implements NavigationView {
 
@@ -24,8 +29,13 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
 
+    private static final String TAG = DrawerActivity.class.getSimpleName();
+
     @InjectPresenter
     NavigationPresenter mPresenter;
+
+    @Inject
+    Prefs mPrefs;
 
     private Drawer mDrawer;
     private View mDrawerFooter;
@@ -34,6 +44,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        App.getUserComponent().inject(this);
         initDrawer();
         mPresenter.initUser();
     }
@@ -51,7 +62,8 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         TextView tv_team = (TextView) mDrawerHeader.findViewById(R.id.tv_team);
 
         mImageLoader.displayCircularImage(user.getProfileImage(), iv_avatar);
-        tv_name.setText(user.getUsername());
+        tv_name.setText(User.getDisplayableName(user));
+        tv_team.setText(mPrefs.getCurrentTeamName());
     }
 
     protected boolean showHamburger() {
@@ -94,8 +106,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         mDrawerFooter = mDrawer.getStickyFooter();
         mDrawerFooter.setOnClickListener(v -> headerClick());
 
-        mDrawerHeader = mDrawer.getStickyHeader();
-
+        mDrawerHeader = mDrawer.getHeader();
         final ActionBarDrawerToggle toggle = mDrawer.getActionBarDrawerToggle();
         toggle.setDrawerIndicatorEnabled(false);
 

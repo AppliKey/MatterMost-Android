@@ -63,6 +63,7 @@
     <dimen name="list_item_heading_text">18sp</dimen>
     <dimen name="list_item_secondary_text">14sp</dimen>
     <dimen name="list_item_heading_bottom_margin">5dp</dimen>
+    <dimen name="status_bar_height">24dp</dimen>
 
     <dimen name="list_item_min_height">72dp</dimen>
     <dimen name="list_item_chat_padding">20dp</dimen>
