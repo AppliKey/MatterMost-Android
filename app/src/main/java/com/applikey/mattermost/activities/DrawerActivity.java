@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,8 +27,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     private static final int ITEM_FIND_MORE_CHANNELS = 0;
     private static final int ITEM_INVITE_MEMBER = 1;
     private static final int ITEM_SETTINGS = 2;
-
-    private static final String TAG = DrawerActivity.class.getSimpleName();
 
     @InjectPresenter
     NavigationPresenter mPresenter;
