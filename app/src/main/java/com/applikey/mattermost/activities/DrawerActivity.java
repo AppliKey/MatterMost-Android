@@ -1,17 +1,18 @@
 package com.applikey.mattermost.activities;
 
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
-import com.applikey.mattermost.utils.kissUtils.utils.SystemUtil;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -27,17 +28,30 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     NavigationPresenter mPresenter;
 
     private Drawer mDrawer;
+    private View mDrawerFooter;
+    private View mDrawerHeader;
 
     @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         initDrawer();
+        mPresenter.initUser();
     }
 
     @Override
     public void startChannelCreating() {
         startActivity(CreateChannelActivity.getIntent(this));
         closeDrawer();
+    }
+
+    @Override
+    public void onUserInit(User user) {
+        ImageView iv_avatar = (ImageView) mDrawerHeader.findViewById(R.id.iv_avatar);
+        TextView tv_name = (TextView) mDrawerHeader.findViewById(R.id.tv_name);
+        TextView tv_team = (TextView) mDrawerHeader.findViewById(R.id.tv_team);
+
+        mImageLoader.displayCircularImage(user.getProfileImage(), iv_avatar);
+        tv_name.setText(user.getUsername());
     }
 
     protected boolean showHamburger() {
@@ -64,6 +78,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         mDrawer = new DrawerBuilder().withActivity(this)
                 .withToolbar(getToolbar())
                 .withActionBarDrawerToggle(true)
+                .withStickyFooter(R.layout.footer_drawer)
                 .withHeader(R.layout.header_drawer)
                 .addDrawerItems(
                         mItemAllChannels,
@@ -76,8 +91,10 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                 })
                 .withSelectedItem(-1)
                 .build();
-        final View header = mDrawer.getHeader();
-        header.setOnClickListener(v -> headerClick());
+        mDrawerFooter = mDrawer.getStickyFooter();
+        mDrawerFooter.setOnClickListener(v -> headerClick());
+
+        mDrawerHeader = mDrawer.getStickyHeader();
 
         final ActionBarDrawerToggle toggle = mDrawer.getActionBarDrawerToggle();
         toggle.setDrawerIndicatorEnabled(false);
@@ -87,10 +104,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         } else {
             toggle.setHomeAsUpIndicator(R.drawable.ic_back);
             getToolbar().setNavigationOnClickListener(v -> onBackPressed());
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            final int statusBarHeight = SystemUtil.getStatusBarHeight(this);
-            header.setPadding(0, statusBarHeight, 0, 0);
         }
     }
 
