@@ -17,7 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/AppToolbar"
-            android:title="@string/find_more_channels"
             app:contentInsetStartWithNavigation="48dp"
             app:navigationIcon="@drawable/ic_back" />
     </android.support.design.widget.AppBarLayout>

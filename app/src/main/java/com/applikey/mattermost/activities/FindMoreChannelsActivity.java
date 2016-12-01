@@ -114,6 +114,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
 
     private void initToolbar() {
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(R.string.find_more_channels);
     }
 
 }
