@@ -24,6 +24,8 @@ public class Constants {
 
     public static final String EMPTY_STRING = "";
 
+    public static final String SPACE = " ";
+
     public static final String MIME_TYPE_IMAGE = "image/*";
 
     public static final String PERSISTENT_PREFS_FILE_NAME = "PersistentPrefs";

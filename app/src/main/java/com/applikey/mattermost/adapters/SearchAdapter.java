@@ -32,6 +32,8 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private String mCurrentUserId;
 
+    private String mSearchText;
+
     public SearchAdapter(ImageLoader imageLoader, String currentUserId) {
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
@@ -76,10 +78,10 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else if (searchType == SearchItem.USER) {
             ((UserViewHolder) vh).bind(mImageLoader, this, (User) mDataSet.get(position));
         } else if (searchType == SearchItem.MESSAGE) {
-            ((ChatListViewHolder) vh).bind(mImageLoader, this, (Message) mDataSet.get(position));
+            ((ChatListViewHolder) vh).bind(mImageLoader, this, (Message) mDataSet.get(position), mSearchText);
         } else if (searchType == SearchItem.MESSAGE_CHANNEL) {
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
-                                                 (Message) mDataSet.get(position));
+                                                 (Message) mDataSet.get(position), mSearchText);
         }
 
     }
@@ -101,6 +103,11 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void clear() {
         mDataSet.clear();
+        notifyDataSetChanged();
+    }
+
+    public void setSearchText(String searchText) {
+        mSearchText = searchText;
         notifyDataSetChanged();
     }
 
