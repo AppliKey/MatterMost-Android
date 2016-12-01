@@ -13,15 +13,12 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
-import rx.Scheduler;
 import rx.Single;
-import rx.functions.Func0;
 
 public class ChannelStorage {
 
@@ -30,12 +27,10 @@ public class ChannelStorage {
     private final Db mDb;
 
     private final Prefs mPrefs;
-    private final Scheduler mDbScheduler;
 
-    public ChannelStorage(final Db db, final Prefs prefs, Scheduler dbScheduler) {
+    public ChannelStorage(final Db db, final Prefs prefs) {
         mDb = db;
         mPrefs = prefs;
-        mDbScheduler = dbScheduler;
     }
 
     public Observable<Channel> findById(String id) {
@@ -43,20 +38,7 @@ public class ChannelStorage {
     }
 
     public Observable<Channel> get(String id) {
-        final AtomicReference<Realm> realmReference = new AtomicReference<>(null);
-        return Observable.defer(new Func0<Observable<Channel>>() {
-            @Override
-            public Observable<Channel> call() {
-                final Realm realm = Realm.getDefaultInstance();
-                realmReference.set(realm);
-                return realm.where(Channel.class).equalTo("id", id).findFirst().asObservable();
-            }
-        })
-                .subscribeOn(mDbScheduler)
-                .unsubscribeOn(mDbScheduler)
-                .filter(channel -> channel.isLoaded() && channel.isValid())
-                .map(channel -> realmReference.get().copyFromRealm(channel))
-                .doOnUnsubscribe(() -> realmReference.get().close());
+        return mDb.getCopiedObject(realm -> realm.where(Channel.class).equalTo("id", id).findFirst());
     }
 
     public void updateLastPost(String channelId, Post post) {

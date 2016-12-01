@@ -2,6 +2,7 @@ package com.applikey.mattermost.injects;
 
 import android.content.Context;
 import android.os.HandlerThread;
+import android.os.Process;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
@@ -58,14 +59,6 @@ public class GlobalModule {
     @PerApp
     EventBus provideEventBus() {
         return EventBus.getDefault();
-    }
-
-    @Provides
-    @PerApp
-    Scheduler provideDbScheduler() {
-        final HandlerThread bgThread = new HandlerThread("dbThread");
-        bgThread.start();
-        return AndroidSchedulers.from(bgThread.getLooper());
     }
 
     @Provides
@@ -147,8 +140,16 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    Db provideDb(Realm realm) {
-        return new Db(realm);
+    Scheduler provideDbScheduler() {
+        final HandlerThread bgThread = new HandlerThread("realm_read_thread", Process.THREAD_PRIORITY_BACKGROUND);
+        bgThread.start();
+        return AndroidSchedulers.from(bgThread.getLooper());
+    }
+
+    @Provides
+    @PerApp
+    Db provideDb(Realm realm, Scheduler dbScheduler) {
+        return new Db(realm, dbScheduler);
     }
 
     @Provides

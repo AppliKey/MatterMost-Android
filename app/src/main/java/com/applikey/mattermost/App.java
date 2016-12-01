@@ -76,7 +76,7 @@ public class App extends Application {
                 .observeForeground(ChatListActivity.class, ChatActivity.class)
                 .doOnNext(observe -> Log.d(TAG, "Chat activities are on " + (observe ? "foreground" : "background")))
                 .switchMap(foreground -> Observable.timer(
-                        foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MILLISECONDS)
+                        foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MINUTES)
                         .map(tick -> foreground))
                 .subscribe(foreground -> {
                     if (foreground) {

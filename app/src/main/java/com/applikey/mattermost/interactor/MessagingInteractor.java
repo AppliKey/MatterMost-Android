@@ -16,7 +16,6 @@ import com.applikey.mattermost.web.Api;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_CHANNEL_VIEWED;
@@ -47,8 +46,7 @@ public class MessagingInteractor {
 
     public Observable<Void> pollUserStatuses() {
         return Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(tick -> mUserStorage.listDirectProfiles().first())
+                .flatMap(tick -> mUserStorage.getDirectUsers().first())
                 .observeOn(Schedulers.io())
                 .flatMap(users -> mApi.getUserStatusesCompatible(Stream.of(users)
                         .map(User::getId)

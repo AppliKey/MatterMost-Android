@@ -22,7 +22,6 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
-import rx.Scheduler;
 
 @Module
 @PerUser
@@ -37,8 +36,8 @@ public class UserModule {
 
     @Provides
     @PerUser
-    ChannelStorage provideChannelStorage(Db db, Prefs prefs, Scheduler scheduler) {
-        return new ChannelStorage(db, prefs, scheduler);
+    ChannelStorage provideChannelStorage(Db db, Prefs prefs) {
+        return new ChannelStorage(db, prefs);
     }
 
     @Provides

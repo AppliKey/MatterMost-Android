@@ -40,7 +40,17 @@ public class UserStorage {
         mDb.saveTransactional(directProfiles.values());
     }
 
-    public void updateUsersStatuses(Map<String, String> usersStatusesMap) {
+    public void updateUsersStatuses(Map<String, String> statusesMap) {
+        mDb.updateMapTransactionalSync(statusesMap, User.class, (user, status, realm) -> {
+            if (user != null) {
+                user.setStatus(status != null
+                        ? User.Status.from(status).ordinal()
+                        : User.Status.OFFLINE.ordinal());
+            }
+        });
+    }
+
+    public void updateUsersStatusesAsync(Map<String, String> usersStatusesMap) {
         mDb.updateMapTransactional(usersStatusesMap, User.class, (user, status, realm) -> {
             if (realm != null && user != null) {
                 user.setStatus(status != null ? User.Status.from(status).ordinal() :
@@ -51,6 +61,10 @@ public class UserStorage {
 
     public Observable<List<User>> listDirectProfiles() {
         return mDb.listRealmObjects(User.class);
+    }
+
+    public Observable<List<User>> getDirectUsers() {
+        return mDb.getCopiedObjects(realm -> realm.where(User.class).findAll());
     }
 
     public Observable<User> getDirectProfile(String id) {

@@ -7,6 +7,7 @@ import com.annimon.stream.Stream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -14,6 +15,7 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
+import rx.Scheduler;
 import rx.Single;
 import rx.functions.Action1;
 import rx.functions.Action3;
@@ -26,9 +28,11 @@ public class Db {
     private static final String TAG = Db.class.getSimpleName();
 
     private final Realm mRealm;
+    private final Scheduler mDbScheduler;
 
-    public Db(Realm realm) {
+    public Db(Realm realm, Scheduler scheduler) {
         mRealm = realm;
+        mDbScheduler = scheduler;
     }
 
     public void saveTransactional(RealmObject object) {
@@ -52,6 +56,38 @@ public class Db {
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty())
                 .map(mRealm::copyFromRealm);
+    }
+
+    public <E extends RealmObject> Observable<List<E>> getCopiedObjects(Func1<Realm, RealmResults<E>> resultsHandler) {
+        final AtomicReference<Realm> realmReference = new AtomicReference<>(null);
+        return Observable.defer(() -> {
+            final Realm realm = Realm.getDefaultInstance();
+            realmReference.set(realm);
+            return resultsHandler.call(realm).asObservable();
+        })
+                .filter(results -> results.isLoaded() && results.isValid())
+                .map(realmReference.get()::copyFromRealm)
+                .subscribeOn(mDbScheduler)
+                .unsubscribeOn(mDbScheduler)
+                .doOnUnsubscribe(realmReference.get()::close);
+    }
+
+    public <E extends RealmObject> Observable<E> getCopiedObject(Func1<Realm, E> objectHandler) {
+        final AtomicReference<Realm> realmReference = new AtomicReference<>(null);
+        return Observable.defer(() -> {
+            final Realm realm = Realm.getDefaultInstance();
+            realmReference.set(realm);
+            final E object = objectHandler.call(realm);
+            return object == null ? Observable.empty() : object.asObservable();
+        })
+                .filter(realmObject -> realmObject.isLoaded() && realmObject.isValid())
+                .map(realmObject -> {
+                    //noinspection unchecked
+                    return realmReference.get().copyFromRealm((E) realmObject);
+                })
+                .subscribeOn(mDbScheduler)
+                .unsubscribeOn(mDbScheduler)
+                .doOnUnsubscribe(realmReference.get()::close);
     }
 
     public <T extends RealmObject> Observable<T> getObjectQualified(Class<T> tClass,
@@ -106,6 +142,18 @@ public class Db {
                     final T object = realm.where(clazz).equalTo("id", entry.getKey()).findFirst();
                     updateFunc.call(object, entry.getValue(), realm);
                 }));
+    }
+
+    public <T extends RealmObject, V> void updateMapTransactionalSync(Map<String, V> valuesMap,
+            Class<T> clazz,
+            Action3<T, V, Realm> updateFunc) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> Stream.of(valuesMap.entrySet())
+                .forEach(entry -> {
+                    final T object = realm.where(clazz).equalTo("id", entry.getKey()).findFirst();
+                    updateFunc.call(object, entry.getValue(), realm);
+                }));
+        realmInstance.close();
     }
 
     public void doTransactional(Action1<Realm> update) {
