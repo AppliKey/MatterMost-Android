@@ -35,7 +35,7 @@
         android:layout_toEndOf="@id/iv_avatar"
         android:textColor="@color/textListSecondary"
         android:textSize="@dimen/drawer_header_text_secondary_size"
-        android:fontFamily="sans-serif-light"
+        android:fontFamily="@string/font_light"
         tools:text="Applikey Sollutions" />
 
 </RelativeLayout>

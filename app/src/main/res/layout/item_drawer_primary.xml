@@ -31,25 +31,19 @@
 
         <TextView
             android:id="@+id/material_drawer_name"
+            style="@style/PrimaryItemTextRtlStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center_vertical|start"
-            android:lines="1"
-            android:maxLines="1"
-            android:textDirection="anyRtl"
+            android:fontFamily="@string/font_medium"
             android:textSize="@dimen/material_drawer_item_primary_text"
             tools:text="Some drawer text" />
 
         <TextView
             android:id="@+id/material_drawer_description"
+            style="@style/PrimaryItemTextRtlStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:gravity="center_vertical|start"
-            android:lines="1"
-            android:maxLines="1"
-            android:textDirection="anyRtl"
+            android:fontFamily="@string/font_regular"
             android:textSize="@dimen/material_drawer_item_primary_description"
             tools:text="Some drawer text" />
     </LinearLayout>
@@ -64,15 +58,14 @@
 
         <TextView
             android:id="@+id/material_drawer_badge"
+            style="@style/PrimaryItemTextBaseStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:fontFamily="@string/font_regular"
             android:gravity="center"
-            android:lines="1"
             android:minWidth="@dimen/drawer_primary_item_badge_min_width"
             android:paddingLeft="@dimen/drawer_primary_item_badge_padding"
             android:paddingRight="@dimen/drawer_primary_item_badge_padding"
-            android:maxLines="1"
             android:textSize="@dimen/material_drawer_item_primary_text"
             tools:text="99" />
 

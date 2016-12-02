@@ -14,14 +14,11 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
-import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.views.CustomPrimaryDrawerItem;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-
-import javax.inject.Inject;
 
 public abstract class DrawerActivity extends BaseMvpActivity implements NavigationView {
 
@@ -31,9 +28,6 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
 
     @InjectPresenter
     NavigationPresenter mPresenter;
-
-    @Inject
-    Prefs mPrefs;
 
     private Drawer mDrawer;
     private View mDrawerFooter;
@@ -55,13 +49,13 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
 
     @Override
     public void onUserInit(User user) {
-        ImageView iv_avatar = (ImageView) mDrawerHeader.findViewById(R.id.iv_avatar);
-        TextView tv_name = (TextView) mDrawerHeader.findViewById(R.id.tv_name);
-        TextView tv_team = (TextView) mDrawerHeader.findViewById(R.id.tv_team);
+        final ImageView ivAvatar = (ImageView) mDrawerHeader.findViewById(R.id.iv_avatar);
+        final TextView tvName = (TextView) mDrawerHeader.findViewById(R.id.tv_name);
+        final TextView tvTeam = (TextView) mDrawerHeader.findViewById(R.id.tv_team);
 
-        mImageLoader.displayCircularImage(user.getProfileImage(), iv_avatar);
-        tv_name.setText(User.getDisplayableName(user));
-        tv_team.setText(mPrefs.getCurrentTeamName());
+        mImageLoader.displayCircularImage(user.getProfileImage(), ivAvatar);
+        tvName.setText(User.getDisplayableName(user));
+        tvTeam.setText(mPresenter.getTeamName());
     }
 
     protected boolean showHamburger() {
