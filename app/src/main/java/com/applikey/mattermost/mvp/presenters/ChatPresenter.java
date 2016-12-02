@@ -73,7 +73,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mChannelStorage.channelById(channelId)
                 .distinctUntilChanged()
                 .doOnNext(channel -> mChannel = channel)
-                .doOnNext(channel -> fetchFirstPageWithClear())
                 .map(channel -> {
                     final String prefix = !mChannel.getType()
                             .equals(Channel.ChannelType.DIRECT.getRepresentation())
@@ -91,6 +90,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mPostStorage.listByChannel(channelId)
                 .first()
                 .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
+                .doOnNext(v -> fetchFirstPageWithClear())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::onDataReady, mErrorHandler::handleError);
 
