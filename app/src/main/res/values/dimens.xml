@@ -102,7 +102,7 @@
     <dimen name="added_people_rv_margin">20dp</dimen>
 
     <dimen name="search_chat_toolbar_text_size">18sp</dimen>
-    <dimen name="drawer_item_text_size">18sp</dimen>
+    <dimen name="drawer_item_text_size">16sp</dimen>
 
     <dimen name="chat_group_list_photo_size">30dp</dimen>
     <dimen name="chat_group_list_photo_padding">2dp</dimen>
@@ -132,4 +132,8 @@
     <dimen name="drawer_header_avatar_margin">30dp</dimen>
     <dimen name="drawer_header_avatar_size">40dp</dimen>
     <dimen name="material_drawer_sticky_footer_elevation">0dp</dimen>
+
+    <dimen name="drawer_primary_item_badge_min_width">20dp</dimen>
+    <dimen name="drawer_primary_item_badge_padding">1dp</dimen>
+    <dimen name="drawer_header_text_secondary_size">14sp</dimen>
 </resources>

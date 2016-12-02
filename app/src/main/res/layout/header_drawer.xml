@@ -34,7 +34,8 @@
         android:layout_marginStart="@dimen/normal"
         android:layout_toEndOf="@id/iv_avatar"
         android:textColor="@color/textListSecondary"
-        android:textSize="@dimen/text_primary_button"
+        android:textSize="@dimen/drawer_header_text_secondary_size"
+        android:fontFamily="sans-serif-light"
         tools:text="Applikey Sollutions" />
 
 </RelativeLayout>

@@ -9,7 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_add_white"
-        android:padding="@dimen/normal"
+        android:paddingTop="@dimen/margin_default"
+        android:paddingBottom="@dimen/margin_default"
+        android:paddingStart="@dimen/large"
+        android:paddingEnd="@dimen/large"
         android:text="@string/new_group_or_channel"
         android:textAppearance="@style/DrawerItemTextAppearance"
         android:textColor="@android:color/white" />

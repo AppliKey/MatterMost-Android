@@ -15,6 +15,7 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.views.NavigationView;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.views.CustomPrimaryDrawerItem;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -74,13 +75,13 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     }
 
     private void initDrawer() {
-        final PrimaryDrawerItem mItemAllChannels = new PrimaryDrawerItem().withName(R.string.find_more_channels)
+        final PrimaryDrawerItem mItemAllChannels = new CustomPrimaryDrawerItem().withName(R.string.find_more_channels)
                 .withIdentifier(ITEM_FIND_MORE_CHANNELS)
                 .withTypeface(Typeface.SANS_SERIF);
-        final PrimaryDrawerItem mItemInviteNewMember = new PrimaryDrawerItem().withName(R.string.invite_new_member)
+        final PrimaryDrawerItem mItemInviteNewMember = new CustomPrimaryDrawerItem().withName(R.string.invite_new_member)
                 .withIdentifier(ITEM_INVITE_MEMBER)
                 .withTypeface(Typeface.SANS_SERIF);
-        final PrimaryDrawerItem mItemSettings = new PrimaryDrawerItem().withName(R.string.settings)
+        final PrimaryDrawerItem mItemSettings = new CustomPrimaryDrawerItem().withName(R.string.settings)
                 .withIdentifier(ITEM_SETTINGS)
                 .withTypeface(Typeface.SANS_SERIF);
 
