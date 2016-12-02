@@ -2,7 +2,6 @@ package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.UserProfileView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -19,8 +18,6 @@ import rx.android.schedulers.AndroidSchedulers;
 public class UserProfilePresenter extends BasePresenter<UserProfileView>
         implements FavoriteablePresenter {
 
-    private static final String TAG = UserProfilePresenter.class.getSimpleName();
-
     @Inject
     UserStorage mUserStorage;
 
@@ -33,7 +30,7 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
     @Inject
     ErrorHandler mErrorHandler;
 
-    private User mUser;
+    private String mUserId;
     private Channel mChannel;
 
     public UserProfilePresenter() {
@@ -41,10 +38,10 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
     }
 
     public void getInitialData(String userId) {
+        mUserId = userId;
         final UserProfileView view = getViewState();
 
         final Subscription subscribe = mUserStorage.getDirectProfile(userId)
-                .doOnNext(user -> mUser = user)
                 .doOnNext(view::showBaseDetails)
                 .flatMap(user -> mChannelStorage.directChannel(userId))
                 .doOnNext(channel -> mChannel = channel)
@@ -59,16 +56,14 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
     public void toggleFavorite() {
         final boolean state = !mChannel.isFavorite();
 
-        mChannelStorage.setFavorite(mChannel, state);
+        mChannelStorage.setFavorite(mChannel.getId(), state);
         getViewState().onMakeFavorite(state);
     }
 
     //TODO Create direct chat
     public void sendDirectMessage() {
-        final Subscription subscribe = mChannelStorage.directChannel(mUser.getId())
-                .first()
-                .subscribe(channel -> getViewState().openDirectChannel(channel),
-                           mErrorHandler::handleError);
+        final Subscription subscribe = mChannelStorage.directChannel(mUserId)
+                .subscribe(channel -> getViewState().openDirectChannel(channel), mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
     }

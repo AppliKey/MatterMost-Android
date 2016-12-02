@@ -1,5 +1,6 @@
 package com.applikey.mattermost.storage.db;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.annimon.stream.Stream;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.realm.RealmResults;
-import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
 
@@ -117,34 +117,61 @@ public class ChannelStorage {
         setLastPost(channel, lastPost);
     }
 
-    public void setFavorite(Channel channel, boolean isFavorite) {
-        mDb.updateTransactional(Channel.class, channel.getId(), (channel1, realm) -> {
-            channel1.setFavorite(isFavorite);
+    public void setFavorite(String channelId, boolean isFavorite) {
+        mDb.updateTransactional(Channel.class, channelId, (channel, realm) -> {
+            channel.setFavorite(isFavorite);
             return true;
         });
     }
 
-    public void setLastPost(Channel channel, Post lastPost) {
-        final String channelId = channel.getId();
+    public void setLastPost(@NonNull Channel channel, @NonNull Post lastPost) {
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            final Post realmPost;
+            Post realmPost = realm.copyToRealmOrUpdate(lastPost);
 
-            //If last post null, find last post
-            if (lastPost == null) {
-                final RealmResults<Post> result = realm.where(Post.class)
-                        .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
-                        .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING);
-                if (result.size() > 0) {
-                    realmPost = result.first();
-                } else {
-                    return false;
-                }
-            } else {
-                realmPost = realm.copyToRealmOrUpdate(lastPost);
-            }
             final User author = realm.where(User.class)
                     .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
                     .findFirst();
+
+            final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+                    realm.where(Post.class)
+                            .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                            .findFirst() : null;
+
+            realmPost.setAuthor(author);
+            realmPost.setRootPost(rootPost);
+
+            realmChannel.setLastPost(realmPost);
+            realmChannel.updateLastActivityTime();
+            return true;
+        });
+    }
+
+    public void updateLastPosts(LastPostDto lastPostDto) {
+        final String currentUserId = mPrefs.getCurrentUserId();
+
+        final Post lastPost = lastPostDto.getPost();
+
+        mDb.doTransactional(realm -> {
+            final User currentUser = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, currentUserId)
+                    .findFirst();
+
+            final String channelId = lastPost.getChannelId();
+
+            final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
+
+            final Channel realmChannel = realm.where(Channel.class)
+                    .equalTo(Channel.FIELD_ID, channelId)
+                    .findFirst();
+
+            final User author;
+            if (TextUtils.equals(realmPost.getUserId(), currentUserId)) {
+                author = currentUser;
+            } else {
+                author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                        .findFirst();
+            }
 
             final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
                     realm.where(Post.class)
@@ -154,50 +181,10 @@ public class ChannelStorage {
 
             realmPost.setAuthor(author);
             realmPost.setRootPost(rootPost);
+
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
-            return true;
-        });
-    }
 
-    public void updateLastPosts(List<LastPostDto> lastPosts) {
-        final String currentUserId = mPrefs.getCurrentUserId();
-        mDb.doTransactional(realm -> {
-            final User currentUser = realm.where(User.class)
-                    .equalTo(User.FIELD_NAME_ID, currentUserId)
-                    .findFirst();
-            for (int i = 0; i < lastPosts.size(); i++) {
-                if (lastPosts.get(i) == null) {
-                    continue;
-                }
-                final String channelId = lastPosts.get(i).getChannelId();
-
-                final Post realmPost = realm.copyToRealmOrUpdate(lastPosts.get(i).getPost());
-
-                final Channel realmChannel = realm.where(Channel.class)
-                        .equalTo(Channel.FIELD_ID, channelId)
-                        .findFirst();
-
-                final User author;
-                if (TextUtils.equals(realmPost.getUserId(), currentUserId)) {
-                    author = currentUser;
-                } else {
-                    author = realm.where(User.class)
-                            .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
-                            .findFirst();
-                }
-
-                final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
-                        realm.where(Post.class)
-                                .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
-                                .findFirst()
-                        : null;
-
-                realmPost.setAuthor(author);
-                realmPost.setRootPost(rootPost);
-                realmChannel.setLastPost(realmPost);
-                realmChannel.updateLastActivityTime();
-            }
         });
     }
 

@@ -57,7 +57,7 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
         vh.getContainer().setTag(position);
     }
 
-    public void setOnClickListener(ChannelListener listener) {
+    public void setChannelListener(ChannelListener listener) {
         this.mChannelListener = listener;
     }
 
