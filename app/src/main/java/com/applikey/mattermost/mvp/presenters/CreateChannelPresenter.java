@@ -35,7 +35,7 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
                 .subscribe(
                         results -> getViewState().showAllUsers(results),
                         error -> getViewState().showError(mErrorHandler.getErrorMessage(error))
-                );
+                          );
         mSubscription.add(subscription);
     }
 
@@ -44,9 +44,7 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
         getViewState().setButtonAddAllState(isAllAlreadyInvited);
     }
 
-    public void createChannel(String channelName,
-            String channelDescription,
-            boolean isPublicChannel) {
+    public void createChannel(String channelName, String channelDescription, boolean isPublicChannel) {
         if (TextUtils.isEmpty(channelName)) {
             getViewState().showEmptyChannelNameError(isPublicChannel);
             return;
@@ -57,7 +55,7 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
                 : Channel.ChannelType.PRIVATE.getRepresentation();
 
         final ChannelRequest channelRequest = new ChannelRequest(channelName, channelDescription,
-                channelType);
+                                                                 channelType);
         createChannelWithRequest(channelRequest);
     }
 
@@ -67,17 +65,19 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
                 .first()
                 .observeOn(Schedulers.io())
                 .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
-                .compose(doOnUi(createdChannel -> mChannelStorage.save(createdChannel.getChannel()),
-                        Schedulers.io()))
-                .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()),
-                        AddedUser::new)
+                .compose(doOnUi(createdChannel -> {
+                    final Channel channel = createdChannel.getChannel();
+                    channel.updateLastActivityTime();
+                    mChannelStorage.save(channel);
+                }, Schedulers.io()))
+                .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()), AddedUser::new)
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
-                        user.getCreatedChannel().getChannel().getId(),
-                        new RequestUserId(user.getUser().getId())))
+                                                       user.getCreatedChannel().getChannel().getId(),
+                                                       new RequestUserId(user.getUser().getId())))
                 .toCompletable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> getViewState().onChannelCreated(),
-                        error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
+                           error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
     }
 }
