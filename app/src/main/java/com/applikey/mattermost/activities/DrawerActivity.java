@@ -38,7 +38,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
         super.onPostCreate(savedInstanceState);
         App.getUserComponent().inject(this);
         initDrawer();
-        mPresenter.initUser();
+        mPresenter.retrieveUser();
     }
 
     @Override
@@ -48,7 +48,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
     }
 
     @Override
-    public void onUserInit(User user) {
+    public void onUserRetrieve(User user) {
         final ImageView ivAvatar = (ImageView) mDrawerHeader.findViewById(R.id.iv_avatar);
         final TextView tvName = (TextView) mDrawerHeader.findViewById(R.id.tv_name);
         final TextView tvTeam = (TextView) mDrawerHeader.findViewById(R.id.tv_team);

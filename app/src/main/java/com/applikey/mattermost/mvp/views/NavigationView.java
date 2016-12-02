@@ -10,6 +10,6 @@ public interface NavigationView extends MvpView {
 
     void startChannelCreating();
 
-    void onUserInit(User user);
+    void onUserRetrieve(User user);
 
 }

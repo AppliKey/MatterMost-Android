@@ -31,10 +31,10 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
         return mPrefs.getCurrentTeamName();
     }
 
-    public void initUser() {
+    public void retrieveUser() {
         final Subscription subscription =
                 mUserStorage.getMe()
-                        .subscribe(getViewState()::onUserInit, Throwable::printStackTrace);
+                        .subscribe(getViewState()::onUserRetrieve, Throwable::printStackTrace);
 
         mSubscription.add(subscription);
     }
