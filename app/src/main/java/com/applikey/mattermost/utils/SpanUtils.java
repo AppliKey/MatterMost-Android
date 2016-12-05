@@ -14,8 +14,8 @@ public class SpanUtils {
     }
 
     public static Spannable createSpannableBoldString(@NonNull String fullText, @NonNull String searchText) {
-        String text = fullText.toLowerCase();
-        String search = searchText.toLowerCase();
+        final String text = fullText.toLowerCase();
+        final String search = searchText.toLowerCase();
         final int searchLength = search.length();
         final Spannable spannableString = new SpannableString(fullText);
         int index = text.indexOf(search);
