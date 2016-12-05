@@ -171,6 +171,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         }
         mSearchString = text;
         final SearchView view = getViewState();
+        view.setSearchText(text);
         view.clearData();
         getData(mSearchString);
     }

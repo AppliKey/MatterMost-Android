@@ -21,4 +21,6 @@ public interface SearchView extends MvpView {
 
     void clearData();
 
+    void setSearchText(String text);
+
 }

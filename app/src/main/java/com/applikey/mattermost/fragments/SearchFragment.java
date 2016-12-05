@@ -123,4 +123,9 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     public void clearData() {
         mAdapter.clear();
     }
+
+    @Override
+    public void setSearchText(String text) {
+        mAdapter.setSearchText(text);
+    }
 }
