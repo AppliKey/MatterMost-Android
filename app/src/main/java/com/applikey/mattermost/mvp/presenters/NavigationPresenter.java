@@ -2,22 +2,26 @@ package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.NavigationView;
-import com.applikey.mattermost.storage.db.StorageDestroyer;
+import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
-import dagger.Lazy;
+import rx.Subscription;
 
 @InjectViewState
 public class NavigationPresenter extends BasePresenter<NavigationView> {
 
     @Inject
-    Lazy<StorageDestroyer> mStorageDestroyer;
+    UserStorage mUserStorage;
 
     @Inject
-    Lazy<Prefs> mPrefs;
+    Prefs mPrefs;
+
+    @Inject
+    ErrorHandler mErrorHandler;
 
     public NavigationPresenter() {
         App.getUserComponent().inject(this);
@@ -25,5 +29,17 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
 
     public void createNewChannel() {
         getViewState().startChannelCreating();
+    }
+
+    public String getTeamName() {
+        return mPrefs.getCurrentTeamName();
+    }
+
+    public void retrieveUser() {
+        final Subscription subscription =
+                mUserStorage.getMe()
+                        .subscribe(getViewState()::onUserRetrieve, mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
     }
 }

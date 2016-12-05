@@ -1,6 +1,7 @@
 package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.activities.DrawerActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.SearchFragment;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
@@ -82,6 +83,8 @@ public interface UserComponent {
     void inject(SearchFragment searchFragment);
 
     void inject(FindMoreChannelsPresenter presenter);
+
+    void inject(DrawerActivity drawerActivity);
 
     @Subcomponent.Builder
     interface Builder {

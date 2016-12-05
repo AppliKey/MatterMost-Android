@@ -19,6 +19,7 @@ public class Prefs {
     private static final String KEY_SERVER_URL = Constants.PACKAGE_NAME + ".SERVER_URL";
     private static final String KEY_AUTH_TOKEN = Constants.PACKAGE_NAME + ".AUTH_TOKEN";
     private static final String KEY_GCM_TOKEN = Constants.PACKAGE_NAME + ".GCM_TOKEN";
+    private static final String KEY_TEAM_NAME = Constants.PACKAGE_NAME + ".TEAM_NAME";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -42,6 +43,15 @@ public class Prefs {
 
     public void setCurrentTeamId(@Nullable String id) {
         mSharedPreferences.edit().putString(KEY_TEAM_ID, id).apply();
+    }
+
+    @Nullable
+    public String getCurrentTeamName() {
+        return mSharedPreferences.getString(KEY_TEAM_NAME, null);
+    }
+
+    public void setCurrentTeamName(@Nullable String id) {
+        mSharedPreferences.edit().putString(KEY_TEAM_NAME, id).apply();
     }
 
     @Nullable

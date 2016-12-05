@@ -130,4 +130,15 @@
         <item name="android:textSize">@dimen/text_title_size</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="PrimaryItemTextBaseStyle">
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="PrimaryItemTextRtlStyle" parent="PrimaryItemTextBaseStyle">
+        <item name="android:textDirection">anyRtl</item>
+    </style>
+
 </resources>
