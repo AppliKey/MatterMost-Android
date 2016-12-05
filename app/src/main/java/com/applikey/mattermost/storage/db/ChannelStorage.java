@@ -2,6 +2,7 @@ package com.applikey.mattermost.storage.db;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
@@ -146,11 +147,15 @@ public class ChannelStorage {
         });
     }
 
+    // FIXME Performance drop
     public void updateLastPosts(LastPostDto lastPostDto) {
+        final long t = System.nanoTime();
+
         final String currentUserId = mPrefs.getCurrentUserId();
 
         final Post lastPost = lastPostDto.getPost();
 
+//        /*
         mDb.doTransactional(realm -> {
             final User currentUser = realm.where(User.class)
                     .equalTo(User.FIELD_NAME_ID, currentUserId)
@@ -165,17 +170,17 @@ public class ChannelStorage {
                     .findFirst();
 
             final User author;
-            if (TextUtils.equals(realmPost.getUserId(), currentUserId)) {
+            if (TextUtils.equals(lastPost.getUserId(), currentUserId)) {
                 author = currentUser;
             } else {
                 author = realm.where(User.class)
-                        .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                        .equalTo(User.FIELD_NAME_ID, lastPost.getUserId())
                         .findFirst();
             }
 
-            final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+            final Post rootPost = !TextUtils.isEmpty(lastPost.getRootId()) ?
                     realm.where(Post.class)
-                            .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                            .equalTo(Post.FIELD_NAME_ID, lastPost.getRootId())
                             .findFirst()
                     : null;
 
@@ -184,8 +189,11 @@ public class ChannelStorage {
 
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
-
         });
+//        */
+
+        Log.d("123", System.nanoTime() - t + "");
+
     }
 
     public void updateLastViewedAt(String id) {

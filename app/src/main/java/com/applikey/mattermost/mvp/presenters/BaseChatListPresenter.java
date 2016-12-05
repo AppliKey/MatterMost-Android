@@ -56,11 +56,9 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
     ErrorHandler mErrorHandler;
 
     private String mTeamId;
-
+    private Emitter<? super String> mChannelEmitter;
     private final Set<String> mPreviewLoadedChannels = new HashSet<>();
     private final Set<String> mUsersLoadedChannels = new HashSet<>();
-
-    private Emitter<? super String> mChannelEmitter;
 
     BaseChatListPresenter() {
         App.getUserComponent().inject(this);
@@ -115,6 +113,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         mSubscription.add(subscription);
     }
 
+    // TODO naming
     private void createObservable() {
         final Observable<String> channelObservable =
                 Observable.fromEmitter(emitter -> mChannelEmitter = emitter, Emitter.BackpressureMode.BUFFER);
@@ -123,7 +122,9 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
                 .observeOn(Schedulers.io())
                 .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(post -> mChannelStorage.updateLastPosts(post), mErrorHandler::handleError);
+                .subscribe(post -> {
+                    mChannelStorage.updateLastPosts(post);
+                }, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
     }
