@@ -4,6 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.mvp.views.NavigationView;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
@@ -18,6 +19,9 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
 
     @Inject
     Prefs mPrefs;
+
+    @Inject
+    ErrorHandler mErrorHandler;
 
     public NavigationPresenter() {
         App.getUserComponent().inject(this);
@@ -34,7 +38,7 @@ public class NavigationPresenter extends BasePresenter<NavigationView> {
     public void retrieveUser() {
         final Subscription subscription =
                 mUserStorage.getMe()
-                        .subscribe(getViewState()::onUserRetrieve, Throwable::printStackTrace);
+                        .subscribe(getViewState()::onUserRetrieve, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }

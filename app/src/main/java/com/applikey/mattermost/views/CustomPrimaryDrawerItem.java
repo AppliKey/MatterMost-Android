@@ -3,7 +3,6 @@ package com.applikey.mattermost.views;
 import com.applikey.mattermost.R;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 
-
 public class CustomPrimaryDrawerItem extends PrimaryDrawerItem {
 
     @Override
