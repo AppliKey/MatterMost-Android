@@ -41,11 +41,9 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
                 return true;
             };
 
-    public static Intent getIntent(Context context, boolean clearBackstack) {
+    public static Intent getIntent(Context context) {
         final Intent intent = new Intent(context, ChooseServerActivity.class);
-        if (clearBackstack) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
     }
 
