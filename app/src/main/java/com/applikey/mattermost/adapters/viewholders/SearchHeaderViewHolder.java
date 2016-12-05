@@ -10,10 +10,6 @@ import com.applikey.mattermost.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * @author Anatoliy Chub
- */
-
 public class SearchHeaderViewHolder extends RecyclerView.ViewHolder {
 
     @Bind(R.id.tv_header)
