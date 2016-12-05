@@ -301,11 +301,6 @@ public class User extends RealmObject
     }
 
     @Override
-    public String toString() {
-        return User.getDisplayableName(this);
-    }
-
-    @Override
     public int compareTo(@NonNull User o) {
         if (this == o) {
             return 0;
