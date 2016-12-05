@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <TextView
+        android:id="@+id/tv_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_default"
+        android:layout_marginStart="@dimen/user_avatar_right_margin"
+        android:paddingTop="@dimen/margin_default"
+        android:paddingBottom="@dimen/small"
+        android:textAllCaps="true"
+        android:letterSpacing="0.2"
+        android:textColor="@color/textListSecondary"
+        tools:text="Header"
+        android:textSize="@dimen/search_list_header_text_size" />
+
+</FrameLayout>
