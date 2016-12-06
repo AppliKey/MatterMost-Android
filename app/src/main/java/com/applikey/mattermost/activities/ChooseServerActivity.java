@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
@@ -34,11 +35,15 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     @InjectPresenter
     ChooseServerPresenter mPresenter;
 
-    public static Intent getIntent(Context context, boolean clearBackstack) {
+    private final TextView.OnEditorActionListener mOnInputDoneActionListener =
+            (v, actionId, event) -> {
+                onProceed();
+                return true;
+            };
+
+    public static Intent getIntent(Context context) {
         final Intent intent = new Intent(context, ChooseServerActivity.class);
-        if (clearBackstack) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
     }
 
@@ -51,6 +56,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         ButterKnife.bind(this);
 
         mEtServerUrl.addTextChangedListener(mTextWatcher);
+        mEtServerUrl.setOnEditorActionListener(mOnInputDoneActionListener);
         disableButton();
     }
 
