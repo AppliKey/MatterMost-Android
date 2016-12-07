@@ -10,6 +10,7 @@ import com.applikey.mattermost.adapters.channel.viewholder.GroupChatListViewHold
 import com.applikey.mattermost.adapters.viewholders.ChatListViewHolder;
 import com.applikey.mattermost.adapters.viewholders.ClickableViewHolder;
 import com.applikey.mattermost.adapters.viewholders.MessageChannelViewHolder;
+import com.applikey.mattermost.adapters.viewholders.SearchHeaderViewHolder;
 import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
@@ -17,12 +18,13 @@ import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
 import com.applikey.mattermost.web.images.ImageLoader;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-        implements RecyclerItemClickListener.OnItemClickListener {
+        implements RecyclerItemClickListener.OnItemClickListener, StickyRecyclerHeadersAdapter<SearchHeaderViewHolder> {
 
     private List<SearchItem> mDataSet = new ArrayList<>();
 
@@ -40,20 +42,19 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                      @SearchItem.Type int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view;
         final ClickableViewHolder viewHolder;
 
-        if (viewType == SearchItem.CHANNEL) {
+        if (viewType == SearchItem.Type.CHANNEL.ordinal()) {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_group_chat, parent, false);
             viewHolder = new GroupChatListViewHolder(view, mCurrentUserId);
-        } else if (viewType == SearchItem.MESSAGE_CHANNEL) {
+        } else if (viewType == SearchItem.Type.MESSAGE_CHANNEL.ordinal()) {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_group_chat, parent, false);
             viewHolder = new MessageChannelViewHolder(view, mCurrentUserId);
-        } else if (viewType == SearchItem.USER) {
+        } else if (viewType == SearchItem.Type.USER.ordinal()) {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_search_user, parent, false);
             viewHolder = new UserViewHolder(view);
@@ -69,17 +70,17 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
 
-        final int searchType = mDataSet.get(position).getSearchType();
+        final SearchItem.Type searchType = mDataSet.get(position).getSearchType();
 
-        if (searchType == SearchItem.CHANNEL) {
+        if (searchType.equals(SearchItem.Type.CHANNEL)) {
             GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
             viewHolder.bind(mImageLoader, (Channel) mDataSet.get(position));
             viewHolder.setClickListener(this);
-        } else if (searchType == SearchItem.USER) {
+        } else if (searchType.equals(SearchItem.Type.USER)) {
             ((UserViewHolder) vh).bind(mImageLoader, this, (User) mDataSet.get(position));
-        } else if (searchType == SearchItem.MESSAGE) {
+        } else if (searchType.equals(SearchItem.Type.MESSAGE)) {
             ((ChatListViewHolder) vh).bind(mImageLoader, this, (Message) mDataSet.get(position), mSearchText);
-        } else if (searchType == SearchItem.MESSAGE_CHANNEL) {
+        } else if (searchType.equals(SearchItem.Type.MESSAGE_CHANNEL)) {
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
                                                  (Message) mDataSet.get(position), mSearchText);
         }
@@ -88,7 +89,24 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        return mDataSet.get(position).getSearchType();
+        return mDataSet.get(position).getSearchType().ordinal();
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+        return mDataSet.get(position).getSearchType().ordinal();
+    }
+
+    @Override
+    public SearchHeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        final View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.header_search_all, parent, false);
+        return new SearchHeaderViewHolder(view);
+    }
+
+    @Override
+    public void onBindHeaderViewHolder(SearchHeaderViewHolder holder, int position) {
+        holder.setHeader(mDataSet.get(position).getSearchType().getRes());
     }
 
     @Override
@@ -126,6 +144,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public interface ClickListener {
+
         void onItemClicked(SearchItem searchItem);
     }
 

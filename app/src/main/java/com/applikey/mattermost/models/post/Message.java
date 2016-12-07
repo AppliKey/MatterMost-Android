@@ -4,6 +4,9 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 
+import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE;
+import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE_CHANNEL;
+
 public class Message implements SearchItem {
 
     private Channel channel;
@@ -42,7 +45,7 @@ public class Message implements SearchItem {
     }
 
     @Override
-    public int getSearchType() {
+    public Type getSearchType() {
         return Channel.ChannelType.fromRepresentation(channel.getType())
                 == Channel.ChannelType.DIRECT ? MESSAGE : MESSAGE_CHANNEL;
     }

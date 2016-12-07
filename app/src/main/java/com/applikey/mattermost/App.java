@@ -1,6 +1,7 @@
 package com.applikey.mattermost;
 
 import android.app.Application;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.applikey.mattermost.activities.ChatActivity;
@@ -33,6 +34,7 @@ public class App extends Application {
     private static final String TAG = "App";
 
     private static ApplicationComponent mComponent;
+
     private static UserComponent mUserComponent;
 
     @Inject
@@ -42,7 +44,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Realm.init(this);
-
+        MultiDex.install(this);
         final Fabric fabric = new Fabric.Builder(this)
                 .kits(new Crashlytics())
                 .debuggable(false)
