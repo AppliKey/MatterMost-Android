@@ -10,6 +10,8 @@ import com.vdurmont.emoji.EmojiParser;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE;
+
 public class Post extends RealmObject implements SearchItem {
 
     public static final String FIELD_NAME_ID = "id";
@@ -175,7 +177,7 @@ public class Post extends RealmObject implements SearchItem {
     }
 
     @Override
-    public int getSearchType() {
+    public Type getSearchType() {
         return MESSAGE;
     }
 
@@ -191,5 +193,21 @@ public class Post extends RealmObject implements SearchItem {
     @Override
     public int compareByDate(SearchItem item) {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id='" + id + '\'' +
+                ", channelId='" + channelId + '\'' +
+                ", rootId='" + rootId + '\'' +
+                ", rootPost=" + rootPost +
+                ", parentId='" + parentId + '\'' +
+                ", createdAt=" + createdAt +
+                ", userId='" + userId + '\'' +
+                ", message='" + message + '\'' +
+                ", priority=" + priority +
+                ", author=" + author +
+                '}';
     }
 }

@@ -162,6 +162,6 @@ public final class ErrorHandler {
         mStorageDestroyer.deleteDatabase();
         App.releaseUserComponent();
 
-        mContext.startActivity(ChooseServerActivity.getIntent(mContext, true));
+        mContext.startActivity(ChooseServerActivity.getIntent(mContext));
     }
 }

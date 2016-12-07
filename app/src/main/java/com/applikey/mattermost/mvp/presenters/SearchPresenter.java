@@ -89,13 +89,13 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     public void handleItemClick(SearchItem item) {
         final SearchView view = getViewState();
         switch (item.getSearchType()) {
-            case SearchItem.CHANNEL:
+            case CHANNEL:
                 view.startChatView((Channel) item);
                 break;
-            case SearchItem.MESSAGE:
+            case MESSAGE:
                 view.startChatView(((Message) item).getChannel());
                 break;
-            case SearchItem.USER:
+            case USER:
                 final User user = ((User) item);
                 mSubscription.add(mChannelStorage.getChannel(user.getId())
                                           .toObservable()
@@ -103,7 +103,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                                           .onErrorResumeNext(t -> Observable.empty())
                                           .subscribe(view::startChatView, mErrorHandler::handleError));
                 break;
-            case SearchItem.MESSAGE_CHANNEL:
+            case MESSAGE_CHANNEL:
                 view.startChatView(((Message) item).getChannel());
                 break;
         }
@@ -166,7 +166,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
 
     protected void onInputTextChanged(SearchTextChanged event) {
         String text = event.getText();
-        if(mSearchString.equals(text)){
+        if (mSearchString.equals(text)) {
             return;
         }
         mSearchString = text;
@@ -175,6 +175,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         view.clearData();
         getData(mSearchString);
     }
+
     public abstract boolean isDataRequestValid(String text);
 
     public abstract void doRequest(SearchView view, String text);

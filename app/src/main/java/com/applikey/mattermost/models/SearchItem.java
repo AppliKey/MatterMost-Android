@@ -1,21 +1,11 @@
 package com.applikey.mattermost.models;
 
-import android.support.annotation.IntDef;
+import android.support.annotation.StringRes;
 
-import java.lang.annotation.Retention;
-
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import com.applikey.mattermost.R;
 
 // TODO: 29.11.16 It needs refactoring. We should use composition instead inheritance
 public interface SearchItem {
-
-    int USER = 0;
-
-    int CHANNEL = 1;
-
-    int MESSAGE = 2;
-
-    int MESSAGE_CHANNEL = 3;
 
     int PRIORITY_USER = 0;
 
@@ -23,14 +13,24 @@ public interface SearchItem {
 
     int PRIORITY_CHANNEL = 2;
 
-    @Retention(SOURCE)
-    @IntDef({CHANNEL, USER, MESSAGE, MESSAGE_CHANNEL})
-    @interface Type {
+    enum Type {
+        CHANNEL(R.string.header_channel),
+        USER(R.string.header_people),
+        MESSAGE(R.string.header_message),
+        MESSAGE_CHANNEL(R.string.header_message);
 
+        public int getRes() {
+            return res;
+        }
+
+        private int res;
+
+        Type(@StringRes int res) {
+            this.res = res;
+        }
     }
 
-    @Type
-    int getSearchType();
+    Type getSearchType();
 
     int getSortPriority();
 

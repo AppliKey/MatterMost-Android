@@ -19,6 +19,8 @@ import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
 
+import static com.applikey.mattermost.models.SearchItem.Type.CHANNEL;
+
 public class Channel extends RealmObject implements SearchItem {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
@@ -238,7 +240,7 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     @Override
-    public int getSearchType() {
+    public Type getSearchType() {
         return CHANNEL;
     }
 

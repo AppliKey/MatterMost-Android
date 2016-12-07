@@ -81,6 +81,11 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         setUnreadStatus(channel);
     }
 
+    protected void setMessageDate(Message message) {
+        getLastMessageTime().setText(
+                TimeUtil.formatTimeOrDateOnlyChannel(message.getPost().getCreatedAt()));
+    }
+
     private String getMessagePreview(Channel channel, Context context) {
         final Post lastPost = channel.getLastPost();
         final String messagePreview;
