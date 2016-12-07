@@ -90,7 +90,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mPostStorage.listByChannel(channelId)
                 .first()
                 .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
-                .doOnNext(v -> fetchFirstPageWithClear())
+                .doOnNext(v -> fetchFirstPageWithClear(channelId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::onDataReady, mErrorHandler::handleError);
 
@@ -110,15 +110,15 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         if (!mFirstFetched) {
             return;
         }
-        fetchPage(0, false);
+        fetchPage(0, mChannel.getId(), false);
     }
 
-    public void fetchFirstPageWithClear() {
-        fetchPage(0, true);
+    public void fetchFirstPageWithClear(String channelId) {
+        fetchPage(0, channelId, true);
     }
 
     public void fetchNextPage(int totalItems) {
-        fetchPage(totalItems, false);
+        fetchPage(totalItems, mChannel.getId(), false);
     }
 
     public void deleteMessage(String channelId, Post post) {
@@ -210,8 +210,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mNotificationManager.dismissNotification(channelId);
     }
 
-    private void fetchPage(int totalItems, boolean clear) {
-        final String channelId = mChannel.getId();
+    private void fetchPage(int totalItems, String channelId, boolean clear) {
         final ChatView view = getViewState();
 
         final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)

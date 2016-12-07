@@ -192,4 +192,20 @@ public class Post extends RealmObject implements SearchItem {
     public int compareByDate(SearchItem item) {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id='" + id + '\'' +
+                ", channelId='" + channelId + '\'' +
+                ", rootId='" + rootId + '\'' +
+                ", rootPost=" + rootPost +
+                ", parentId='" + parentId + '\'' +
+                ", createdAt=" + createdAt +
+                ", userId='" + userId + '\'' +
+                ", message='" + message + '\'' +
+                ", priority=" + priority +
+                ", author=" + author +
+                '}';
+    }
 }
