@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -192,12 +190,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onDataReady(RealmResults<Post> posts) {
-        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
-                mChannelType);
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
                                    channelType, mChannelLastViewed, onPostLongClick);
 
-        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
 
@@ -205,14 +201,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+
     public void showEmpty(boolean show) {
         mSrlChat.setVisibility(show ? GONE : VISIBLE);
         mTvEmptyState.setVisibility(show ? VISIBLE : GONE);
-    }
-
-    @Override
-    public void onDataFetched() {
-        Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
     }
 
     @Override
