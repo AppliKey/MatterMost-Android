@@ -99,7 +99,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
     @OnEditorAction(R.id.et_server)
     boolean onDoneClick(int actionId) {
-        if(actionId == EditorInfo.IME_ACTION_DONE) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
             onProceed();
         }
         return true;
