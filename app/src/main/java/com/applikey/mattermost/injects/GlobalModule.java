@@ -107,7 +107,7 @@ public class GlobalModule {
 
         // TODO: 07.12.16 CACHE DISABLED IN DEBUG BUILD TO ALLOW DEBUG BY STETHO.
         // (WITH CACHE WE HAVE " 304 NOT MODIFIED" IN RESPONSE)
-        if (BuildConfig.DEBUG) {
+        if (!BuildConfig.DEBUG) {
             final File baseDir = mApplicationContext.getCacheDir();
             if (baseDir != null) {
                 final File cacheDir = new File(baseDir, "HttpResponseCache");
