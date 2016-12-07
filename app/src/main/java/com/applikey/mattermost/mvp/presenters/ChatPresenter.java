@@ -216,7 +216,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private void listenPostsCount(String channelId) {
         final Subscription subscription =
                 mPostStorage.listByChannel(channelId)
-                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(realmResults -> {
                             getViewState().showEmpty(realmResults.isEmpty());
