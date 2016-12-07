@@ -59,17 +59,10 @@ public class Message implements SearchItem {
         if (priorityDifference != 0) {
             return priorityDifference;
         }
-        long lastPost1 = 0L;
-        long lastPost2 = 0L;
         final Message message1 = this;
         final Message message2 = (Message) item;
-        lastPost1 = message1.getChannel().getLastPostAt();
-        lastPost2 = message2.getChannel().getLastPostAt();
-        if (lastPost1 == 0 || lastPost2 == 0) {
-            lastPost2 = message2.getChannel().getCreatedAt();
-            lastPost1 = message1.getChannel()
-                    .getCreatedAt();
-        }
+        final long lastPost1 = message1.getPost().getCreatedAt();
+        final long lastPost2 = message2.getPost().getCreatedAt();
 
         return (int) (lastPost2 - lastPost1);
     }

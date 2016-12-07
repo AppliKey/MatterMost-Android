@@ -87,6 +87,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void loadMessages(String channelId) {
         final ChatView view = getViewState();
+
         final Subscription subscribe = mPostStorage.listByChannel(channelId)
                 .first()
                 .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
@@ -95,6 +96,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .subscribe(view::onDataReady, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
+
+        listenPostsCount(channelId);
     }
 
     public void channelNameClick() {
@@ -159,7 +162,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                 .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
-                .doOnNext(post -> getViewState().showEmpty(false))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
@@ -184,6 +186,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void joinToChannel(String channelId) {
+
         final Subscription subscription = mApi.joinToChannel(mTeamId, channelId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -208,6 +211,18 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         mChannelStorage.updateLastViewedAt(channelId);
         mNotificationManager.dismissNotification(channelId);
+    }
+
+    private void listenPostsCount(String channelId) {
+        final Subscription subscription =
+                mPostStorage.listByChannel(channelId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(realmResults -> {
+                            getViewState().showEmpty(realmResults.isEmpty());
+                        }, mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
     }
 
     private void fetchPage(int totalItems, String channelId, boolean clear) {

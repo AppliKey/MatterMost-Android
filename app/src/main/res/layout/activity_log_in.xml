@@ -66,6 +66,7 @@
             android:layout_below="@+id/tv_password"
             android:hint="@string/enter_your_password"
             android:inputType="textVisiblePassword"
+            android:imeOptions="actionDone"
             android:maxLines="1"
             android:text="@string/default_password" />
 
