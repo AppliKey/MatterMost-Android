@@ -146,11 +146,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setOnEmojiPopupDismissListener(() -> mIvEmojicon.setSelected(false))
                 .build(mEtMessage);
 
-        final boolean isNotJoined = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
+        final boolean inJoined = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
         mChannelId = getIntent().getStringExtra(CHANNEL_ID_KEY);
         mPresenter.getInitialData(mChannelId);
 
-        if (!isNotJoined) {
+        if (!inJoined) {
             final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
             showJoiningInterface(channelName);
         } else {
