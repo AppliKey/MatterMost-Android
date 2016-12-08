@@ -150,6 +150,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         if (TextUtils.isEmpty(message.trim())) {
             return;
         }
+
+        getViewState().clearMessageInput();
+
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
@@ -167,7 +170,14 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mSubscription.add(subscribe);
     }
 
+    // TODO: Refactor: duplicated code
     public void sendReplyMessage(String channelId, String message, String mRootId) {
+        if (TextUtils.isEmpty(message.trim())) {
+            return;
+        }
+
+        getViewState().clearMessageInput();
+
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;

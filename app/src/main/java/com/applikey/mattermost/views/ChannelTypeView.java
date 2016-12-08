@@ -31,9 +31,9 @@ public class ChannelTypeView extends LinearLayout {
     private CompoundButton.OnCheckedChangeListener mOnCheckedListener = (view, checked) -> {
         if (checked) {
             mTvTypePublic.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_disabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkDisabled));
             mTvTypePrivate.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_enabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkEnabled));
 
             mTvTypePublic.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_public_channel_unselected, 0, 0, 0);
@@ -41,9 +41,9 @@ public class ChannelTypeView extends LinearLayout {
                     R.drawable.ic_private_channel_selected, 0, 0, 0);
         } else {
             mTvTypePublic.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_enabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkEnabled));
             mTvTypePrivate.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_disabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkDisabled));
             mTvTypePublic.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_public_channel_selected, 0, 0, 0);
             mTvTypePrivate.setCompoundDrawablesWithIntrinsicBounds(

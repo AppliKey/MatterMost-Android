@@ -21,6 +21,8 @@ public interface ChatView extends MvpView {
 
     void onMessageSent(long createdAt);
 
+    void clearMessageInput();
+
     void onChannelJoined();
 
     void openChannelDetails(Channel channel);

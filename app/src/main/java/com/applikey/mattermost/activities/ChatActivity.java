@@ -207,10 +207,14 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onMessageSent(long createdAt) {
-        mEtMessage.setText(null);
         mAdapter.setLastViewed(createdAt);
         scrollToStart();
         hideReply();
+    }
+
+    @Override
+    public void clearMessageInput() {
+        mEtMessage.getText().clear();
     }
 
     @Override
