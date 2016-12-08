@@ -2,7 +2,6 @@ package com.applikey.mattermost.adapters.channel.viewholder;
 
 import android.content.Context;
 import android.support.annotation.CallSuper;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
