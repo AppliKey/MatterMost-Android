@@ -136,4 +136,5 @@
     <dimen name="drawer_primary_item_badge_min_width">20dp</dimen>
     <dimen name="drawer_primary_item_badge_padding">1dp</dimen>
     <dimen name="drawer_header_text_secondary_size">14sp</dimen>
+    <dimen name="button_corner">72dp</dimen>
 </resources>
