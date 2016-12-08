@@ -81,7 +81,7 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         setUnreadStatus(channel);
     }
 
-    // TODO Refactor
+    // TODO It does not belong here. We use this vh for both Channels and Messages. This is incorrect.
     protected void setMessageDate(Message message) {
         getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnlyChannel(message.getPost().getCreatedAt()));
