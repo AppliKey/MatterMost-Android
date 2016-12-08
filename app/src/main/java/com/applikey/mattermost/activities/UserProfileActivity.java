@@ -91,7 +91,7 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     @Override
     public void showBaseDetails(User user) {
         mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
-        mDisplayName.setText(user.toString());
+        mDisplayName.setText(User.getDisplayableName(user));
         mEmail.setText(user.getEmail());
         setStatusIcon(user);
     }
