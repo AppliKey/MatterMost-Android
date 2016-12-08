@@ -15,7 +15,7 @@ import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
-        extends RealmRecyclerViewAdapter<Channel, VH> {
+        extends LowRateRealmRecyclerViewAdapter<Channel, VH> {
 
     private ChannelListener mChannelListener = null;
 

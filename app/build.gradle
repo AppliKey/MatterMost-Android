@@ -18,7 +18,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'realm-android'
 
 android {
-    compileOptions.incremental = true
+    compileOptions.incremental = false
 
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
