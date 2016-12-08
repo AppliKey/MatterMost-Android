@@ -122,6 +122,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         final Subscription subscribe = channelObservable
                 .observeOn(Schedulers.io())
                 .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
+                .filter(lastPostDto -> lastPostDto != null)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(post -> mChannelStorage.updateLastPosts(post), mErrorHandler::handleError);
 
