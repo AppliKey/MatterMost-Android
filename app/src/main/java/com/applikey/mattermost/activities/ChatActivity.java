@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -49,13 +47,9 @@ import static android.view.View.VISIBLE;
 public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
-
     private static final String CHANNEL_TYPE_KEY = "channel-type";
-
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
-
     private static final String CHANNEL_NAME = "channel-name";
-
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
 
     @Bind(R.id.toolbar)
@@ -134,15 +128,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
         intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         intent.putExtra(CHANNEL_NAME, channel.getDisplayName());
-        return intent;
-    }
-
-    /**
-     * Start ChatActivity to join to public channel
-     */
-    public static Intent getIntent(Context context, Channel channel, boolean isJoining) {
-        final Intent intent = getIntent(context, channel);
-        intent.putExtra(ACTION_JOIN_TO_CHANNEL_KEY, isJoining);
+        intent.putExtra(ACTION_JOIN_TO_CHANNEL_KEY, channel.isJoined());
         return intent;
     }
 
@@ -160,11 +146,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setOnEmojiPopupDismissListener(() -> mIvEmojicon.setSelected(false))
                 .build(mEtMessage);
 
-        final boolean isJoiningToChannel = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
+        final boolean inJoined = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
         mChannelId = getIntent().getStringExtra(CHANNEL_ID_KEY);
         mPresenter.getInitialData(mChannelId);
 
-        if (isJoiningToChannel) {
+        if (!inJoined) {
             final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
             showJoiningInterface(channelName);
         } else {
@@ -192,12 +178,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onDataReady(RealmResults<Post> posts) {
-        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
-                mChannelType);
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
                                    channelType, mChannelLastViewed, onPostLongClick);
 
-        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
 
@@ -205,14 +189,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+
     public void showEmpty(boolean show) {
         mSrlChat.setVisibility(show ? GONE : VISIBLE);
         mTvEmptyState.setVisibility(show ? VISIBLE : GONE);
-    }
-
-    @Override
-    public void onDataFetched() {
-        Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
     }
 
     @Override

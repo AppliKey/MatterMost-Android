@@ -329,9 +329,8 @@ public class User extends RealmObject
     }
 
     @Override
-    @Type
-    public int getSearchType() {
-        return USER;
+    public Type getSearchType() {
+        return Type.USER;
     }
 
     @Override

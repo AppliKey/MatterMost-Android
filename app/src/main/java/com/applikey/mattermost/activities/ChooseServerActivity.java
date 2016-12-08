@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,6 +21,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 
 public class ChooseServerActivity extends BaseMvpActivity implements ChooseServerView {
 
@@ -56,6 +58,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         ButterKnife.bind(this);
 
         mEtServerUrl.addTextChangedListener(mTextWatcher);
+
         mEtServerUrl.setOnEditorActionListener(mOnInputDoneActionListener);
         disableButton();
     }
@@ -92,6 +95,14 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
         showLoadingDialog();
         mPresenter.chooseServer(httpPrefix, serverUrl);
+    }
+
+    @OnEditorAction(R.id.et_server)
+    boolean onDoneClick(int actionId) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            onProceed();
+        }
+        return true;
     }
 
     private void disableButton() {

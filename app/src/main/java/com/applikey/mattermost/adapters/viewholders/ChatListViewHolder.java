@@ -15,19 +15,24 @@ import butterknife.ButterKnife;
 
 public class ChatListViewHolder extends UserChatListViewHolder {
 
-
     public ChatListViewHolder(View itemView, String userId) {
         super(itemView, userId);
         ButterKnife.bind(this, itemView);
     }
 
-    public void bind(ImageLoader imageLoader, RecyclerItemClickListener.OnItemClickListener listener, Message message, String searchText){
+    public void bind(ImageLoader imageLoader,
+                     RecyclerItemClickListener.OnItemClickListener listener,
+                     Message message,
+                     String searchText) {
         super.bind(imageLoader, message.getChannel());
+        setMessageDate(message);
 
         final Post post = message.getPost();
 
-        final CharSequence messageWithAuthorText = TextUtils.concat(getAuthorPrefix(itemView.getContext(), message), Constants.SPACE,
-                                                                    SpanUtils.createSpannableBoldString(post.getMessage(), searchText));
+        final CharSequence messageWithAuthorText = TextUtils.concat(getAuthorPrefix(itemView.getContext(), message),
+                                                                    Constants.SPACE,
+                                                                    SpanUtils.createSpannableBoldString(
+                                                                            post.getMessage(), searchText));
 
         getMessagePreview().setText(messageWithAuthorText);
 

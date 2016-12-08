@@ -142,5 +142,9 @@
     <string name="join">Join</string>
     <string name="join_offer">Do you want to join #%s?</string>
 
+    <string name="header_message">Messages</string>
+    <string name="header_channel">Channels</string>
+    <string name="header_people">People</string>
+
 
 </resources>

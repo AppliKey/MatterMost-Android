@@ -1,7 +1,5 @@
 package com.applikey.mattermost.models.channel;
 
-import android.util.Log;
-
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -18,6 +16,8 @@ import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
+
+import static com.applikey.mattermost.models.SearchItem.Type.CHANNEL;
 
 public class Channel extends RealmObject implements SearchItem {
 
@@ -60,10 +60,6 @@ public class Channel extends RealmObject implements SearchItem {
     @SerializedName("create_at")
     private long createdAt;
 
-    //if we are fetching not joined channels, we should set it to false
-    // TODO: 29.11.16 We should move it out from this model
-    private boolean isJoined = true;
-
     // TODO: 04.11.16 NEED DETAILED REVIEW
     // Application-specific fields
     private String previewImagePath;
@@ -86,6 +82,7 @@ public class Channel extends RealmObject implements SearchItem {
     // as it can not compare multiple fields
     private long lastActivityTime;
 
+    private boolean isJoined = true;
     private boolean isFavorite;
 
     private RealmList<User> mUsers = new RealmList<>();
@@ -107,7 +104,6 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     public boolean isJoined() {
-        Log.d(TAG, "isJoined: " + isJoined);
         return isJoined;
     }
 
@@ -238,7 +234,7 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     @Override
-    public int getSearchType() {
+    public Type getSearchType() {
         return CHANNEL;
     }
 

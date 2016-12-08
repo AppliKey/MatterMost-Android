@@ -265,6 +265,7 @@ public class ChannelStorage {
                                       channel.setLastPost(storedChannel.getLastPost());
                                       channel.updateLastActivityTime();
                                       channel.setFavorite(storedChannel.isFavorite());
+                                      channel.setJoined(storedChannel.isJoined());
                                       return true;
                                   });
     }

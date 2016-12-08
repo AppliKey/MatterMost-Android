@@ -20,6 +20,7 @@ import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchView;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import java.util.List;
 
@@ -75,7 +76,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     }
 
     public void startChatView(Channel channel) {
-        getActivity().startActivity(ChatActivity.getIntent(getContext(), channel, !channel.isJoined()));
+        getActivity().startActivity(ChatActivity.getIntent(getContext(), channel));
     }
 
     @Override
@@ -91,6 +92,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
         mAdapter = new SearchAdapter(mImageLoader, mCurrentUserId);
         mAdapter.setOnClickListener(clickListener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addItemDecoration(new StickyRecyclerHeadersDecoration(mAdapter));
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -102,7 +104,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     @Override
     public void displayData(List<SearchItem> items) {
         Log.d(TAG, "displayData: " + items);
-        if(items == null || items.isEmpty()) {
+        if (items == null || items.isEmpty()) {
             setEmptyState(true);
         } else {
             setEmptyState(false);
@@ -110,7 +112,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
         }
     }
 
-    public void setEmptyState(boolean isEmpty){
+    public void setEmptyState(boolean isEmpty) {
         if (isEmpty) {
             mTvEmptyState.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
