@@ -214,7 +214,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void clearMessageInput() {
-        mEtMessage.setText(null);
+        mEtMessage.getText().clear();
     }
 
     @Override
