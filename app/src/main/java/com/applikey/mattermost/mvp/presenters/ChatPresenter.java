@@ -186,11 +186,11 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void joinToChannel(String channelId) {
-
         final Subscription subscription = mApi.joinToChannel(mTeamId, channelId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(channel -> {
+                    channel.setJoined(true);
                     mChannelStorage.save(channel);
                     getViewState().onChannelJoined();
                 }, mErrorHandler::handleError);
