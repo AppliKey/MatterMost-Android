@@ -15,7 +15,7 @@ public abstract class LowRateRealmChangeListener<T> implements RealmChangeListen
 
     public LowRateRealmChangeListener() {
         mSubscription = Observable
-                .interval(5, 5, TimeUnit.SECONDS)
+                .interval(100, 100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((v) -> {
                     if (mShouldCallBack) {
@@ -31,7 +31,7 @@ public abstract class LowRateRealmChangeListener<T> implements RealmChangeListen
         mShouldCallBack = true;
     }
 
-    public void unSubscribe() {
+    void unSubscribe() {
         if (!mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
         }

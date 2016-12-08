@@ -34,6 +34,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> implements ChatListPresenter {
 
@@ -86,6 +87,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         if (mPreviewLoadedChannels.contains(channel.getId())) {
             return;
         }
+        Timber.d("Getting last post for %s", channel.getDisplayName());
+
         mPreviewLoadedChannels.add(channel.getId());
         mChannelEmitter.onNext(channel.getId());
     }

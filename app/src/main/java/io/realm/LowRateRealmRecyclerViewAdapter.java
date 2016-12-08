@@ -28,11 +28,11 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
 
     @Nullable
     private OrderedRealmCollection<T> adapterData;
+    private LowRateRealmChangeListener listener;
     protected final LayoutInflater inflater;
     @NonNull
     protected final Context context;
     private final boolean hasAutoUpdates;
-    private final RealmChangeListener listener;
 
     public LowRateRealmRecyclerViewAdapter(@NonNull Context context,
                                            @Nullable OrderedRealmCollection<T> data,
@@ -46,16 +46,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
         this.adapterData = data;
         this.inflater = LayoutInflater.from(context);
         this.hasAutoUpdates = autoUpdate;
-
-        // Right now don't use generics, since we need maintain two different
-        // types of listeners until RealmList is properly supported.
-        // See https://github.com/realm/realm-java/issues/989
-        this.listener = hasAutoUpdates ? new LowRateRealmChangeListener() {
-            @Override
-            public void onChangeCallback() {
-                notifyDataSetChanged();
-            }
-        } : null;
     }
 
     /**
@@ -80,6 +70,17 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
     @Override
     public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+
+        // Right now don't use generics, since we need maintain two different
+        // types of listeners until RealmList is properly supported.
+        // See https://github.com/realm/realm-java/issues/989
+        this.listener = hasAutoUpdates ? new LowRateRealmChangeListener() {
+            @Override
+            public void onChangeCallback() {
+                notifyDataSetChanged();
+            }
+        } : null;
+
         if (hasAutoUpdates && isDataValid()) {
             //noinspection ConstantConditions
             addListener(adapterData);
@@ -93,6 +94,9 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
             //noinspection ConstantConditions
             removeListener(adapterData);
         }
+
+        listener.unSubscribe();
+        listener = null;
     }
 
     /**
@@ -139,6 +143,12 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
 
         this.adapterData = data;
         notifyDataSetChanged();
+    }
+
+    public void unSubscribe() {
+        if (listener != null) {
+            listener.unSubscribe();
+        }
     }
 
     private void addListener(@NonNull OrderedRealmCollection<T> data) {

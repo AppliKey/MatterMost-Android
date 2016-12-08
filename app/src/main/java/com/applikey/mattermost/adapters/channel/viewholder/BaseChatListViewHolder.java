@@ -2,6 +2,7 @@ package com.applikey.mattermost.adapters.channel.viewholder;
 
 import android.content.Context;
 import android.support.annotation.CallSuper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,22 +18,19 @@ import com.applikey.mattermost.web.images.ImageLoader;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
-    private String mCurrentUserId;
-
     @Bind(R.id.iv_notification_icon)
     ImageView mNotificationIcon;
-
     @Bind(R.id.tv_channel_name)
     TextView mChannelName;
-
     @Bind(R.id.tv_last_message_time)
     TextView mLastMessageTime;
-
     @Bind(R.id.tv_message_preview)
     TextView mMessagePreview;
+    private String mCurrentUserId;
 
     public BaseChatListViewHolder(View itemView) {
         super(itemView);
@@ -49,12 +47,12 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         return itemView;
     }
 
-    public ImageView getNotificationIcon() {
-        return mNotificationIcon;
-    }
-
     public TextView getName() {
         return mChannelName;
+    }
+
+    public ImageView getNotificationIcon() {
+        return mNotificationIcon;
     }
 
     public TextView getLastMessageTime() {
@@ -74,11 +72,21 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
         final String messagePreview = getMessagePreview(channel, getContainer().getContext());
 
+        Timber.d("Message bound: %s", messagePreview);
+
         getMessagePreview().setText(messagePreview);
         getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnlyChannel(lastPostAt != 0 ? lastPostAt : channel.getCreatedAt()));
 
         setUnreadStatus(channel);
+    }
+
+    protected String getAuthorPrefix(Context context, Message message) {
+        final Post post = message.getPost();
+        if (mCurrentUserId.equals(post.getUserId())) {
+            return context.getString(R.string.chat_you);
+        }
+        return message.getUser().getUsername() + ":";
     }
 
     private String getMessagePreview(Channel channel, Context context) {
@@ -112,13 +120,5 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
-    }
-
-    protected String getAuthorPrefix(Context context, Message message) {
-        final Post post = message.getPost();
-        if (mCurrentUserId.equals(post.getUserId())) {
-            return context.getString(R.string.chat_you);
-        }
-        return message.getUser().getUsername() + ":";
     }
 }
