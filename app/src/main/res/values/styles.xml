@@ -121,11 +121,11 @@
     <style name="SearchEditText">
         <item name="android:textSize">@dimen/search_chat_toolbar_text_size</item>
         <item name="android:textColorHint">@color/tabUnSelected</item>
-        <item name="android:textColor">@color/textlink_enabled</item>
+        <item name="android:textColor">@color/textlinkEnabled</item>
     </style>
 
     <style name="EmptyState">
-        <item name="android:textColor">@color/textlink_disabled</item>
+        <item name="android:textColor">@color/textlinkDisabled</item>
         <item name="android:textSize">@dimen/text_title_size</item>
         <item name="android:gravity">center</item>
     </style>

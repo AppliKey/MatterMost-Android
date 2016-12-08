@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="middle"
         android:gravity="center"
-        android:textColor="@color/textlink_disabled"
+        android:textColor="@color/textlinkDisabled"
         android:textSize="@dimen/text_title_size" />
 
     <com.applikey.mattermost.views.SafeButton

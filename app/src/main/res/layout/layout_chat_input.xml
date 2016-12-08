@@ -50,7 +50,7 @@
         android:id="@+id/view_reply_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/separator_list"
+        android:background="@color/separatorList"
         android:visibility="gone"
         tools:visibility="visible" />
 

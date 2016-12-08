@@ -103,7 +103,7 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
     private void setUnreadStatus(Channel channel) {
         if (channel.hasUnreadMessages()) {
             getNotificationIcon().setVisibility(View.VISIBLE);
-            getContainer().setBackgroundResource(R.color.unread_background);
+            getContainer().setBackgroundResource(R.color.unreadBackground);
         } else {
             getNotificationIcon().setVisibility(View.GONE);
             getContainer().setBackgroundResource(android.R.color.white);

@@ -8,13 +8,13 @@
     <color name="primaryStart">#63cdff</color>
     <color name="primaryEnd">#6794ff</color>
 
-    <color name="primary_start_pressed">#52aad4</color>
-    <color name="primary_end_pressed">#3e60af</color>
+    <color name="primaryStartPressed">#52aad4</color>
+    <color name="primaryEndPressed">#3e60af</color>
 
-    <color name="color_disabled">#c9cdd4</color>
+    <color name="colorDisabled">#c9cdd4</color>
 
     <color name="background">#f1f2f5</color>
-    <color name="unread_background">#f4f5f7</color>
+    <color name="unreadBackground">#f4f5f7</color>
 
     <color name="primaryStartDisabled">#7F63cdff</color>
     <color name="primaryEndDisabled">#7F6794ff</color>
@@ -31,27 +31,27 @@
     <color name="noResource">#FF00CC</color>
 
     <color name="separator">#757575</color>
-    <color name="separator_light">#757575</color>
-    <color name="separator_list">#edeff2</color>
+    <color name="separatorLight">#757575</color>
+    <color name="separatorList">#edeff2</color>
 
     <color name="tabSelected">#64b0ff</color>
     <color name="tabUnSelected">#c9cdd4</color>
 
-    <color name="status_online">#2bce7c</color>
-    <color name="status_idle">#f6c41d</color>
-    <color name="status_offline">#c9cdd4</color>
+    <color name="statusOnline">#2bce7c</color>
+    <color name="statusIdle">#f6c41d</color>
+    <color name="statusOffline">#c9cdd4</color>
 
-    <color name="textlink_enabled">#242933</color>
-    <color name="textlink_disabled">#919499</color>
-    <color name="counter_background">#c9cdd4</color>
+    <color name="textlinkEnabled">#242933</color>
+    <color name="textlinkDisabled">#919499</color>
+    <color name="counterBackground">#c9cdd4</color>
 
-    <color name="switch_track_color">#edeff2</color>
+    <color name="switchTrackColor">#edeff2</color>
 
     <!--drawer-->
-    <color name="material_drawer_background">@android:color/white</color>
-    <color name="material_drawer_primary_text">@color/textPrimary</color>
-    <color name="material_drawer_selected">@android:color/transparent</color>
-    <color name="material_drawer_selected_text">@color/textPrimary</color>
-    <color name="settings_background">#f4f5f7</color>
+    <color name="materialDrawerBackground">@android:color/white</color>
+    <color name="materialDrawerPrimaryText">@color/textPrimary</color>
+    <color name="materialDrawerSelected">@android:color/transparent</color>
+    <color name="materialDrawerSelectedText">@color/textPrimary</color>
+    <color name="settingsBackground">#f4f5f7</color>
 
 </resources>
