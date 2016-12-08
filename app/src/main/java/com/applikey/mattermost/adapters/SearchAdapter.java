@@ -26,6 +26,8 @@ import java.util.List;
 public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         implements RecyclerItemClickListener.OnItemClickListener, StickyRecyclerHeadersAdapter<SearchHeaderViewHolder> {
 
+    private static final String TAG = SearchAdapter.class.getSimpleName();
+
     private List<SearchItem> mDataSet = new ArrayList<>();
 
     private ImageLoader mImageLoader;
@@ -94,7 +96,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public long getHeaderId(int position) {
-        return mDataSet.get(position).getSearchType().ordinal();
+        SearchItem.Type type = mDataSet.get(position).getSearchType();
+        //MESSAGE_CHANNEL and MESSAGE has the same header
+        return type.equals(SearchItem.Type.MESSAGE_CHANNEL) ? SearchItem.Type.MESSAGE.ordinal() : type.ordinal();
     }
 
     @Override
