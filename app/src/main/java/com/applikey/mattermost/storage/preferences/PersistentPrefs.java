@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import rx.Completable;
 import rx.Single;
 import rx.schedulers.Schedulers;
 
@@ -39,12 +38,11 @@ public class PersistentPrefs {
                 .map(array -> new HashSet<>(Arrays.asList(array)));
     }
 
-    public Completable saveServerUrl(String serverUrl) {
+    public Single<String> saveServerUrl(String serverUrl) {
         return getServerUrls()
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(urls -> urls.add(serverUrl))
                 .map(urls -> TextUtils.join(",", urls))
-                .doOnSuccess(array -> mSharedPreferences.edit().putString(KEY_SERVER_URLS, array).apply())
-                .toCompletable();
+                .doOnSuccess(array -> mSharedPreferences.edit().putString(KEY_SERVER_URLS, array).apply());
     }
 }
