@@ -58,13 +58,14 @@
         android:layout_below="@id/tv_url"
         android:layout_toEndOf="@id/sp_http"
         android:hint="@string/example_server"
-        android:inputType="textEmailAddress"
         android:imeOptions="actionDone"
+        android:inputType="textEmailAddress"
         android:maxLines="1"
         android:text="@string/default_server_text" />
 
     <com.applikey.mattermost.views.SafeButton
         android:id="@+id/b_proceed"
+        android:enabled="false"
         style="@style/Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
