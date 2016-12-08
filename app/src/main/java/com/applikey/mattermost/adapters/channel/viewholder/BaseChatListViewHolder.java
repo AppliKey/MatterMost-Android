@@ -82,6 +82,8 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
     }
 
     // TODO It does not belong here. We use this vh for both Channels and Messages. This is incorrect.
+    // introduce abstraction and use template method for binding. See the example - binding of our messages and
+    // messages of other people
     protected void setMessageDate(Message message) {
         getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnlyChannel(message.getPost().getCreatedAt()));
