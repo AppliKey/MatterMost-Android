@@ -31,9 +31,6 @@ public class SearchChannelFragment extends SearchFragment implements SearchChann
 
     @Override
     public void onItemClicked(SearchItem item) {
-
-        Log.d(TAG, "onItemClicked: ");
         mPresenter.handleItemClick(item);
     }
-
 }

@@ -69,7 +69,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
 
     @Override
     public void onChannelClick(Channel channel) {
-        startActivity(ChatActivity.getIntent(this, channel, true));
+        startActivity(ChatActivity.getIntent(this, channel));
     }
 
     @Override
