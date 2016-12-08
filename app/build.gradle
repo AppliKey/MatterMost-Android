@@ -183,6 +183,8 @@ dependencies {
     //rxpaparazzo
     compile "com.github.miguelbcr:RxPaparazzo:0.3.2"
 
+    compile 'com.android.support:multidex:1.0.1'
+
     //sticky header
     compile ('com.timehop.stickyheadersrecyclerview:library:[0.4.3]@aar') {
         exclude module:'com.android.support:recyclerview-v7:22.2.0'
