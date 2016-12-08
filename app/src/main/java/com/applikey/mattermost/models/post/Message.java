@@ -4,6 +4,9 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 
+import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE;
+import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE_CHANNEL;
+
 public class Message implements SearchItem {
 
     private Channel channel;
@@ -42,7 +45,7 @@ public class Message implements SearchItem {
     }
 
     @Override
-    public int getSearchType() {
+    public Type getSearchType() {
         return Channel.ChannelType.fromRepresentation(channel.getType())
                 == Channel.ChannelType.DIRECT ? MESSAGE : MESSAGE_CHANNEL;
     }
@@ -59,17 +62,10 @@ public class Message implements SearchItem {
         if (priorityDifference != 0) {
             return priorityDifference;
         }
-        long lastPost1 = 0L;
-        long lastPost2 = 0L;
         final Message message1 = this;
         final Message message2 = (Message) item;
-        lastPost1 = message1.getChannel().getLastPostAt();
-        lastPost2 = message2.getChannel().getLastPostAt();
-        if (lastPost1 == 0 || lastPost2 == 0) {
-            lastPost2 = message2.getChannel().getCreatedAt();
-            lastPost1 = message1.getChannel()
-                    .getCreatedAt();
-        }
+        final long lastPost1 = message1.getPost().getCreatedAt();
+        final long lastPost2 = message2.getPost().getCreatedAt();
 
         return (int) (lastPost2 - lastPost1);
     }

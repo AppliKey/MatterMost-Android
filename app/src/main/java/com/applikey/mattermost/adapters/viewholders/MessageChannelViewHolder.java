@@ -15,21 +15,27 @@ import butterknife.ButterKnife;
 
 public class MessageChannelViewHolder extends GroupChatListViewHolder {
 
-
     public MessageChannelViewHolder(View itemView, String userId) {
         super(itemView, userId);
 
         ButterKnife.bind(this, itemView);
     }
 
-    public void bind(ImageLoader imageLoader, RecyclerItemClickListener.OnItemClickListener listener, Message message, String searchText) {
+    public void bind(ImageLoader imageLoader,
+                     RecyclerItemClickListener.OnItemClickListener listener,
+                     Message message,
+                     String searchText) {
         super.bind(imageLoader, message.getChannel());
+
+        setMessageDate(message);
 
         final Post post = message.getPost();
         final String messageText = post.getMessage();
 
-        final CharSequence messageWithAuthorText = TextUtils.concat(getAuthorPrefix(itemView.getContext(), message), Constants.SPACE,
-                                                               SpanUtils.createSpannableBoldString(messageText, searchText));
+        final CharSequence messageWithAuthorText = TextUtils.concat(getAuthorPrefix(itemView.getContext(), message),
+                                                                    Constants.SPACE,
+                                                                    SpanUtils.createSpannableBoldString(messageText,
+                                                                                                        searchText));
 
         getMessagePreview().setText(messageWithAuthorText);
         setClickListener(listener);

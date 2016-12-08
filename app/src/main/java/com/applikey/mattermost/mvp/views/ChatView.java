@@ -15,8 +15,6 @@ public interface ChatView extends MvpView {
 
     void onDataReady(RealmResults<Post> posts);
 
-    void onDataFetched();
-
     void showProgress();
 
     void hideProgress();

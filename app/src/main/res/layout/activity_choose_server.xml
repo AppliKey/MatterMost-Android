@@ -59,6 +59,7 @@
         android:layout_toEndOf="@id/sp_http"
         android:hint="@string/example_server"
         android:inputType="textEmailAddress"
+        android:imeOptions="actionDone"
         android:maxLines="1"
         android:text="@string/default_server_text" />
 

@@ -57,7 +57,7 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     @Override
     public void logout() {
         stopService(WebSocketService.getIntent(this));
-        startActivity(ChooseServerActivity.getIntent(this, true));
+        startActivity(ChooseServerActivity.getIntent(this));
     }
 
     @Override

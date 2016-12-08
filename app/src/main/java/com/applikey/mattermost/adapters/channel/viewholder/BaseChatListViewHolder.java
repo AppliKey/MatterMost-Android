@@ -81,6 +81,12 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         setUnreadStatus(channel);
     }
 
+    // TODO Refactor
+    protected void setMessageDate(Message message) {
+        getLastMessageTime().setText(
+                TimeUtil.formatTimeOrDateOnlyChannel(message.getPost().getCreatedAt()));
+    }
+
     protected String getAuthorPrefix(Context context, Message message) {
         final Post post = message.getPost();
         if (mCurrentUserId.equals(post.getUserId())) {
@@ -92,18 +98,18 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
     private String getMessagePreview(Channel channel, Context context) {
         final Post lastPost = channel.getLastPost();
         final String messagePreview;
-        if (channel.getLastPost() == null) {
+        if (lastPost == null) {
             messagePreview = context.getString(R.string.channel_preview_message_placeholder);
         } else if (isMy(lastPost)) {
             messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
-                    channel.getLastPost().getMessage();
+                    lastPost.getMessage();
         } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
             final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
             messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
                     +
-                    channel.getLastPost().getMessage();
+                    lastPost.getMessage();
         } else {
-            messagePreview = channel.getLastPost().getMessage();
+            messagePreview = lastPost.getMessage();
         }
         return messagePreview;
     }
