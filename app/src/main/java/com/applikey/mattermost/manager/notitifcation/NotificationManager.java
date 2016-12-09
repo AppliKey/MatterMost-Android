@@ -4,6 +4,8 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -37,17 +39,21 @@ public class NotificationManager {
 
         final Intent intent = SplashActivity.getIntent(mContext, bundle);
 
-        final PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+        final PendingIntent pendingIntent =
+                PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         final Notification notification =
                 new NotificationCompat.Builder(mContext)
                         .setColor(ContextCompat.getColor(mContext, R.color.colorPrimary))
                         .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSound(ringtoneUri)
                         .setContentTitle(mContext.getString(R.string.new_message_received))
                         .setContentText(message)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
+                        .setLights(ContextCompat.getColor(mContext, R.color.colorAccent), 500, 500)
                         .build();
 
         mNotificationManager.notify(id.hashCode(), notification);
