@@ -42,7 +42,7 @@ public class NotificationManager {
         final PendingIntent pendingIntent =
                 PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        final Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         final Notification notification =
                 new NotificationCompat.Builder(mContext)
