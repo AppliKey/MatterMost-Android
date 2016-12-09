@@ -24,8 +24,8 @@ public class NotificationManager {
     public static final String NOTIFICATION_BUNDLE_KEY = "notification-bundle";
     public static final String NOTIFICATION_CHANNEL_ID_KEY = "channel-id";
 
-    private final static int LIGHT_ON_MS = 500;
-    private final static int LIGHT_OFF_MS = 500;
+    private final static int LIGHT_ON_MS = 1500;
+    private final static int LIGHT_OFF_MS = 1500;
 
     private final Context mContext;
     private final NotificationManagerCompat mNotificationManager;
@@ -54,6 +54,7 @@ public class NotificationManager {
                         .setSound(ringtoneUri)
                         .setContentTitle(mContext.getString(R.string.new_message_received))
                         .setContentText(message)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
                         .setLights(ContextCompat.getColor(mContext, R.color.colorAccent), LIGHT_ON_MS, LIGHT_OFF_MS)
