@@ -72,7 +72,8 @@ class LogInActivityTest {
         onView(withId(R.id.et_password)).perform(typeText(password))
         closeSoftKeyboard()
         onView(withId(R.id.b_authorize)).perform(click())
-        onView(withId(R.id.rv_teams)).check(matches(isDisplayed()))
+        Thread.sleep(3000)
+        onView(withId(R.id.tv_password)).check(matches(isDisplayed()))
     }
 
     @Test
