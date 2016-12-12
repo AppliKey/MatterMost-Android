@@ -222,6 +222,10 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
 
     androidTestCompile "org.jetbrains.kotlin:kotlin-stdlib:1.0.5"
-
-
 }
+android.variantFilter { variant ->
+    if(variant.buildType.name.equals('release') && variant.getFlavors().get(0).name.equals('instrumentation')) {
+        variant.setIgnore(true);
+    }
+}
+

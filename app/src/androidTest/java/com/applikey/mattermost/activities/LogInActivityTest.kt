@@ -19,11 +19,11 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class LogInActivityTest {
 
-    val serverName = "http://mattermost-nutscracker53.herokuapp.com/"
-
-    val userName = "test5@gmail.com"
-    val password = "11111"
-
+    companion object {
+        const val serverName = "http://mattermost-nutscracker53.herokuapp.com/"
+        const val userName = "test5@gmail.com"
+        const val password = "11111"
+    }
 
     @JvmField @Rule
     val activity: ActivityTestRule<ChooseServerActivity> = ActivityTestRule<ChooseServerActivity>(ChooseServerActivity::class.java)
