@@ -9,6 +9,7 @@ import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.applikey.mattermost.R
+import org.hamcrest.Matchers.any
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -20,11 +21,11 @@ class LogInActivityTest {
 
     val serverName = "http://mattermost-nutscracker53.herokuapp.com/"
 
-    val userName = "allah@gmail.com"
-    val password = "1111"
+    val userName = "test5@gmail.com"
+    val password = "11111"
 
 
-    @JvmField @get:Rule
+    @JvmField @Rule
     val activity: ActivityTestRule<ChooseServerActivity> = ActivityTestRule<ChooseServerActivity>(ChooseServerActivity::class.java)
 
     @Before
@@ -71,6 +72,31 @@ class LogInActivityTest {
         onView(withId(R.id.et_password)).perform(typeText(password))
         closeSoftKeyboard()
         onView(withId(R.id.b_authorize)).perform(click())
+        onView(withId(R.id.rv_teams)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testThatErrorWillShowIfPasswordNotEntered() {
+        onView(withId(R.id.et_server)).perform(typeText(serverName))
+        closeSoftKeyboard()
+        onView(withId(R.id.b_proceed)).perform(click())
+        onView(withId(R.id.et_login)).perform(typeText(userName))
+        onView(withId(R.id.et_password)).perform(typeText(""))
+        closeSoftKeyboard()
+        onView(withId(R.id.b_authorize)).perform(click())
+        onView(withId(R.id.et_password)).check(matches(hasErrorText(any(String::class.java))))
+    }
+
+    @Test
+    fun testThatIncorrectLoginWillProduceNotFoundError() {
+        onView(withId(R.id.et_server)).perform(typeText(serverName))
+        closeSoftKeyboard()
+        onView(withId(R.id.b_proceed)).perform(click())
+        onView(withId(R.id.et_login)).perform(typeText("asdasd"))
+        onView(withId(R.id.et_password)).perform(typeText("asdas"))
+        closeSoftKeyboard()
+        onView(withId(R.id.b_authorize)).perform(click())
+        onView(withId(R.id.et_password)).check(matches(hasErrorText(any(String::class.java))))
     }
 
     private fun getStringRes(res: Int): String {
