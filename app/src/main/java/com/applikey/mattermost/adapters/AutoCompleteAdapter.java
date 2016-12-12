@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AutoCompleteAdapter<T> extends ArrayAdapter<T> implements Filterable {
 
-    private List<T> mSuggestions = new ArrayList<>();
+    private final List<T> mSuggestions = new ArrayList<>();
     private final T[] mOriginalValues;
     private ContainsFilter mFilter;
 
@@ -40,7 +40,7 @@ public class AutoCompleteAdapter<T> extends ArrayAdapter<T> implements Filterabl
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            FilterResults filterResults = new FilterResults();
+            final FilterResults filterResults = new FilterResults();
             if (constraint != null) {
                 mSuggestions.clear();
                 for (T object : mOriginalValues) {
@@ -61,7 +61,7 @@ public class AutoCompleteAdapter<T> extends ArrayAdapter<T> implements Filterabl
             if (results == null) {
                 return;
             }
-            List<T> filteredList = (List<T>) results.values;
+            final List<T> filteredList = (List<T>) results.values;
             if (results.count > 0) {
                 clear();
                 Stream.of(filteredList).forEach(AutoCompleteAdapter.this::add);

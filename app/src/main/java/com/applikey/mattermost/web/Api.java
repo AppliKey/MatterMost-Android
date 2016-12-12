@@ -97,7 +97,7 @@ public interface Api {
     //It resolve validation problem(in the case if user input (<server_url> + <team>), instead
     // (<server_url>))
     @GET("api/v3/general/ping")
-    Observable<PingResponse> ping();
+    Single<PingResponse> ping();
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
     Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
