@@ -175,8 +175,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<AttachDeviceRequest>> attachDevice(
-            @Body AttachDeviceRequest request) {
+    public Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
         return getRealApi().attachDevice(request);
     }
 

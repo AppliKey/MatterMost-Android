@@ -84,7 +84,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     public void setAutoCompleteServers(String[] urls) {
         final AutoCompleteAdapter<String> adapter =
                 new AutoCompleteAdapter<>(this, android.R.layout.simple_list_item_1, urls);
-        mEtServerUrl.setAdapter(adapter);
+        runOnUiThread(() ->  mEtServerUrl.setAdapter(adapter));
     }
 
     @OnClick(R.id.b_proceed)
