@@ -125,9 +125,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     }
 
     @Override
-    public void showEmpty(boolean show) {
-        mTvEmptyState.setVisibility(show ? View.VISIBLE : View.GONE);
-        mRvChannels.setVisibility(show ? View.GONE : View.VISIBLE);
+    public void displayEmptyState(boolean visible) {
+        mTvEmptyState.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mRvChannels.setVisibility(visible ? View.GONE : View.VISIBLE);
     }
 
     protected abstract ChatListPresenter getPresenter();

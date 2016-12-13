@@ -154,7 +154,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
 
     private void listenPostState() {
         final Subscription subscription = getInitData()
-                .doOnNext(channels -> getViewState().showEmpty(channels.isEmpty()))
+                .doOnNext(channels -> getViewState().displayEmptyState(channels.isEmpty()))
                 .map(channels -> Stream.of(channels).filter(Channel::hasUnreadMessages).collect(Collectors.toList()))
                 .subscribe(
                         channels -> getViewState().showUnreadIndicator(!channels.isEmpty()),

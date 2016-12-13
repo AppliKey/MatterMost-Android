@@ -189,7 +189,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-
     public void showEmpty(boolean show) {
         mSrlChat.setVisibility(show ? GONE : VISIBLE);
         mTvEmptyState.setVisibility(show ? VISIBLE : GONE);
