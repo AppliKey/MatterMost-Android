@@ -14,5 +14,5 @@ public interface ChatListView extends MvpView {
 
     void showUnreadIndicator(boolean showIndicator);
 
-    void showEmpty();
+    void showEmpty(boolean show);
 }

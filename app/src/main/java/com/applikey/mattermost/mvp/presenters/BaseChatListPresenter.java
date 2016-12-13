@@ -77,10 +77,12 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
     @Override
     public void displayData() {
         final Subscription subscription = getInitData()
-                .subscribe(getViewState()::displayInitialData,
-                           mErrorHandler::handleError);
+                .first()
+                .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
+
+        listenPostState();
     }
 
     @Override
@@ -148,6 +150,17 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
 
     private ChannelWithUsers transform(ChannelExtraResult channelExtraResult, List<User> users) {
         return new ChannelWithUsers(channelExtraResult.getChannel(), users);
+    }
+
+    private void listenPostState() {
+        final Subscription subscription = getInitData()
+                .doOnNext(channels -> getViewState().showEmpty(channels.isEmpty()))
+                .map(channels -> Stream.of(channels).filter(Channel::hasUnreadMessages).collect(Collectors.toList()))
+                .subscribe(
+                        channels -> getViewState().showUnreadIndicator(!channels.isEmpty()),
+                        mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
     }
 }
 

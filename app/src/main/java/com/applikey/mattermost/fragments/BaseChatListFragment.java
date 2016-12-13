@@ -93,7 +93,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     public void displayInitialData(RealmResults<Channel> channels) {
         Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed " + channels.size());
 
-        if(channels == null || channels.isEmpty()) {
+        if (channels.isEmpty()) {
             mTvEmptyState.setVisibility(View.VISIBLE);
             mRvChannels.setVisibility(View.GONE);
         } else {
@@ -125,9 +125,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     }
 
     @Override
-    public void showEmpty() {
-        mTvEmptyState.setVisibility(View.VISIBLE);
-        mRvChannels.setVisibility(View.GONE);
+    public void showEmpty(boolean show) {
+        mTvEmptyState.setVisibility(show ? View.VISIBLE : View.GONE);
+        mRvChannels.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     protected abstract ChatListPresenter getPresenter();
