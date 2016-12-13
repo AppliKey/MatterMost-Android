@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.ArrayMap;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -71,8 +72,8 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_chat_list);
+
         ButterKnife.bind(this);
         initView();
         mEventBus.register(this);
@@ -136,13 +137,11 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
                 final View customTab = tab.getCustomView();
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
-                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(tabIconIndex),
-                                                (ImageView) notificationIcon);
+                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(tabIconIndex), (ImageView) notificationIcon);
                 }
             }
         }
-        final TabSelectedListener mOnTabSelectedListener = new ChatListTabSelectedListener(
-                mViewPager);
+        final TabSelectedListener mOnTabSelectedListener = new ChatListTabSelectedListener(mViewPager);
         mTabLayout.addOnTabSelectedListener(mOnTabSelectedListener);
         mOnTabSelectedListener.onTabReselected(mTabLayout.getTabAt(0));
         mViewPager.setOffscreenPageLimit(mViewPager.getAdapter().getCount() - 1);
@@ -160,8 +159,7 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        final Bundle bundle = getIntent().getBundleExtra(
-                NotificationManager.NOTIFICATION_BUNDLE_KEY);
+        final Bundle bundle = getIntent().getBundleExtra(NotificationManager.NOTIFICATION_BUNDLE_KEY);
         if (bundle != null) {
             final String channelId = bundle.getString(
                     NotificationManager.NOTIFICATION_CHANNEL_ID_KEY);
@@ -194,16 +192,14 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
 
         protected int getSelectedTabColor() {
             if (mSelectedTabColor == -1) {
-                mSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
-                                                           R.color.tabSelected);
+                mSelectedTabColor = ContextCompat.getColor(ChatListActivity.this, R.color.tabSelected);
             }
             return mSelectedTabColor;
         }
 
         protected int getUnSelectedTabColor() {
             if (mUnSelectedTabColor == -1) {
-                mUnSelectedTabColor = ContextCompat.getColor(ChatListActivity.this,
-                                                             R.color.tabUnSelected);
+                mUnSelectedTabColor = ContextCompat.getColor(ChatListActivity.this, R.color.tabUnSelected);
             }
             return mUnSelectedTabColor;
         }
@@ -213,8 +209,8 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
 
         private final Object mutex = new Object();
 
-        private final Map<TabBehavior, Boolean> mIndicatorVisibilities = new HashMap<>();
-        private final Map<TabBehavior, ImageView> mIndicators = new HashMap<>();
+        private final Map<TabBehavior, Boolean> mIndicatorVisibilities = new ArrayMap<>();
+        private final Map<TabBehavior, ImageView> mIndicators = new ArrayMap<>();
 
         void handleEvent(TabIndicatorRequested event) {
             synchronized (mutex) {

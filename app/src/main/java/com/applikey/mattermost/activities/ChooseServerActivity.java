@@ -85,7 +85,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     public void setAutoCompleteServers(String[] urls) {
         final ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, urls);
-        mEtServerUrl.setAdapter(adapter);
+        runOnUiThread(() ->  mEtServerUrl.setAdapter(adapter));
     }
 
     @OnClick(R.id.b_proceed)
@@ -106,13 +106,11 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     }
 
     private void disableButton() {
-        mBtnProceed.setClickable(false);
-        mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient_disabled);
+        mBtnProceed.setEnabled(false);
     }
 
     private void enableButton() {
-        mBtnProceed.setClickable(true);
-        mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient);
+        mBtnProceed.setEnabled(true);
     }
 
     private void handleButtonVisibility(String input) {

@@ -92,7 +92,6 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
         mAdapter = new SearchAdapter(mImageLoader, mCurrentUserId);
         mAdapter.setOnClickListener(clickListener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.addItemDecoration(new StickyRecyclerHeadersDecoration(mAdapter));
         mRecyclerView.setAdapter(mAdapter);
     }
 

@@ -28,11 +28,11 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private List<SearchItem> mDataSet = new ArrayList<>();
 
-    private ImageLoader mImageLoader;
+    private final ImageLoader mImageLoader;
 
     private ClickListener mClickListener;
 
-    private String mCurrentUserId;
+    private final String mCurrentUserId;
 
     private String mSearchText;
 
@@ -73,7 +73,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final SearchItem.Type searchType = mDataSet.get(position).getSearchType();
 
         if (searchType.equals(SearchItem.Type.CHANNEL)) {
-            GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
+            final GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
             viewHolder.bind(mImageLoader, (Channel) mDataSet.get(position));
             viewHolder.setClickListener(this);
         } else if (searchType.equals(SearchItem.Type.USER)) {
@@ -94,7 +94,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public long getHeaderId(int position) {
-        return mDataSet.get(position).getSearchType().ordinal();
+        final SearchItem.Type type = mDataSet.get(position).getSearchType();
+        //MESSAGE_CHANNEL and MESSAGE has the same header
+        return type.equals(SearchItem.Type.MESSAGE_CHANNEL) ? SearchItem.Type.MESSAGE.ordinal() : type.ordinal();
     }
 
     @Override

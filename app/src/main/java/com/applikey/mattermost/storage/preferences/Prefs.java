@@ -97,6 +97,8 @@ public class Prefs {
     }
 
     public void clear() {
+        final String gcmToken = getGcmToken();
         mSharedPreferences.edit().clear().apply();
+        setGcmToken(gcmToken);
     }
 }

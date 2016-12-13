@@ -62,27 +62,30 @@ public class ChannelStorage {
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                                                     Channel.ChannelType.PUBLIC.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                                                     Channel.ChannelType.PRIVATE.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                                                     Channel.ChannelType.DIRECT.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listFavorite() {
         return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class,
                                                              Channel.IS_FAVORITE, true,
+                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+    }
+
+    public Observable<RealmResults<Channel>> listUnread() {
+        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class, Channel.FIELD_UNREAD_TYPE,
+                                                             true,
                                                              Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
@@ -92,13 +95,6 @@ public class ChannelStorage {
 
     public Observable<List<Channel>> listAll() {
         return mDb.listRealmObjects(Channel.class);
-    }
-
-    public Observable<RealmResults<Channel>> listUnread() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                                                    true,
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
     }
 
     public void save(Channel channel) {
