@@ -20,21 +20,19 @@ import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchView;
-import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 
 public abstract class SearchFragment extends BaseMvpFragment implements SearchView {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
-    @Bind(R.id.rv_items)
+    @BindView(R.id.rv_items)
     RecyclerView mRecyclerView;
 
     @Inject
@@ -43,7 +41,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
 
     protected SearchAdapter mAdapter;
 
-    @Bind(R.id.tv_empty_state)
+    @BindView(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
     @Override
@@ -59,7 +57,7 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
                              @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(getLayout(), container, false);
 
-        ButterKnife.bind(this, view);
+        bindViews(view);
 
         return view;
     }
@@ -72,7 +70,6 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
     }
 
     public void startChatView(Channel channel) {

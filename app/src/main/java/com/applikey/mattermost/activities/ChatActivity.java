@@ -36,7 +36,7 @@ import com.vanniktech.emoji.EmojiPopup;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmResults;
@@ -52,31 +52,31 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private static final String CHANNEL_NAME = "channel-name";
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.srl_chat)
+    @BindView(R.id.srl_chat)
     SwipeRefreshLayout mSrlChat;
 
-    @Bind(R.id.rv_messages)
+    @BindView(R.id.rv_messages)
     RecyclerView mRvMessages;
 
-    @Bind(R.id.tv_empty_state)
+    @BindView(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
-    @Bind(R.id.et_message)
+    @BindView(R.id.et_message)
     EmojiEditText mEtMessage;
 
-    @Bind(R.id.ll_reply)
+    @BindView(R.id.ll_reply)
     LinearLayout mLlReply;
 
-    @Bind(R.id.view_reply_separator)
+    @BindView(R.id.view_reply_separator)
     View mViewReplySeparator;
 
-    @Bind(R.id.iv_reply_close)
+    @BindView(R.id.iv_reply_close)
     ImageView mIvReplyClose;
 
-    @Bind(R.id.tv_reply_message)
+    @BindView(R.id.tv_reply_message)
     TextView mTvReplyMessage;
 
     @InjectPresenter
@@ -89,25 +89,25 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
-    @Bind(R.id.iv_emoji)
+    @BindView(R.id.iv_emoji)
     ImageView mIvEmojicon;
 
-    @Bind(R.id.root_view)
+    @BindView(R.id.root_view)
     View rootView;
 
-    @Bind(R.id.btn_join_channel)
+    @BindView(R.id.btn_join_channel)
     Button mBtnJoinChat;
 
-    @Bind(R.id.tv_join_offer)
+    @BindView(R.id.tv_join_offer)
     TextView mTvJoinOffer;
 
-    @Bind(R.id.join_layout)
+    @BindView(R.id.join_layout)
     LinearLayout mJoinLayout;
 
-    @Bind(R.id.l_message)
+    @BindView(R.id.l_message)
     LinearLayout mMessageLayout;
 
-    @Bind(R.id.chat_layout)
+    @BindView(R.id.chat_layout)
     ViewGroup mChatLayout;
 
     private String mRootId;

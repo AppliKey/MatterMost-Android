@@ -15,25 +15,25 @@ import com.applikey.mattermost.mvp.views.InviteNewMemberView;
 import com.applikey.mattermost.utils.TextViewUtils;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class InviteNewMemberActivity extends BaseMvpActivity implements InviteNewMemberView {
 
-    @Bind(R.id.tv_invite_info)
+    @BindView(R.id.tv_invite_info)
     TextView mTvInfo;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.et_email)
+    @BindView(R.id.et_email)
     EditText mEtEmail;
 
-    @Bind(R.id.et_first_name)
+    @BindView(R.id.et_first_name)
     EditText mEtFirstName;
 
-    @Bind(R.id.et_last_name)
+    @BindView(R.id.et_last_name)
     EditText mEtLastName;
 
     @InjectPresenter

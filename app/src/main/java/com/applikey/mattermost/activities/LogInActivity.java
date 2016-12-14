@@ -18,7 +18,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -26,16 +26,16 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     private static final String TAG = "LogInActivity";
 
-    @Bind(R.id.et_login)
+    @BindView(R.id.et_login)
     EditText mEtLogin;
 
-    @Bind(R.id.et_password)
+    @BindView(R.id.et_password)
     EditText mEtPassword;
 
-    @Bind(R.id.b_authorize)
+    @BindView(R.id.b_authorize)
     Button mBtnAuthorize;
 
-    @Bind(R.id.back)
+    @BindView(R.id.back)
     View mViewBack;
 
     @InjectPresenter

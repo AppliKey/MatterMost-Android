@@ -15,7 +15,7 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PeopleToNewChannelAdapter
@@ -105,13 +105,13 @@ public class PeopleToNewChannelAdapter
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.iv_pending_people_avatar)
+        @BindView(R.id.iv_pending_people_avatar)
         ImageView mAddedPeopleAvatar;
 
-        @Bind(R.id.tv_added_member)
+        @BindView(R.id.tv_added_member)
         TextView mTvAddedMember;
 
-        @Bind(R.id.cb_is_member_added)
+        @BindView(R.id.cb_is_member_added)
         CheckBox mCbIsMemberAdded;
 
         public ViewHolder(View itemView) {

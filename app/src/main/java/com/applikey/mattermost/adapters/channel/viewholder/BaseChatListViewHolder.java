@@ -15,23 +15,23 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
     private String mCurrentUserId;
 
-    @Bind(R.id.iv_notification_icon)
+    @BindView(R.id.iv_notification_icon)
     ImageView mNotificationIcon;
 
-    @Bind(R.id.tv_channel_name)
+    @BindView(R.id.tv_channel_name)
     TextView mChannelName;
 
-    @Bind(R.id.tv_last_message_time)
+    @BindView(R.id.tv_last_message_time)
     TextView mLastMessageTime;
 
-    @Bind(R.id.tv_message_preview)
+    @BindView(R.id.tv_message_preview)
     TextView mMessagePreview;
 
     public BaseChatListViewHolder(View itemView) {

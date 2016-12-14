@@ -25,7 +25,7 @@ import com.transitionseverywhere.TransitionManager;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -39,19 +39,19 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
     @InjectPresenter
     ChannelDetailsPresenter mPresenter;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.channel_name)
+    @BindView(R.id.channel_name)
     TextView mChannelName;
 
-    @Bind(R.id.channel_description)
+    @BindView(R.id.channel_description)
     TextView mChannelDescription;
 
-    @Bind(R.id.added_people_layout)
+    @BindView(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
 
-    @Bind(R.id.container)
+    @BindView(R.id.container)
     LinearLayout mContainer;
 
     private Menu mMenu;
