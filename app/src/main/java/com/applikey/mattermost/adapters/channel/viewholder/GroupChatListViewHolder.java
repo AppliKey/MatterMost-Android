@@ -43,7 +43,6 @@ public class GroupChatListViewHolder extends BaseChatListViewHolder {
     @Override
     public void bind(ImageLoader imageLoader, Channel channel) {
         super.bind(imageLoader, channel);
-
         final List<User> users = channel.getUsers();
         final Iterator<User> iterator = users.iterator();
 
@@ -78,8 +77,10 @@ public class GroupChatListViewHolder extends BaseChatListViewHolder {
 
     private void setGroupImage(ImageLoader imageLoader, Iterator<User> iterator, ImageView imageView) {
         if (iterator.hasNext()) {
+            final User user = iterator.next();
+
             imageView.setVisibility(View.VISIBLE);
-            imageLoader.displayCircularImage(iterator.next().getProfileImage(), imageView);
+            imageLoader.displayCircularImage(user.getProfileImage(), imageView);
         } else {
             imageView.setVisibility(View.GONE);
         }

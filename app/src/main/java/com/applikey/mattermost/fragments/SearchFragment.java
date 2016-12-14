@@ -17,10 +17,10 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.adapters.SearchAdapter;
+import com.applikey.mattermost.listeners.OnLoadAdditionalDataListener;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchView;
-import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import javax.inject.Named;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public abstract class SearchFragment extends BaseMvpFragment implements SearchView {
+public abstract class SearchFragment extends BaseMvpFragment implements SearchView, OnLoadAdditionalDataListener {
 
     private static final String TAG = SearchFragment.class.getSimpleName();
 
@@ -88,9 +88,15 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
         }
     }
 
+    @Override
+    public void onLoadAdditionalData(Channel channel, int position) {
+
+    }
+
     protected void initView(SearchAdapter.ClickListener clickListener) {
         mAdapter = new SearchAdapter(mImageLoader, mCurrentUserId);
         mAdapter.setOnClickListener(clickListener);
+        mAdapter.setOnLoadAdditionalDataListener(this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -128,5 +134,10 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
     @Override
     public void setSearchText(String text) {
         mAdapter.setSearchText(text);
+    }
+
+    @Override
+    public void notifyItemChanged(int position) {
+        mAdapter.notifyItemChanged(position);
     }
 }

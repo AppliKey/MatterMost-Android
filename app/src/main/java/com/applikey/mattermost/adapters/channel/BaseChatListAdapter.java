@@ -80,6 +80,7 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
         void onItemClicked(Channel channel);
 
         void onLoadAdditionalData(Channel channel);
+
     }
 }
 
