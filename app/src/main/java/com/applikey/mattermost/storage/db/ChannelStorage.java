@@ -59,15 +59,19 @@ public class ChannelStorage {
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+        return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
                                                     Channel.ChannelType.PUBLIC.getRepresentation(),
+                                                      Channel.FIELD_NAME_IS_JOINED,
+                                                      true,
                                                     Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.PRIVATE.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+        return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
+                                                      Channel.ChannelType.PRIVATE.getRepresentation(),
+                                                      Channel.FIELD_NAME_IS_JOINED,
+                                                      true,
+                                                      Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
