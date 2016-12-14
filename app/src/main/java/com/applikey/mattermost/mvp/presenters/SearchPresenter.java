@@ -1,7 +1,5 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.text.TextUtils;
-
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchTextChanged;
 import com.applikey.mattermost.models.SearchItem;
@@ -20,7 +18,6 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +34,6 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     private static final String TAG = SearchPresenter.class.getSimpleName();
 
     boolean mChannelsIsFetched = false;
-
-    private List<Channel> mFetchedChannels = new ArrayList<>();
 
     @Inject
     ChannelStorage mChannelStorage;
@@ -69,21 +64,11 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                                   .doOnNext(channel -> channel.setJoined(false))
                                   .toList()
                                   .observeOn(AndroidSchedulers.mainThread())
+                                  .doOnNext(channels -> mChannelStorage.saveAndDeleteRemovedChannelsSync(channels))
                                   .subscribe(channels -> {
-                                      mFetchedChannels = channels;
                                       mChannelsIsFetched = true;
                                       getData(mSearchString);
                                   }, mErrorHandler::handleError));
-    }
-
-    List<Channel> addFilterChannels(List<Channel> channels, String text) {
-        for (Channel channel : mFetchedChannels) {
-            String name = channel.getName();
-            if (!TextUtils.isEmpty(name) && name.contains(text)) {
-                channels.add(channel);
-            }
-        }
-        return channels;
     }
 
     public void handleItemClick(SearchItem item) {

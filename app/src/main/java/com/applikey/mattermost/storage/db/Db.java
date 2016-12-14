@@ -153,6 +153,12 @@ public class Db {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(objects));
     }
 
+    public void saveTransactionalSync(Iterable<? extends RealmObject> objects) {
+        mRealm.beginTransaction();
+        mRealm.copyToRealmOrUpdate(objects);
+        mRealm.commitTransaction();
+    }
+
     public <T extends RealmObject> Observable<List<T>> listRealmObjects(Class<T> tClass) {
         return mRealm
                 .where(tClass)

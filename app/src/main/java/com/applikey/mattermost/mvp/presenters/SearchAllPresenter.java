@@ -60,8 +60,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))
-                                .first()
-                                .doOnNext(channels -> addFilterChannels(channels, text)),
+                                .first(),
 
                         mUserStorage.searchUsers(text).first(), (items, users) -> {
 

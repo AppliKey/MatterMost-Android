@@ -235,6 +235,10 @@ public class ChannelStorage {
         saveAndDeleteRemovedChannels(channels);
     }
 
+    public void saveAndDeleteRemovedChannelsSync(List<Channel> channels) {
+        mDb.saveTransactional(restoreChannels(channels));
+    }
+
     private void saveAndDeleteRemovedChannels(List<Channel> channels) {
         mDb.saveTransactional(restoreChannels(channels));
         mDb.doTransactional(realm -> {

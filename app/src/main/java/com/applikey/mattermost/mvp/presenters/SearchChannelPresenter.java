@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -58,8 +59,8 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
                         .map(Channel::getList)
+                        .doOnNext(channels -> Log.d(TAG, "doRequest: " + channels))
                         .observeOn(Schedulers.io())
-                        .doOnNext(channels -> addFilterChannels(channels, text))
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(items -> Collections.sort(items, new ChannelDateComparator()))
                         .map(ArrayList<SearchItem>::new)
