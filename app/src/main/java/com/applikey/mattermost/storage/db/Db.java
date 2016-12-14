@@ -98,6 +98,15 @@ public class Db {
         });
     }
 
+    public <T extends RealmObject> void updateTransactional(Class<T> tClass,
+                                                            String id,
+                                                            Func2<T, Realm, Boolean> update, Realm.Transaction.OnSuccess onSuccess) {
+        mRealm.executeTransactionAsync(realm -> {
+            final T realmObject = realm.where(tClass).equalTo("id", id).findFirst();
+            update.call(realmObject, realm);
+        }, onSuccess);
+    }
+
     public <T extends RealmObject, V> void updateMapTransactional(Map<String, V> valuesMap,
                                                                   Class<T> clazz,
                                                                   Action3<T, V, Realm> updateFunc) {

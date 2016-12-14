@@ -2,18 +2,25 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
+import com.applikey.mattermost.models.channel.ExtraInfo;
+import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
 import com.applikey.mattermost.models.post.PostSearchRequest;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.models.web.ChannelExtraResult;
+import com.applikey.mattermost.models.web.ChannelWithUsers;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
+import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -22,8 +29,10 @@ import com.applikey.mattermost.web.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -58,7 +67,18 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     @Inject
     ErrorHandler mErrorHandler;
 
+    @Inject
+    Db mDb;
+
     protected String mSearchString = Constants.EMPTY_STRING;
+
+    private final Set<String> mUsersLoadedChannels = new HashSet<>();
+
+    private String mTeamId;
+
+    public void init() {
+        mTeamId = mPrefs.getCurrentTeamId();
+    }
 
     public void requestNotJoinedChannels() {
         mSubscription.add(mApi.getChannelsUserHasNotJoined(mPrefs.getCurrentTeamId())
@@ -174,6 +194,38 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         view.setSearchText(text);
         view.clearData();
         getData(mSearchString);
+    }
+
+    public void getChatUsers(Channel channel, int position) {
+        if (mUsersLoadedChannels.contains(channel.getId())) {
+            return;
+        }
+        mUsersLoadedChannels.add(channel.getId());
+        final SearchView view = getViewState();
+
+        final Subscription subscription = Observable.just(channel)
+                .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
+                        .subscribeOn(Schedulers.io()), this::transform)
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(channelExtraResult -> mUserStorage.findUsers(
+                        Stream.of(channelExtraResult.getExtraInfo().getMembers())
+                                .map(MemberInfo::getId)
+                                .collect(Collectors.toList())), this::transform) //TODO replace to rx style
+                .first()
+                .subscribe(channelWithUsers -> {
+                    mChannelStorage.setUsers(channel.getId(), channelWithUsers.getUsers(),
+                                             () -> view.notifyItemChanged(position));
+                }, mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
+    }
+
+    private ChannelExtraResult transform(Channel channel, ExtraInfo extraInfo) {
+        return new ChannelExtraResult(channel, extraInfo);
+    }
+
+    private ChannelWithUsers transform(ChannelExtraResult channelExtraResult, List<User> users) {
+        return new ChannelWithUsers(channelExtraResult.getChannel(), users);
     }
 
     public abstract boolean isDataRequestValid(String text);

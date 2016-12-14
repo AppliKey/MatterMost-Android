@@ -23,4 +23,6 @@ public interface SearchView extends MvpView {
 
     void setSearchText(String text);
 
+    void notifyItemChanged(int position);
+
 }

@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.SearchAllPresenter;
 import com.applikey.mattermost.mvp.views.SearchAllView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -39,5 +40,10 @@ public class SearchAllFragment extends SearchFragment implements SearchAllView,
         mPresenter.handleItemClick(item);
     }
 
+    @Override
+    public void onLoadAdditionalData(Channel channel, int position) {
+        super.onLoadAdditionalData(channel, position);
+        mPresenter.getChatUsers(channel, position);
+    }
 
 }

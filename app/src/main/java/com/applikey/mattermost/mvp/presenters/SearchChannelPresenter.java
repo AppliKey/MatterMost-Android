@@ -39,6 +39,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     public SearchChannelPresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
+        init();
     }
 
     @Override
@@ -70,4 +71,5 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     public void onInputTextChanged(SearchChannelTextChanged event) {
         super.onInputTextChanged(event);
     }
+
 }

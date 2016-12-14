@@ -43,6 +43,7 @@ public class SearchMessagePresenter extends SearchPresenter<SearchMessageView> {
     public SearchMessagePresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
+        init();
     }
 
     @Override
