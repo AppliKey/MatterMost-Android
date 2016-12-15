@@ -81,6 +81,9 @@
             android:screenOrientation="portrait" />
         <activity android:name=".activities.FindMoreChannelsActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.MessageDetailsActivity"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

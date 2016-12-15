@@ -16,6 +16,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.activities.BaseActivity;
 import com.applikey.mattermost.activities.ChatActivity;
+import com.applikey.mattermost.activities.MessageDetailsActivity;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.listeners.OnLoadAdditionalDataListener;
 import com.applikey.mattermost.models.SearchItem;
@@ -126,6 +127,12 @@ public abstract class SearchFragment extends BaseMvpFragment implements SearchVi
             mRecyclerView.setVisibility(View.VISIBLE);
         }
     }
+
+    @Override
+    public void startMessageDetailsView(String postId) {
+        startActivity(MessageDetailsActivity.getIntent(getContext(), postId));
+    }
+
 
     public void clearData() {
         mAdapter.clear();

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="0dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/AppToolbar"
+            app:title="Message details"
+            app:navigationIcon="@drawable/ic_back" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:id="@+id/iv_preview_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/large"
+        android:layout_marginLeft="@dimen/message_details_content_margin"
+        android:layout_marginRight="@dimen/message_details_content_margin">
+
+        <ImageView
+            android:id="@+id/iv_preview_image"
+            android:layout_width="@dimen/list_item_image_chat"
+            android:layout_height="@dimen/list_item_image_chat"
+            android:src="@drawable/no_resource" />
+
+        <ImageView
+            android:id="@+id/iv_status_bg"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/no_resource_round_white" />
+
+        <ImageView
+            android:id="@+id/iv_status"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_margin="2dp"
+            android:src="@drawable/no_resource_round" />
+
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_default"
+            android:textSize="@dimen/user_name_text_size"
+            android:textColor="@color/colorAttachment"
+            android:layout_toEndOf="@id/iv_preview_image"
+            tools:text="John Smith" />
+
+            <com.applikey.mattermost.views.LinkTextView
+                android:id="@+id/tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small"
+                android:layout_alignStart="@id/tv_user_name"
+                android:layout_below="@id/tv_user_name"
+                android:background="@drawable/bg_post"
+                android:paddingBottom="@dimen/list_item_chat_padding_timestamp"
+                android:paddingEnd="@dimen/list_item_chat_padding"
+                android:paddingStart="@dimen/list_item_chat_padding"
+                android:paddingTop="@dimen/list_item_chat_padding_timestamp"
+                android:autoLink="web"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/colorAttachment"
+                android:textSize="@dimen/list_item_chat_text_size"
+                app:emojiSize="@dimen/emoji_size"
+                tools:text="Some very long and interesting message" />
+
+        <TextView
+            android:id="@+id/tv_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_message"
+            android:layout_alignStart="@id/tv_message"
+            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginBottom="@dimen/normal"
+            android:fontFamily="sans-serif-light"
+            android:textColor="@color/textListSecondary"
+            android:textSize="@dimen/list_item_chat_date_size"
+            tools:text="11:12 AM, 16, September 2016 " />
+
+        <com.applikey.mattermost.views.SafeButton
+            android:id="@+id/btn_go_to_dialog"
+            style="@style/Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="@dimen/margin_default"
+            android:layout_marginBottom="@dimen/go_to_dialog_button_margin_bottom"
+            android:layout_marginLeft="@dimen/margin_default"
+            android:layout_marginRight="@dimen/margin_default"
+            android:text="@string/go_to_dialog" />
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

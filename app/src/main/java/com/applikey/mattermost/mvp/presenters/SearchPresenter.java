@@ -113,7 +113,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 view.startChatView((Channel) item);
                 break;
             case MESSAGE:
-                view.startChatView(((Message) item).getChannel());
+                view.startMessageDetailsView( ((Message) item).getPost().getId());
                 break;
             case USER:
                 final User user = ((User) item);

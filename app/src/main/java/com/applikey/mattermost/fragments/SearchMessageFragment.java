@@ -44,4 +44,5 @@ public class SearchMessageFragment extends SearchFragment implements SearchMessa
         super.onLoadAdditionalData(channel, position);
         mPresenter.getChatUsers(channel, position);
     }
+
 }

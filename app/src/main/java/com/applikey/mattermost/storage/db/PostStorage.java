@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import rx.Observable;
+import rx.Single;
 
 public class PostStorage {
 
@@ -24,6 +25,10 @@ public class PostStorage {
 
     public void update(Post post) {
         mDb.saveTransactional(post);
+    }
+
+    public Single<Post> get(String id) {
+        return mDb.getObject(Post.class, Post.FIELD_NAME_ID, id);
     }
 
     public void saveAll(List<Post> posts) {
