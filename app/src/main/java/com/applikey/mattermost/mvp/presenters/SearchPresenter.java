@@ -21,6 +21,7 @@ import com.applikey.mattermost.models.web.ChannelWithUsers;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
+import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
@@ -48,6 +49,9 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     boolean mChannelsIsFetched = false;
 
     private List<Channel> mFetchedChannels = new ArrayList<>();
+
+    @Inject
+    PostStorage mPostStorage;
 
     @Inject
     ChannelStorage mChannelStorage;
@@ -136,6 +140,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .map(Map::values)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(posts -> mPostStorage.saveAll(new ArrayList<>(posts)))
                 .flatMap(Observable::from)
                 .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
                          Message::new)

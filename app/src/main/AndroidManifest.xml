@@ -83,6 +83,7 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.MessageDetailsActivity"
+            android:theme="@style/GreyBackgroundTheme"
             android:screenOrientation="portrait" />
 
         <receiver

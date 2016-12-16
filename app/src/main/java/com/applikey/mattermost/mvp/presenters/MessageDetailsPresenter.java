@@ -1,19 +1,21 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.mvp.views.MessageDetailsView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
 
+@InjectViewState
 public class MessageDetailsPresenter extends BasePresenter<MessageDetailsView> {
 
-    private static final String TAG = MessageDetailsPresenter.class.getSimpleName();
     @Inject
     UserStorage mUserStorage;
 
@@ -30,17 +32,20 @@ public class MessageDetailsPresenter extends BasePresenter<MessageDetailsView> {
     public void initMessage(String postId) {
         final MessageDetailsView view = getViewState();
         mPostStorage.get(postId)
-                .toObservable()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(post -> mChannelStorage.getChannel(post.getChannelId()).toObservable(),
-                         (post, channel) -> new Message(post, channel))
-                // TODO: 15.12.16 FIX IT
-                .flatMap(message -> mUserStorage.getDirectProfile(message.getPost().getUserId()),
-                         (message, user) -> {
-                             message.setUser(user);
-                             return message;})
+                .flatMap(post -> mChannelStorage.getChannel(post.getChannelId())
+                        .map(channel -> new Message(post, channel)))
+                .doOnSuccess(message -> {})
+                .flatMap(message -> mUserStorage.getDirectProfile(message.getPost().getUserId())
+                       .toSingle()
+                        .doOnSuccess(message::setUser)
+                       .map(user -> message))
                 .subscribe(view::initView, Throwable::printStackTrace);
     }
 
+    public void onGoToDialogButtonClick(Channel channel) {
+        final MessageDetailsView view = getViewState();
+        view.startChatView(channel);
+    }
 }

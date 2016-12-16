@@ -390,7 +390,7 @@ public class Db {
                 .findFirst();
         final Observable<T> map;
         if (object == null) {
-            map = Observable.error(new ObjectNotFoundException());
+            map = Observable.error(new ObjectNotFoundException("Field : " + field + " = " + id));
         } else {
             map = object
                     .<T>asObservable()

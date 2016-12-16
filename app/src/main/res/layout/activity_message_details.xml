@@ -16,6 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/white"
             android:theme="@style/AppToolbar"
             app:title="Message details"
             app:navigationIcon="@drawable/ic_back" />
@@ -66,7 +67,7 @@
                 android:layout_marginTop="@dimen/small"
                 android:layout_alignStart="@id/tv_user_name"
                 android:layout_below="@id/tv_user_name"
-                android:background="@drawable/bg_post"
+                android:background="@android:color/white"
                 android:paddingBottom="@dimen/list_item_chat_padding_timestamp"
                 android:paddingEnd="@dimen/list_item_chat_padding"
                 android:paddingStart="@dimen/list_item_chat_padding"
