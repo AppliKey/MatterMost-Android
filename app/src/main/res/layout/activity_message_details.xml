@@ -67,7 +67,7 @@
                 android:layout_marginTop="@dimen/small"
                 android:layout_alignStart="@id/tv_user_name"
                 android:layout_below="@id/tv_user_name"
-                android:background="@android:color/white"
+                android:background="@drawable/bg_post_message_details"
                 android:paddingBottom="@dimen/list_item_chat_padding_timestamp"
                 android:paddingEnd="@dimen/list_item_chat_padding"
                 android:paddingStart="@dimen/list_item_chat_padding"
