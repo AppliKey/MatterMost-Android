@@ -140,7 +140,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .map(Map::values)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(posts -> mPostStorage.saveAll(new ArrayList<>(posts)))
+                .doOnNext(posts -> mPostStorage.saveAllSync(new ArrayList<>(posts)))
                 .flatMap(Observable::from)
                 .flatMap(item -> mChannelStorage.channelById(item.getChannelId()).first(),
                          Message::new)

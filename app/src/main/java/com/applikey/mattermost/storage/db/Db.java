@@ -410,7 +410,7 @@ public class Db {
         mRealm.commitTransaction();
     }
 
-    private Realm getRealm() {
+    public Realm getRealm() {
         return mRealm;
     }
 
