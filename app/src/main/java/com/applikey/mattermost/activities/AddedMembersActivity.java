@@ -25,8 +25,8 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
 import butterknife.BindDimen;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AddedMembersActivity extends BaseMvpActivity
@@ -39,13 +39,13 @@ public class AddedMembersActivity extends BaseMvpActivity
     @InjectPresenter
     AddedMembersPresenter mPresenter;
 
-    @Bind(R.id.rv_added_members)
+    @BindView(R.id.rv_added_members)
     RecyclerView mRvAddedMembers;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.text_empty)
+    @BindView(R.id.text_empty)
     TextView mTextEmpty;
 
     @BindDimen(R.dimen.list_item_margin)

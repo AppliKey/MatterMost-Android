@@ -29,11 +29,10 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
@@ -46,13 +45,13 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
     @InjectPresenter
     ChatListScreenPresenter mPresenter;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.tabs)
+    @BindView(R.id.tabs)
     TabLayout mTabLayout;
 
-    @Bind(R.id.vpChatList)
+    @BindView(R.id.vpChatList)
     ViewPager mViewPager;
 
     private ChatListPagerAdapter mChatListPagerAdapter;

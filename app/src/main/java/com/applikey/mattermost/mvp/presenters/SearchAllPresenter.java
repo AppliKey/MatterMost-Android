@@ -41,6 +41,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     public SearchAllPresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
+        init();
     }
 
     @Override

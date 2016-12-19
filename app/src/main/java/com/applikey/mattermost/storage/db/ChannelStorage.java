@@ -15,6 +15,7 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
 import rx.Single;
@@ -212,6 +213,14 @@ public class ChannelStorage {
             realm.copyToRealmOrUpdate(realmChannel);
             return true;
         });
+    }
+
+    public void setUsers(String id, List<User> users, Realm.Transaction.OnSuccess onSuccess){
+        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+            realmChannel.setUsers(users);
+            realm.copyToRealmOrUpdate(realmChannel);
+            return true;
+        }, onSuccess);
     }
 
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
