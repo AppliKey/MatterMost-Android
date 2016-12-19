@@ -162,6 +162,12 @@ public class Db {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(objects));
     }
 
+    public void saveTransactionalSync(Iterable<? extends RealmObject> objects) {
+        mRealm.beginTransaction();
+        mRealm.copyToRealmOrUpdate(objects);
+        mRealm.commitTransaction();
+    }
+
     public <T extends RealmObject> Observable<List<T>> listRealmObjects(Class<T> tClass) {
         return mRealm
                 .where(tClass)
@@ -208,6 +214,23 @@ public class Db {
                 .asObservable()
                 .filter(response -> !response.isEmpty())
                 .map(mRealm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredExcluded(
+            Class<T> tClass,
+            String fieldName,
+            String value,
+            String excludedField,
+            boolean excludedValue,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .equalTo(excludedField, excludedValue)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(

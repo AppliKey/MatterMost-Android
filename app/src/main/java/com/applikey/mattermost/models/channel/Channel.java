@@ -31,6 +31,7 @@ public class Channel extends RealmObject implements SearchItem {
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
+    public static final String FIELD_NAME_IS_JOINED = "isJoined";
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
     private static final String TAG = Channel.class.getSimpleName();
