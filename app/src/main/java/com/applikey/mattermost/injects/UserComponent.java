@@ -2,7 +2,6 @@ package com.applikey.mattermost.injects;
 
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.activities.DrawerActivity;
-import com.applikey.mattermost.activities.MessageDetailsActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
 import com.applikey.mattermost.fragments.SearchFragment;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
@@ -89,8 +88,6 @@ public interface UserComponent {
     void inject(DrawerActivity drawerActivity);
 
     void inject(MessageDetailsPresenter messageDetailsPresenter);
-
-    void inject(MessageDetailsActivity messageDetailsActivity);
 
     @Subcomponent.Builder
     interface Builder {

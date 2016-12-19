@@ -11,8 +11,6 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
-import rx.android.schedulers.AndroidSchedulers;
-
 @InjectViewState
 public class MessageDetailsPresenter extends BasePresenter<MessageDetailsView> {
 
@@ -32,11 +30,8 @@ public class MessageDetailsPresenter extends BasePresenter<MessageDetailsView> {
     public void initMessage(String postId) {
         final MessageDetailsView view = getViewState();
         mPostStorage.get(postId)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(post -> mChannelStorage.getChannel(post.getChannelId())
                         .map(channel -> new Message(post, channel)))
-                .doOnSuccess(message -> {})
                 .flatMap(message -> mUserStorage.getDirectProfile(message.getPost().getUserId())
                        .toSingle()
                         .doOnSuccess(message::setUser)

@@ -23,7 +23,7 @@ import com.applikey.mattermost.views.SafeButton;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -34,15 +34,15 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
     @InjectPresenter
     MessageDetailsPresenter mPresenter;
 
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.iv_preview_image) ImageView mIvPreviewImage;
-    @Bind(R.id.iv_status_bg) ImageView mIvStatusBg;
-    @Bind(R.id.iv_status) ImageView mIvStatus;
-    @Bind(R.id.tv_user_name) TextView mTvUserName;
-    @Bind(R.id.tv_message) LinkTextView mTvMessage;
-    @Bind(R.id.tv_timestamp) TextView mTvTimestamp;
-    @Bind(R.id.btn_go_to_dialog) SafeButton mGoToDialogButton;
-    @Bind(R.id.iv_preview_image_layout) RelativeLayout mIvPreviewImageLayout;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.iv_preview_image) ImageView mIvPreviewImage;
+    @BindView(R.id.iv_status_bg) ImageView mIvStatusBg;
+    @BindView(R.id.iv_status) ImageView mIvStatus;
+    @BindView(R.id.tv_user_name) TextView mTvUserName;
+    @BindView(R.id.tv_message) LinkTextView mTvMessage;
+    @BindView(R.id.tv_timestamp) TextView mTvTimestamp;
+    @BindView(R.id.btn_go_to_dialog) SafeButton mGoToDialogButton;
+    @BindView(R.id.iv_preview_image_layout) RelativeLayout mIvPreviewImageLayout;
 
     private Message mMessage;
 
@@ -59,12 +59,6 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
         ButterKnife.bind(this);
         initToolbar();
         mPresenter.initMessage(getIntent().getStringExtra(KEY_POST_ID));
-    }
-
-    private void initToolbar(){
-        setSupportActionBar(mToolbar);
-        setTitle(R.string.message_details);
-        mToolbar.setNavigationOnClickListener(view -> onBackPressed());
     }
 
     @OnClick(R.id.btn_go_to_dialog)
@@ -112,5 +106,11 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
             mIvStatusBg.setVisibility(View.GONE);
             mIvStatus.setVisibility(View.GONE);
         }
+    }
+
+    private void initToolbar(){
+        setSupportActionBar(mToolbar);
+        setTitle(R.string.message_details);
+        mToolbar.setNavigationOnClickListener(view -> onBackPressed());
     }
 }
