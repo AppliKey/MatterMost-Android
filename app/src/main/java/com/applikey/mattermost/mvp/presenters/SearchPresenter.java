@@ -1,5 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchTextChanged;
 import com.applikey.mattermost.models.SearchItem;
