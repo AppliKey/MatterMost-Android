@@ -145,6 +145,8 @@
     <string name="header_message">Messages</string>
     <string name="header_channel">Channels</string>
     <string name="header_people">People</string>
+    <string name="go_to_dialog">Go to dialogue</string>
+    <string name="message_details">Message details</string>
 
 
 </resources>

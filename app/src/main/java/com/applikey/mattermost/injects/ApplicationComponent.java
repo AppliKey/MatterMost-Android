@@ -50,4 +50,5 @@ public interface ApplicationComponent {
 
     // Components
     UserComponent.Builder userComponentBuilder();
+
 }

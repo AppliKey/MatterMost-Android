@@ -264,7 +264,7 @@ public class ChannelStorage {
     }
 
     public Single<Channel> getChannel(String id) {
-        return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
+        return mDb.getObject(Channel.class, Channel.FIELD_ID, id);
     }
 
     public void delete(String channelId) {
