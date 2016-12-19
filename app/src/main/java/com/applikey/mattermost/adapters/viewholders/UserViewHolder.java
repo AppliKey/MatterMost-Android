@@ -9,15 +9,15 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class UserViewHolder extends ClickableViewHolder {
 
-    @Bind(R.id.iv_preview_image)
+    @BindView(R.id.iv_preview_image)
     ImageView mPreviewImage;
 
-    @Bind(R.id.tv_channel_name)
+    @BindView(R.id.tv_channel_name)
     TextView mChannelName;
 
     public UserViewHolder(View itemView) {

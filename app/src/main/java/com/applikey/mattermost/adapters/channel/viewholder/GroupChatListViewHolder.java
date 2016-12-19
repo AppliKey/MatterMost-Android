@@ -12,28 +12,28 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import java.util.Iterator;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class GroupChatListViewHolder extends BaseChatListViewHolder {
 
     private final static int GROUP_GRID_COUNT = 4;
 
-    @Bind(R.id.iv_first)
+    @BindView(R.id.iv_first)
     ImageView mIvFirst;
 
-    @Bind(R.id.iv_second)
+    @BindView(R.id.iv_second)
     ImageView mIvSecond;
 
-    @Bind(R.id.iv_third)
+    @BindView(R.id.iv_third)
     ImageView mIvThird;
 
-    @Bind(R.id.iv_fourth)
+    @BindView(R.id.iv_fourth)
     ImageView mIvFourth;
 
-    @Bind(R.id.iv_channel_icon)
+    @BindView(R.id.iv_channel_icon)
     ImageView mIvChannelIcon;
 
-    @Bind(R.id.ccv_fourth)
+    @BindView(R.id.ccv_fourth)
     CircleCounterView mCcvFourth;
 
     public GroupChatListViewHolder(View itemView, String userId) {
