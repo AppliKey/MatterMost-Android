@@ -18,20 +18,20 @@ import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 
 public class ChooseServerActivity extends BaseMvpActivity implements ChooseServerView {
 
-    @Bind(R.id.et_server)
+    @BindView(R.id.et_server)
     AutoCompleteTextView mEtServerUrl;
 
-    @Bind(R.id.b_proceed)
+    @BindView(R.id.b_proceed)
     Button mBtnProceed;
 
-    @Bind(R.id.sp_http)
+    @BindView(R.id.sp_http)
     Spinner mSpHttp;
 
     @InjectPresenter
@@ -85,7 +85,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     public void setAutoCompleteServers(String[] urls) {
         final ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, urls);
-        runOnUiThread(() ->  mEtServerUrl.setAdapter(adapter));
+        runOnUiThread(() -> mEtServerUrl.setAdapter(adapter));
     }
 
     @OnClick(R.id.b_proceed)

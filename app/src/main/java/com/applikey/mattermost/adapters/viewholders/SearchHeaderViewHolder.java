@@ -7,12 +7,12 @@ import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class SearchHeaderViewHolder extends RecyclerView.ViewHolder {
 
-    @Bind(R.id.tv_header)
+    @BindView(R.id.tv_header)
     TextView mTvHeader;
 
     public SearchHeaderViewHolder(View itemView) {

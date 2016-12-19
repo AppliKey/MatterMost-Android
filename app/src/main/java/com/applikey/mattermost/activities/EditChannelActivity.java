@@ -20,17 +20,17 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 public class EditChannelActivity extends BaseEditChannelActivity implements EditChannelView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
 
-    @Bind(R.id.add_members_text)
+    @BindView(R.id.add_members_text)
     TextView mAddMembersText;
 
-    @Bind(R.id.members_layout)
+    @BindView(R.id.members_layout)
     AddedPeopleLayout mMembersLayout;
 
     @InjectPresenter

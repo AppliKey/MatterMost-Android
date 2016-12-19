@@ -25,7 +25,7 @@ import com.applikey.mattermost.views.AddedPeopleLayout;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
@@ -35,25 +35,25 @@ public abstract class BaseEditChannelActivity extends BaseMvpActivity
 
     private static final int REQUEST_ADDED_MEMBERS_DIALOG = 1;
 
-    @Bind(R.id.et_channel_name)
+    @BindView(R.id.et_channel_name)
     EditText mEtChannelName;
 
-    @Bind(R.id.et_channel_description)
+    @BindView(R.id.et_channel_description)
     EditText mEtChannelDescription;
 
-    @Bind(R.id.et_search_people)
+    @BindView(R.id.et_search_people)
     EditText mEtSearchPeople;
 
-    @Bind(R.id.rv_peoples)
+    @BindView(R.id.rv_peoples)
     RecyclerView mRvPeoples;
 
-    @Bind(R.id.added_people_layout)
+    @BindView(R.id.added_people_layout)
     AddedPeopleLayout mAddedPeopleLayout;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.tv_empty_state)
+    @BindView(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
     protected PeopleToNewChannelAdapter mAdapter;
