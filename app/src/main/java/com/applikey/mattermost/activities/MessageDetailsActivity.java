@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
@@ -24,8 +23,6 @@ import com.applikey.mattermost.views.SafeButton;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,9 +33,6 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
 
     @InjectPresenter
     MessageDetailsPresenter mPresenter;
-
-    @Inject
-    ImageLoader mImageLoader;
 
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.iv_preview_image) ImageView mIvPreviewImage;
@@ -62,7 +56,6 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_details);
-        App.getUserComponent().inject(this);
         ButterKnife.bind(this);
         initToolbar();
         mPresenter.initMessage(getIntent().getStringExtra(KEY_POST_ID));
