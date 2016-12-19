@@ -7,6 +7,14 @@
     android:animateLayoutChanges="true"
     android:orientation="vertical">
 
+    <ProgressBar
+        android:id="@+id/loading_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:indeterminate="true"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        />
+
     <LinearLayout
         android:id="@+id/ll_reply"
         android:layout_width="match_parent"
