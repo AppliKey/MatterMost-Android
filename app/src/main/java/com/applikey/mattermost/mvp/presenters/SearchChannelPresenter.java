@@ -16,12 +16,12 @@ import com.arellomobile.mvp.InjectViewState;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -64,7 +64,9 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
                         .observeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(items -> Collections.sort(items, new ChannelDateComparator()))
-                        .map(ArrayList<SearchItem>::new)
+                        .flatMap(Observable::from)
+                        .map(SearchItem::new)
+                        .toList()
                         .subscribe(view::displayData, mErrorHandler::handleError));
     }
 

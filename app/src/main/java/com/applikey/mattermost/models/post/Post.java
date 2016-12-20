@@ -2,7 +2,6 @@ package com.applikey.mattermost.models.post;
 
 import android.support.annotation.Nullable;
 
-import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 import com.vdurmont.emoji.EmojiParser;
@@ -10,9 +9,7 @@ import com.vdurmont.emoji.EmojiParser;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE;
-
-public class Post extends RealmObject implements SearchItem {
+public class Post extends RealmObject {
 
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
@@ -176,23 +173,10 @@ public class Post extends RealmObject implements SearchItem {
                 : post.getAuthor() == null;
     }
 
-    @Override
-    public Type getSearchType() {
-        return MESSAGE;
-    }
+
 
     public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
         return (int) (post1.getCreatedAt() - post2.getCreatedAt());
-    }
-
-    @Override
-    public int getSortPriority() {
-        return PRIORITY_MESSAGE;
-    }
-
-    @Override
-    public int compareByDate(SearchItem item) {
-        return 0;
     }
 
     @Override
