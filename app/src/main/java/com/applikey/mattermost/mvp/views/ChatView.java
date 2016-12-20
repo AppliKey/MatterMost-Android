@@ -4,7 +4,6 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.arellomobile.mvp.MvpView;
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
@@ -34,4 +33,6 @@ public interface ChatView extends MvpView {
     void showEmpty(boolean show);
 
     void showJoiningInterface(String channelName);
+
+    void showLoading(boolean show);
 }

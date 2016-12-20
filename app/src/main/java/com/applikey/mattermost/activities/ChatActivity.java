@@ -40,6 +40,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmResults;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -110,6 +111,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @BindView(R.id.chat_layout)
     ViewGroup mChatLayout;
 
+    @BindView(R.id.loading_progress_bar)
+    MaterialProgressBar mLoadingProgressBar;
+
     private String mRootId;
 
     private String mChannelId;
@@ -174,6 +178,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         ViewUtil.setEnabledInDept(mChatLayout, false);
 
         mTvJoinOffer.setText(getString(R.string.join_offer, channelName));
+    }
+
+    @Override
+    public void showLoading(boolean show) {
+        mLoadingProgressBar.setVisibility(show ? VISIBLE : GONE);
     }
 
     @Override
