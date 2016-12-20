@@ -131,8 +131,10 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @OnClick(R.id.btn_leave_channel)
     public void onLeaveChannelClick() {
-        new AlertDialog.Builder(this).setMessage(R.string.are_you_sure_want_to_leave_channel)
-                .setPositiveButton(R.string.ok, (dialog, which) -> mPresenter.leaveChannel())
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.message_delete_title)
+                .setMessage(R.string.are_you_sure_want_to_leave_channel)
+                .setPositiveButton(R.string.delete, (dialog, which) -> mPresenter.leaveChannel())
                 .setNegativeButton(R.string.cancel, null)
                 .create()
                 .show();
