@@ -147,6 +147,7 @@
     <string name="header_people">People</string>
     <string name="go_to_dialog">Go to dialogue</string>
     <string name="message_details">Message details</string>
+    <string name="are_you_sure_want_to_leave_channel">Are you sure want to leave the channel</string>
 
 
 </resources>
