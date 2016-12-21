@@ -391,7 +391,21 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        if (isOwner) {
+        if (!post.isSent()) {
+            dialogBuilder.setItems(R.array.post_own_opinion_fail_array, (dialog, which) -> {
+                switch (which) {
+                    case 0:
+                        mPresenter.sendMessage(mChannelId, post.getMessage(), post.getId());
+                        break;
+                    case 1:
+                        deleteMessage(mChannelId, post);
+                        break;
+                    default:
+                        throw new RuntimeException("Not implemented feature");
+                }
+            });
+        }
+        else if (isOwner) {
             dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
                 switch (which) {
                     case 0:

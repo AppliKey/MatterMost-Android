@@ -114,6 +114,11 @@
         <item>Reply</item>
     </array>
 
+    <array name="post_own_opinion_fail_array">
+        <item>Retry</item>
+        <item>Delete</item>
+    </array>
+
     <array name="post_opinion_array">
         <item>Reply</item>
     </array>

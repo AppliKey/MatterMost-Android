@@ -127,6 +127,12 @@ public class Db {
         });
     }
 
+    public <T extends RealmObject> void deleteTransactionalSync(Class<T> tClass, String id) {
+        mRealm.beginTransaction();
+        mRealm.where(tClass).equalTo("id", id).findFirst().deleteFromRealm();
+        mRealm.commitTransaction();
+    }
+
     public void deleteTransactional(final RealmObject realmObject) {
         mRealm.executeTransactionAsync(realm -> {
             realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();

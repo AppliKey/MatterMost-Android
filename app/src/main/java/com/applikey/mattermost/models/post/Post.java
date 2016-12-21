@@ -37,6 +37,20 @@ public class Post extends RealmObject {
     // Application-specific fields
     private int priority;
     private User author;
+    private boolean mSent = true;
+
+    public Post() {
+
+    }
+
+    private Post(Builder builder) {
+        setId(builder.id);
+        setChannelId(builder.channelId);
+        setCreatedAt(builder.createdAt);
+        setUserId(builder.userId);
+        setMessage(builder.message);
+        setSent(builder.sent);
+    }
 
     public String getId() {
         return id;
@@ -110,6 +124,14 @@ public class Post extends RealmObject {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public boolean isSent() {
+        return mSent;
+    }
+
+    public void setSent(boolean sent) {
+        mSent = sent;
     }
 
     @Nullable
@@ -193,5 +215,52 @@ public class Post extends RealmObject {
                 ", priority=" + priority +
                 ", author=" + author +
                 '}';
+    }
+
+    public static final class Builder {
+
+        private String id;
+        private String channelId;
+        private long createdAt;
+        private String userId;
+        private String message;
+        private boolean sent;
+
+        public Builder() {
+        }
+
+        public Builder id(String val) {
+            id = val;
+            return this;
+        }
+
+        public Builder channelId(String val) {
+            channelId = val;
+            return this;
+        }
+
+        public Builder createdAt(long val) {
+            createdAt = val;
+            return this;
+        }
+
+        public Builder userId(String val) {
+            userId = val;
+            return this;
+        }
+
+        public Builder message(String val) {
+            message = val;
+            return this;
+        }
+
+        public Builder sent(boolean val) {
+            sent = val;
+            return this;
+        }
+
+        public Post build() {
+            return new Post(this);
+        }
     }
 }
