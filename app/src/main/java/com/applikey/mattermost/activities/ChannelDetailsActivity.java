@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -136,7 +137,13 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
 
     @OnClick(R.id.btn_leave_channel)
     public void onLeaveChannelClick() {
-        mPresenter.leaveChannel();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.message_delete_title)
+                .setMessage(R.string.are_you_sure_want_to_leave_channel)
+                .setPositiveButton(R.string.delete, (dialog, which) -> mPresenter.leaveChannel())
+                .setNegativeButton(R.string.cancel, null)
+                .create()
+                .show();
     }
 
     @Override
