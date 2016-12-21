@@ -60,8 +60,8 @@ public class ChannelDetailsPresenter extends BasePresenter<ChannelDetailsView>
         getViewState().onMakeFavorite(state);
     }
 
-    public void onEditChannel() {
-        getViewState().openEditChannel(mChannel);
+    public void onEditChannel(boolean invite) {
+        getViewState().openEditChannel(mChannel, invite);
     }
 
     public void leaveChannel() {

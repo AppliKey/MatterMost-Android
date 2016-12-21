@@ -119,13 +119,19 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
     }
 
     @Override
-    public void openEditChannel(Channel channel) {
-        startActivity(EditChannelActivity.getIntent(this, channel));
+    public void openEditChannel(Channel channel, boolean invite) {
+        startActivity(EditChannelActivity.getIntent(this, channel, invite));
+
+    }
+
+    @OnClick(R.id.b_invite_member)
+    public void onInviteMemberClick() {
+        mPresenter.onEditChannel(true);
     }
 
     @OnClick(R.id.b_edit_channel)
     public void onEditChannelClick() {
-        mPresenter.onEditChannel();
+        mPresenter.onEditChannel(false);
     }
 
     @OnClick(R.id.btn_leave_channel)
@@ -141,11 +147,6 @@ public class ChannelDetailsActivity extends BaseMvpActivity implements ChannelDe
     @OnClick(R.id.added_people_layout)
     void onAddedUsersPanelClick() {
         startActivity(AddedMembersActivity.getIntent(this, mAddedPeopleLayout.getUsers(), false));
-    }
-
-    @OnClick(R.id.b_invite_member)
-    void onInviteMemberClick() {
-        //TODO Implement Invite members logic
     }
 
     private void initViews() {
