@@ -1,5 +1,6 @@
 package com.applikey.mattermost.models;
 
+import android.support.annotation.IntDef;
 import android.support.annotation.StringRes;
 
 import com.applikey.mattermost.R;
@@ -7,17 +8,24 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.user.User;
 
+import java.lang.annotation.Retention;
+
 import static com.applikey.mattermost.models.SearchItem.Type.CHANNEL;
 import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE;
 import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE_CHANNEL;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public class SearchItem {
 
-    public static int PRIORITY_USER = 0;
+    @Retention(SOURCE)
+    @IntDef({PRIORITY_USER, PRIORITY_MESSAGE, PRIORITY_CHANNEL})
+    @interface Priority {}
 
-    public static int PRIORITY_MESSAGE = 1;
+    private final static int PRIORITY_USER = 0;
 
-    public static int PRIORITY_CHANNEL = 2;
+    private final static int PRIORITY_MESSAGE = 1;
+
+    private final static int PRIORITY_CHANNEL = 2;
 
     private Message mMessage;
 
@@ -69,6 +77,7 @@ public class SearchItem {
         return mType;
     }
 
+    @Priority
     public int getSortPriority() {
         return mPriority;
     }

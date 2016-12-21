@@ -75,24 +75,24 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
-
-        final SearchItem.Type searchType = mDataSet.get(position).getSearchType();
+        final SearchItem searchItem = mDataSet.get(position);
+        final SearchItem.Type searchType = searchItem.getSearchType();
 
         if (searchType.equals(SearchItem.Type.CHANNEL)) {
-            final Channel channel = mDataSet.get(position).getChannel();
+            final Channel channel = searchItem.getChannel();
             uploadUsersForChannel(channel, position);
             final GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
             viewHolder.bind(mImageLoader, channel);
             viewHolder.setClickListener(this);
         } else if (searchType.equals(SearchItem.Type.USER)) {
-            ((UserViewHolder) vh).bind(mImageLoader, this, mDataSet.get(position).getUser());
+            ((UserViewHolder) vh).bind(mImageLoader, this, searchItem.getUser());
         } else if (searchType.equals(SearchItem.Type.MESSAGE)) {
-            ((ChatListViewHolder) vh).bind(mImageLoader, this, mDataSet.get(position).getMessage(), mSearchText);
+            ((ChatListViewHolder) vh).bind(mImageLoader, this, searchItem.getMessage(), mSearchText);
         } else if (searchType.equals(SearchItem.Type.MESSAGE_CHANNEL)) {
-            final Channel channel = (mDataSet.get(position)).getMessage().getChannel();
+            final Channel channel = searchItem.getMessage().getChannel();
             uploadUsersForChannel(channel, position);
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
-                                                 mDataSet.get(position).getMessage(), mSearchText);
+                                                 searchItem.getMessage(), mSearchText);
         }
 
     }
