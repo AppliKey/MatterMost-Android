@@ -89,7 +89,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else if (searchType.equals(SearchItem.Type.MESSAGE)) {
             ((ChatListViewHolder) vh).bind(mImageLoader, this, mDataSet.get(position).getMessage(), mSearchText);
         } else if (searchType.equals(SearchItem.Type.MESSAGE_CHANNEL)) {
-            final Channel channel = (mDataSet.get(position)).getChannel();
+            final Channel channel = (mDataSet.get(position)).getMessage().getChannel();
             uploadUsersForChannel(channel, position);
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
                                                  mDataSet.get(position).getMessage(), mSearchText);

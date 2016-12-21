@@ -22,8 +22,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @InjectViewState
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
@@ -59,10 +57,9 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
         mSubscription.clear();
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
+                        .first()
                         .map(Channel::getList)
                         .doOnNext(channels -> Log.d(TAG, "doRequest: " + channels))
-                        .observeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(items -> Collections.sort(items, new ChannelDateComparator()))
                         .flatMap(Observable::from)
                         .map(SearchItem::new)
