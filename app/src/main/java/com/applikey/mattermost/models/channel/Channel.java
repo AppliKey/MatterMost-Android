@@ -350,28 +350,6 @@ public class Channel extends RealmObject implements SearchItem {
 
     }
 
-    @Override
-    public String toString() {
-        return "Channel{" +
-                "id='" + id + '\'' +
-                ", type='" + type + '\'' +
-                ", displayName='" + displayName + '\'' +
-                ", name='" + name + '\'' +
-                ", header='" + header + '\'' +
-                ", purpose='" + purpose + '\'' +
-                ", lastPostAt=" + lastPostAt +
-                ", createdAt=" + createdAt +
-                ", previewImagePath='" + previewImagePath + '\'' +
-                ", directCollocutor=" + directCollocutor +
-                ", lastViewedAt=" + lastViewedAt +
-                ", hasUnreadMessages=" + hasUnreadMessages +
-                ", lastPost=" + lastPost +
-                ", lastActivityTime=" + lastActivityTime +
-                ", isJoined=" + isJoined +
-                ", isFavorite=" + isFavorite +
-                ", mUsers=" + mUsers +
-                '}';
-    }
 
 /*    @Override
     public String toString() {

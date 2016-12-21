@@ -19,6 +19,7 @@ import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -57,6 +58,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     private Channel mChannel;
     private String mTeamId;
+    private AtomicInteger mMessageSendingCounter = new AtomicInteger(0);
 
     private boolean mFirstFetched = false;
 
@@ -125,6 +127,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void deleteMessage(String channelId, Post post) {
+
         final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -151,7 +154,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
             return;
         }
 
-        getViewState().clearMessageInput();
+        final ChatView view = getViewState();
+        view.clearMessageInput();
+        view.showLoading(true);
+        mMessageSendingCounter.incrementAndGet();
 
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
@@ -165,7 +171,13 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                 .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
-                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
+                .subscribe(result -> {
+                    view.showLoading(mMessageSendingCounter.decrementAndGet() != 0);
+                    view.onMessageSent(result.getCreatedAt());
+                }, throwable -> {
+                    mErrorHandler.handleError(throwable);
+                    view.showLoading(mMessageSendingCounter.decrementAndGet() != 0);
+                });
 
         mSubscription.add(subscribe);
     }
