@@ -15,7 +15,6 @@ import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
 import com.applikey.mattermost.listeners.OnLoadAdditionalDataListener;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -76,24 +75,24 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
-
-        final SearchItem.Type searchType = mDataSet.get(position).getSearchType();
+        final SearchItem searchItem = mDataSet.get(position);
+        final SearchItem.Type searchType = searchItem.getSearchType();
 
         if (searchType.equals(SearchItem.Type.CHANNEL)) {
-            final Channel channel = (Channel) mDataSet.get(position);
+            final Channel channel = searchItem.getChannel();
             uploadUsersForChannel(channel, position);
             final GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
             viewHolder.bind(mImageLoader, channel);
             viewHolder.setClickListener(this);
         } else if (searchType.equals(SearchItem.Type.USER)) {
-            ((UserViewHolder) vh).bind(mImageLoader, this, (User) mDataSet.get(position));
+            ((UserViewHolder) vh).bind(mImageLoader, this, searchItem.getUser());
         } else if (searchType.equals(SearchItem.Type.MESSAGE)) {
-            ((ChatListViewHolder) vh).bind(mImageLoader, this, (Message) mDataSet.get(position), mSearchText);
+            ((ChatListViewHolder) vh).bind(mImageLoader, this, searchItem.getMessage(), mSearchText);
         } else if (searchType.equals(SearchItem.Type.MESSAGE_CHANNEL)) {
-            final Channel channel = ((Message) mDataSet.get(position)).getChannel();
+            final Channel channel = searchItem.getMessage().getChannel();
             uploadUsersForChannel(channel, position);
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
-                                                 (Message) mDataSet.get(position), mSearchText);
+                                                 searchItem.getMessage(), mSearchText);
         }
 
     }

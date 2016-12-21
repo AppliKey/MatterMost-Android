@@ -100,13 +100,13 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         final SearchView view = getViewState();
         switch (item.getSearchType()) {
             case CHANNEL:
-                view.startChatView((Channel) item);
+                view.startChatView(item.getChannel());
                 break;
             case MESSAGE:
-                view.startMessageDetailsView( ((Message) item).getPost().getId());
+                view.startMessageDetailsView(item.getMessage().getPost().getId());
                 break;
             case USER:
-                final User user = ((User) item);
+                final User user = (item.getUser());
                 mSubscription.add(mChannelStorage.getChannel(user.getId())
                                           .toObservable()
                                           .doOnError(t -> createChannel(user))
@@ -114,7 +114,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                                           .subscribe(view::startChatView, mErrorHandler::handleError));
                 break;
             case MESSAGE_CHANNEL:
-                view.startChatView(((Message) item).getChannel());
+                view.startChatView(item.getMessage().getChannel());
                 break;
         }
     }
@@ -133,7 +133,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 .flatMap(item -> mUserStorage.getDirectProfile(item.getPost().getUserId()).first(),
                          (message, user) -> {
                              message.setUser(user);
-                             return (SearchItem) message;
+                             return new SearchItem(message);
                          })
                 .toList();
     }
