@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.fragments.ChannelListFragment;
@@ -32,6 +33,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -87,7 +89,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribeOn(Schedulers.io())
                 .map(InitLoadResponse::getPreferences)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(mPreferenceStorage::save)
+                .doOnSuccess(preferences -> mPreferenceStorage.save(preferences))
                 .observeOn(Schedulers.io())
                 .flatMap(v -> mApi.getMe())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -112,27 +114,34 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-
+        Log.d("ChatListPresenter", "onFirstViewAttach: ");
         final Subscription subscription = mTeamStorage.getChosenTeam()
                 .doOnNext(team -> getViewState().setToolbarTitle(team.getDisplayName()))
                 .map(Team::getId)
+                .first()
+                .toSingle()
                 .flatMap(this::fetchStartup)
-                .doOnNext(this::fetchUserStatus)
+                .doOnSuccess(this::fetchUserStatus)
                 .subscribe(v -> {
                 }, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
 
-    private Observable<StartupFetchResult> fetchStartup(String teamId) {
-        return Observable.zip(mApi.listChannels(teamId), mApi.getTeamProfiles(teamId),
-                (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
+    private Single<StartupFetchResult> fetchStartup(String teamId) {
+        Log.d("ChatListPresenter", "fetchStartup: start");
+        return Single.zip(mApi.listChannels(teamId), mApi.getTeamProfiles(teamId),
+                          (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(response -> mUserStorage.save(response.getDirectProfiles()))
-                .doOnNext(response -> mChannelStorage.saveChannelResponse(
-                        response.getChannelResponse(),
-                        response.getDirectProfiles()));
+                .doOnSuccess(startupFetchResult -> {
+                    Log.d("ChatListPresenter", "fetchStartup: ");
+                    mUserStorage.save(startupFetchResult.getDirectProfiles());
+                    mChannelStorage.saveChannelResponse(
+                            startupFetchResult.getChannelResponse(),
+                            startupFetchResult.getDirectProfiles());
+                });
+
     }
 
     public boolean shouldShowUnreadTab() {
@@ -147,7 +156,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(userStatusResponse -> mUserStorage.saveUsersStatuses(
+                .doOnSuccess(userStatusResponse -> mUserStorage.saveUsersStatuses(
                         response.getDirectProfiles(), userStatusResponse))
                 .subscribe(v -> {
                 }, mErrorHandler::handleError);

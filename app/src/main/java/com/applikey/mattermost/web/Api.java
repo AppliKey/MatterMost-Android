@@ -49,22 +49,22 @@ public interface Api {
     Single<Map<String, Team>> listTeams();
 
     @GET("/api/v3/users/me")
-    Observable<User> getMe();
+    Single<User> getMe();
 
     @GET("/api/v3/users/initial_load")
-    Observable<InitLoadResponse> getInitialLoad();
+    Single<InitLoadResponse> getInitialLoad();
 
     @GET("/api/v3/users/direct_profiles")
     Observable<Map<String, User>> getDirectProfiles();
 
     @GET("/api/v3/users/profiles/{teamId}")
-    Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
+    Single<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
 
     @POST("/api/v3/users/status")
-    Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds);
+    Single<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds);
 
     @GET("/api/v3/users/status")
-    Observable<Map<String, String>> getUserStatuses();
+    Single<Map<String, String>> getUserStatuses();
 
     @POST("/api/v3/users/send_password_reset")
     Single<Void> sendPasswordReset(@Body RestorePasswordRequest request);
@@ -81,7 +81,7 @@ public interface Api {
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")
-    Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
+    Single<ChannelResponse> listChannels(@Path("teamId") String teamId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}")
     Observable<Channel> getChannelById(@Path("teamId") String teamId,
@@ -160,10 +160,10 @@ public interface Api {
 
     @Multipart
     @POST("/api/v3/users/newimage")
-    Observable<Void> uploadImage(@Part MultipartBody.Part image);
+    Single<Void> uploadImage(@Part MultipartBody.Part image);
 
     @POST("/api/v3/users/update")
-    Observable<User> editUser(@Body User user);
+    Single<User> editUser(@Body User user);
 
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/join")
     Single<Channel> joinToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId);

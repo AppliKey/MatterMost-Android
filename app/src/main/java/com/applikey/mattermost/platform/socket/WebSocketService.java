@@ -98,8 +98,9 @@ public class WebSocketService extends Service {
     private void startPollingUsersStatuses() {
         final Subscription pollStatusesObservable = Observable.interval(Constants.POLLING_PERIOD_SECONDS,
                                                                         TimeUnit.SECONDS)
+                .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(tick -> mUserStorage.listDirectProfiles().first())
+                .flatMap(tick -> mUserStorage.listDirectProfiles().first().toSingle())
                 .observeOn(Schedulers.io())
                 .flatMap(users -> mApi.getUserStatusesCompatible(Stream.of(users)
                                                                          .map(User::getId)

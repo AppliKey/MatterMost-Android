@@ -64,12 +64,12 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<User> getMe() {
+    public Single<User> getMe() {
         return getRealApi().getMe();
     }
 
     @Override
-    public Observable<InitLoadResponse> getInitialLoad() {
+    public Single<InitLoadResponse> getInitialLoad() {
         return getRealApi().getInitialLoad();
     }
 
@@ -79,17 +79,17 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId) {
+    public Single<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId) {
         return getRealApi().getTeamProfiles(teamId);
     }
 
     @Override
-    public Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds) {
+    public Single<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds) {
         return getRealApi().getUserStatusesCompatible(userIds);
     }
 
     @Override
-    public Observable<Map<String, String>> getUserStatuses() {
+    public Single<Map<String, String>> getUserStatuses() {
         return getRealApi().getUserStatuses();
     }
 
@@ -113,7 +113,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<ChannelResponse> listChannels(@Path("teamId") String teamId) {
+    public Single<ChannelResponse> listChannels(@Path("teamId") String teamId) {
         return getRealApi().listChannels(teamId);
     }
 
@@ -207,14 +207,14 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Void> uploadImage(
+    public Single<Void> uploadImage(
             @Part MultipartBody.Part image) {
 
         return getRealApi().uploadImage(image);
     }
 
     @Override
-    public Observable<User> editUser(@Body User user) {
+    public Single<User> editUser(@Body User user) {
         return getRealApi().editUser(user);
     }
 
