@@ -74,7 +74,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Map<String, User>> getDirectProfiles() {
+    public Single<Map<String, User>> getDirectProfiles() {
         return getRealApi().getDirectProfiles();
     }
 
@@ -99,14 +99,14 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Void> deletePost(@Path("teamId") String teamId,
+    public Single<Void> deletePost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
                                        @Path("channelId") String postId) {
         return getRealApi().deletePost(teamId, channelId, postId);
     }
 
     @Override
-    public Observable<Post> updatePost(@Path("teamId") String teamId,
+    public Single<Post> updatePost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
                                        @Body Post post) {
         return getRealApi().updatePost(teamId, channelId, post);
@@ -118,7 +118,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Channel> getChannelById(@Path("teamId") String teamId,
+    public Single<Channel> getChannelById(@Path("teamId") String teamId,
                                               @Path("channelId") String channelId) {
         return getRealApi().getChannelById(teamId, channelId);
     }
@@ -129,7 +129,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
+    public Single<PostResponse> getPostsPage(@Path("teamId") String teamId,
                                                  @Path("channelId") String channelId,
                                                  @Path("offset") int offset,
                                                  @Path("limit") int limit) {
@@ -137,13 +137,13 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
+    public Single<PostResponse> getLastPost(@Path("teamId") String teamId,
                                                 @Path("channelId") String channelId) {
         return getRealApi().getLastPost(teamId, channelId);
     }
 
     @Override
-    public Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
+    public Single<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
                                                  @Path("channelId") String channelId) {
         return getRealApi().getChannelExtra(teamId, channelId);
     }
