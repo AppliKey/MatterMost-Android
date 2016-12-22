@@ -123,6 +123,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
                                  mImageLoader, mOnLongClickListener);
         }
+        holder.setFailStatusVisible(!post.isSent());
     }
 
     @Override
@@ -188,10 +189,17 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         @BindView(R.id.tv_reply_message)
         TextView mTvReplyMessage;
 
+        @BindView(R.id.iv_fail)
+        ImageView mIvFail;
+
         ViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+        }
+
+        void setFailStatusVisible(boolean visible) {
+            mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
 
         void toggleDate(Post post) {
