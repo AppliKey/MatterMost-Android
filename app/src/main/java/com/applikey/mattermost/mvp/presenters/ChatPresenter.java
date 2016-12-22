@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.App;
@@ -154,7 +155,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mSubscription.add(subscribe);
     }
 
-    public void sendMessage(String channelId, String message, String postId) {
+    public void sendMessage(String channelId, String message, @Nullable String postId) {
         if (TextUtils.isEmpty(message.trim())) {
             return;
         }

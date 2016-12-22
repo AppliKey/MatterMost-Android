@@ -393,15 +393,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         if (!post.isSent()) {
             dialogBuilder.setItems(R.array.post_own_opinion_fail_array, (dialog, which) -> {
-                switch (which) {
-                    case 0:
-                        mPresenter.sendMessage(mChannelId, post.getMessage(), post.getId());
-                        break;
-                    case 1:
-                        deleteMessage(mChannelId, post);
-                        break;
-                    default:
-                        throw new RuntimeException("Not implemented feature");
+                if (which == 0) {
+                    mPresenter.sendMessage(mChannelId, post.getMessage(), post.getId());
+                } else if (which == 1) {
+                    deleteMessage(mChannelId, post);
                 }
             });
         }
