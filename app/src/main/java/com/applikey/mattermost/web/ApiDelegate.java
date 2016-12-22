@@ -36,7 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import rx.Observable;
 import rx.Single;
 
 public class ApiDelegate implements Api {
@@ -180,7 +179,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Channel> createChannel(@Path("team_id") String teamId,
+    public Single<Channel> createChannel(@Path("team_id") String teamId,
                                              @Body DirectChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
     }
@@ -196,12 +195,12 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body) {
+    public Single<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body) {
         return getRealApi().inviteNewMember(teamId, body);
     }
 
     @Override
-    public Observable<PostResponse> searchPosts(@Path("team_id") String teamId, @Body
+    public Single<PostResponse> searchPosts(@Path("team_id") String teamId, @Body
             PostSearchRequest request) {
         return getRealApi().searchPosts(teamId, request);
     }

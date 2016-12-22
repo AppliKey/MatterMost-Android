@@ -34,7 +34,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import rx.Observable;
 import rx.Single;
 
 public interface Api {
@@ -134,7 +133,7 @@ public interface Api {
     Single<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request);
 
     @POST("/api/v3/teams/{team_id}/channels/create_direct")
-    Observable<Channel> createChannel(@Path("team_id") String teamId,
+    Single<Channel> createChannel(@Path("team_id") String teamId,
                                       @Body DirectChannelRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/{channelId}/delete")
@@ -145,7 +144,7 @@ public interface Api {
     Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
 
     @POST("/api/v3/teams/{team_id}/invite_members")
-    Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
+    Single<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
 
     @POST("api/v3/teams/{teamId}/channels/update")
     Single<Channel> updateChannelTitle(@Path("teamId") String teamId,
@@ -156,7 +155,7 @@ public interface Api {
                                              @Body ChannelPurposeRequest request);
 
     @POST("/api/v3/teams/{team_id}/posts/search")
-    Observable<PostResponse> searchPosts(@Path("team_id") String teamId, @Body PostSearchRequest request);
+    Single<PostResponse> searchPosts(@Path("team_id") String teamId, @Body PostSearchRequest request);
 
     @Multipart
     @POST("/api/v3/users/newimage")

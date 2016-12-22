@@ -123,6 +123,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     protected Observable<List<SearchItem>> getPostsObservable(String text) {
         return mApi.searchPosts(mPrefs.getCurrentTeamId(), new PostSearchRequest(text))
                 .map(PostResponse::getPosts)
+                .toObservable()
                 .filter(postMap -> postMap != null)
                 .map(Map::values)
                 .subscribeOn(Schedulers.io())
@@ -143,14 +144,13 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         final SearchView view = getViewState();
         view.showLoading(true);
 
-        final Subscription subscription = Observable.just(mPrefs.getCurrentTeamId())
+        final Subscription subscription = Single.just(mPrefs.getCurrentTeamId())
                 .observeOn(Schedulers.io())
-                .flatMap(teamId -> mApi.createChannel(teamId, new DirectChannelRequest(user.getId())),
-                         (team, channel) -> channel)
+                .flatMap(teamId -> mApi.createChannel(teamId, new DirectChannelRequest(user.getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> channel.setDirectCollocutor(user))
-                .doOnNext(channel -> mChannelStorage.save(channel))
-                .doOnNext(channel ->
+                .doOnSuccess(channel -> channel.setDirectCollocutor(user))
+                .doOnSuccess(channel -> mChannelStorage.save(channel))
+                .doOnSuccess(channel ->
                                   mChannelStorage.updateDirectChannelData(channel,
                                                                           Collections.singletonMap(user.getId(), user),
                                                                           mPrefs.getCurrentUserId()))
