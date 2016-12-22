@@ -14,7 +14,7 @@ import com.applikey.mattermost.mvp.views.SettingsView;
 import com.applikey.mattermost.platform.socket.WebSocketService;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
@@ -24,10 +24,10 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     @InjectPresenter
     SettingsPresenter mPresenter;
 
-    @Bind(R.id.sw_show_unread_messages)
+    @BindView(R.id.sw_show_unread_messages)
     SwitchCompat mSwitchShowUnreadMessages;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
     public static Intent getIntent(Context context) {
@@ -57,7 +57,7 @@ public class SettingsActivity extends BaseMvpActivity implements SettingsView {
     @Override
     public void logout() {
         stopService(WebSocketService.getIntent(this));
-        startActivity(ChooseServerActivity.getIntent(this, true));
+        startActivity(ChooseServerActivity.getIntent(this));
     }
 
     @Override

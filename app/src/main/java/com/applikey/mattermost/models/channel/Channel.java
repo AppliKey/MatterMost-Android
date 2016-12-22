@@ -1,8 +1,5 @@
 package com.applikey.mattermost.models.channel;
 
-import android.util.Log;
-
-import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
@@ -19,7 +16,7 @@ import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
 
-public class Channel extends RealmObject implements SearchItem {
+public class Channel extends RealmObject {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
 
@@ -31,6 +28,7 @@ public class Channel extends RealmObject implements SearchItem {
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
+    public static final String FIELD_NAME_IS_JOINED = "isJoined";
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
     private static final String TAG = Channel.class.getSimpleName();
@@ -60,10 +58,6 @@ public class Channel extends RealmObject implements SearchItem {
     @SerializedName("create_at")
     private long createdAt;
 
-    //if we are fetching not joined channels, we should set it to false
-    // TODO: 29.11.16 We should move it out from this model
-    private boolean isJoined = true;
-
     // TODO: 04.11.16 NEED DETAILED REVIEW
     // Application-specific fields
     private String previewImagePath;
@@ -86,6 +80,7 @@ public class Channel extends RealmObject implements SearchItem {
     // as it can not compare multiple fields
     private long lastActivityTime;
 
+    private boolean isJoined = true;
     private boolean isFavorite;
 
     private RealmList<User> mUsers = new RealmList<>();
@@ -107,7 +102,6 @@ public class Channel extends RealmObject implements SearchItem {
     }
 
     public boolean isJoined() {
-        Log.d(TAG, "isJoined: " + isJoined);
         return isJoined;
     }
 
@@ -237,30 +231,9 @@ public class Channel extends RealmObject implements SearchItem {
         isFavorite = favorite;
     }
 
-    @Override
-    public int getSearchType() {
-        return CHANNEL;
-    }
-
-    @Override
-    public int getSortPriority() {
-        return PRIORITY_CHANNEL;
-    }
-
-    @Override
-    public int compareByDate(SearchItem item) {
-        final int priorityDifference = item.getSortPriority() - this.getSortPriority();
-
-        if (priorityDifference != 0) {
-            return priorityDifference;
-        }
-
-        long lastPost1 = 0L;
-        long lastPost2 = 0L;
-        final Channel channel1 = this;
-        final Channel channel2 = (Channel) item;
-        lastPost1 = channel1.getLastPostAt();
-        lastPost2 = channel2.getLastPostAt();
+    public int compareByDate(Channel item) {
+        final long lastPost1 = getLastPostAt();
+        final long lastPost2 = item.getLastPostAt();
         return (int) (lastPost2 - lastPost1);
     }
 
@@ -352,6 +325,7 @@ public class Channel extends RealmObject implements SearchItem {
         return channelList;
 
     }
+
 
 /*    @Override
     public String toString() {

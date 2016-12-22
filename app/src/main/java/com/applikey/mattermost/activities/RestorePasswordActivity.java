@@ -12,13 +12,13 @@ import com.applikey.mattermost.mvp.presenters.RestorePasswordPresenter;
 import com.applikey.mattermost.mvp.views.RestorePasswordView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class RestorePasswordActivity extends BaseMvpActivity implements RestorePasswordView {
 
-    @Bind(R.id.et_login)
+    @BindView(R.id.et_login)
     EditText mEtLogin;
 
     @InjectPresenter

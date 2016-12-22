@@ -17,16 +17,16 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ChooseTeamActivity extends BaseMvpActivity implements ChooseTeamView {
 
-    @Bind(R.id.content)
+    @BindView(R.id.content)
     LinearLayout mLlContent;
 
-    @Bind(R.id.rv_teams)
+    @BindView(R.id.rv_teams)
     RecyclerView mRvTeams;
 
     @InjectPresenter

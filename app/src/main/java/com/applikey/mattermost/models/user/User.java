@@ -7,18 +7,16 @@ import android.text.TextUtils;
 
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
-import com.applikey.mattermost.models.SearchItem;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class User extends RealmObject
-        implements RealmModel, Comparable<User>, Searchable<String>, Parcelable, SearchItem {
+        implements Comparable<User>, Searchable<String>, Parcelable {
 
     public static final String FIELD_NAME_ID = "id";
 
@@ -301,11 +299,6 @@ public class User extends RealmObject
     }
 
     @Override
-    public String toString() {
-        return User.getDisplayableName(this);
-    }
-
-    @Override
     public int compareTo(@NonNull User o) {
         if (this == o) {
             return 0;
@@ -331,22 +324,6 @@ public class User extends RealmObject
             result = true;
         }
         return result;
-    }
-
-    @Override
-    @Type
-    public int getSearchType() {
-        return USER;
-    }
-
-    @Override
-    public int getSortPriority() {
-        return PRIORITY_USER;
-    }
-
-    @Override
-    public int compareByDate(SearchItem item) {
-        return item.getSortPriority() - this.getSortPriority();
     }
 
 }

@@ -19,22 +19,22 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class FindMoreChannelsActivity extends BaseMvpActivity
         implements FindMoreChannelsView, NotJoinedChannelsAdapter.OnNotJoinedChannelClickListener {
 
-    @Bind(R.id.rv_more_channels)
+    @BindView(R.id.rv_more_channels)
     RecyclerView mRvNotJoinedChannels;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.tv_empty_state)
+    @BindView(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
-    @Bind(R.id.refresh_find_more_channel)
+    @BindView(R.id.refresh_find_more_channel)
     SwipeRefreshLayout mRefreshFindMoreChannels;
 
     @InjectPresenter
@@ -69,7 +69,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
 
     @Override
     public void onChannelClick(Channel channel) {
-        startActivity(ChatActivity.getIntent(this, channel, true));
+        startActivity(ChatActivity.getIntent(this, channel));
     }
 
     @Override
@@ -114,6 +114,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
 
     private void initToolbar() {
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle(R.string.find_more_channels);
     }
 
 }

@@ -21,9 +21,10 @@
     <dimen name="margin_3x">48dp</dimen>
     <dimen name="margin_4x">64dp</dimen>
     <dimen name="margin_default">16dp</dimen>
+    <dimen name="message_details_content_margin">20dp</dimen>
 
     <dimen name="user_avatar_right_margin">20dp</dimen>
-    <dimen name="user_item_top_padding">20dp</dimen>
+    <dimen name="user_item_vertical_padding">10dp</dimen>
 
     <dimen name="small">8dp</dimen>
     <dimen name="normal">16dp</dimen>
@@ -63,6 +64,7 @@
     <dimen name="list_item_heading_text">18sp</dimen>
     <dimen name="list_item_secondary_text">14sp</dimen>
     <dimen name="list_item_heading_bottom_margin">5dp</dimen>
+    <dimen name="status_bar_height">24dp</dimen>
 
     <dimen name="list_item_min_height">72dp</dimen>
     <dimen name="list_item_chat_padding">20dp</dimen>
@@ -101,7 +103,7 @@
     <dimen name="added_people_rv_margin">20dp</dimen>
 
     <dimen name="search_chat_toolbar_text_size">18sp</dimen>
-    <dimen name="drawer_item_text_size">18sp</dimen>
+    <dimen name="drawer_item_text_size">16sp</dimen>
 
     <dimen name="chat_group_list_photo_size">30dp</dimen>
     <dimen name="chat_group_list_photo_padding">2dp</dimen>
@@ -126,4 +128,18 @@
 
     <dimen name="channel_horizontal_margin">30dp</dimen>
     <dimen name="channel_horizontal_margin_edit_text">26dp</dimen>
+
+    <dimen name="drawer_header_height">100dp</dimen>
+    <dimen name="drawer_header_avatar_margin">30dp</dimen>
+    <dimen name="drawer_header_avatar_size">40dp</dimen>
+    <dimen name="material_drawer_sticky_footer_elevation">0dp</dimen>
+
+    <dimen name="drawer_primary_item_badge_min_width">20dp</dimen>
+    <dimen name="drawer_primary_item_badge_padding">1dp</dimen>
+    <dimen name="drawer_header_text_secondary_size">14sp</dimen>
+
+    <dimen name="search_list_header_text_size">12sp</dimen>
+    <dimen name="button_corner">72dp</dimen>
+    <dimen name="user_name_text_size">16sp</dimen>
+    <dimen name="go_to_dialog_button_margin_bottom">40dp</dimen>
 </resources>

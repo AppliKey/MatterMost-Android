@@ -19,6 +19,7 @@ import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -57,6 +58,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     private Channel mChannel;
     private String mTeamId;
+    private AtomicInteger mMessageSendingCounter = new AtomicInteger(0);
 
     private boolean mFirstFetched = false;
 
@@ -73,7 +75,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mChannelStorage.channelById(channelId)
                 .distinctUntilChanged()
                 .doOnNext(channel -> mChannel = channel)
-                .doOnNext(channel -> fetchFirstPageWithClear())
                 .map(channel -> {
                     final String prefix = !mChannel.getType()
                             .equals(Channel.ChannelType.DIRECT.getRepresentation())
@@ -88,13 +89,17 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void loadMessages(String channelId) {
         final ChatView view = getViewState();
+
         final Subscription subscribe = mPostStorage.listByChannel(channelId)
                 .first()
                 .doOnNext(posts -> getViewState().showEmpty(posts.isEmpty()))
+                .doOnNext(v -> fetchFirstPageWithClear(channelId))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::onDataReady, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
+
+        listenPostsCount(channelId);
     }
 
     public void channelNameClick() {
@@ -110,18 +115,19 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         if (!mFirstFetched) {
             return;
         }
-        fetchPage(0, false);
+        fetchPage(0, mChannel.getId(), false);
     }
 
-    public void fetchFirstPageWithClear() {
-        fetchPage(0, true);
+    public void fetchFirstPageWithClear(String channelId) {
+        fetchPage(0, channelId, true);
     }
 
     public void fetchNextPage(int totalItems) {
-        fetchPage(totalItems, false);
+        fetchPage(totalItems, mChannel.getId(), false);
     }
 
     public void deleteMessage(String channelId, Post post) {
+
         final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -147,6 +153,12 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         if (TextUtils.isEmpty(message.trim())) {
             return;
         }
+
+        final ChatView view = getViewState();
+        view.clearMessageInput();
+        view.showLoading(true);
+        mMessageSendingCounter.incrementAndGet();
+
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
@@ -159,13 +171,25 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
                 .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
-                .doOnNext(post -> getViewState().showEmpty(false))
-                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
+                .subscribe(result -> {
+                    view.showLoading(mMessageSendingCounter.decrementAndGet() != 0);
+                    view.onMessageSent(result.getCreatedAt());
+                }, throwable -> {
+                    mErrorHandler.handleError(throwable);
+                    view.showLoading(mMessageSendingCounter.decrementAndGet() != 0);
+                });
 
         mSubscription.add(subscribe);
     }
 
+    // TODO: Refactor: duplicated code
     public void sendReplyMessage(String channelId, String message, String mRootId) {
+        if (TextUtils.isEmpty(message.trim())) {
+            return;
+        }
+
+        getViewState().clearMessageInput();
+
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
@@ -188,6 +212,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(channel -> {
+                    channel.setJoined(true);
                     mChannelStorage.save(channel);
                     getViewState().onChannelJoined();
                 }, mErrorHandler::handleError);
@@ -210,8 +235,18 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mNotificationManager.dismissNotification(channelId);
     }
 
-    private void fetchPage(int totalItems, boolean clear) {
-        final String channelId = mChannel.getId();
+    private void listenPostsCount(String channelId) {
+        final Subscription subscription =
+                mPostStorage.listByChannel(channelId)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(realmResults -> {
+                            getViewState().showEmpty(realmResults.isEmpty());
+                        }, mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
+    }
+
+    private void fetchPage(int totalItems, String channelId, boolean clear) {
         final ChatView view = getViewState();
 
         final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)

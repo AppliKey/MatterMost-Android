@@ -6,39 +6,46 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 
 public class ChooseServerActivity extends BaseMvpActivity implements ChooseServerView {
 
-    @Bind(R.id.et_server)
+    @BindView(R.id.et_server)
     AutoCompleteTextView mEtServerUrl;
 
-    @Bind(R.id.b_proceed)
+    @BindView(R.id.b_proceed)
     Button mBtnProceed;
 
-    @Bind(R.id.sp_http)
+    @BindView(R.id.sp_http)
     Spinner mSpHttp;
 
     @InjectPresenter
     ChooseServerPresenter mPresenter;
 
-    public static Intent getIntent(Context context, boolean clearBackstack) {
+    private final TextView.OnEditorActionListener mOnInputDoneActionListener =
+            (v, actionId, event) -> {
+                onProceed();
+                return true;
+            };
+
+    public static Intent getIntent(Context context) {
         final Intent intent = new Intent(context, ChooseServerActivity.class);
-        if (clearBackstack) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return intent;
     }
 
@@ -51,6 +58,8 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         ButterKnife.bind(this);
 
         mEtServerUrl.addTextChangedListener(mTextWatcher);
+
+        mEtServerUrl.setOnEditorActionListener(mOnInputDoneActionListener);
         disableButton();
     }
 
@@ -76,7 +85,7 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     public void setAutoCompleteServers(String[] urls) {
         final ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, urls);
-        mEtServerUrl.setAdapter(adapter);
+        runOnUiThread(() -> mEtServerUrl.setAdapter(adapter));
     }
 
     @OnClick(R.id.b_proceed)
@@ -88,14 +97,20 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
         mPresenter.chooseServer(httpPrefix, serverUrl);
     }
 
+    @OnEditorAction(R.id.et_server)
+    boolean onDoneClick(int actionId) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            onProceed();
+        }
+        return true;
+    }
+
     private void disableButton() {
-        mBtnProceed.setClickable(false);
-        mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient_disabled);
+        mBtnProceed.setEnabled(false);
     }
 
     private void enableButton() {
-        mBtnProceed.setClickable(true);
-        mBtnProceed.setBackgroundResource(R.drawable.round_button_gradient);
+        mBtnProceed.setEnabled(true);
     }
 
     private void handleButtonVisibility(String input) {

@@ -134,6 +134,15 @@ public class Db {
         });
     }
 
+    public <T extends RealmObject> void updateTransactional(Class<T> tClass,
+                                                            String id,
+                                                            Func2<T, Realm, Boolean> update, Realm.Transaction.OnSuccess onSuccess) {
+        mRealm.executeTransactionAsync(realm -> {
+            final T realmObject = realm.where(tClass).equalTo("id", id).findFirst();
+            update.call(realmObject, realm);
+        }, onSuccess);
+    }
+
     public <T extends RealmObject, V> void updateMapTransactional(Map<String, V> valuesMap,
                                                                   Class<T> clazz,
                                                                   Action3<T, V, Realm> updateFunc) {
@@ -201,6 +210,12 @@ public class Db {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(objects));
     }
 
+    public void saveTransactionalSync(Iterable<? extends RealmObject> objects) {
+        mRealm.beginTransaction();
+        mRealm.copyToRealmOrUpdate(objects);
+        mRealm.commitTransaction();
+    }
+
     public <T extends RealmObject> Observable<List<T>> listRealmObjects(Class<T> tClass) {
         return mRealm
                 .where(tClass)
@@ -247,6 +262,23 @@ public class Db {
                 .asObservable()
                 .filter(response -> !response.isEmpty())
                 .map(mRealm::copyFromRealm);
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredExcluded(
+            Class<T> tClass,
+            String fieldName,
+            String value,
+            String excludedField,
+            boolean excludedValue,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .equalTo(excludedField, excludedValue)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(
@@ -429,7 +461,7 @@ public class Db {
                 .findFirst();
         final Observable<T> map;
         if (object == null) {
-            map = Observable.error(new ObjectNotFoundException());
+            map = Observable.error(new ObjectNotFoundException("Field : " + field + " = " + id));
         } else {
             map = object
                     .<T>asObservable()
@@ -449,7 +481,7 @@ public class Db {
         mRealm.commitTransaction();
     }
 
-    private Realm getRealm() {
+    public Realm getRealm() {
         return mRealm;
     }
 

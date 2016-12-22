@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
@@ -40,10 +41,10 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
     }
 
     public void requestNotJoinedChannels() {
-        Timber.d("show loading");
         getViewState().showLoading();
         final Subscription subscription = getNotJoinedChannels()
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(channels -> Stream.of(channels).forEach(channel -> channel.setJoined(false)))
                 .doOnSuccess(mChannelStorage::save)
                 .subscribe(this::showResult, this::handleError);
         mSubscription.add(subscription);

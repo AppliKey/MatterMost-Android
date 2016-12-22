@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.design.internal.ForegroundLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -20,8 +19,8 @@
             android:id="@+id/iv_preview_image_layout"
             android:layout_width="@dimen/list_item_image"
             android:layout_height="@dimen/list_item_image"
-            android:layout_marginLeft="@dimen/list_item_margin"
-            android:layout_marginRight="@dimen/list_item_margin">
+            android:layout_marginLeft="@dimen/margin_default"
+            android:layout_marginRight="@dimen/margin_default">
 
             <ImageView
                 android:id="@+id/iv_preview_image"
@@ -86,7 +85,7 @@
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_secondary_text" />
 
-        <com.applikey.mattermost.views.ContentTextView
+        <com.vanniktech.emoji.EmojiTextView
             android:id="@+id/tv_message_preview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -105,5 +104,5 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/separator_list" />
-</LinearLayout>
+        android:background="@color/separatorList" />
+</android.support.design.internal.ForegroundLinearLayout>

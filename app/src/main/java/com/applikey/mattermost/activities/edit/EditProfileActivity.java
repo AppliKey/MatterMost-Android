@@ -19,19 +19,19 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class EditProfileActivity extends BaseMvpActivity implements EditProfileView {
 
     @InjectPresenter EditProfilePresenter mPresenter;
 
-    @Bind(R.id.toolbar) Toolbar mToolbar;
-    @Bind(R.id.iv_avatar) ImageView mIvAvatar;
-    @Bind(R.id.et_first_name) EditText mEtFirstName;
-    @Bind(R.id.et_last_name) EditText mEtLastName;
-    @Bind(R.id.et_username) EditText mEtUsername;
-    @Bind(R.id.et_email) EditText mEtEmail;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.iv_avatar) ImageView mIvAvatar;
+    @BindView(R.id.et_first_name) EditText mEtFirstName;
+    @BindView(R.id.et_last_name) EditText mEtLastName;
+    @BindView(R.id.et_username) EditText mEtUsername;
+    @BindView(R.id.et_email) EditText mEtEmail;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, EditProfileActivity.class);

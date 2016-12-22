@@ -8,6 +8,7 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.team.Team;
@@ -17,7 +18,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -25,20 +26,26 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     private static final String TAG = "LogInActivity";
 
-    @Bind(R.id.et_login)
+    @BindView(R.id.et_login)
     EditText mEtLogin;
 
-    @Bind(R.id.et_password)
+    @BindView(R.id.et_password)
     EditText mEtPassword;
 
-    @Bind(R.id.b_authorize)
+    @BindView(R.id.b_authorize)
     Button mBtnAuthorize;
 
-    @Bind(R.id.back)
+    @BindView(R.id.back)
     View mViewBack;
 
     @InjectPresenter
     LogInPresenter mPresenter;
+
+    private final TextView.OnEditorActionListener mOnInputDoneActionListener =
+            (v, actionId, event) -> {
+                onAuthorize();
+                return true;
+            };
 
     public static Intent getIntent(Context context) {
         return new Intent(context, LogInActivity.class);
@@ -128,5 +135,6 @@ public class LogInActivity extends BaseMvpActivity implements LogInView {
 
     private void initViews() {
         mEtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        mEtPassword.setOnEditorActionListener(mOnInputDoneActionListener);
     }
 }

@@ -10,20 +10,20 @@ import android.widget.ToggleButton;
 
 import com.applikey.mattermost.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
 public class ChannelTypeView extends LinearLayout {
 
-    @Bind(R.id.tv_type_public)
+    @BindView(R.id.tv_type_public)
     TextView mTvTypePublic;
 
-    @Bind(R.id.tvTypePrivate)
+    @BindView(R.id.tvTypePrivate)
     TextView mTvTypePrivate;
 
-    @Bind(R.id.toggle_channel_type)
+    @BindView(R.id.toggle_channel_type)
     ToggleButton mToggleButton;
 
     private CompoundButton.OnCheckedChangeListener mExternalCheckedChangeListener;
@@ -31,9 +31,9 @@ public class ChannelTypeView extends LinearLayout {
     private CompoundButton.OnCheckedChangeListener mOnCheckedListener = (view, checked) -> {
         if (checked) {
             mTvTypePublic.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_disabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkDisabled));
             mTvTypePrivate.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_enabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkEnabled));
 
             mTvTypePublic.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_public_channel_unselected, 0, 0, 0);
@@ -41,9 +41,9 @@ public class ChannelTypeView extends LinearLayout {
                     R.drawable.ic_private_channel_selected, 0, 0, 0);
         } else {
             mTvTypePublic.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_enabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkEnabled));
             mTvTypePrivate.setTextColor(
-                    ContextCompat.getColor(getContext(), R.color.textlink_disabled));
+                    ContextCompat.getColor(getContext(), R.color.textlinkDisabled));
             mTvTypePublic.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_public_channel_selected, 0, 0, 0);
             mTvTypePrivate.setCompoundDrawablesWithIntrinsicBounds(

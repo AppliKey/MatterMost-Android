@@ -6,6 +6,7 @@ import android.os.Process;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.BuildConfig;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
@@ -115,10 +116,15 @@ public class GlobalModule {
         final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okClientBuilder.addInterceptor(httpLoggingInterceptor);
-        final File baseDir = mApplicationContext.getCacheDir();
-        if (baseDir != null) {
-            final File cacheDir = new File(baseDir, "HttpResponseCache");
-            okClientBuilder.cache(new Cache(cacheDir, 1024 * 1024 * 50));
+
+        // TODO: 07.12.16 CACHE DISABLED IN DEBUG BUILD TO ALLOW DEBUG BY STETHO.
+        // (WITH CACHE WE HAVE " 304 NOT MODIFIED" IN RESPONSE)
+        if (!BuildConfig.DEBUG) {
+            final File baseDir = mApplicationContext.getCacheDir();
+            if (baseDir != null) {
+                final File cacheDir = new File(baseDir, "HttpResponseCache");
+                okClientBuilder.cache(new Cache(cacheDir, 1024 * 1024 * 50));
+            }
         }
         okClientBuilder.connectTimeout(Constants.TIMEOUT_DURATION_SEC, TimeUnit.SECONDS);
         okClientBuilder.readTimeout(Constants.TIMEOUT_DURATION_SEC, TimeUnit.SECONDS);

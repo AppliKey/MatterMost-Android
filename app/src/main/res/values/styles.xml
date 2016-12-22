@@ -7,6 +7,10 @@
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 
+    <style name="GreyBackgroundTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/unreadBackground</item>
+    </style>
+
     <style name="SearchViewBar" parent="AppToolbar">
         <item name="homeAsUpIndicator">@drawable/ic_back</item>
         <item name="searchViewStyle">@style/SearchView</item>
@@ -21,8 +25,7 @@
     <style name="Button" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:clickable">true</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:foreground">?android:attr/selectableItemBackground</item>
-        <item name="android:background">@drawable/round_button_gradient</item>
+        <item name="android:background">@drawable/round_button</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
     </style>
 
@@ -122,12 +125,23 @@
     <style name="SearchEditText">
         <item name="android:textSize">@dimen/search_chat_toolbar_text_size</item>
         <item name="android:textColorHint">@color/tabUnSelected</item>
-        <item name="android:textColor">@color/textlink_enabled</item>
+        <item name="android:textColor">@color/textlinkEnabled</item>
     </style>
 
     <style name="EmptyState">
-        <item name="android:textColor">@color/textlink_disabled</item>
+        <item name="android:textColor">@color/textlinkDisabled</item>
         <item name="android:textSize">@dimen/text_title_size</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="PrimaryItemTextBaseStyle">
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="PrimaryItemTextRtlStyle" parent="PrimaryItemTextBaseStyle">
+        <item name="android:textDirection">anyRtl</item>
+    </style>
+
 </resources>
