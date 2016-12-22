@@ -53,13 +53,13 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<AuthenticationResponse>> authorize(
+    public Single<Response<AuthenticationResponse>> authorize(
             @Body AuthenticationRequest authenticationRequest) {
         return getRealApi().authorize(authenticationRequest);
     }
 
     @Override
-    public Observable<Map<String, Team>> listTeams() {
+    public Single<Map<String, Team>> listTeams() {
         return getRealApi().listTeams();
     }
 
@@ -94,7 +94,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request) {
+    public Single<Void> sendPasswordReset(@Body RestorePasswordRequest request) {
         return getRealApi().sendPasswordReset(request);
     }
 
@@ -124,7 +124,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PingResponse> ping() {
+    public Single<PingResponse> ping() {
         return getRealApi().ping();
     }
 
@@ -175,7 +175,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
+    public Single<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
         return getRealApi().attachDevice(request);
     }
 

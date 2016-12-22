@@ -42,11 +42,11 @@ public interface Api {
     String MULTIPART_IMAGE_TAG = "image";
 
     @POST("/api/v3/users/login")
-    Observable<Response<AuthenticationResponse>> authorize(
+    Single<Response<AuthenticationResponse>> authorize(
             @Body AuthenticationRequest authenticationRequest);
 
     @GET("/api/v3/teams/all")
-    Observable<Map<String, Team>> listTeams();
+    Single<Map<String, Team>> listTeams();
 
     @GET("/api/v3/users/me")
     Observable<User> getMe();
@@ -67,7 +67,7 @@ public interface Api {
     Observable<Map<String, String>> getUserStatuses();
 
     @POST("/api/v3/users/send_password_reset")
-    Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request);
+    Single<Void> sendPasswordReset(@Body RestorePasswordRequest request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
     Observable<Void> deletePost(@Path("teamId") String teamId,
@@ -97,7 +97,7 @@ public interface Api {
     //It resolve validation problem(in the case if user input (<server_url> + <team>), instead
     // (<server_url>))
     @GET("api/v3/general/ping")
-    Observable<PingResponse> ping();
+    Single<PingResponse> ping();
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
     Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
@@ -131,7 +131,7 @@ public interface Api {
                                             @Body RequestUserId userId);
 
     @POST("/api/v3/users/attach_device")
-    Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request);
+    Single<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request);
 
     @POST("/api/v3/teams/{team_id}/channels/create_direct")
     Observable<Channel> createChannel(@Path("team_id") String teamId,
