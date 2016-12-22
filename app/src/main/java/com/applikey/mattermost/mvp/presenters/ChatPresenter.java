@@ -131,8 +131,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(posts -> mPostStorage.delete(post))
-                .doOnNext(posts -> mChannel.setLastPost(null))
+                .doOnSuccess(posts -> mPostStorage.delete(post))
+                .doOnSuccess(posts -> mChannel.setLastPost(null))
                 .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
@@ -251,6 +251,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
                 .subscribeOn(Schedulers.io())
+                .toObservable()
                 .switchIfEmpty(Observable.empty())
                 .map(postResponse -> postResponse.getPosts().values())
                 .map(ArrayList::new)

@@ -36,6 +36,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -194,15 +195,18 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         mUsersLoadedChannels.add(channel.getId());
         final SearchView view = getViewState();
 
-        final Subscription subscription = Observable.just(channel)
+        final Subscription subscription = Single.just(channel)
                 .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
-                        .subscribeOn(Schedulers.io()), this::transform)
+                        .subscribeOn(Schedulers.io()))
+                .map(extraInfo -> transform(channel, extraInfo))
                 .observeOn(AndroidSchedulers.mainThread())
+                .toObservable()
                 .flatMap(channelExtraResult -> mUserStorage.findUsers(
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
                                 .collect(Collectors.toList())), this::transform) //TODO replace to rx style
                 .first()
+                .toSingle()
                 .subscribe(channelWithUsers -> {
                     mChannelStorage.setUsers(channel.getId(), channelWithUsers.getUsers(),
                                              () -> view.notifyItemChanged(position));

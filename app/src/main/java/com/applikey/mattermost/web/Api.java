@@ -55,7 +55,7 @@ public interface Api {
     Single<InitLoadResponse> getInitialLoad();
 
     @GET("/api/v3/users/direct_profiles")
-    Observable<Map<String, User>> getDirectProfiles();
+    Single<Map<String, User>> getDirectProfiles();
 
     @GET("/api/v3/users/profiles/{teamId}")
     Single<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
@@ -70,12 +70,12 @@ public interface Api {
     Single<Void> sendPasswordReset(@Body RestorePasswordRequest request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
-    Observable<Void> deletePost(@Path("teamId") String teamId,
+    Single<Void> deletePost(@Path("teamId") String teamId,
                                 @Path("channelId") String channelId,
                                 @Path("postId") String postId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/update")
-    Observable<Post> updatePost(@Path("teamId") String teamId,
+    Single<Post> updatePost(@Path("teamId") String teamId,
                                 @Path("channelId") String channelId,
                                 @Body Post post);
 
@@ -84,7 +84,7 @@ public interface Api {
     Single<ChannelResponse> listChannels(@Path("teamId") String teamId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}")
-    Observable<Channel> getChannelById(@Path("teamId") String teamId,
+    Single<Channel> getChannelById(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId);
 
     //This url is not containing "/" symbol at the start
@@ -100,17 +100,17 @@ public interface Api {
     Single<PingResponse> ping();
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
-    Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
+    Single<PostResponse> getPostsPage(@Path("teamId") String teamId,
                                           @Path("channelId") String channelId,
                                           @Path("offset") int offset,
                                           @Path("limit") int limit);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/0/1")
-    Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
+    Single<PostResponse> getLastPost(@Path("teamId") String teamId,
                                          @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
-    Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
+    Single<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
                                           @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")

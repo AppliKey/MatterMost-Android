@@ -31,6 +31,7 @@ import javax.inject.Inject;
 
 import rx.Emitter;
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -101,15 +102,19 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         }
         mUsersLoadedChannels.add(channel.getId());
 
-        final Subscription subscription = Observable.just(channel)
+        final Subscription subscription = Single.just(channel)
                 .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
-                        .subscribeOn(Schedulers.io()), this::transform)
+                        .subscribeOn(Schedulers.io()))
+                .map(extraInfo -> transform(channel, extraInfo))
                 .observeOn(AndroidSchedulers.mainThread())
+                .toObservable()
                 .flatMap(channelExtraResult -> mUserStorage.findUsers(
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
-                                .collect(Collectors.toList())), this::transform) //TODO replace to rx style
+                                .collect(Collectors.toList())),
+                         this::transform) //TODO replace to rx style
                 .first()
+                .toSingle()
                 .subscribe(channelWithUsers -> {
                     mChannelStorage.setUsers(channelWithUsers.getChannel().getId(), channelWithUsers.getUsers());
                 }, mErrorHandler::handleError);
@@ -123,7 +128,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
 
         final Subscription subscribe = channelObservable
                 .observeOn(Schedulers.io())
-                .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
+                .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId).toObservable(), this::transform)
                 .filter(lastPostDto -> lastPostDto != null)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(post -> mChannelStorage.updateLastPosts(post), mErrorHandler::handleError);

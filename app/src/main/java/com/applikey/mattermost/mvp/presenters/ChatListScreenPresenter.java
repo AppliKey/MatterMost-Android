@@ -74,7 +74,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     public void preloadChannel(String channelId) {
         final Subscription subscription =
                 Observable.amb(mChannelStorage.channelById(channelId), mTeamStorage.getChosenTeam()
-                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId).subscribeOn(Schedulers.io())))
+                        .flatMap(team -> mApi.getChannelById(team.getId(), channelId).subscribeOn(Schedulers.io()).toObservable()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .first()
                         .subscribe(channel -> {
@@ -114,7 +114,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-        Log.d("ChatListPresenter", "onFirstViewAttach: ");
+
         final Subscription subscription = mTeamStorage.getChosenTeam()
                 .doOnNext(team -> getViewState().setToolbarTitle(team.getDisplayName()))
                 .map(Team::getId)
