@@ -8,7 +8,6 @@ import com.applikey.mattermost.models.channel.ChannelRequest;
 import com.applikey.mattermost.models.channel.CreatedChannel;
 import com.applikey.mattermost.models.channel.InvitedUsersManager;
 import com.applikey.mattermost.models.channel.RequestUserId;
-import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.mvp.views.CreateChannelView;
 import com.arellomobile.mvp.InjectViewState;
 
@@ -16,8 +15,6 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import static com.applikey.mattermost.utils.rx.RxUtils.doOnUi;
 
 @InjectViewState
 public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChannelView> {
@@ -60,23 +57,27 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
     }
 
     private void createChannelWithRequest(ChannelRequest request) {
-        final Subscription subscription = mTeamStorage.getChosenTeam()
-                .map(Team::getId)
-                .first()
+        final Subscription subscription = mApi.createChannel(mPrefs.getCurrentTeamId(), request)
+                .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .flatMap(teamId -> mApi.createChannel(teamId, request), CreatedChannel::new)
-                .compose(doOnUi(createdChannel -> {
+                .map(channel -> new CreatedChannel(mPrefs.getCurrentTeamId(), channel))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess(createdChannel -> {
                     final Channel channel = createdChannel.getChannel();
                     channel.updateLastActivityTime();
                     mChannelStorage.save(channel);
-                }, Schedulers.io()))
+                })
+                .observeOn(Schedulers.io())
+                .toObservable()
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()), AddedUser::new)
                 .flatMap(user -> mApi.addUserToChannel(user.getCreatedChannel().getTeamId(),
                                                        user.getCreatedChannel().getChannel().getId(),
-                                                       new RequestUserId(user.getUser().getId())))
-                .toCompletable()
+                                                       new RequestUserId(user.getUser().getId())).toObservable())
+                .toList()
+                .first()
+                .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> getViewState().onChannelCreated(),
+                .subscribe(membership -> getViewState().onChannelCreated(),
                            error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
     }

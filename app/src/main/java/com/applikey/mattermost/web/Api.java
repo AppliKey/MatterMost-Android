@@ -114,19 +114,19 @@ public interface Api {
                                           @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")
-    Observable<Post> createPost(@Path("teamId") String teamId,
+    Single<Post> createPost(@Path("teamId") String teamId,
                                 @Path("channelId") String channelId,
                                 @Body PendingPost request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
-    Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+    Single<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
                                                     @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{team_id}/channels/create")
-    Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
+    Single<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
 
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/add")
-    Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
+    Single<Membership> addUserToChannel(@Path("team_id") String teamId,
                                             @Path("channel_id") String channelId,
                                             @Body RequestUserId userId);
 
@@ -138,7 +138,7 @@ public interface Api {
                                       @Body DirectChannelRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/{channelId}/delete")
-    Observable<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
+    Single<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
                                                     @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{team_id}/channels/more")
@@ -148,11 +148,11 @@ public interface Api {
     Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
 
     @POST("api/v3/teams/{teamId}/channels/update")
-    Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
+    Single<Channel> updateChannelTitle(@Path("teamId") String teamId,
                                            @Body ChannelTitleRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/update_purpose")
-    Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
+    Single<Channel> updateChannelPurpose(@Path("teamId") String teamId,
                                              @Body ChannelPurposeRequest request);
 
     @POST("/api/v3/teams/{team_id}/posts/search")

@@ -72,7 +72,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
         final Subscription subscription = mApi.deleteChannel(teamId, channelId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(deleteChannelResponse ->
+                .doOnSuccess(deleteChannelResponse ->
                                   mChannelStorage.delete(deleteChannelResponse.getId()))
                 .toCompletable()
                 .subscribe(() -> getViewState().onChannelDeleted(),
@@ -88,24 +88,26 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
         final Subscription subscription = mApi.updateChannelTitle(teamId, channelTitleRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.save(channel))
+                .doOnSuccess(channel -> mChannelStorage.save(channel))
                 .observeOn(Schedulers.io())
                 .flatMap(channel -> mApi.updateChannelPurpose(teamId, channelPurposeRequest))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> mChannelStorage.save(channel))
+                .doOnSuccess(channel -> mChannelStorage.save(channel))
+                .toObservable()
                 .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()))
                 .observeOn(Schedulers.io())
                 .flatMap(user -> mApi.addUserToChannel(teamId, channelId,
-                                                       new RequestUserId(user.getId())), (user, membership) -> user)
+                                                       new RequestUserId(user.getId())).toObservable(), (user, membership) -> user)
                 .toList()
+                .first()
+                .toSingle()
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(users -> {
                     users.addAll(mInvitedUsersManager.getAlreadyMemberUsers());
                     return users;
                 })
-                .doOnNext(users -> mChannelStorage.setUsers(channelId, users))
-                .toCompletable()
-                .subscribe(() -> getViewState().onChannelUpdated(),
+                .doOnSuccess(users -> mChannelStorage.setUsers(channelId, users))
+                .subscribe(users -> getViewState().onChannelUpdated(),
                            error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
 

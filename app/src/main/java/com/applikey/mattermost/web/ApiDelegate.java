@@ -149,26 +149,26 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Post> createPost(@Path("teamId") String teamId,
+    public Single<Post> createPost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
                                        @Body PendingPost request) {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
     @Override
-    public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+    public Single<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
                                                            @Path("channelId") String channelId) {
         return getRealApi().updateLastViewedAt(teamId, channelId);
     }
 
     @Override
-    public Observable<Channel> createChannel(@Path("team_id") String teamId, @Body
+    public Single<Channel> createChannel(@Path("team_id") String teamId, @Body
             ChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
     }
 
     @Override
-    public Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
+    public Single<Membership> addUserToChannel(@Path("team_id") String teamId,
                                                    @Path("channel_id") String channelId,
                                                    @Body RequestUserId userId) {
         return getRealApi().addUserToChannel(teamId, channelId, userId);
@@ -186,7 +186,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
+    public Single<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
             @Path("channelId") String channelId) {
         return getRealApi().deleteChannel(teamId, channelId);
     }
@@ -225,13 +225,13 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
+    public Single<Channel> updateChannelTitle(@Path("teamId") String teamId,
                                                   @Body ChannelTitleRequest request) {
         return getRealApi().updateChannelTitle(teamId, request);
     }
 
     @Override
-    public Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
+    public Single<Channel> updateChannelPurpose(@Path("teamId") String teamId,
                                                     @Body ChannelPurposeRequest request) {
         return getRealApi().updateChannelPurpose(teamId, request);
     }

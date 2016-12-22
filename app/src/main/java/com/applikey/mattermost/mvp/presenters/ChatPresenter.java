@@ -169,8 +169,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
+                .doOnSuccess(post -> mChannelStorage.setLastPost(mChannel, post))
                 .subscribe(result -> {
                     view.showLoading(mMessageSendingCounter.decrementAndGet() != 0);
                     view.onMessageSent(result.getCreatedAt());
@@ -200,8 +200,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
+                .doOnSuccess(post -> mChannelStorage.setLastPost(mChannel, post))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
@@ -223,11 +223,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private void updateLastViewedAt(String channelId) {
         // Does not belong to UI
         final Subscription subscribe = mApi.updateLastViewedAt(mTeamId, channelId)
-                .toCompletable()
+
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                }, mErrorHandler::handleError);
+                .subscribe(stringResponse -> {}, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
 
