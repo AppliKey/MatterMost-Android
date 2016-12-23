@@ -1,5 +1,9 @@
 package com.applikey.mattermost.storage.db;
 
+import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Process;
 import android.util.Log;
 
 import com.annimon.stream.Stream;
@@ -17,6 +21,7 @@ import io.realm.Sort;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Action3;
 import rx.functions.Func1;
@@ -28,11 +33,9 @@ public class Db {
     private static final String TAG = Db.class.getSimpleName();
 
     private final Realm mRealm;
-    private final Scheduler mDbScheduler;
 
-    public Db(Realm realm, Scheduler scheduler) {
+    public Db(Realm realm) {
         mRealm = realm;
-        mDbScheduler = scheduler;
     }
 
     public void saveTransactional(RealmObject object) {
@@ -58,7 +61,10 @@ public class Db {
                 .map(mRealm::copyFromRealm);
     }
 
-    public <E extends RealmObject> Observable<List<E>> getCopiedObjects(Func1<Realm, RealmResults<E>> resultsHandler) {
+    public  <E extends RealmObject> Observable<List<E>> getCopiedObjects(Func1<Realm, RealmResults<E>> resultsHandler) {
+        final HandlerThread handlerThread = new HandlerThread("RealmReadThread", Process.THREAD_PRIORITY_BACKGROUND);
+        handlerThread.start();
+        final Scheduler scheduler = AndroidSchedulers.from(handlerThread.getLooper());
         final AtomicReference<Realm> realmReference = new AtomicReference<>(null);
         return Observable.defer(() -> {
             final Realm realm = Realm.getDefaultInstance();
@@ -66,13 +72,16 @@ public class Db {
             return resultsHandler.call(realm).asObservable();
         })
                 .filter(results -> results.isLoaded() && results.isValid())
-                .map(realmReference.get()::copyFromRealm)
-                .subscribeOn(mDbScheduler)
-                .unsubscribeOn(mDbScheduler)
-                .doOnUnsubscribe(realmReference.get()::close);
+                .map(results -> realmReference.get().copyFromRealm(results))
+                .subscribeOn(scheduler)
+                .unsubscribeOn(scheduler)
+                .doOnUnsubscribe(() -> unsubscribeOnDbThread(handlerThread, realmReference.get()));
     }
 
-    public <E extends RealmObject> Observable<E> getCopiedObject(Func1<Realm, E> objectHandler) {
+    public  <E extends RealmObject> Observable<E> getCopiedObject(Func1<Realm, E> objectHandler) {
+        final HandlerThread handlerThread = new HandlerThread("RealmReadThread", Process.THREAD_PRIORITY_BACKGROUND);
+        handlerThread.start();
+        final Scheduler scheduler = AndroidSchedulers.from(handlerThread.getLooper());
         final AtomicReference<Realm> realmReference = new AtomicReference<>(null);
         return Observable.defer(() -> {
             final Realm realm = Realm.getDefaultInstance();
@@ -85,9 +94,21 @@ public class Db {
                     //noinspection unchecked
                     return realmReference.get().copyFromRealm((E) realmObject);
                 })
-                .subscribeOn(mDbScheduler)
-                .unsubscribeOn(mDbScheduler)
-                .doOnUnsubscribe(realmReference.get()::close);
+                .subscribeOn(scheduler)
+                .unsubscribeOn(scheduler)
+                .doOnUnsubscribe(() -> unsubscribeOnDbThread(handlerThread, realmReference.get()));
+    }
+
+    private void unsubscribeOnDbThread(HandlerThread handlerThread, Realm realm) {
+        final Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(() -> {
+            realm.close();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                handlerThread.quitSafely();
+            } else {
+                handlerThread.quit();
+            }
+        });
     }
 
     public <T extends RealmObject> Observable<T> getObjectQualified(Class<T> tClass,
