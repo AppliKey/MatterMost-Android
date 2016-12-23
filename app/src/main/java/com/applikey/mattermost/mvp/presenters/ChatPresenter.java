@@ -129,13 +129,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void deleteMessage(String channelId, Post post) {
-
-        final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(posts -> mPostStorage.delete(post))
-                .doOnSuccess(posts -> mChannel.setLastPost(null))
-                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), mErrorHandler::handleError);
         if (!post.isSent()) {
             mPostStorage.delete(post);
             mChannelStorage.updateLastPost(mChannel);
@@ -143,8 +136,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
             final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext(posts -> mPostStorage.delete(post))
-                    .doOnNext(posts -> mChannel.setLastPost(null))
+                    .doOnSuccess(posts -> mPostStorage.delete(post))
+                    .doOnSuccess(posts -> mChannel.setLastPost(null))
                     .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), mErrorHandler::handleError);
 
             mSubscription.add(subscribe);
@@ -182,9 +175,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
-                .doOnNext(post -> {
+                .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
+                .doOnSuccess(post -> mChannelStorage.setLastPost(mChannel, post))
+                .doOnSuccess(post -> {
                     if (!TextUtils.isEmpty(postId)) {
                         mPostStorage.delete(postId);
                     }

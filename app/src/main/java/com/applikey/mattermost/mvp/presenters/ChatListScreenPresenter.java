@@ -118,6 +118,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         final Subscription subscription = mTeamStorage.getChosenTeam()
                 .doOnNext(team -> getViewState().setToolbarTitle(team.getDisplayName()))
                 .map(Team::getId)
+                .first()
                 .toSingle()
                 .flatMap(this::fetchStartup)
                 .doOnSuccess(this::fetchUserStatus)
