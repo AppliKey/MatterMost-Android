@@ -59,7 +59,6 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
     private void createChannelWithRequest(ChannelRequest request) {
         final Subscription subscription = mApi.createChannel(mPrefs.getCurrentTeamId(), request)
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
                 .map(channel -> new CreatedChannel(mPrefs.getCurrentTeamId(), channel))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(createdChannel -> {
@@ -75,9 +74,9 @@ public class CreateChannelPresenter extends BaseEditChannelPresenter<CreateChann
                                                        new RequestUserId(user.getUser().getId())).toObservable())
                 .toList()
                 .first()
-                .toSingle()
+                .toCompletable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(membership -> getViewState().onChannelCreated(),
+                .subscribe(()-> getViewState().onChannelCreated(),
                            error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
     }

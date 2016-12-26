@@ -9,10 +9,8 @@ import com.applikey.mattermost.fragments.DirectChatListFragment;
 import com.applikey.mattermost.fragments.FavoriteChatListFragment;
 import com.applikey.mattermost.fragments.GroupListFragment;
 import com.applikey.mattermost.fragments.UnreadChatListFragment;
-import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.team.Team;
-import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.StartupFetchResult;
 import com.applikey.mattermost.mvp.views.ChatListScreenView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -27,7 +25,6 @@ import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -89,7 +86,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                 .subscribeOn(Schedulers.io())
                 .map(InitLoadResponse::getPreferences)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(preferences -> mPreferenceStorage.save(preferences))
+                .doOnSuccess(mPreferenceStorage::save)
                 .observeOn(Schedulers.io())
                 .flatMap(v -> mApi.getMe())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -131,7 +128,7 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     private Single<StartupFetchResult> fetchStartup(String teamId) {
         Log.d("ChatListPresenter", "fetchStartup: start");
         return Single.zip(mApi.listChannels(teamId), mApi.getTeamProfiles(teamId),
-                          (channelResponse, contacts) -> transform(channelResponse, contacts, teamId))
+                          (channelResponse, contacts) -> new StartupFetchResult(channelResponse, contacts, teamId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(startupFetchResult -> {
@@ -160,11 +157,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
                         response.getDirectProfiles(), userStatusResponse))
                 .subscribe(v -> {
                 }, mErrorHandler::handleError);
-    }
-
-    private StartupFetchResult transform(ChannelResponse channelResponse,
-            Map<String, User> contacts, String teamId) {
-        return new StartupFetchResult(channelResponse, contacts, teamId);
     }
 
     private List<Fragment> initTabs(boolean shouldShowUnreadTab) {

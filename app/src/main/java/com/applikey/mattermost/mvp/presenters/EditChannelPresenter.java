@@ -93,8 +93,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
                 .flatMap(channel -> mApi.updateChannelPurpose(teamId, channelPurposeRequest))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(channel -> mChannelStorage.save(channel))
-                .toObservable()
-                .flatMap(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()))
+                .flatMapObservable(createdChannel -> Observable.from(mInvitedUsersManager.getInvitedUsers()))
                 .observeOn(Schedulers.io())
                 .flatMap(user -> mApi.addUserToChannel(teamId, channelId,
                                                        new RequestUserId(user.getId())).toObservable(), (user, membership) -> user)

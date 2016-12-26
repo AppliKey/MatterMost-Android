@@ -246,10 +246,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private void updateLastViewedAt(String channelId) {
         // Does not belong to UI
         final Subscription subscribe = mApi.updateLastViewedAt(mTeamId, channelId)
-
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(stringResponse -> {}, mErrorHandler::handleError);
+                .toCompletable()
+                .subscribe(() -> {}, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
 

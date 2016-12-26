@@ -6,12 +6,10 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.models.post.LastPostDto;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.post.PostResponse;
-import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.ChannelExtraResult;
 import com.applikey.mattermost.models.web.ChannelWithUsers;
 import com.applikey.mattermost.mvp.views.ChatListView;
@@ -31,7 +29,6 @@ import javax.inject.Inject;
 
 import rx.Emitter;
 import rx.Observable;
-import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -102,22 +99,19 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         }
         mUsersLoadedChannels.add(channel.getId());
 
-        final Subscription subscription = Single.just(channel)
-                .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
-                        .subscribeOn(Schedulers.io()))
-                .map(extraInfo -> transform(channel, extraInfo))
+        final Subscription subscription = mApi.getChannelExtra(mTeamId, channel.getId())
+                        .subscribeOn(Schedulers.io())
+                .map(extraInfo ->  new ChannelExtraResult(channel, extraInfo))
                 .observeOn(AndroidSchedulers.mainThread())
                 .toObservable()
                 .flatMap(channelExtraResult -> mUserStorage.findUsers(
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
                                 .collect(Collectors.toList())),
-                         this::transform) //TODO replace to rx style
+                         (channelExtraResult, users) -> new ChannelWithUsers(channelExtraResult.getChannel(), users)) //TODO replace to rx style
                 .first()
                 .toSingle()
-                .subscribe(channelWithUsers -> {
-                    mChannelStorage.setUsers(channelWithUsers.getChannel().getId(), channelWithUsers.getUsers());
-                }, mErrorHandler::handleError);
+                .subscribe(channelWithUsers -> mChannelStorage.setUsers(channelWithUsers.getChannel().getId(), channelWithUsers.getUsers()), mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
@@ -147,14 +141,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
             return new LastPostDto(lastPost, channelId);
         }
         return null;
-    }
-
-    private ChannelExtraResult transform(Channel channel, ExtraInfo extraInfo) {
-        return new ChannelExtraResult(channel, extraInfo);
-    }
-
-    private ChannelWithUsers transform(ChannelExtraResult channelExtraResult, List<User> users) {
-        return new ChannelWithUsers(channelExtraResult.getChannel(), users);
     }
 
     private void listenPostState() {
