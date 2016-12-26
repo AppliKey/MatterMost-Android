@@ -73,10 +73,9 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
         mSubscription.add(mApi.ping()
                                   .subscribeOn(Schedulers.io())
+                                  .flatMap(response -> mPersistentPrefs.saveServerUrl(url))
+                                  .flatMap(s -> mPersistentPrefs.getServerUrls())
                                   .observeOn(AndroidSchedulers.mainThread())
-                                  .flatMap(response -> mPersistentPrefs.saveServerUrl(url).toObservable(),
-                                           (o, string) -> string)
-                                  .flatMap(s -> mPersistentPrefs.getServerUrls().toObservable(), (string, set) -> set)
                                   .subscribe(stringSet -> {
                                       final String[] urls = new String[stringSet.size()];
                                       stringSet.toArray(urls);
