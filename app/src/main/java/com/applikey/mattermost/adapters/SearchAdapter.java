@@ -12,9 +12,9 @@ import com.applikey.mattermost.adapters.viewholders.ClickableViewHolder;
 import com.applikey.mattermost.adapters.viewholders.MessageChannelViewHolder;
 import com.applikey.mattermost.adapters.viewholders.SearchHeaderViewHolder;
 import com.applikey.mattermost.adapters.viewholders.UserViewHolder;
+import com.applikey.mattermost.listeners.OnLoadAdditionalDataListener;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.RecyclerItemClickListener;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -28,13 +28,19 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private List<SearchItem> mDataSet = new ArrayList<>();
 
-    private ImageLoader mImageLoader;
+    private final ImageLoader mImageLoader;
 
     private ClickListener mClickListener;
 
-    private String mCurrentUserId;
+    private final String mCurrentUserId;
 
     private String mSearchText;
+
+    private OnLoadAdditionalDataListener mOnLoadAdditionalDataListener;
+
+    public void setOnLoadAdditionalDataListener(OnLoadAdditionalDataListener onLoadAdditionalDataListener) {
+        mOnLoadAdditionalDataListener = onLoadAdditionalDataListener;
+    }
 
     public SearchAdapter(ImageLoader imageLoader, String currentUserId) {
         mCurrentUserId = currentUserId;
@@ -69,22 +75,33 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
-
-        final SearchItem.Type searchType = mDataSet.get(position).getSearchType();
+        final SearchItem searchItem = mDataSet.get(position);
+        final SearchItem.Type searchType = searchItem.getSearchType();
 
         if (searchType.equals(SearchItem.Type.CHANNEL)) {
-            GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
-            viewHolder.bind(mImageLoader, (Channel) mDataSet.get(position));
+            final Channel channel = searchItem.getChannel();
+            uploadUsersForChannel(channel, position);
+            final GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
+            viewHolder.bind(mImageLoader, channel);
             viewHolder.setClickListener(this);
         } else if (searchType.equals(SearchItem.Type.USER)) {
-            ((UserViewHolder) vh).bind(mImageLoader, this, (User) mDataSet.get(position));
+            ((UserViewHolder) vh).bind(mImageLoader, this, searchItem.getUser());
         } else if (searchType.equals(SearchItem.Type.MESSAGE)) {
-            ((ChatListViewHolder) vh).bind(mImageLoader, this, (Message) mDataSet.get(position), mSearchText);
+            ((ChatListViewHolder) vh).bind(mImageLoader, this, searchItem.getMessage(), mSearchText);
         } else if (searchType.equals(SearchItem.Type.MESSAGE_CHANNEL)) {
+            final Channel channel = searchItem.getMessage().getChannel();
+            uploadUsersForChannel(channel, position);
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
-                                                 (Message) mDataSet.get(position), mSearchText);
+                                                 searchItem.getMessage(), mSearchText);
         }
 
+    }
+
+    private void uploadUsersForChannel(Channel channel, int position) {
+        final List<User> users = channel.getUsers();
+        if(users == null || users.isEmpty()) {
+            mOnLoadAdditionalDataListener.onLoadAdditionalData(channel, position);
+        }
     }
 
     @Override
@@ -94,7 +111,9 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public long getHeaderId(int position) {
-        return mDataSet.get(position).getSearchType().ordinal();
+        final SearchItem.Type type = mDataSet.get(position).getSearchType();
+        //MESSAGE_CHANNEL and MESSAGE has the same header
+        return type.equals(SearchItem.Type.MESSAGE_CHANNEL) ? SearchItem.Type.MESSAGE.ordinal() : type.ordinal();
     }
 
     @Override

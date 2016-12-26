@@ -1,6 +1,5 @@
 package com.applikey.mattermost.models.channel;
 
-import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
@@ -17,9 +16,7 @@ import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
 
-import static com.applikey.mattermost.models.SearchItem.Type.CHANNEL;
-
-public class Channel extends RealmObject implements SearchItem {
+public class Channel extends RealmObject {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
 
@@ -31,6 +28,7 @@ public class Channel extends RealmObject implements SearchItem {
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
+    public static final String FIELD_NAME_IS_JOINED = "isJoined";
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
 
     private static final String TAG = Channel.class.getSimpleName();
@@ -233,30 +231,9 @@ public class Channel extends RealmObject implements SearchItem {
         isFavorite = favorite;
     }
 
-    @Override
-    public Type getSearchType() {
-        return CHANNEL;
-    }
-
-    @Override
-    public int getSortPriority() {
-        return PRIORITY_CHANNEL;
-    }
-
-    @Override
-    public int compareByDate(SearchItem item) {
-        final int priorityDifference = item.getSortPriority() - this.getSortPriority();
-
-        if (priorityDifference != 0) {
-            return priorityDifference;
-        }
-
-        long lastPost1 = 0L;
-        long lastPost2 = 0L;
-        final Channel channel1 = this;
-        final Channel channel2 = (Channel) item;
-        lastPost1 = channel1.getLastPostAt();
-        lastPost2 = channel2.getLastPostAt();
+    public int compareByDate(Channel item) {
+        final long lastPost1 = getLastPostAt();
+        final long lastPost2 = item.getLastPostAt();
         return (int) (lastPost2 - lastPost1);
     }
 
@@ -348,6 +325,7 @@ public class Channel extends RealmObject implements SearchItem {
         return channelList;
 
     }
+
 
 /*    @Override
     public String toString() {

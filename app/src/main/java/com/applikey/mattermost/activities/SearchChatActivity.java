@@ -29,7 +29,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
@@ -46,19 +46,19 @@ public class SearchChatActivity extends BaseMvpActivity implements SearchChatVie
 
     private final TabIndicatorModel mTabIndicatorModel = new TabIndicatorModel();
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.view_pager)
+    @BindView(R.id.view_pager)
     ViewPager mViewPager;
 
-    @Bind(R.id.tab_layout)
+    @BindView(R.id.tab_layout)
     TabLayout mTabLayout;
 
-    @Bind(R.id.et_search)
+    @BindView(R.id.et_search)
     EditText mEtSearch;
 
-    @Bind(R.id.btn_clear_search)
+    @BindView(R.id.btn_clear_search)
     ImageButton mBtnClearSearch;
 
     @InjectPresenter

@@ -15,6 +15,9 @@ public interface SearchView extends MvpView {
     @StateStrategyType(value = SkipStrategy.class)
     void startChatView(Channel channel);
 
+    @StateStrategyType(value = SkipStrategy.class)
+    void startMessageDetailsView(String postId);
+
     void showLoading(boolean show);
 
     void displayData(List<SearchItem> items);
@@ -22,5 +25,7 @@ public interface SearchView extends MvpView {
     void clearData();
 
     void setSearchText(String text);
+
+    void notifyItemChanged(int position);
 
 }

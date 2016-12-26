@@ -32,8 +32,7 @@ import org.greenrobot.eventbus.EventBus;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.BindView;
 import io.realm.RealmResults;
 
 public abstract class BaseChatListFragment extends BaseMvpFragment
@@ -41,10 +40,10 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
 
     /* package */ static final String BEHAVIOR_KEY = "TabBehavior";
 
-    @Bind(R.id.rv_channels)
+    @BindView(R.id.rv_channels)
     RecyclerView mRvChannels;
 
-    @Bind(R.id.tv_empty_state)
+    @BindView(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
     @Inject
@@ -84,7 +83,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
                              @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
-        ButterKnife.bind(this, view);
+        bindViews(view);
 
         return view;
     }
@@ -93,7 +92,7 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     public void displayInitialData(RealmResults<Channel> channels) {
         Log.d(BaseChatListFragment.class.getSimpleName(), "Data displayed " + channels.size());
 
-        if(channels == null || channels.isEmpty()) {
+        if (channels.isEmpty()) {
             mTvEmptyState.setVisibility(View.VISIBLE);
             mRvChannels.setVisibility(View.GONE);
         } else {
@@ -125,9 +124,9 @@ public abstract class BaseChatListFragment extends BaseMvpFragment
     }
 
     @Override
-    public void showEmpty() {
-        mTvEmptyState.setVisibility(View.VISIBLE);
-        mRvChannels.setVisibility(View.GONE);
+    public void displayEmptyState(boolean visible) {
+        mTvEmptyState.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mRvChannels.setVisibility(visible ? View.GONE : View.VISIBLE);
     }
 
     protected abstract ChatListPresenter getPresenter();

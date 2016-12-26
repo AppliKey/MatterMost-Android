@@ -2,7 +2,6 @@ package com.applikey.mattermost.models.post;
 
 import android.support.annotation.Nullable;
 
-import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 import com.vdurmont.emoji.EmojiParser;
@@ -10,9 +9,7 @@ import com.vdurmont.emoji.EmojiParser;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-import static com.applikey.mattermost.models.SearchItem.Type.MESSAGE;
-
-public class Post extends RealmObject implements SearchItem {
+public class Post extends RealmObject {
 
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
@@ -40,6 +37,20 @@ public class Post extends RealmObject implements SearchItem {
     // Application-specific fields
     private int priority;
     private User author;
+    private boolean mSent = true;
+
+    public Post() {
+
+    }
+
+    private Post(Builder builder) {
+        setId(builder.id);
+        setChannelId(builder.channelId);
+        setCreatedAt(builder.createdAt);
+        setUserId(builder.userId);
+        setMessage(builder.message);
+        setSent(builder.sent);
+    }
 
     public String getId() {
         return id;
@@ -115,6 +126,14 @@ public class Post extends RealmObject implements SearchItem {
         this.author = author;
     }
 
+    public boolean isSent() {
+        return mSent;
+    }
+
+    public void setSent(boolean sent) {
+        mSent = sent;
+    }
+
     @Nullable
     public Post getRootPost() {
         return rootPost;
@@ -176,23 +195,10 @@ public class Post extends RealmObject implements SearchItem {
                 : post.getAuthor() == null;
     }
 
-    @Override
-    public Type getSearchType() {
-        return MESSAGE;
-    }
+
 
     public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
         return (int) (post1.getCreatedAt() - post2.getCreatedAt());
-    }
-
-    @Override
-    public int getSortPriority() {
-        return PRIORITY_MESSAGE;
-    }
-
-    @Override
-    public int compareByDate(SearchItem item) {
-        return 0;
     }
 
     @Override
@@ -209,5 +215,52 @@ public class Post extends RealmObject implements SearchItem {
                 ", priority=" + priority +
                 ", author=" + author +
                 '}';
+    }
+
+    public static final class Builder {
+
+        private String id;
+        private String channelId;
+        private long createdAt;
+        private String userId;
+        private String message;
+        private boolean sent;
+
+        public Builder() {
+        }
+
+        public Builder id(String val) {
+            id = val;
+            return this;
+        }
+
+        public Builder channelId(String val) {
+            channelId = val;
+            return this;
+        }
+
+        public Builder createdAt(long val) {
+            createdAt = val;
+            return this;
+        }
+
+        public Builder userId(String val) {
+            userId = val;
+            return this;
+        }
+
+        public Builder message(String val) {
+            message = val;
+            return this;
+        }
+
+        public Builder sent(boolean val) {
+            sent = val;
+            return this;
+        }
+
+        public Post build() {
+            return new Post(this);
+        }
     }
 }

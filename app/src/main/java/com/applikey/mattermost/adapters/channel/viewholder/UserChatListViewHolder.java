@@ -8,20 +8,20 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import butterknife.Bind;
+import butterknife.BindView;
 
 public class UserChatListViewHolder extends BaseChatListViewHolder {
 
-    @Bind(R.id.iv_preview_image)
+    @BindView(R.id.iv_preview_image)
     ImageView mPreviewImage;
 
-    @Bind(R.id.iv_channel_icon)
+    @BindView(R.id.iv_channel_icon)
     ImageView mChannelIcon;
 
-    @Bind(R.id.iv_status_bg)
+    @BindView(R.id.iv_status_bg)
     ImageView mStatusBackground;
 
-    @Bind(R.id.iv_status)
+    @BindView(R.id.iv_status)
     ImageView mStatus;
 
     public UserChatListViewHolder(View itemView, String userId) {

@@ -5,14 +5,13 @@ import android.text.TextUtils;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchUserTextChanged;
+import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.mvp.views.SearchUserView;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,9 +54,10 @@ public class SearchUserPresenter extends SearchPresenter<SearchUserView> {
                         .first()
                         .flatMap(Observable::from)
                         .filter(user -> !TextUtils.equals(user.getId(), mCurrentUserId))
+                        .map(SearchItem::new)
                         .toList()
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(users ->  view.displayData(new ArrayList<>(users)), mErrorHandler::handleError));
+                        .subscribe(view::displayData, mErrorHandler::handleError));
     }
 
     @Subscribe
