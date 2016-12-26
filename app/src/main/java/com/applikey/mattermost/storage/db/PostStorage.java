@@ -7,8 +7,10 @@ import com.applikey.mattermost.models.user.User;
 
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
+import rx.Single;
 
 public class PostStorage {
 
@@ -24,6 +26,10 @@ public class PostStorage {
 
     public void update(Post post) {
         mDb.saveTransactional(post);
+    }
+
+    public Single<Post> get(String id) {
+        return mDb.getObject(Post.class, Post.FIELD_NAME_ID, id);
     }
 
     public void saveAll(List<Post> posts) {
@@ -44,6 +50,27 @@ public class PostStorage {
                 realmPost.setRootPost(rootPost);
             }
         });
+    }
+
+    public void saveAllSync(List<Post> posts) {
+        Realm realm = mDb.getRealm();
+        realm.beginTransaction();
+            for (Post post : posts) {
+                final User author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                        .findFirst();
+
+                final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
+                        realm.where(Post.class)
+                                .equalTo(Post.FIELD_NAME_ID, post.getRootId())
+                                .findFirst()
+                        : null;
+
+                final Post realmPost = realm.copyToRealmOrUpdate(post);
+                realmPost.setAuthor(author);
+                realmPost.setRootPost(rootPost);
+            }
+       realm.commitTransaction();
     }
 
     public void save(Post post) {
@@ -78,5 +105,9 @@ public class PostStorage {
                 .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
                 .findAll()
                 .deleteAllFromRealm());
+    }
+
+    public void delete(String id) {
+        mDb.deleteTransactionalSync(Post.class, id);
     }
 }

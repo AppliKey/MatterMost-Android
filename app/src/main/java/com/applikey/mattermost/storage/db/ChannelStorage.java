@@ -16,6 +16,7 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 import rx.Observable;
 import rx.Single;
@@ -60,15 +61,19 @@ public class ChannelStorage {
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+        return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
                                                     Channel.ChannelType.PUBLIC.getRepresentation(),
+                                                      Channel.FIELD_NAME_IS_JOINED,
+                                                      true,
                                                     Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.PRIVATE.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+        return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
+                                                      Channel.ChannelType.PRIVATE.getRepresentation(),
+                                                      Channel.FIELD_NAME_IS_JOINED,
+                                                      true,
+                                                      Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
@@ -121,22 +126,24 @@ public class ChannelStorage {
         });
     }
 
-    public void setLastPost(@NonNull Channel channel, @NonNull Post lastPost) {
+    public void setLastPost(@NonNull Channel channel, Post lastPost) {
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            Post realmPost = realm.copyToRealmOrUpdate(lastPost);
+            Post realmPost = null;
+            if(lastPost != null) {
+                realmPost = realm.copyToRealmOrUpdate(lastPost);
 
-            final User author = realm.where(User.class)
-                    .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
-                    .findFirst();
+                final User author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                        .findFirst();
 
-            final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
-                    realm.where(Post.class)
-                            .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
-                            .findFirst() : null;
+                final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+                        realm.where(Post.class)
+                                .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                                .findFirst() : null;
 
-            realmPost.setAuthor(author);
-            realmPost.setRootPost(rootPost);
-
+                realmPost.setAuthor(author);
+                realmPost.setRootPost(rootPost);
+            }
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
             return true;
@@ -218,6 +225,14 @@ public class ChannelStorage {
         });
     }
 
+    public void setUsers(String id, List<User> users, Realm.Transaction.OnSuccess onSuccess){
+        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+            realmChannel.setUsers(users);
+            realm.copyToRealmOrUpdate(realmChannel);
+            return true;
+        }, onSuccess);
+    }
+
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
         // Transform direct channels
 
@@ -243,6 +258,10 @@ public class ChannelStorage {
         saveAndDeleteRemovedChannels(channels);
     }
 
+    public void saveAndDeleteRemovedChannelsSync(List<Channel> channels) {
+        mDb.saveTransactional(restoreChannels(channels));
+    }
+
     private void saveAndDeleteRemovedChannels(List<Channel> channels) {
         mDb.saveTransactional(restoreChannels(channels));
         mDb.doTransactional(realm -> {
@@ -255,7 +274,7 @@ public class ChannelStorage {
     }
 
     public Single<Channel> getChannel(String id) {
-        return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
+        return mDb.getObject(Channel.class, Channel.FIELD_ID, id);
     }
 
     public void delete(String channelId) {

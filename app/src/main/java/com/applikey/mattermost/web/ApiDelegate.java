@@ -124,7 +124,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PingResponse> ping() {
+    public Single<PingResponse> ping() {
         return getRealApi().ping();
     }
 

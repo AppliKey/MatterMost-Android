@@ -10,20 +10,20 @@ import android.widget.ToggleButton;
 
 import com.applikey.mattermost.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
 public class ChannelTypeView extends LinearLayout {
 
-    @Bind(R.id.tv_type_public)
+    @BindView(R.id.tv_type_public)
     TextView mTvTypePublic;
 
-    @Bind(R.id.tvTypePrivate)
+    @BindView(R.id.tvTypePrivate)
     TextView mTvTypePrivate;
 
-    @Bind(R.id.toggle_channel_type)
+    @BindView(R.id.toggle_channel_type)
     ToggleButton mToggleButton;
 
     private CompoundButton.OnCheckedChangeListener mExternalCheckedChangeListener;

@@ -6,6 +6,7 @@ import android.view.View;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.SearchAdapter;
 import com.applikey.mattermost.models.SearchItem;
+import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.presenters.SearchMessagePresenter;
 import com.applikey.mattermost.mvp.views.SearchMessageView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -36,6 +37,12 @@ public class SearchMessageFragment extends SearchFragment implements SearchMessa
     @Override
     protected int getLayout() {
         return R.layout.fragment_search_chat;
+    }
+
+    @Override
+    public void onLoadAdditionalData(Channel channel, int position) {
+        super.onLoadAdditionalData(channel, position);
+        mPresenter.getChatUsers(channel, position);
     }
 
 }

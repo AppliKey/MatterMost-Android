@@ -15,20 +15,25 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
-    @Bind(R.id.iv_notification_icon)
+    private String mCurrentUserId;
+
+    @BindView(R.id.iv_notification_icon)
     ImageView mNotificationIcon;
-    @Bind(R.id.tv_channel_name)
+
+    @BindView(R.id.tv_channel_name)
     TextView mChannelName;
-    @Bind(R.id.tv_last_message_time)
+
+    @BindView(R.id.tv_last_message_time)
     TextView mLastMessageTime;
-    @Bind(R.id.tv_message_preview)
+
+    @BindView(R.id.tv_message_preview)
     TextView mMessagePreview;
+
     private String mCurrentUserId;
 
     public BaseChatListViewHolder(View itemView) {
@@ -46,12 +51,12 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         return itemView;
     }
 
-    public TextView getName() {
-        return mChannelName;
-    }
-
     public ImageView getNotificationIcon() {
         return mNotificationIcon;
+    }
+
+    public TextView getName() {
+        return mChannelName;
     }
 
     public TextView getLastMessageTime() {
@@ -70,8 +75,6 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         getName().setText(channel.getDisplayName());
 
         final String messagePreview = getMessagePreview(channel, getContainer().getContext());
-
-        Timber.d("Message bound: %s", messagePreview);
 
         getMessagePreview().setText(messagePreview);
         getLastMessageTime().setText(

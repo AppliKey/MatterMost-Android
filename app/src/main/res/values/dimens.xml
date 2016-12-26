@@ -21,6 +21,7 @@
     <dimen name="margin_3x">48dp</dimen>
     <dimen name="margin_4x">64dp</dimen>
     <dimen name="margin_default">16dp</dimen>
+    <dimen name="message_details_content_margin">20dp</dimen>
 
     <dimen name="user_avatar_right_margin">20dp</dimen>
     <dimen name="user_item_vertical_padding">10dp</dimen>
@@ -139,4 +140,6 @@
 
     <dimen name="search_list_header_text_size">12sp</dimen>
     <dimen name="button_corner">72dp</dimen>
+    <dimen name="user_name_text_size">16sp</dimen>
+    <dimen name="go_to_dialog_button_margin_bottom">40dp</dimen>
 </resources>

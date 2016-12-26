@@ -15,6 +15,7 @@ import com.applikey.mattermost.mvp.presenters.CreateChannelPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.FindMoreChannelsPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
+import com.applikey.mattermost.mvp.presenters.MessageDetailsPresenter;
 import com.applikey.mattermost.mvp.presenters.NavigationPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchAllPresenter;
 import com.applikey.mattermost.mvp.presenters.SearchChannelPresenter;
@@ -85,6 +86,8 @@ public interface UserComponent {
     void inject(FindMoreChannelsPresenter presenter);
 
     void inject(DrawerActivity drawerActivity);
+
+    void inject(MessageDetailsPresenter messageDetailsPresenter);
 
     @Subcomponent.Builder
     interface Builder {

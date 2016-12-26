@@ -7,6 +7,7 @@ import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.events.SearchAllTextChanged;
 import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchAllView;
 import com.applikey.mattermost.mvp.views.SearchView;
 import com.applikey.mattermost.utils.MessageDateComparator;
@@ -41,6 +42,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     public SearchAllPresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
+        init();
     }
 
     @Override
@@ -60,14 +62,16 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))
-                                .first()
-                                .doOnNext(channels -> addFilterChannels(channels, text)),
+                                .first(),
 
                         mUserStorage.searchUsers(text).first(), (items, users) -> {
-
                             final List<SearchItem> searchItemList = new ArrayList<>();
-                            searchItemList.addAll(items);
-                            searchItemList.addAll(users);
+                            for(Channel channel : items) {
+                                 searchItemList.add(new SearchItem(channel));
+                            }
+                            for(User user : users) {
+                                searchItemList.add(new SearchItem(user));
+                            }
                             return searchItemList;
                         })
                         .flatMap(items -> getPostsObservable(text).first(),

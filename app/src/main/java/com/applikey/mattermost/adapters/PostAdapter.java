@@ -19,7 +19,7 @@ import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.transitionseverywhere.TransitionManager;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -123,6 +123,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
                                  mImageLoader, mOnLongClickListener);
         }
+        holder.setFailStatusVisible(!post.isSent());
     }
 
     @Override
@@ -159,39 +160,46 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.iv_status)
+        @BindView(R.id.iv_status)
         ImageView mIvStatus;
 
         @Nullable
-        @Bind(R.id.iv_preview_image)
+        @BindView(R.id.iv_preview_image)
         ImageView mIvPreviewImage;
 
         @Nullable
-        @Bind(R.id.iv_preview_image_layout)
+        @BindView(R.id.iv_preview_image_layout)
         FrameLayout mIvPreviewImageLayout;
 
-        @Bind(R.id.tv_date)
+        @BindView(R.id.tv_date)
         TextView mTvDate;
 
-        @Bind(R.id.tv_message)
+        @BindView(R.id.tv_message)
         TextView mTvMessage;
 
-        @Bind(R.id.tv_timestamp)
+        @BindView(R.id.tv_timestamp)
         TextView mTvTimestamp;
 
-        @Bind(R.id.tv_new_message)
+        @BindView(R.id.tv_new_message)
         TextView mTvNewMessage;
 
-        @Bind(R.id.tv_name)
+        @BindView(R.id.tv_name)
         TextView mTvName;
 
-        @Bind(R.id.tv_reply_message)
+        @BindView(R.id.tv_reply_message)
         TextView mTvReplyMessage;
+
+        @BindView(R.id.iv_fail)
+        ImageView mIvFail;
 
         ViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+        }
+
+        void setFailStatusVisible(boolean visible) {
+            mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
 
         void toggleDate(Post post) {
