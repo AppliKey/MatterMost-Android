@@ -58,6 +58,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     @Inject
     ErrorHandler mErrorHandler;
 
+    private String mChannelId;
     private Channel mChannel;
     private String mTeamId;
     private AtomicInteger mMessageSendingCounter = new AtomicInteger(0);
