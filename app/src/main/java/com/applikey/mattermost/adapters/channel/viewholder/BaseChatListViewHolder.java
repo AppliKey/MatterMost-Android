@@ -20,8 +20,6 @@ import butterknife.ButterKnife;
 
 public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
-    private String mCurrentUserId;
-
     @BindView(R.id.iv_notification_icon)
     ImageView mNotificationIcon;
 
