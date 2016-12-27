@@ -106,7 +106,8 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
                     return users;
                 })
                 .doOnSuccess(users -> mChannelStorage.setUsers(channelId, users))
-                .subscribe(users -> getViewState().onChannelUpdated(),
+                .toCompletable()
+                .subscribe(() -> getViewState().onChannelUpdated(),
                            error -> getViewState().showError(mErrorHandler.getErrorMessage(error)));
         mSubscription.add(subscription);
 

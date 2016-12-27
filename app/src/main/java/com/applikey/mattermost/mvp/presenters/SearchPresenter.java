@@ -8,7 +8,6 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
-import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -195,10 +194,9 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         mUsersLoadedChannels.add(channel.getId());
         final SearchView view = getViewState();
 
-        final Subscription subscription = Single.just(channel)
-                .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
-                        .subscribeOn(Schedulers.io()))
-                .map(extraInfo -> transform(channel, extraInfo))
+        final Subscription subscription = mApi.getChannelExtra(mTeamId, channel.getId())
+                        .subscribeOn(Schedulers.io())
+                .map(extraInfo ->  new ChannelExtraResult(channel, extraInfo))
                 .observeOn(AndroidSchedulers.mainThread())
                 .toObservable()
                 .flatMap(channelExtraResult -> mUserStorage.findUsers(
@@ -215,9 +213,6 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         mSubscription.add(subscription);
     }
 
-    private ChannelExtraResult transform(Channel channel, ExtraInfo extraInfo) {
-        return new ChannelExtraResult(channel, extraInfo);
-    }
 
     private ChannelWithUsers transform(ChannelExtraResult channelExtraResult, List<User> users) {
         return new ChannelWithUsers(channelExtraResult.getChannel(), users);
