@@ -119,7 +119,6 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
 
         if (isMy(post)) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
-            holder.setFailStatusVisible(!post.isSent());
         } else {
             holder.bindOtherPost(mChannelType, post, showAuthor, showTime, mImageLoader, mOnLongClickListener);
         }
@@ -225,6 +224,8 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
                 return true;
             });
             mTvName.setText(R.string.you);
+
+            setFailStatusVisible(!post.isSent());
         }
 
         void bindOtherPost(Channel.ChannelType channelType,
