@@ -236,7 +236,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void openChannelDetails(Channel channel) {
-        if(mIsJoined) {
+        if (mIsJoined) {
             startActivity(ChannelDetailsActivity.getIntent(this, channel));
         }
     }
@@ -402,8 +402,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                     deleteMessage(mChannelId, post);
                 }
             });
-        }
-        else if (isOwner) {
+        } else if (isOwner) {
             dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
                 switch (which) {
                     case 0:
