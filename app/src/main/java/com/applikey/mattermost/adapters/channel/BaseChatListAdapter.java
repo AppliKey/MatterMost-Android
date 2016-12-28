@@ -9,12 +9,13 @@ import com.applikey.mattermost.adapters.channel.viewholder.BaseChatListViewHolde
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.web.images.ImageLoader;
 
+import io.realm.LowRateRealmRecyclerViewAdapter;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
-        extends RealmRecyclerViewAdapter<Channel, VH> {
+        extends LowRateRealmRecyclerViewAdapter<Channel, VH> {
 
     private ChannelListener mChannelListener = null;
 
@@ -22,10 +23,10 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
 
     protected final String mCurrentUserId;
 
-    protected final Context mContext;
+    final Context mContext;
 
     public BaseChatListAdapter(@NonNull Context context, RealmResults<Channel> data,
-            ImageLoader imageLoader, String currentUserId) {
+                               ImageLoader imageLoader, String currentUserId) {
         super(context, data, true);
         mContext = context;
         mImageLoader = imageLoader;
@@ -57,11 +58,7 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
         vh.getContainer().setTag(position);
     }
 
-    public void setChannelListener(ChannelListener listener) {
-        this.mChannelListener = listener;
-    }
-
-    public final View.OnClickListener mOnClickListener = view -> {
+    final View.OnClickListener mOnClickListener = view -> {
         final OrderedRealmCollection<Channel> data = getData();
         if (data == null) {
             return;
@@ -74,6 +71,10 @@ public abstract class BaseChatListAdapter<VH extends BaseChatListViewHolder>
             mChannelListener.onItemClicked(team);
         }
     };
+
+    public void setChannelListener(ChannelListener listener) {
+        this.mChannelListener = listener;
+    }
 
     public interface ChannelListener {
 

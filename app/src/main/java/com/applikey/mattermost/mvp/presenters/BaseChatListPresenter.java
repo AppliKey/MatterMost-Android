@@ -32,6 +32,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> implements ChatListPresenter {
 
@@ -54,11 +55,9 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
     ErrorHandler mErrorHandler;
 
     private String mTeamId;
-
+    private Emitter<? super String> mChannelEmitter;
     private final Set<String> mPreviewLoadedChannels = new HashSet<>();
     private final Set<String> mUsersLoadedChannels = new HashSet<>();
-
-    private Emitter<? super String> mChannelEmitter;
 
     BaseChatListPresenter() {
         App.getUserComponent().inject(this);
@@ -88,6 +87,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         if (mPreviewLoadedChannels.contains(channel.getId())) {
             return;
         }
+        Timber.d("Getting last post for %s", channel.getDisplayName());
+
         mPreviewLoadedChannels.add(channel.getId());
         mChannelEmitter.onNext(channel.getId());
     }
@@ -116,6 +117,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         mSubscription.add(subscription);
     }
 
+    // TODO naming
     private void createObservable() {
         final Observable<String> channelObservable =
                 Observable.fromEmitter(emitter -> mChannelEmitter = emitter, Emitter.BackpressureMode.BUFFER);
@@ -125,7 +127,9 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
                 .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId).toObservable(), this::transform)
                 .filter(lastPostDto -> lastPostDto != null)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(post -> mChannelStorage.updateLastPosts(post), mErrorHandler::handleError);
+                .subscribe(post -> {
+                    mChannelStorage.updateLastPosts(post);
+                }, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
     }
