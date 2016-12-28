@@ -150,15 +150,11 @@ public class ChannelStorage {
         });
     }
 
-    // FIXME Performance drop
     public void updateLastPosts(LastPostDto lastPostDto) {
-        final long t = System.nanoTime();
-
         final String currentUserId = mPrefs.getCurrentUserId();
 
         final Post lastPost = lastPostDto.getPost();
 
-//        /*
         mDb.doTransactional(realm -> {
             final User currentUser = realm.where(User.class)
                     .equalTo(User.FIELD_NAME_ID, currentUserId)
@@ -193,10 +189,6 @@ public class ChannelStorage {
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
         });
-//        */
-
-        Log.d("123", System.nanoTime() - t + "");
-
     }
 
     public void updateLastViewedAt(String id) {
