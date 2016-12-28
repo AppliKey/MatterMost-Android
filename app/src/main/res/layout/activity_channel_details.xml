@@ -89,7 +89,7 @@
             android:layout_marginEnd="@dimen/normal"
             android:layout_marginStart="@dimen/normal"
             android:layout_marginTop="@dimen/large"
-            android:text="@string/leave_channel" />
+            android:text="@string/leave" />
 
     </LinearLayout>
 
