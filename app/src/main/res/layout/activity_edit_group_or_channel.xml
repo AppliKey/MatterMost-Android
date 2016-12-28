@@ -58,6 +58,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/channel_horizontal_margin"
                 android:layout_marginStart="@dimen/channel_horizontal_margin"
+                android:layout_marginTop="@dimen/channel_horizontal_margin"
+                android:text="@string/url" />
+
+            <EditText
+                android:id="@+id/et_link_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin_edit_text"
+                android:layout_marginStart="@dimen/channel_horizontal_margin_edit_text"
+                android:fontFamily="@string/font_light"
+                android:inputType="textEmailAddress"
+                android:lines="1"
+                android:maxLines="1" />
+
+            <TextView
+                style="@style/TextHeadingSecondary.Small.Capitalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/channel_horizontal_margin"
+                android:layout_marginStart="@dimen/channel_horizontal_margin"
                 android:layout_marginTop="@dimen/create_channel_label_top_margin"
                 android:text="@string/create_channel_description_title" />
 
