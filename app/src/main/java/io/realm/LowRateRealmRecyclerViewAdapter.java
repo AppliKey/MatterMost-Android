@@ -20,7 +20,7 @@ import android.view.LayoutInflater;
  * The RealmAdapter will stop receiving updates if the Realm instance providing the {@link OrderedRealmCollection} is
  * closed.
  *
- * @param <T> type of {@link RealmModel} stored in the adapter.
+ * @param <T>  type of {@link RealmModel} stored in the adapter.
  * @param <VH> type of RecyclerView.ViewHolder used in the adapter.
  */
 public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH extends RecyclerView.ViewHolder>
@@ -53,7 +53,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
      * same after notifyDataSetChanged() or {@link #updateData(OrderedRealmCollection)} has been called.
      *
      * @param index position of item in the adapter.
-     *
      * @return current item ID.
      */
     @Override
@@ -104,7 +103,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
      * Can return {@code null} if provided Realm instance by {@link OrderedRealmCollection} is closed.
      *
      * @param index index of the item.
-     *
      * @return the item at the specified position, {@code null} if adapter data is not valid.
      */
     @SuppressWarnings("WeakerAccess")
@@ -143,12 +141,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
 
         this.adapterData = data;
         notifyDataSetChanged();
-    }
-
-    public void unSubscribe() {
-        if (listener != null) {
-            listener.unSubscribe();
-        }
     }
 
     private void addListener(@NonNull OrderedRealmCollection<T> data) {

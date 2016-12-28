@@ -13,7 +13,7 @@ public abstract class LowRateRealmChangeListener<T> implements RealmChangeListen
     private boolean mShouldCallBack;
     private final Subscription mSubscription;
 
-    public LowRateRealmChangeListener() {
+    LowRateRealmChangeListener() {
         mSubscription = Observable
                 .interval(1000, 1000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
