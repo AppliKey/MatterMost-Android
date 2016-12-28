@@ -34,7 +34,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import rx.Observable;
 import rx.Single;
 
 public interface Api {
@@ -42,49 +41,49 @@ public interface Api {
     String MULTIPART_IMAGE_TAG = "image";
 
     @POST("/api/v3/users/login")
-    Observable<Response<AuthenticationResponse>> authorize(
+    Single<Response<AuthenticationResponse>> authorize(
             @Body AuthenticationRequest authenticationRequest);
 
     @GET("/api/v3/teams/all")
-    Observable<Map<String, Team>> listTeams();
+    Single<Map<String, Team>> listTeams();
 
     @GET("/api/v3/users/me")
-    Observable<User> getMe();
+    Single<User> getMe();
 
     @GET("/api/v3/users/initial_load")
-    Observable<InitLoadResponse> getInitialLoad();
+    Single<InitLoadResponse> getInitialLoad();
 
     @GET("/api/v3/users/direct_profiles")
-    Observable<Map<String, User>> getDirectProfiles();
+    Single<Map<String, User>> getDirectProfiles();
 
     @GET("/api/v3/users/profiles/{teamId}")
-    Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
+    Single<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId);
 
     @POST("/api/v3/users/status")
-    Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds);
+    Single<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds);
 
     @GET("/api/v3/users/status")
-    Observable<Map<String, String>> getUserStatuses();
+    Single<Map<String, String>> getUserStatuses();
 
     @POST("/api/v3/users/send_password_reset")
-    Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request);
+    Single<Void> sendPasswordReset(@Body RestorePasswordRequest request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
-    Observable<Void> deletePost(@Path("teamId") String teamId,
+    Single<Void> deletePost(@Path("teamId") String teamId,
                                 @Path("channelId") String channelId,
                                 @Path("postId") String postId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/update")
-    Observable<Post> updatePost(@Path("teamId") String teamId,
+    Single<Post> updatePost(@Path("teamId") String teamId,
                                 @Path("channelId") String channelId,
                                 @Body Post post);
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")
-    Observable<ChannelResponse> listChannels(@Path("teamId") String teamId);
+    Single<ChannelResponse> listChannels(@Path("teamId") String teamId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}")
-    Observable<Channel> getChannelById(@Path("teamId") String teamId,
+    Single<Channel> getChannelById(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId);
 
     //This url is not containing "/" symbol at the start
@@ -100,70 +99,70 @@ public interface Api {
     Single<PingResponse> ping();
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
-    Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
+    Single<PostResponse> getPostsPage(@Path("teamId") String teamId,
                                           @Path("channelId") String channelId,
                                           @Path("offset") int offset,
                                           @Path("limit") int limit);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/0/1")
-    Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
+    Single<PostResponse> getLastPost(@Path("teamId") String teamId,
                                          @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
-    Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
+    Single<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
                                           @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")
-    Observable<Post> createPost(@Path("teamId") String teamId,
+    Single<Post> createPost(@Path("teamId") String teamId,
                                 @Path("channelId") String channelId,
                                 @Body PendingPost request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
-    Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+    Single<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
                                                     @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{team_id}/channels/create")
-    Observable<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
+    Single<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
 
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/add")
-    Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
+    Single<Membership> addUserToChannel(@Path("team_id") String teamId,
                                             @Path("channel_id") String channelId,
                                             @Body RequestUserId userId);
 
     @POST("/api/v3/users/attach_device")
-    Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request);
+    Single<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request);
 
     @POST("/api/v3/teams/{team_id}/channels/create_direct")
-    Observable<Channel> createChannel(@Path("team_id") String teamId,
+    Single<Channel> createChannel(@Path("team_id") String teamId,
                                       @Body DirectChannelRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/{channelId}/delete")
-    Observable<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
+    Single<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
                                                     @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{team_id}/channels/more")
     Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
 
     @POST("/api/v3/teams/{team_id}/invite_members")
-    Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
+    Single<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body);
 
     @POST("api/v3/teams/{teamId}/channels/update")
-    Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
+    Single<Channel> updateChannelTitle(@Path("teamId") String teamId,
                                            @Body ChannelTitleRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/update_purpose")
-    Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
+    Single<Channel> updateChannelPurpose(@Path("teamId") String teamId,
                                              @Body ChannelPurposeRequest request);
 
     @POST("/api/v3/teams/{team_id}/posts/search")
-    Observable<PostResponse> searchPosts(@Path("team_id") String teamId, @Body PostSearchRequest request);
+    Single<PostResponse> searchPosts(@Path("team_id") String teamId, @Body PostSearchRequest request);
 
     @Multipart
     @POST("/api/v3/users/newimage")
-    Observable<Void> uploadImage(@Part MultipartBody.Part image);
+    Single<Void> uploadImage(@Part MultipartBody.Part image);
 
     @POST("/api/v3/users/update")
-    Observable<User> editUser(@Body User user);
+    Single<User> editUser(@Body User user);
 
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/join")
     Single<Channel> joinToChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId);

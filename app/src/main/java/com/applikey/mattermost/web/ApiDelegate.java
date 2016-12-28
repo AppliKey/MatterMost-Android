@@ -36,7 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
-import rx.Observable;
 import rx.Single;
 
 public class ApiDelegate implements Api {
@@ -53,72 +52,72 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<AuthenticationResponse>> authorize(
+    public Single<Response<AuthenticationResponse>> authorize(
             @Body AuthenticationRequest authenticationRequest) {
         return getRealApi().authorize(authenticationRequest);
     }
 
     @Override
-    public Observable<Map<String, Team>> listTeams() {
+    public Single<Map<String, Team>> listTeams() {
         return getRealApi().listTeams();
     }
 
     @Override
-    public Observable<User> getMe() {
+    public Single<User> getMe() {
         return getRealApi().getMe();
     }
 
     @Override
-    public Observable<InitLoadResponse> getInitialLoad() {
+    public Single<InitLoadResponse> getInitialLoad() {
         return getRealApi().getInitialLoad();
     }
 
     @Override
-    public Observable<Map<String, User>> getDirectProfiles() {
+    public Single<Map<String, User>> getDirectProfiles() {
         return getRealApi().getDirectProfiles();
     }
 
     @Override
-    public Observable<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId) {
+    public Single<Map<String, User>> getTeamProfiles(@Path("teamId") String teamId) {
         return getRealApi().getTeamProfiles(teamId);
     }
 
     @Override
-    public Observable<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds) {
+    public Single<Map<String, String>> getUserStatusesCompatible(@Body String[] userIds) {
         return getRealApi().getUserStatusesCompatible(userIds);
     }
 
     @Override
-    public Observable<Map<String, String>> getUserStatuses() {
+    public Single<Map<String, String>> getUserStatuses() {
         return getRealApi().getUserStatuses();
     }
 
     @Override
-    public Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request) {
+    public Single<Void> sendPasswordReset(@Body RestorePasswordRequest request) {
         return getRealApi().sendPasswordReset(request);
     }
 
     @Override
-    public Observable<Void> deletePost(@Path("teamId") String teamId,
+    public Single<Void> deletePost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
                                        @Path("channelId") String postId) {
         return getRealApi().deletePost(teamId, channelId, postId);
     }
 
     @Override
-    public Observable<Post> updatePost(@Path("teamId") String teamId,
+    public Single<Post> updatePost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
                                        @Body Post post) {
         return getRealApi().updatePost(teamId, channelId, post);
     }
 
     @Override
-    public Observable<ChannelResponse> listChannels(@Path("teamId") String teamId) {
+    public Single<ChannelResponse> listChannels(@Path("teamId") String teamId) {
         return getRealApi().listChannels(teamId);
     }
 
     @Override
-    public Observable<Channel> getChannelById(@Path("teamId") String teamId,
+    public Single<Channel> getChannelById(@Path("teamId") String teamId,
                                               @Path("channelId") String channelId) {
         return getRealApi().getChannelById(teamId, channelId);
     }
@@ -129,7 +128,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PostResponse> getPostsPage(@Path("teamId") String teamId,
+    public Single<PostResponse> getPostsPage(@Path("teamId") String teamId,
                                                  @Path("channelId") String channelId,
                                                  @Path("offset") int offset,
                                                  @Path("limit") int limit) {
@@ -137,56 +136,56 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PostResponse> getLastPost(@Path("teamId") String teamId,
+    public Single<PostResponse> getLastPost(@Path("teamId") String teamId,
                                                 @Path("channelId") String channelId) {
         return getRealApi().getLastPost(teamId, channelId);
     }
 
     @Override
-    public Observable<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
+    public Single<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
                                                  @Path("channelId") String channelId) {
         return getRealApi().getChannelExtra(teamId, channelId);
     }
 
     @Override
-    public Observable<Post> createPost(@Path("teamId") String teamId,
+    public Single<Post> createPost(@Path("teamId") String teamId,
                                        @Path("channelId") String channelId,
                                        @Body PendingPost request) {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
     @Override
-    public Observable<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
+    public Single<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
                                                            @Path("channelId") String channelId) {
         return getRealApi().updateLastViewedAt(teamId, channelId);
     }
 
     @Override
-    public Observable<Channel> createChannel(@Path("team_id") String teamId, @Body
+    public Single<Channel> createChannel(@Path("team_id") String teamId, @Body
             ChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
     }
 
     @Override
-    public Observable<Membership> addUserToChannel(@Path("team_id") String teamId,
+    public Single<Membership> addUserToChannel(@Path("team_id") String teamId,
                                                    @Path("channel_id") String channelId,
                                                    @Body RequestUserId userId) {
         return getRealApi().addUserToChannel(teamId, channelId, userId);
     }
 
     @Override
-    public Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
+    public Single<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
         return getRealApi().attachDevice(request);
     }
 
     @Override
-    public Observable<Channel> createChannel(@Path("team_id") String teamId,
+    public Single<Channel> createChannel(@Path("team_id") String teamId,
                                              @Body DirectChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
     }
 
     @Override
-    public Observable<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
+    public Single<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
             @Path("channelId") String channelId) {
         return getRealApi().deleteChannel(teamId, channelId);
     }
@@ -196,25 +195,25 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body) {
+    public Single<Void> inviteNewMember(@Path("team_id") String teamId, @Body InviteNewMembersRequest body) {
         return getRealApi().inviteNewMember(teamId, body);
     }
 
     @Override
-    public Observable<PostResponse> searchPosts(@Path("team_id") String teamId, @Body
+    public Single<PostResponse> searchPosts(@Path("team_id") String teamId, @Body
             PostSearchRequest request) {
         return getRealApi().searchPosts(teamId, request);
     }
 
     @Override
-    public Observable<Void> uploadImage(
+    public Single<Void> uploadImage(
             @Part MultipartBody.Part image) {
 
         return getRealApi().uploadImage(image);
     }
 
     @Override
-    public Observable<User> editUser(@Body User user) {
+    public Single<User> editUser(@Body User user) {
         return getRealApi().editUser(user);
     }
 
@@ -225,13 +224,13 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Channel> updateChannelTitle(@Path("teamId") String teamId,
+    public Single<Channel> updateChannelTitle(@Path("teamId") String teamId,
                                                   @Body ChannelTitleRequest request) {
         return getRealApi().updateChannelTitle(teamId, request);
     }
 
     @Override
-    public Observable<Channel> updateChannelPurpose(@Path("teamId") String teamId,
+    public Single<Channel> updateChannelPurpose(@Path("teamId") String teamId,
                                                     @Body ChannelPurposeRequest request) {
         return getRealApi().updateChannelPurpose(teamId, request);
     }

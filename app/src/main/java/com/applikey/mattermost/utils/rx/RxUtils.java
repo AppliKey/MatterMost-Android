@@ -2,6 +2,7 @@ package com.applikey.mattermost.utils.rx;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -55,6 +56,17 @@ public class RxUtils {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(beforeRun)
                 .doOnTerminate(afterRun);
+    }
+
+    /**
+     * Execute two actions on UI thread
+     * Use STRICTLY before .subscribe
+     */
+    public static <T> Single.Transformer<T, T> applyProgressSingle(Action0 beforeRun, Action0 afterRun) {
+        return tObservable -> tObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(beforeRun)
+                .doAfterTerminate(afterRun);
     }
 
 }
