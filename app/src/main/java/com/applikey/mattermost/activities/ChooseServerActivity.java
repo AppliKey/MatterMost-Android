@@ -7,13 +7,13 @@ import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.adapters.AutoCompleteAdapter;
 import com.applikey.mattermost.mvp.presenters.ChooseServerPresenter;
 import com.applikey.mattermost.mvp.views.ChooseServerView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -52,7 +52,6 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_choose_server);
 
         ButterKnife.bind(this);
@@ -83,9 +82,9 @@ public class ChooseServerActivity extends BaseMvpActivity implements ChooseServe
 
     @Override
     public void setAutoCompleteServers(String[] urls) {
-        final ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, urls);
-        runOnUiThread(() -> mEtServerUrl.setAdapter(adapter));
+        final AutoCompleteAdapter<String> adapter =
+                new AutoCompleteAdapter<>(this, android.R.layout.simple_list_item_1, urls);
+        mEtServerUrl.setAdapter(adapter);
     }
 
     @OnClick(R.id.b_proceed)
