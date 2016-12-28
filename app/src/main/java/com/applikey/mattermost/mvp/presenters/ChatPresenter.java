@@ -2,11 +2,13 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
 
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
@@ -92,7 +94,13 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         if (Channel.ChannelType.DIRECT.getRepresentation().equals(mChannel.getType())) {
             view.openUserProfile(mChannel.getDirectCollocutor());
         } else {
-            view.openChannelDetails(mChannel);
+            final String mCurrentUserId = mPrefs.getCurrentUserId();
+            final boolean joined = Stream.of(mChannel.getUsers())
+                    .map(User::getId)
+                    .anyMatch(userId -> TextUtils.equals(userId, mCurrentUserId));
+            if (joined) {
+                view.openChannelDetails(mChannel);
+            }
         }
     }
 
