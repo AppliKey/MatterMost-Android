@@ -16,7 +16,7 @@ import com.applikey.mattermost.mvp.views.CreateChannelView;
 import com.applikey.mattermost.views.ChannelTypeView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 public class CreateChannelActivity extends BaseEditChannelActivity
@@ -25,10 +25,10 @@ public class CreateChannelActivity extends BaseEditChannelActivity
     @InjectPresenter
     CreateChannelPresenter mPresenter;
 
-    @Bind(R.id.channel_type_view)
+    @BindView(R.id.channel_type_view)
     ChannelTypeView mChannelTypeView;
 
-    @Bind(R.id.btn_add_all)
+    @BindView(R.id.btn_add_all)
     CheckedTextView mChBtnAddAll;
 
     public static Intent getIntent(Context context) {

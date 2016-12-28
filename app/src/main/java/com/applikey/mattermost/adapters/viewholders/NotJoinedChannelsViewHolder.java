@@ -7,12 +7,12 @@ import android.widget.TextView;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class NotJoinedChannelsViewHolder extends RecyclerView.ViewHolder {
 
-    @Bind(R.id.tv_more_channel_name)
+    @BindView(R.id.tv_more_channel_name)
     TextView mTvNotJoinedChannelName;
 
     public NotJoinedChannelsViewHolder(View itemView) {

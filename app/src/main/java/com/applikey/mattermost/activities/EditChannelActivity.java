@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
@@ -20,27 +22,35 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 
 public class EditChannelActivity extends BaseEditChannelActivity implements EditChannelView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
+    private static final String INVITE_KEY = Constants.PACKAGE_NAME + "activities.editchannelactivity.invite";
 
-    @Bind(R.id.add_members_text)
+    @BindView(R.id.add_members_text)
     TextView mAddMembersText;
 
-    @Bind(R.id.members_layout)
+    @BindView(R.id.members_layout)
     AddedPeopleLayout mMembersLayout;
 
     @InjectPresenter
     EditChannelPresenter mPresenter;
+    @BindView(R.id.scroll_view) NestedScrollView mScrollView;
 
+    private boolean mOpenAsInviteNewMember;
 
-    public static Intent getIntent(Context context, Channel channel) {
+    public static Intent getIntent(Context context, Channel channel, boolean invite) {
         final Intent intent = new Intent(context, EditChannelActivity.class);
         intent.putExtra(CHANNEL_ID_KEY, channel.getId());
+        intent.putExtra(INVITE_KEY, invite);
         return intent;
+    }
+
+    public static Intent getIntent(Context context, Channel channel) {
+        return getIntent(context, channel, false);
     }
 
     @Override
@@ -48,6 +58,10 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
         super.onCreate(savedInstanceState);
         initParameters();
         mMembersLayout.setImageLoader(mImageLoader);
+    }
+
+    public void scroolToAddMembers() {
+        mScrollView.post(() -> mScrollView.scrollTo(0, (int) mAddMembersText.getY()));
     }
 
     @Override
@@ -125,11 +139,15 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     public void showMembers(List<User> users) {
         mAdapter.setAlreadyMemberUsers(users);
         mMembersLayout.showUsers(users);
+        if (mOpenAsInviteNewMember) {
+            scroolToAddMembers();
+        }
     }
 
     private void initParameters() {
         final Bundle extras = getIntent().getExtras();
         final String channelId = extras.getString(CHANNEL_ID_KEY);
+        mOpenAsInviteNewMember = getIntent().getBooleanExtra(INVITE_KEY, false);
         mPresenter.getInitialData(channelId);
     }
 

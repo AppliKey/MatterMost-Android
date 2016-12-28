@@ -15,23 +15,23 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
     private String mCurrentUserId;
 
-    @Bind(R.id.iv_notification_icon)
+    @BindView(R.id.iv_notification_icon)
     ImageView mNotificationIcon;
 
-    @Bind(R.id.tv_channel_name)
+    @BindView(R.id.tv_channel_name)
     TextView mChannelName;
 
-    @Bind(R.id.tv_last_message_time)
+    @BindView(R.id.tv_last_message_time)
     TextView mLastMessageTime;
 
-    @Bind(R.id.tv_message_preview)
+    @BindView(R.id.tv_message_preview)
     TextView mMessagePreview;
 
     public BaseChatListViewHolder(View itemView) {
@@ -81,21 +81,26 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         setUnreadStatus(channel);
     }
 
+    protected void setMessageDate(Message message) {
+        getLastMessageTime().setText(
+                TimeUtil.formatTimeOrDateOnlyChannel(message.getPost().getCreatedAt()));
+    }
+
     private String getMessagePreview(Channel channel, Context context) {
         final Post lastPost = channel.getLastPost();
         final String messagePreview;
-        if (channel.getLastPost() == null) {
+        if (lastPost == null) {
             messagePreview = context.getString(R.string.channel_preview_message_placeholder);
         } else if (isMy(lastPost)) {
             messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
-                    channel.getLastPost().getMessage();
+                    lastPost.getMessage();
         } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
             final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
             messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
                     +
-                    channel.getLastPost().getMessage();
+                    lastPost.getMessage();
         } else {
-            messagePreview = channel.getLastPost().getMessage();
+            messagePreview = lastPost.getMessage();
         }
         return messagePreview;
     }
@@ -103,7 +108,7 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
     private void setUnreadStatus(Channel channel) {
         if (channel.hasUnreadMessages()) {
             getNotificationIcon().setVisibility(View.VISIBLE);
-            getContainer().setBackgroundResource(R.color.unread_background);
+            getContainer().setBackgroundResource(R.color.unreadBackground);
         } else {
             getNotificationIcon().setVisibility(View.GONE);
             getContainer().setBackgroundResource(android.R.color.white);

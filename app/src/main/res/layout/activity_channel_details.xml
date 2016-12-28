@@ -71,12 +71,25 @@
 
         <Button
             android:id="@+id/b_edit_channel"
-            style="@style/BorderlessButton"
-            android:layout_width="wrap_content"
+            style="@style/Button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="@dimen/normal"
+            android:layout_marginEnd="@dimen/normal"
+            android:layout_marginStart="@dimen/normal"
+            android:layout_marginTop="@dimen/large"
             android:text="@string/edit_channel" />
+
+        <Button
+            android:id="@+id/btn_leave_channel"
+            style="@style/Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="@dimen/normal"
+            android:layout_marginStart="@dimen/normal"
+            android:layout_marginTop="@dimen/large"
+            android:text="@string/leave_channel" />
 
     </LinearLayout>
 

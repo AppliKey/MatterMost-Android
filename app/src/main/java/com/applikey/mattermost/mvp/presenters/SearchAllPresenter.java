@@ -10,12 +10,14 @@ import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.SearchAllView;
 import com.applikey.mattermost.mvp.views.SearchView;
+import com.applikey.mattermost.utils.MessageDateComparator;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +42,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
     public SearchAllPresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
+        init();
     }
 
     @Override
@@ -59,20 +62,16 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
         mSubscription.add(
                 Observable.zip(
                         Channel.getList(mChannelStorage.listUndirected(text))
-                                .first()
-                                .doOnNext(channels -> addFilterChannels(channels, text)),
+                                .first(),
 
                         mUserStorage.searchUsers(text).first(), (items, users) -> {
-
                             final List<SearchItem> searchItemList = new ArrayList<>();
-
-                            for (Channel item : items) {
-                                searchItemList.add(item);
+                            for(Channel channel : items) {
+                                 searchItemList.add(new SearchItem(channel));
                             }
-                            for (User user : users) {
-                                searchItemList.add(user);
+                            for(User user : users) {
+                                searchItemList.add(new SearchItem(user));
                             }
-
                             return searchItemList;
                         })
                         .flatMap(items -> getPostsObservable(text).first(),
@@ -80,6 +79,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
                                      items.addAll(items2);
                                      return items;
                                  })
+                        .doOnNext(items -> Collections.sort(items, new MessageDateComparator()))
                         .debounce(Constants.INPUT_REQUEST_TIMEOUT_MILLISEC, TimeUnit.MILLISECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(view::displayData, mErrorHandler::handleError));
@@ -87,10 +87,7 @@ public class SearchAllPresenter extends SearchPresenter<SearchAllView> {
 
     @Subscribe
     public void onInputTextChanged(SearchAllTextChanged event) {
-        mSearchString = event.getText();
-        final SearchAllView view = getViewState();
-        view.clearData();
-        getData(mSearchString);
+        super.onInputTextChanged(event);
     }
 
 }

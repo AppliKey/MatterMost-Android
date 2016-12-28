@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/container"
+<android.support.design.internal.ForegroundLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:foreground="?attr/selectableItemBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:foreground="?selectableItemBackground"
     android:clickable="true"
     android:orientation="vertical">
 
@@ -112,8 +111,9 @@
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_secondary_text" />
 
-        <com.applikey.mattermost.views.ContentTextView
+        <com.vanniktech.emoji.EmojiTextView
             android:id="@+id/tv_message_preview"
+            app:emojiSize="@dimen/emoji_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_channel_name"
@@ -123,7 +123,6 @@
             android:maxLines="2"
             android:textColor="@color/textListSecondary"
             android:textSize="@dimen/list_item_secondary_text"
-            app:emojiSize="@dimen/emoji_size"
             tools:text="@string/example_message_preview" />
 
     </RelativeLayout>
@@ -131,5 +130,5 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/separator_list" />
-</LinearLayout>
+        android:background="@color/separatorList" />
+</android.support.design.internal.ForegroundLinearLayout>

@@ -1,10 +1,9 @@
 package com.applikey.mattermost.storage.db;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.annimon.stream.Stream;
-import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.Membership;
@@ -16,11 +15,10 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
-import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class ChannelStorage {
 
@@ -29,16 +27,10 @@ public class ChannelStorage {
     private final Db mDb;
 
     private final Prefs mPrefs;
-    private final MetaDataManager mMetaDataManager;
 
-    public ChannelStorage(final Db db, final Prefs prefs, final MetaDataManager metaDataManager) {
+    public ChannelStorage(final Db db, final Prefs prefs) {
         mDb = db;
         mPrefs = prefs;
-        mMetaDataManager = metaDataManager;
-    }
-
-    public Observable<Channel> findById(String id) {
-        return mDb.getObject(Channel.class, id);
     }
 
     // TODO Duplicate
@@ -48,6 +40,10 @@ public class ChannelStorage {
 
     public Observable<Channel> directChannel(String userId) {
         return mDb.getObjectQualified(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
+    }
+
+    public void removeChannelAsync(Channel channel) {
+        mDb.removeAsync(Channel.class, Channel.FIELD_ID, channel.getId());
     }
 
     public Observable<List<Channel>> list() {
@@ -64,36 +60,37 @@ public class ChannelStorage {
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
+        return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
                                                     Channel.ChannelType.PUBLIC.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
+                                                      Channel.FIELD_NAME_IS_JOINED,
+                                                      true,
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.PRIVATE.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
+        return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
+                                                      Channel.ChannelType.PRIVATE.getRepresentation(),
+                                                      Channel.FIELD_NAME_IS_JOINED,
+                                                      true,
+                                                      Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                                                     Channel.ChannelType.DIRECT.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
+                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
-    //Realm doesn't support empty array for operation "in"
     public Observable<RealmResults<Channel>> listFavorite() {
-        return mMetaDataManager.getFavoriteChannels()
-                .doOnNext(strings -> Log.d(TAG, "listFavorite: " + strings))
-                .map(ids -> ids.isEmpty()
-                        ? new String[] {"null"}
-                        : ids.toArray(new String[ids.size()]))
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(ids -> mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_ID,
-                                                                     ids, Channel.FIELD_NAME_LAST_ACTIVITY_TIME));
+        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class,
+                                                             Channel.IS_FAVORITE, true,
+                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+    }
+
+    public Observable<RealmResults<Channel>> listUnread() {
+        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class, Channel.FIELD_UNREAD_TYPE,
+                                                             true,
+                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<Channel> channelById(String id) {
@@ -103,15 +100,6 @@ public class ChannelStorage {
     public Observable<List<Channel>> listAll() {
         return mDb.listRealmObjects(Channel.class);
     }
-
-    public Observable<RealmResults<Channel>> listUnread() {
-        return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                                                    true,
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME)
-                .first();
-    }
-
-    //TODO Save channel after create
 
     public void save(Channel channel) {
         mDb.saveTransactional(channel);
@@ -130,27 +118,63 @@ public class ChannelStorage {
         setLastPost(channel, lastPost);
     }
 
-    public void setLastPost(Channel channel, Post lastPost) {
-        final String channelId = channel.getId();
-        mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            final Post realmPost;
+    public void setFavorite(String channelId, boolean isFavorite) {
+        mDb.updateTransactional(Channel.class, channelId, (channel, realm) -> {
+            channel.setFavorite(isFavorite);
+            return true;
+        });
+    }
 
-            //If last post null, find last post
-            if (lastPost == null) {
-                final RealmResults<Post> result = realm.where(Post.class)
-                        .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
-                        .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING);
-                if (result.size() > 0) {
-                    realmPost = result.first();
-                } else {
-                    return false;
-                }
-            } else {
+    public void setLastPost(@NonNull Channel channel, Post lastPost) {
+        mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
+            Post realmPost = null;
+            if(lastPost != null) {
                 realmPost = realm.copyToRealmOrUpdate(lastPost);
+
+                final User author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                        .findFirst();
+
+                final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+                        realm.where(Post.class)
+                                .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                                .findFirst() : null;
+
+                realmPost.setAuthor(author);
+                realmPost.setRootPost(rootPost);
             }
-            final User author = realm.where(User.class)
-                    .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+            realmChannel.setLastPost(realmPost);
+            realmChannel.updateLastActivityTime();
+            return true;
+        });
+    }
+
+    public void updateLastPosts(LastPostDto lastPostDto) {
+        final String currentUserId = mPrefs.getCurrentUserId();
+
+        final Post lastPost = lastPostDto.getPost();
+
+        mDb.doTransactional(realm -> {
+            final User currentUser = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, currentUserId)
                     .findFirst();
+
+            final String channelId = lastPost.getChannelId();
+
+            final Post realmPost = realm.copyToRealmOrUpdate(lastPost);
+
+            final Channel realmChannel = realm.where(Channel.class)
+                    .equalTo(Channel.FIELD_ID, channelId)
+                    .findFirst();
+
+            final User author;
+            if (TextUtils.equals(realmPost.getUserId(), currentUserId)) {
+                author = currentUser;
+            } else {
+                author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                        .findFirst();
+            }
 
             final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
                     realm.where(Post.class)
@@ -160,50 +184,10 @@ public class ChannelStorage {
 
             realmPost.setAuthor(author);
             realmPost.setRootPost(rootPost);
+
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
-            return true;
-        });
-    }
 
-    public void updateLastPosts(List<LastPostDto> lastPosts) {
-        final String currentUserId = mPrefs.getCurrentUserId();
-        mDb.doTransactional(realm -> {
-            final User currentUser = realm.where(User.class)
-                    .equalTo(User.FIELD_NAME_ID, currentUserId)
-                    .findFirst();
-            for (int i = 0; i < lastPosts.size(); i++) {
-                if (lastPosts.get(i) == null) {
-                    continue;
-                }
-                final String channelId = lastPosts.get(i).getChannelId();
-
-                final Post realmPost = realm.copyToRealmOrUpdate(lastPosts.get(i).getPost());
-
-                final Channel realmChannel = realm.where(Channel.class)
-                        .equalTo(Channel.FIELD_ID, channelId)
-                        .findFirst();
-
-                final User author;
-                if (TextUtils.equals(realmPost.getUserId(), currentUserId)) {
-                    author = currentUser;
-                } else {
-                    author = realm.where(User.class)
-                            .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
-                            .findFirst();
-                }
-
-                final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
-                        realm.where(Post.class)
-                                .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
-                                .findFirst()
-                        : null;
-
-                realmPost.setAuthor(author);
-                realmPost.setRootPost(rootPost);
-                realmChannel.setLastPost(realmPost);
-                realmChannel.updateLastActivityTime();
-            }
         });
     }
 
@@ -233,6 +217,14 @@ public class ChannelStorage {
         });
     }
 
+    public void setUsers(String id, List<User> users, Realm.Transaction.OnSuccess onSuccess){
+        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+            realmChannel.setUsers(users);
+            realm.copyToRealmOrUpdate(realmChannel);
+            return true;
+        }, onSuccess);
+    }
+
     public void saveChannelResponse(ChannelResponse response, Map<String, User> userProfiles) {
         // Transform direct channels
 
@@ -258,6 +250,10 @@ public class ChannelStorage {
         saveAndDeleteRemovedChannels(channels);
     }
 
+    public void saveAndDeleteRemovedChannelsSync(List<Channel> channels) {
+        mDb.saveTransactional(restoreChannels(channels));
+    }
+
     private void saveAndDeleteRemovedChannels(List<Channel> channels) {
         mDb.saveTransactional(restoreChannels(channels));
         mDb.doTransactional(realm -> {
@@ -270,7 +266,7 @@ public class ChannelStorage {
     }
 
     public Single<Channel> getChannel(String id) {
-        return mDb.getObject(Channel.class, Channel.FIELD_NAME, id);
+        return mDb.getObject(Channel.class, Channel.FIELD_ID, id);
     }
 
     public void delete(String channelId) {
@@ -283,6 +279,8 @@ public class ChannelStorage {
                                       channel.setUsers(storedChannel.getUsers());
                                       channel.setLastPost(storedChannel.getLastPost());
                                       channel.updateLastActivityTime();
+                                      channel.setFavorite(storedChannel.isFavorite());
+                                      channel.setJoined(storedChannel.isJoined());
                                       return true;
                                   });
     }

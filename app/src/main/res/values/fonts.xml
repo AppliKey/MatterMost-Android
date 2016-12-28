@@ -2,6 +2,7 @@
 <resources>
 
     <string name="font_regular">sans-serif</string>
+    <string name="font_medium">sans-medium</string>
     <string name="font_light">sans-serif-light</string>
 
 </resources>

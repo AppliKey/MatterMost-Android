@@ -5,7 +5,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@android:color/white</item>
+    </style>
 
+    <style name="GreyBackgroundTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/unreadBackground</item>
     </style>
 
     <style name="SearchViewBar" parent="AppToolbar">
@@ -22,8 +25,7 @@
     <style name="Button" parent="Widget.AppCompat.Button.Borderless.Colored">
         <item name="android:clickable">true</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:foreground">?android:attr/selectableItemBackground</item>
-        <item name="android:background">@drawable/round_button_gradient</item>
+        <item name="android:background">@drawable/round_button</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
     </style>
 
@@ -121,19 +123,42 @@
     </style>
 
     <style name="SearchEditText">
-        <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/search_chat_toolbar_text_size</item>
-        <item name="android:lines">1</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:hint">@string/search_with_ellipsis</item>
         <item name="android:textColorHint">@color/tabUnSelected</item>
-        <item name="android:layout_gravity">start</item>
-        <item name="android:textColor">@color/textlink_enabled</item>
+        <item name="android:textColor">@color/textlinkEnabled</item>
     </style>
 
     <style name="EmptyState">
-        <item name="android:textColor">@color/textlink_disabled</item>
+        <item name="android:textColor">@color/textlinkDisabled</item>
         <item name="android:textSize">@dimen/text_title_size</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="PrimaryItemTextBaseStyle">
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="PrimaryItemTextRtlStyle" parent="PrimaryItemTextBaseStyle">
+        <item name="android:textDirection">anyRtl</item>
+    </style>
+
+    <style name="ReplyMessageStyleMy">
+        <item name="android:layout_marginBottom">@dimen/list_item_chat_time_margin</item>
+        <item name="android:autoLink">web</item>
+        <item name="android:drawablePadding">@dimen/small</item>
+        <item name="android:drawableStart">@drawable/line</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@string/font_light</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/text_primary_button</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ReplyMessageStyleOther" parent="ReplyMessageStyleMy">
+        <item name="android:textColor">@color/textListPrimary</item>
+    </style>
+
 </resources>

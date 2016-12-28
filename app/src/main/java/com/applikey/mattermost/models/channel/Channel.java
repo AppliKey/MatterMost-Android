@@ -1,6 +1,5 @@
 package com.applikey.mattermost.models.channel;
 
-import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
@@ -17,25 +16,22 @@ import io.realm.RealmResults;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
 
-public class Channel extends RealmObject implements SearchItem {
+public class Channel extends RealmObject {
 
     public static final Comparator<Channel> COMPARATOR_BY_DATE = new ComparatorByDate();
 
     public static final String FIELD_NAME_TYPE = "type";
-
     public static final String FIELD_UNREAD_TYPE = "hasUnreadMessages";
-
     public static final String FIELD_NAME = "name";
-
     public static final String FIELD_ID = "id";
-
+    public static final String IS_FAVORITE = "isFavorite";
     public static final String FIELD_NAME_LAST_POST_AT = "lastPostAt";
-
     public static final String FIELD_NAME_CREATED_AT = "createdAt";
-
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
-
+    public static final String FIELD_NAME_IS_JOINED = "isJoined";
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
+
+    private static final String TAG = Channel.class.getSimpleName();
 
     @PrimaryKey
     @SerializedName(FIELD_ID)
@@ -84,6 +80,9 @@ public class Channel extends RealmObject implements SearchItem {
     // as it can not compare multiple fields
     private long lastActivityTime;
 
+    private boolean isJoined = true;
+    private boolean isFavorite;
+
     private RealmList<User> mUsers = new RealmList<>();
 
     public long getLastActivityTime() {
@@ -100,6 +99,14 @@ public class Channel extends RealmObject implements SearchItem {
         }
         this.lastActivityTime = Math.max(createdAt, lastPostAt);
         rebuildHasUnreadMessages();
+    }
+
+    public boolean isJoined() {
+        return isJoined;
+    }
+
+    public void setJoined(boolean joined) {
+        isJoined = joined;
     }
 
     public User getDirectCollocutor() {
@@ -216,9 +223,18 @@ public class Channel extends RealmObject implements SearchItem {
         mUsers.addAll(users);
     }
 
-    @Override
-    public int getSearchType() {
-        return CHANNEL;
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public int compareByDate(Channel item) {
+        final long lastPost1 = getLastPostAt();
+        final long lastPost2 = item.getLastPostAt();
+        return (int) (lastPost2 - lastPost1);
     }
 
     @Override
@@ -309,6 +325,7 @@ public class Channel extends RealmObject implements SearchItem {
         return channelList;
 
     }
+
 
 /*    @Override
     public String toString() {

@@ -19,7 +19,7 @@ import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 import com.applikey.mattermost.mvp.views.UserProfileView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -33,22 +33,22 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     @InjectPresenter
     UserProfilePresenter mPresenter;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.container)
+    @BindView(R.id.container)
     LinearLayout mContainer;
 
-    @Bind(status)
+    @BindView(status)
     ImageView mStatus;
 
-    @Bind(R.id.display_name)
+    @BindView(R.id.display_name)
     TextView mDisplayName;
 
-    @Bind(R.id.email)
+    @BindView(R.id.email)
     TextView mEmail;
 
-    @Bind(R.id.avatar)
+    @BindView(R.id.avatar)
     ImageView mAvatar;
 
     private Menu mMenu;
@@ -91,7 +91,7 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
     @Override
     public void showBaseDetails(User user) {
         mImageLoader.displayCircularImage(user.getProfileImage(), mAvatar);
-        mDisplayName.setText(user.toString());
+        mDisplayName.setText(User.getDisplayableName(user));
         mEmail.setText(user.getEmail());
         setStatusIcon(user);
     }

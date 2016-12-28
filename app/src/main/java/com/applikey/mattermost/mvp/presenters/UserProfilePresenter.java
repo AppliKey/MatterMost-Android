@@ -1,11 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
-import android.util.Log;
-
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.manager.metadata.MetaDataManager;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.UserProfileView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
@@ -15,13 +11,12 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 @InjectViewState
 public class UserProfilePresenter extends BasePresenter<UserProfileView>
         implements FavoriteablePresenter {
-
-    private static final String TAG = UserProfilePresenter.class.getSimpleName();
 
     @Inject
     UserStorage mUserStorage;
@@ -35,44 +30,41 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
     @Inject
     ErrorHandler mErrorHandler;
 
-    @Inject
-    MetaDataManager mMetaDataManager;
-
-    private User mUser;
+    private String mUserId;
     private Channel mChannel;
-
-    private boolean mIsFavorite;
 
     public UserProfilePresenter() {
         App.getUserComponent().inject(this);
     }
 
     public void getInitialData(String userId) {
+        mUserId = userId;
         final UserProfileView view = getViewState();
 
-        mSubscription.add(mUserStorage.getDirectProfile(userId)
-                .doOnNext(user -> mUser = user)
+        final Subscription subscribe = mUserStorage.getDirectProfile(userId)
                 .doOnNext(view::showBaseDetails)
                 .flatMap(user -> mChannelStorage.directChannel(userId))
                 .doOnNext(channel -> mChannel = channel)
-                .flatMap(channel -> mMetaDataManager.isFavoriteChannel(channel.getId()))
-                .doOnNext(favorite -> mIsFavorite = favorite)
+                .map(Channel::isFavorite)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onMakeFavorite, mErrorHandler::handleError));
+                .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     @Override
     public void toggleFavorite() {
-        Log.d(TAG, "toggleFavorite: " + !mIsFavorite);
-        mSubscription.add(mMetaDataManager.setFavoriteChannel(mChannel.getId(), !mIsFavorite)
-                .subscribe());
+        final boolean state = !mChannel.isFavorite();
+
+        mChannelStorage.setFavorite(mChannel.getId(), state);
+        getViewState().onMakeFavorite(state);
     }
 
     //TODO Create direct chat
     public void sendDirectMessage() {
-        mSubscription.add(mChannelStorage.directChannel(mUser.getId())
-                .first()
-                .subscribe(channel -> getViewState().openDirectChannel(channel), mErrorHandler::handleError));
-    }
+        final Subscription subscribe = mChannelStorage.directChannel(mUserId)
+                .subscribe(channel -> getViewState().openDirectChannel(channel), mErrorHandler::handleError);
 
+        mSubscription.add(subscribe);
+    }
 }

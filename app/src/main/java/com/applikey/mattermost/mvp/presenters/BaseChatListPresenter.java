@@ -1,7 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -27,23 +26,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import io.realm.RealmChangeListener;
-import io.realm.RealmResults;
-import io.realm.Sort;
+import rx.Emitter;
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
-        implements ChatListPresenter, RealmChangeListener<RealmResults<Channel>> {
-
-    private static final String TAG = BaseChatListPresenter.class.getSimpleName();
+public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> implements ChatListPresenter {
 
     @Inject
     Prefs mPrefs;
@@ -63,16 +55,14 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
     @Inject
     ErrorHandler mErrorHandler;
 
-    private RealmResults<Channel> mChannels;
-
     private String mTeamId;
 
     private final Set<String> mPreviewLoadedChannels = new HashSet<>();
     private final Set<String> mUsersLoadedChannels = new HashSet<>();
 
-    private Subscriber<? super String> mChannelSubscriber;
+    private Emitter<? super String> mChannelEmitter;
 
-    /* package */ BaseChatListPresenter() {
+    BaseChatListPresenter() {
         App.getUserComponent().inject(this);
     }
 
@@ -84,33 +74,15 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         createObservable();
     }
 
-    private void createObservable() {
-        final Observable<String> channelObservable = Observable.create(subscriber -> {
-            mChannelSubscriber = subscriber;
-        });
-
-        final long timeout = 1;
-        final long timeShift = 1;
-
-        mSubscription.add(channelObservable
-                .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
-                .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
-                .buffer(timeout, timeShift, TimeUnit.SECONDS)
-                .filter(posts -> !posts.isEmpty())
-                .doOnNext(posts -> Log.d(TAG, "createObservable: posts size = " + posts.size()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> mChannelStorage.updateLastPosts(posts), mErrorHandler::handleError));
-    }
-
     @Override
     public void displayData() {
         final Subscription subscription = getInitData()
-                .doOnNext(channels -> mChannels = channels)
-                .doOnNext(channels -> channels.addChangeListener(this))
+                .first()
                 .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
+
+        listenPostState();
     }
 
     @Override
@@ -118,9 +90,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         if (mPreviewLoadedChannels.contains(channel.getId())) {
             return;
         }
-        Log.d(TAG, "getLastPost for " + channel.getDisplayName());
         mPreviewLoadedChannels.add(channel.getId());
-        mChannelSubscriber.onNext(channel.getId());
+        mChannelEmitter.onNext(channel.getId());
     }
 
     @Override
@@ -128,7 +99,6 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         if (mUsersLoadedChannels.contains(channel.getId())) {
             return;
         }
-        Log.d(TAG, "getUsers for " + channel.getDisplayName());
         mUsersLoadedChannels.add(channel.getId());
 
         final Subscription subscription = Observable.just(channel)
@@ -147,27 +117,18 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
         mSubscription.add(subscription);
     }
 
-    @Override
-    public void onChange(RealmResults<Channel> channels) {
-        final ChatListView view = getViewState();
-        if (view == null) {
-            throw new NullPointerException("Attached view is null");
-        }
-        if (channels.size() == 0) {
-            view.showUnreadIndicator(false);
-            view.showEmpty();
-        } else {
-            view.showUnreadIndicator(channels.sort(Channel.FIELD_UNREAD_TYPE, Sort.DESCENDING)
-                    .first().hasUnreadMessages());
-        }
-    }
+    private void createObservable() {
+        final Observable<String> channelObservable =
+                Observable.fromEmitter(emitter -> mChannelEmitter = emitter, Emitter.BackpressureMode.BUFFER);
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mChannels != null) {
-            mChannels.removeChangeListener(this);
-        }
+        final Subscription subscribe = channelObservable
+                .observeOn(Schedulers.io())
+                .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId), this::transform)
+                .filter(lastPostDto -> lastPostDto != null)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(post -> mChannelStorage.updateLastPosts(post), mErrorHandler::handleError);
+
+        mSubscription.add(subscribe);
     }
 
     @Nullable
@@ -189,6 +150,17 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView>
 
     private ChannelWithUsers transform(ChannelExtraResult channelExtraResult, List<User> users) {
         return new ChannelWithUsers(channelExtraResult.getChannel(), users);
+    }
+
+    private void listenPostState() {
+        final Subscription subscription = getInitData()
+                .doOnNext(channels -> getViewState().displayEmptyState(channels.isEmpty()))
+                .map(channels -> Stream.of(channels).filter(Channel::hasUnreadMessages).collect(Collectors.toList()))
+                .subscribe(
+                        channels -> getViewState().showUnreadIndicator(!channels.isEmpty()),
+                        mErrorHandler::handleError);
+
+        mSubscription.add(subscription);
     }
 }
 

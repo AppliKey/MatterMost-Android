@@ -3,6 +3,7 @@ package com.applikey.mattermost.web;
 import com.applikey.mattermost.models.auth.AttachDeviceRequest;
 import com.applikey.mattermost.models.auth.AuthenticationRequest;
 import com.applikey.mattermost.models.auth.AuthenticationResponse;
+import com.applikey.mattermost.models.auth.RestorePasswordRequest;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelPurposeRequest;
 import com.applikey.mattermost.models.channel.ChannelRequest;
@@ -33,7 +34,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
@@ -94,8 +94,8 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<Void>> sendPasswordReset(@Field("email") String email) {
-        return getRealApi().sendPasswordReset(email);
+    public Observable<Void> sendPasswordReset(@Body RestorePasswordRequest request) {
+        return getRealApi().sendPasswordReset(request);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<PingResponse> ping() {
+    public Single<PingResponse> ping() {
         return getRealApi().ping();
     }
 
@@ -175,8 +175,7 @@ public class ApiDelegate implements Api {
     }
 
     @Override
-    public Observable<Response<AttachDeviceRequest>> attachDevice(
-            @Body AttachDeviceRequest request) {
+    public Observable<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request) {
         return getRealApi().attachDevice(request);
     }
 
@@ -217,6 +216,12 @@ public class ApiDelegate implements Api {
     @Override
     public Observable<User> editUser(@Body User user) {
         return getRealApi().editUser(user);
+    }
+
+    @Override
+    public Single<Void> leaveChannel(@Path("team_id") String teamId,
+                                         @Path("channel_id") String channelId) {
+        return getRealApi().leaveChannel(teamId, channelId);
     }
 
     @Override

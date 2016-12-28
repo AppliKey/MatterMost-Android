@@ -66,6 +66,7 @@
             android:layout_below="@+id/tv_password"
             android:hint="@string/enter_your_password"
             android:inputType="textVisiblePassword"
+            android:imeOptions="actionDone"
             android:maxLines="1"
             android:text="@string/default_password" />
 
@@ -89,7 +90,7 @@
             android:layout_marginStart="@dimen/edit_text_align"
             android:layout_marginTop="@dimen/margin_default"
             android:padding="@dimen/button_padding"
-            android:text="@string/restore_password_capt" />
+            android:text="@string/forgot_password" />
 
     </RelativeLayout>
 </RelativeLayout>

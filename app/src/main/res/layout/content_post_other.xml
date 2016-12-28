@@ -69,21 +69,12 @@
                 android:id="@+id/tv_reply_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/list_item_chat_time_margin"
-                android:autoLink="web"
-                android:drawablePadding="@dimen/small"
-                android:drawableStart="@drawable/line"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-light"
-                android:maxLines="1"
-                android:textColor="@color/textListPrimary"
-                android:textSize="@dimen/text_primary_button"
-                android:visibility="gone"
+                style="@style/ReplyMessageStyleOther"
                 app:emojiSize="@dimen/emoji_size"
                 tools:text="User Message"
                 tools:visibility="visible" />
 
-            <com.applikey.mattermost.views.ContentTextView
+            <com.applikey.mattermost.views.LinkTextView
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

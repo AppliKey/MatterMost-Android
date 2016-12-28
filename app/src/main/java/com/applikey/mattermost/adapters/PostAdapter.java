@@ -3,6 +3,7 @@ package com.applikey.mattermost.adapters;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,7 @@ import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.transitionseverywhere.TransitionManager;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -34,7 +35,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     private final Channel.ChannelType mChannelType;
 
     private long mLastViewed;
-    private int mNewMessageIndicatorPosition = -1;
+    private String mNewMessageIndicatorId = "";
 
     public PostAdapter(Context context,
                        RealmResults<Post> posts,
@@ -104,14 +105,14 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         final boolean showTime = isFirstPost || !isPostsSameSecond(post, previousPost)
                 || !isPostsSameAuthor(post, previousPost);
 
-        final boolean mNewMessageIndicatorShowed = mNewMessageIndicatorPosition != -1;
+        final boolean mNewMessageIndicatorShowed = !TextUtils.isEmpty(mNewMessageIndicatorId);
         final boolean showNewMessageIndicator = (!mNewMessageIndicatorShowed &&
                 mLastViewed < post.getCreatedAt() &&
-                !isLastPost && nextPost.getCreatedAt() < mLastViewed) /*||
-                mNewMessageIndicatorPosition == holder.getAdapterPosition()*/;
+                !isLastPost && nextPost.getCreatedAt() < mLastViewed) ||
+                TextUtils.equals(mNewMessageIndicatorId, post.getId());
 
         if (showNewMessageIndicator) {
-            mNewMessageIndicatorPosition = holder.getAdapterPosition();
+            mNewMessageIndicatorId = post.getId();
         }
 
         holder.bindHeader(showNewMessageIndicator, showDate);
@@ -119,8 +120,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         if (isMy(post)) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
-                                 mImageLoader, mOnLongClickListener);
+            holder.bindOtherPost(mChannelType, post, showAuthor, showTime, mImageLoader, mOnLongClickListener);
         }
     }
 
@@ -158,39 +158,47 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.iv_status)
+        @BindView(R.id.iv_status)
         ImageView mIvStatus;
 
         @Nullable
-        @Bind(R.id.iv_preview_image)
+        @BindView(R.id.iv_preview_image)
         ImageView mIvPreviewImage;
 
         @Nullable
-        @Bind(R.id.iv_preview_image_layout)
+        @BindView(R.id.iv_preview_image_layout)
         FrameLayout mIvPreviewImageLayout;
 
-        @Bind(R.id.tv_date)
+        @BindView(R.id.tv_date)
         TextView mTvDate;
 
-        @Bind(R.id.tv_message)
+        @BindView(R.id.tv_message)
         TextView mTvMessage;
 
-        @Bind(R.id.tv_timestamp)
+        @BindView(R.id.tv_timestamp)
         TextView mTvTimestamp;
 
-        @Bind(R.id.tv_new_message)
+        @BindView(R.id.tv_new_message)
         TextView mTvNewMessage;
 
-        @Bind(R.id.tv_name)
+        @BindView(R.id.tv_name)
         TextView mTvName;
 
-        @Bind(R.id.tv_reply_message)
+        @BindView(R.id.tv_reply_message)
         TextView mTvReplyMessage;
+
+        @Nullable
+        @BindView(R.id.iv_fail)
+        ImageView mIvFail;
 
         ViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+        }
+
+        void setFailStatusVisible(boolean visible) {
+            mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
 
         void toggleDate(Post post) {
@@ -216,6 +224,8 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
                 return true;
             });
             mTvName.setText(R.string.you);
+
+            setFailStatusVisible(!post.isSent());
         }
 
         void bindOtherPost(Channel.ChannelType channelType,

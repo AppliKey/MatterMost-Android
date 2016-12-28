@@ -69,13 +69,19 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
         mPrefs.setCurrentServerUrl(fullServerUrl);
 
-        mSubscription.add(mPersistentPrefs.saveServerUrl(fullServerUrl)
-                .subscribe());
+        final String url = fullServerUrl;
 
         mSubscription.add(mApi.ping()
                                   .subscribeOn(Schedulers.io())
+                                  .flatMap(response -> mPersistentPrefs.saveServerUrl(url))
+                                  .flatMap(s -> mPersistentPrefs.getServerUrls())
                                   .observeOn(AndroidSchedulers.mainThread())
-                                  .subscribe(pingResponse -> view.onValidServerChosen(), throwable -> {
+                                  .subscribe(stringSet -> {
+                                      final String[] urls = new String[stringSet.size()];
+                                      stringSet.toArray(urls);
+                                      view.setAutoCompleteServers(urls);
+                                      view.onValidServerChosen();
+                                  }, throwable -> {
                                       mErrorHandler.get().handleError(throwable);
                                       view.showValidationError();
                                   }));

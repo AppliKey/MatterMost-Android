@@ -1,10 +1,9 @@
 package com.applikey.mattermost.models.post;
 
-import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.user.User;
 
-public class Message implements SearchItem {
+public class Message {
 
     private Channel channel;
 
@@ -41,10 +40,11 @@ public class Message implements SearchItem {
         this.user = user;
     }
 
-    @Override
-    public int getSearchType() {
-        return Channel.ChannelType.fromRepresentation(channel.getType())
-                == Channel.ChannelType.DIRECT ? MESSAGE : MESSAGE_CHANNEL;
+
+    public int compareByDate(Message item) {
+        final long lastPost1 = getPost().getCreatedAt();
+        final long lastPost2 = item.getPost().getCreatedAt();
+        return (int) (lastPost2 - lastPost1);
     }
 
     @Override

@@ -43,6 +43,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scrollbars="vertical"
+                    app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                    app:reverseLayout="true"
                     tools:listitem="@layout/list_item_post_my" />
 
             </android.support.v4.widget.SwipeRefreshLayout>
@@ -52,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="@string/no_posts_to_display"
+                android:text="@string/no_messages_here_yet"
                 android:visibility="gone" />
 
             <include

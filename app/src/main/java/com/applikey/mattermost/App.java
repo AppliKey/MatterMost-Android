@@ -1,6 +1,7 @@
 package com.applikey.mattermost;
 
 import android.app.Application;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.applikey.mattermost.activities.ChatActivity;
@@ -16,6 +17,7 @@ import com.applikey.mattermost.web.images.ImageLoader;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
+import com.squareup.leakcanary.LeakCanary;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
 import java.util.concurrent.TimeUnit;
@@ -32,6 +34,7 @@ public class App extends Application {
     private static final String TAG = "App";
 
     private static ApplicationComponent mComponent;
+
     private static UserComponent mUserComponent;
 
     @Inject
@@ -41,7 +44,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Realm.init(this);
-
+        MultiDex.install(this);
         final Fabric fabric = new Fabric.Builder(this)
                 .kits(new Crashlytics())
                 .debuggable(false)
@@ -49,6 +52,7 @@ public class App extends Application {
 
         Fabric.with(fabric);
         RxPaparazzo.register(this);
+        LeakCanary.install(this);
 
         KissTools.setContext(this);
         mComponent = DaggerApplicationComponent.builder()
@@ -67,7 +71,8 @@ public class App extends Application {
         RxForeground.with(this)
                 .observeForeground(ChatListActivity.class, ChatActivity.class)
                 .doOnNext(observe -> Log.d(TAG, "Chat activities are on " + (observe ? "foreground" : "background")))
-                .switchMap(foreground -> Observable.timer(foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MINUTES)
+                .switchMap(foreground -> Observable.timer(
+                        foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MILLISECONDS)
                         .map(tick -> foreground))
                 .subscribe(foreground -> {
                     if (foreground) {

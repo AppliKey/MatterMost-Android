@@ -1,6 +1,7 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -9,18 +10,18 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.mvp.views.SearchChannelView;
 import com.applikey.mattermost.mvp.views.SearchView;
+import com.applikey.mattermost.utils.ChannelDateComparator;
 import com.arellomobile.mvp.InjectViewState;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import rx.Observable;
 
 @InjectViewState
 public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
@@ -37,6 +38,7 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
     public SearchChannelPresenter() {
         App.getUserComponent().inject(this);
         mEventBus.register(this);
+        init();
     }
 
     @Override
@@ -55,19 +57,19 @@ public class SearchChannelPresenter extends SearchPresenter<SearchChannelView> {
         mSubscription.clear();
         mSubscription.add(
                 mChannelStorage.listUndirected(text)
+                        .first()
                         .map(Channel::getList)
-                        .observeOn(Schedulers.io())
-                        .doOnNext(channels -> addFilterChannels(channels, text))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map(ArrayList<SearchItem>::new)
+                        .doOnNext(channels -> Log.d(TAG, "doRequest: " + channels))
+                        .doOnNext(items -> Collections.sort(items, new ChannelDateComparator()))
+                        .flatMap(Observable::from)
+                        .map(SearchItem::new)
+                        .toList()
                         .subscribe(view::displayData, mErrorHandler::handleError));
     }
 
     @Subscribe
     public void onInputTextChanged(SearchChannelTextChanged event) {
-        mSearchString = event.getText();
-        final SearchChannelView view = getViewState();
-        view.clearData();
-        getData(mSearchString);
+        super.onInputTextChanged(event);
     }
+
 }

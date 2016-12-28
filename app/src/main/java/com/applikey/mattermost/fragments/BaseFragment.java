@@ -1,11 +1,11 @@
 package com.applikey.mattermost.fragments;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.activities.BaseActivity;
@@ -19,16 +19,16 @@ import org.greenrobot.eventbus.EventBus;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 public abstract class BaseFragment extends RxFragment {
 
     @Inject
     EventBus mEventBus;
 
-    @Inject
-    ImageLoader mImageLoader;
+    @Inject ImageLoader mImageLoader;
 
-    private ProgressDialog mProgressDialog;
+    private Unbinder mUnbinder;
 
     public void showToast(@NonNull String text) {
         ToastUtil.show(text);
@@ -44,9 +44,12 @@ public abstract class BaseFragment extends RxFragment {
         getComponent().inject(this);
     }
 
+    protected void bindViews(View view) {
+        mUnbinder = ButterKnife.bind(this, view);
+    }
     @Override
     public void onDestroyView() {
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
         super.onDestroyView();
     }
 

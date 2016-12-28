@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,10 +37,11 @@ import com.vanniktech.emoji.EmojiPopup;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmResults;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -49,40 +49,36 @@ import static android.view.View.VISIBLE;
 public class ChatActivity extends DrawerActivity implements ChatView {
 
     private static final String CHANNEL_ID_KEY = "channel-id";
-
     private static final String CHANNEL_TYPE_KEY = "channel-type";
-
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
-
     private static final String CHANNEL_NAME = "channel-name";
-
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.srl_chat)
+    @BindView(R.id.srl_chat)
     SwipeRefreshLayout mSrlChat;
 
-    @Bind(R.id.rv_messages)
+    @BindView(R.id.rv_messages)
     RecyclerView mRvMessages;
 
-    @Bind(R.id.tv_empty_state)
+    @BindView(R.id.tv_empty_state)
     TextView mTvEmptyState;
 
-    @Bind(R.id.et_message)
+    @BindView(R.id.et_message)
     EmojiEditText mEtMessage;
 
-    @Bind(R.id.ll_reply)
+    @BindView(R.id.ll_reply)
     LinearLayout mLlReply;
 
-    @Bind(R.id.view_reply_separator)
+    @BindView(R.id.view_reply_separator)
     View mViewReplySeparator;
 
-    @Bind(R.id.iv_reply_close)
+    @BindView(R.id.iv_reply_close)
     ImageView mIvReplyClose;
 
-    @Bind(R.id.tv_reply_message)
+    @BindView(R.id.tv_reply_message)
     TextView mTvReplyMessage;
 
     @InjectPresenter
@@ -95,26 +91,29 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
-    @Bind(R.id.iv_emoji)
+    @BindView(R.id.iv_emoji)
     ImageView mIvEmojicon;
 
-    @Bind(R.id.root_view)
+    @BindView(R.id.root_view)
     View rootView;
 
-    @Bind(R.id.btn_join_channel)
+    @BindView(R.id.btn_join_channel)
     Button mBtnJoinChat;
 
-    @Bind(R.id.tv_join_offer)
+    @BindView(R.id.tv_join_offer)
     TextView mTvJoinOffer;
 
-    @Bind(R.id.join_layout)
+    @BindView(R.id.join_layout)
     LinearLayout mJoinLayout;
 
-    @Bind(R.id.l_message)
+    @BindView(R.id.l_message)
     LinearLayout mMessageLayout;
 
-    @Bind(R.id.chat_layout)
+    @BindView(R.id.chat_layout)
     ViewGroup mChatLayout;
+
+    @BindView(R.id.loading_progress_bar)
+    MaterialProgressBar mLoadingProgressBar;
 
     private String mRootId;
 
@@ -134,15 +133,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         intent.putExtra(CHANNEL_TYPE_KEY, channel.getType());
         intent.putExtra(CHANNEL_LAST_VIEWED_KEY, channel.getLastViewedAt());
         intent.putExtra(CHANNEL_NAME, channel.getDisplayName());
-        return intent;
-    }
-
-    /**
-     * Start ChatActivity to join to public channel
-     */
-    public static Intent getIntent(Context context, Channel channel, boolean isJoining) {
-        final Intent intent = getIntent(context, channel);
-        intent.putExtra(ACTION_JOIN_TO_CHANNEL_KEY, isJoining);
+        intent.putExtra(ACTION_JOIN_TO_CHANNEL_KEY, channel.isJoined());
         return intent;
     }
 
@@ -160,11 +151,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setOnEmojiPopupDismissListener(() -> mIvEmojicon.setSelected(false))
                 .build(mEtMessage);
 
-        final boolean isJoiningToChannel = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
+        final boolean inJoined = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
         mChannelId = getIntent().getStringExtra(CHANNEL_ID_KEY);
         mPresenter.getInitialData(mChannelId);
 
-        if (isJoiningToChannel) {
+        if (!inJoined) {
             final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
             showJoiningInterface(channelName);
         } else {
@@ -176,6 +167,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mPresenter.fetchAfterRestart();
+    }
+
     public void showJoiningInterface(String channelName) {
         mSrlChat.setVisibility(GONE);
         mJoinLayout.setVisibility(VISIBLE);
@@ -186,13 +182,16 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void showLoading(boolean show) {
+        mLoadingProgressBar.setVisibility(show ? VISIBLE : GONE);
+    }
+
+    @Override
     public void onDataReady(RealmResults<Post> posts) {
-        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(
-                mChannelType);
+        final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
                                    channelType, mChannelLastViewed, onPostLongClick);
 
-        mRvMessages.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
 
@@ -203,25 +202,28 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     public void showEmpty(boolean show) {
         mSrlChat.setVisibility(show ? GONE : VISIBLE);
         mTvEmptyState.setVisibility(show ? VISIBLE : GONE);
-
     }
 
     @Override
-    public void onDataFetched() {
-        Log.d(ChatActivity.class.getSimpleName(), "Data Fetched");
+    public void showProgress() {
+        mSrlChat.setRefreshing(true);
     }
 
     @Override
-    public void showProgress(boolean enabled) {
-        mSrlChat.setRefreshing(enabled);
+    public void hideProgress() {
+        mSrlChat.setRefreshing(false);
     }
 
     @Override
     public void onMessageSent(long createdAt) {
-        mEtMessage.setText(null);
         mAdapter.setLastViewed(createdAt);
         scrollToStart();
         hideReply();
+    }
+
+    @Override
+    public void clearMessageInput() {
+        mEtMessage.getText().clear();
     }
 
     @Override
@@ -339,6 +341,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         builder.setTitle(R.string.post_delete)
                 .setMessage(R.string.are_you_sure_you_want_to_delete_this_post)
                 .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.delete, (dialog1, which1) -> mPresenter.deleteMessage(channelId, post))
                 .setPositiveButton(R.string.delete,
                                    (dialog1, which1) -> mPresenter.deleteMessage(
                                            channelId, post))
@@ -389,7 +392,16 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        if (isOwner) {
+        if (!post.isSent()) {
+            dialogBuilder.setItems(R.array.post_own_opinion_fail_array, (dialog, which) -> {
+                if (which == 0) {
+                    mPresenter.sendMessage(mChannelId, post.getMessage(), post.getId());
+                } else if (which == 1) {
+                    deleteMessage(mChannelId, post);
+                }
+            });
+        }
+        else if (isOwner) {
             dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
                 switch (which) {
                     case 0:

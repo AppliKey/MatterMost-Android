@@ -11,7 +11,7 @@ import com.applikey.mattermost.models.team.Team;
 
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 @SuppressWarnings("NullableProblems")
@@ -63,7 +63,7 @@ public class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.ViewHo
 
         private final View mRoot;
 
-        @Bind(R.id.name)
+        @BindView(R.id.name)
         TextView mName;
 
         ViewHolder(View itemView) {

@@ -2,23 +2,19 @@ package com.applikey.mattermost.models.post;
 
 import android.support.annotation.Nullable;
 
-import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 import com.vdurmont.emoji.EmojiParser;
 
-import java.util.Comparator;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Post extends RealmObject implements SearchItem{
+public class Post extends RealmObject {
 
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
-    public static final Comparator<Post> COMPARATOR_BY_PRIORITY = (o1, o2)
-            -> o2.getPriority() - o1.getPriority();
+
     @PrimaryKey
     @SerializedName("id")
     private String id;
@@ -41,6 +37,20 @@ public class Post extends RealmObject implements SearchItem{
     // Application-specific fields
     private int priority;
     private User author;
+    private boolean mSent = true;
+
+    public Post() {
+
+    }
+
+    private Post(Builder builder) {
+        setId(builder.id);
+        setChannelId(builder.channelId);
+        setCreatedAt(builder.createdAt);
+        setUserId(builder.userId);
+        setMessage(builder.message);
+        setSent(builder.sent);
+    }
 
     public String getId() {
         return id;
@@ -116,6 +126,14 @@ public class Post extends RealmObject implements SearchItem{
         this.author = author;
     }
 
+    public boolean isSent() {
+        return mSent;
+    }
+
+    public void setSent(boolean sent) {
+        mSent = sent;
+    }
+
     @Nullable
     public Post getRootPost() {
         return rootPost;
@@ -139,36 +157,110 @@ public class Post extends RealmObject implements SearchItem{
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         final Post post = (Post) o;
 
-        if (getCreatedAt() != post.getCreatedAt())
+        if (getCreatedAt() != post.getCreatedAt()) {
             return false;
-        if (getParentId() != null && !getParentId().equals(post.getParentId()))
+        }
+        if (getParentId() != null && !getParentId().equals(post.getParentId())) {
             return false;
-        if (getRootId() != null && !getRootId().equals(post.getRootId()))
+        }
+        if (getRootId() != null && !getRootId().equals(post.getRootId())) {
             return false;
-        if (getPriority() != post.getPriority())
+        }
+        if (getPriority() != post.getPriority()) {
             return false;
-        if (!getId().equals(post.getId()))
+        }
+        if (!getId().equals(post.getId())) {
             return false;
-        if (!getChannelId().equals(post.getChannelId()))
+        }
+        if (!getChannelId().equals(post.getChannelId())) {
             return false;
-        if (!getUserId().equals(post.getUserId()))
+        }
+        if (!getUserId().equals(post.getUserId())) {
             return false;
-        if (!getMessage().equals(post.getMessage()))
+        }
+        if (!getMessage().equals(post.getMessage())) {
             return false;
+        }
         return getAuthor() != null
                 ? getAuthor().equals(post.getAuthor())
                 : post.getAuthor() == null;
     }
 
+
+
+    public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
+        return (int) (post1.getCreatedAt() - post2.getCreatedAt());
+    }
+
     @Override
-    public int getSearchType() {
-        return MESSAGE;
+    public String toString() {
+        return "Post{" +
+                "id='" + id + '\'' +
+                ", channelId='" + channelId + '\'' +
+                ", rootId='" + rootId + '\'' +
+                ", rootPost=" + rootPost +
+                ", parentId='" + parentId + '\'' +
+                ", createdAt=" + createdAt +
+                ", userId='" + userId + '\'' +
+                ", message='" + message + '\'' +
+                ", priority=" + priority +
+                ", author=" + author +
+                '}';
+    }
+
+    public static final class Builder {
+
+        private String id;
+        private String channelId;
+        private long createdAt;
+        private String userId;
+        private String message;
+        private boolean sent;
+
+        public Builder() {
+        }
+
+        public Builder id(String val) {
+            id = val;
+            return this;
+        }
+
+        public Builder channelId(String val) {
+            channelId = val;
+            return this;
+        }
+
+        public Builder createdAt(long val) {
+            createdAt = val;
+            return this;
+        }
+
+        public Builder userId(String val) {
+            userId = val;
+            return this;
+        }
+
+        public Builder message(String val) {
+            message = val;
+            return this;
+        }
+
+        public Builder sent(boolean val) {
+            sent = val;
+            return this;
+        }
+
+        public Post build() {
+            return new Post(this);
+        }
     }
 }

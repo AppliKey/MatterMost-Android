@@ -5,10 +5,7 @@ public class Constants {
     // TODO replace with actual package name
     public static final String PACKAGE_NAME = "com.applikey.mattermost";
 
-    public static final int TIMEOUT_DURATION_SEC = 20;
-
-    // TODO Use server as realm identifier
-    public static final String REALM_NAME = "Test1.realm";
+    public static final int TIMEOUT_DURATION_SEC = 10;
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
@@ -26,6 +23,8 @@ public class Constants {
     public static final int POLLING_PERIOD_SECONDS = 15;
 
     public static final String EMPTY_STRING = "";
+
+    public static final String SPACE = " ";
 
     public static final String MIME_TYPE_IMAGE = "image/*";
 

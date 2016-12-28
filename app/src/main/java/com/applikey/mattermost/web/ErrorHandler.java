@@ -56,9 +56,8 @@ public final class ErrorHandler {
             return;
         } else if (isTimeoutException(throwable)) {
             Toast.makeText(mContext, "Connection timeout", Toast.LENGTH_SHORT).show();
-        } else {
-            throwable.printStackTrace();
         }
+        throwable.printStackTrace();
     }
 
     public void handleError(String message) {
@@ -92,7 +91,7 @@ public final class ErrorHandler {
         RequestError requestError = null;
         if (isHttpException(throwable)) {
             final HttpException httpException = (HttpException) throwable;
-            if (isHttpExceptionWithCode(httpException, HttpCode.INTERNAL_SERVER_ERROR)) {
+            if (isHttpExceptionWithCode(httpException, HttpCode.INTERNAL_SERVER_ERROR, HttpCode.BAD_REQUEST)) {
                 final Response<?> responseBody = httpException.response();
                 try {
                     requestError = getErrorModel(responseBody, mJsonErrorAdapter);
@@ -139,8 +138,13 @@ public final class ErrorHandler {
         return parser.fromJson(responseBody.string());
     }
 
-    private boolean isHttpExceptionWithCode(HttpException e, int code) {
-        return e.code() == code;
+    private boolean isHttpExceptionWithCode(HttpException e, int... codes) {
+        for (int code : codes) {
+            if (code == e.code()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isHttpException(Throwable e) {
@@ -158,6 +162,6 @@ public final class ErrorHandler {
         mStorageDestroyer.deleteDatabase();
         App.releaseUserComponent();
 
-        mContext.startActivity(ChooseServerActivity.getIntent(mContext, true));
+        mContext.startActivity(ChooseServerActivity.getIntent(mContext));
     }
 }

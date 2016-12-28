@@ -7,6 +7,19 @@
     android:animateLayoutChanges="true"
     android:orientation="vertical">
 
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/loading_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:progress="30"
+        android:secondaryProgress="60"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_useIntrinsicPadding="false"
+        android:background="@android:color/transparent"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
     <LinearLayout
         android:id="@+id/ll_reply"
         android:layout_width="match_parent"
@@ -50,7 +63,7 @@
         android:id="@+id/view_reply_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/separator_list"
+        android:background="@color/separatorList"
         android:visibility="gone"
         tools:visibility="visible" />
 

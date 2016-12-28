@@ -17,5 +17,9 @@ public interface ChannelDetailsView extends MvpView, FavoriteableView {
     void showMembers(List<User> users);
 
     @StateStrategyType(SkipStrategy.class)
-    void openEditChannel(Channel channel);
+    void openEditChannel(Channel channel, boolean invite);
+
+    void showProgress(boolean show);
+
+    void backToMainActivity();
 }

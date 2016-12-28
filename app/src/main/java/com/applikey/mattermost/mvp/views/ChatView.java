@@ -9,16 +9,18 @@ import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
 import io.realm.RealmResults;
 
-@StateStrategyType(value = SkipStrategy.class)
+@StateStrategyType(SkipStrategy.class)
 public interface ChatView extends MvpView {
 
     void onDataReady(RealmResults<Post> posts);
 
-    void onDataFetched();
+    void showProgress();
 
-    void showProgress(boolean enabled);
+    void hideProgress();
 
     void onMessageSent(long createdAt);
+
+    void clearMessageInput();
 
     void onChannelJoined();
 
@@ -31,4 +33,6 @@ public interface ChatView extends MvpView {
     void showEmpty(boolean show);
 
     void showJoiningInterface(String channelName);
+
+    void showLoading(boolean show);
 }
