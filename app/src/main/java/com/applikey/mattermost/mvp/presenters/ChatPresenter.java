@@ -296,6 +296,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     private void clearChat() {
-        mPostStorage.deleteAllByChannel(mChannel.getId());
+        mPostStorage.deleteAllByChannel(mChannel.getId(), true);
     }
 }
