@@ -62,10 +62,10 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.PUBLIC.getRepresentation(),
+                                                      Channel.ChannelType.PUBLIC.getRepresentation(),
                                                       Channel.FIELD_NAME_IS_JOINED,
                                                       true,
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                      Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
@@ -89,9 +89,11 @@ public class ChannelStorage {
     }
 
     public Observable<RealmResults<Channel>> listUnread() {
-        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                                                             true,
-                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+        return mDb.resultRealmObjectsFilteredExcludedWithEmpty(Channel.class, Channel.FIELD_UNREAD_TYPE,
+                                                               true,
+                                                               Channel.FIELD_NAME_IS_JOINED,
+                                                               true,
+                                                               Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<Channel> channelById(String id) {
@@ -129,7 +131,7 @@ public class ChannelStorage {
     public void setLastPost(@NonNull Channel channel, Post lastPost) {
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
             Post realmPost = null;
-            if(lastPost != null) {
+            if (lastPost != null) {
                 realmPost = realm.copyToRealmOrUpdate(lastPost);
 
                 final User author = realm.where(User.class)
@@ -217,7 +219,7 @@ public class ChannelStorage {
         });
     }
 
-    public void setUsers(String id, List<User> users, Realm.Transaction.OnSuccess onSuccess){
+    public void setUsers(String id, List<User> users, Realm.Transaction.OnSuccess onSuccess) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
             realmChannel.setUsers(users);
             realm.copyToRealmOrUpdate(realmChannel);

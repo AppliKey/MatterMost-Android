@@ -47,6 +47,7 @@ public abstract class BaseFragment extends RxFragment {
     protected void bindViews(View view) {
         mUnbinder = ButterKnife.bind(this, view);
     }
+
     @Override
     public void onDestroyView() {
         mUnbinder.unbind();
@@ -54,12 +55,12 @@ public abstract class BaseFragment extends RxFragment {
     }
 
     public ApplicationComponent getComponent() {
-        return ((App) getActivity().getApplication()).getComponent();
+        return App.getComponent();
     }
 
     @Nullable
     public BaseActivity getBaseActivity() {
-        FragmentActivity activity = getActivity();
+        final FragmentActivity activity = getActivity();
         if (activity != null && activity instanceof BaseActivity) {
             return (BaseActivity) activity;
         }
@@ -67,14 +68,14 @@ public abstract class BaseFragment extends RxFragment {
     }
 
     protected void showLoadingDialog() {
-        BaseActivity baseActivity = getBaseActivity();
+        final BaseActivity baseActivity = getBaseActivity();
         if (baseActivity != null) {
             baseActivity.showLoadingDialog();
         }
     }
 
     protected void hideLoadingDialog() {
-        BaseActivity baseActivity = getBaseActivity();
+        final BaseActivity baseActivity = getBaseActivity();
         if (baseActivity != null) {
             baseActivity.hideLoadingDialog();
         }

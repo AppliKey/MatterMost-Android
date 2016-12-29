@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.MessageDetailsPresenter;
@@ -22,6 +21,7 @@ import com.applikey.mattermost.views.LinkTextView;
 import com.applikey.mattermost.views.SafeButton;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +29,7 @@ import butterknife.OnClick;
 
 public class MessageDetailsActivity extends BaseMvpActivity implements MessageDetailsView {
 
-    public static final String KEY_POST_ID = Constants.PACKAGE_NAME + "activities.message.details.activity.post.id";
+    private static final String KEY_POST_ID = Constants.PACKAGE_NAME + "activities.message.details.activity.post.id";
 
     @InjectPresenter
     MessageDetailsPresenter mPresenter;
@@ -44,12 +44,15 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
     @BindView(R.id.btn_go_to_dialog) SafeButton mGoToDialogButton;
     @BindView(R.id.iv_preview_image_layout) RelativeLayout mIvPreviewImageLayout;
 
-    private Message mMessage;
-
     public static Intent getIntent(Context context, String postId) {
-        Intent intent = new Intent(context, MessageDetailsActivity.class);
+        final Intent intent = new Intent(context, MessageDetailsActivity.class);
         intent.putExtra(KEY_POST_ID, postId);
         return intent;
+    }
+
+    @ProvidePresenter
+    MessageDetailsPresenter providePresenter() {
+        return new MessageDetailsPresenter(getIntent().getStringExtra(KEY_POST_ID));
     }
 
     @Override
@@ -58,34 +61,42 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
         setContentView(R.layout.activity_message_details);
         ButterKnife.bind(this);
         initToolbar();
-        mPresenter.initMessage(getIntent().getStringExtra(KEY_POST_ID));
     }
 
     @OnClick(R.id.btn_go_to_dialog)
     public void onGoToDialogClick() {
-        mPresenter.onGoToDialogButtonClick(mMessage.getChannel());
+        mPresenter.onGoToDialogButtonClick();
     }
 
     @Override
-    public void initView(Message message) {
-        mMessage = message;
-        final User user = message.getUser();
-        final Post post = message.getPost();
-        final Channel channel = message.getChannel();
-        setChannelIcon(mImageLoader, channel);
-        setStatusIcon(channel);
+    public void setAuthorInfo(User user) {
         mTvUserName.setText(User.getDisplayableName(user));
+        setUserAvatar(mImageLoader, user);
+    }
+
+    @Override
+    public void setPostInfo(Post post) {
         mTvMessage.setText(post.getMessage());
         mTvTimestamp.setText(TimeUtil.formatDateTime(post.getCreatedAt()));
     }
 
+    @Override
+    public void setUserStatus(User user) {
+        final User.Status status = user != null ? User.Status.from(user.getStatus()) : null;
+        if (status != null) {
+            mIvStatus.setImageResource(status.getDrawableId());
+        }
+        mIvStatusBg.setVisibility(View.VISIBLE);
+        mIvStatus.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void startChatView(Channel channel) {
         startActivity(ChatActivity.getIntent(this, channel));
     }
 
-    private void setChannelIcon(ImageLoader imageLoader, Channel element) {
-        final User member = element.getDirectCollocutor();
-        final String previewImagePath = member != null ? member.getProfileImage() : null;
+    private void setUserAvatar(ImageLoader imageLoader, User user) {
+        final String previewImagePath = user != null ? user.getProfileImage() : null;
         if (previewImagePath != null && !previewImagePath.isEmpty()) {
             imageLoader.displayCircularImage(previewImagePath, mIvPreviewImage);
         } else {
@@ -93,22 +104,7 @@ public class MessageDetailsActivity extends BaseMvpActivity implements MessageDe
         }
     }
 
-    private void setStatusIcon(Channel channel) {
-        if (Channel.ChannelType.DIRECT.getRepresentation().equals(channel.getType())) {
-            final User member = channel.getDirectCollocutor();
-            final User.Status status = member != null ? User.Status.from(member.getStatus()) : null;
-            if (status != null) {
-                mIvStatus.setImageResource(status.getDrawableId());
-            }
-            mIvStatusBg.setVisibility(View.VISIBLE);
-            mIvStatus.setVisibility(View.VISIBLE);
-        } else {
-            mIvStatusBg.setVisibility(View.GONE);
-            mIvStatus.setVisibility(View.GONE);
-        }
-    }
-
-    private void initToolbar(){
+    private void initToolbar() {
         setSupportActionBar(mToolbar);
         setTitle(R.string.message_details);
         mToolbar.setNavigationOnClickListener(view -> onBackPressed());

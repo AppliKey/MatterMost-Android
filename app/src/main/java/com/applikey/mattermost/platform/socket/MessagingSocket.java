@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Emitter;
 import rx.Observable;
 
-
 public class MessagingSocket implements Socket {
 
     private static final String TAG = "MessagingSocket";
@@ -70,9 +69,9 @@ public class MessagingSocket implements Socket {
 
                     @Override
                     public void onDisconnected(WebSocket websocket,
-                            WebSocketFrame serverCloseFrame,
-                            WebSocketFrame clientCloseFrame,
-                            boolean closedByServer)
+                                               WebSocketFrame serverCloseFrame,
+                                               WebSocketFrame clientCloseFrame,
+                                               boolean closedByServer)
                             throws Exception {
                         if (mIsDisconnectingFired.get()) {
                             Log.d(TAG, "Socket disconnected!");
@@ -84,8 +83,7 @@ public class MessagingSocket implements Socket {
                     }
                 };
                 mWebSocket = new WebSocketFactory()
-                        .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
-                        .createSocket(mURI);
+                        .createSocket(mURI, Constants.WEB_SOCKET_TIMEOUT);
                 mWebSocket.addListener(socketListener);
                 mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mBearerTokenFactory.getBearerTokenString());
                 emitter.setCancellation(() -> mWebSocket.removeListener(socketListener));
