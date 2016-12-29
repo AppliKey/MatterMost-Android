@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/SearchViewBar"
+            app:contentInsetStartWithNavigation="60dp"
             app:navigationIcon="@drawable/ic_back">
 
         </android.support.v7.widget.Toolbar>
