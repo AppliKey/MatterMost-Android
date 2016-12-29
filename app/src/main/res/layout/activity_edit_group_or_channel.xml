@@ -147,7 +147,7 @@
 
             <Button
                 android:id="@+id/btn_delete_channel"
-                style="@style/GrayButton"
+                style="@style/GreyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height"
                 android:layout_gravity="center_horizontal"

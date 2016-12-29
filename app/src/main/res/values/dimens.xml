@@ -142,4 +142,5 @@
     <dimen name="button_corner">72dp</dimen>
     <dimen name="user_name_text_size">16sp</dimen>
     <dimen name="go_to_dialog_button_margin_bottom">40dp</dimen>
+    <dimen name="grey_button_min_height">34dp</dimen>
 </resources>
