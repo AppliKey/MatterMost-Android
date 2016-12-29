@@ -4,6 +4,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.models.commands.Invite;
 import com.applikey.mattermost.models.commands.InviteNewMembersRequest;
 import com.applikey.mattermost.mvp.views.InviteNewMemberView;
+import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.web.Api;
@@ -12,7 +13,6 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -26,32 +26,40 @@ public class InviteNewMemberPresenter extends BasePresenter<InviteNewMemberView>
     Prefs mPrefs;
 
     @Inject
+    UserStorage mUserStorage;
+
+    @Inject
     ErrorHandler mErrorHandler;
 
     public InviteNewMemberPresenter() {
-        App.getComponent().inject(this);
+        App.getUserComponent().inject(this);
     }
 
     public void inviteNewMember(String email, String firstName, String lastName) {
-        final InviteNewMemberView view = getViewState();
         if (email == null || email.trim().isEmpty()) {
-            view.showEmptyEmailError();
+            getViewState().showEmptyEmailError();
             return;
         }
         if (!StringUtil.isEmail(email)) {
-            view.showInvalidEmailError();
+            getViewState().showInvalidEmailError();
             return;
         }
 
         final Invite invite = new Invite(email, firstName, lastName);
         final InviteNewMembersRequest request = new InviteNewMembersRequest(invite);
 
-        final Subscription subscription = mApi.inviteNewMember(mPrefs.getCurrentTeamId(), request)
-                .subscribeOn(Schedulers.io())
+        mUserStorage.getUserByEmail(email)
+                .compose(bindToLifecycle())
+                .doOnNext(user -> {
+                    if (user != null) {
+                        getViewState().showUserExistError();
+                    }
+                })
+                .filter(user -> user == null)
+                .observeOn(Schedulers.io())
+                .flatMap(user -> mApi.inviteNewMember(mPrefs.getCurrentTeamId(), request).toObservable())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((v) -> view.onSuccessfulInvitationSent(), this::handleError);
-
-        mSubscription.add(subscription);
+                .subscribe((v) -> getViewState().onSuccessfulInvitationSent(), this::handleError);
     }
 
     private void handleError(Throwable throwable) {

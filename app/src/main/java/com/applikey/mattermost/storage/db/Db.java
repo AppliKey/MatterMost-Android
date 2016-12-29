@@ -66,6 +66,17 @@ public class Db {
                 .first();
     }
 
+    public <T extends RealmObject> Observable<T> getObjectQualifiedNullable(Class<T> tClass,
+                                                                    String fieldName,
+                                                                    String fieldValue) {
+        return mRealm.where(tClass)
+                .equalTo(fieldName, fieldValue)
+                .findFirstAsync()
+                .<T>asObservable()
+                .filter(o -> o.isLoaded())
+                .first();
+    }
+
     // FIXME Duplicated
     public <T extends RealmObject> Observable<T> getObjectAndCopy(Class<T> tClass, String id) {
         return getObject(tClass, id)
