@@ -126,6 +126,7 @@ public abstract class DrawerActivity extends BaseMvpActivity implements Navigati
                 startSettings();
                 break;
         }
+        mDrawer.deselect();
         closeDrawer();
     }
 
