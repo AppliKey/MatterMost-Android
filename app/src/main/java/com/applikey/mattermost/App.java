@@ -12,10 +12,10 @@ import com.applikey.mattermost.injects.GlobalModule;
 import com.applikey.mattermost.injects.UserComponent;
 import com.applikey.mattermost.manager.RxForeground;
 import com.applikey.mattermost.platform.socket.WebSocketService;
+import com.applikey.mattermost.utils.FixedPresentersCounter;
 import com.applikey.mattermost.utils.kissUtils.KissTools;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.MvpFacade;
-import com.arellomobile.mvp.PresentersCounter;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.fuck_boilerplate.rx_paparazzo.RxPaparazzo;
@@ -84,7 +84,7 @@ public class App extends Application {
                     }
                 }, Throwable::printStackTrace);
 
-        MvpFacade.getInstance().setPresentersCounter(new PresentersCounter());
+        MvpFacade.getInstance().setPresentersCounter(new FixedPresentersCounter());
     }
 
     @Override
