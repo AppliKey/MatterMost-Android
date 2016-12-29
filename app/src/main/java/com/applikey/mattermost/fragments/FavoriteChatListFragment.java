@@ -6,9 +6,8 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
 import com.applikey.mattermost.adapters.channel.FavoriteChatListAdapter;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.FavoriteChatListPresenter;
-import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import io.realm.RealmResults;
 
@@ -17,9 +16,6 @@ import static com.applikey.mattermost.views.TabBehavior.FAVOURITES;
 public class FavoriteChatListFragment extends BaseChatListFragment {
 
     private static final String TAG = "FavoriteChatListFragment";
-
-    @InjectPresenter
-    FavoriteChatListPresenter mPresenter;
 
     public static BaseChatListFragment newInstance() {
         final BaseChatListFragment fragment = new FavoriteChatListFragment();
@@ -33,11 +29,8 @@ public class FavoriteChatListFragment extends BaseChatListFragment {
     }
 
     @Override
-    protected ChatListPresenter getPresenter() {
-        if (mPresenter == null) {
-            throw new RuntimeException("Presenter is null");
-        }
-        return mPresenter;
+    BaseChatListPresenter providePresenter() {
+        return new FavoriteChatListPresenter();
     }
 
     @Override
@@ -53,6 +46,6 @@ public class FavoriteChatListFragment extends BaseChatListFragment {
     @Override
     public void onLoadAdditionalData(Channel channel) {
         super.onLoadAdditionalData(channel);
-        getPresenter().getChatUsers(channel);
+        mPresenter.getChatUsers(channel);
     }
 }
