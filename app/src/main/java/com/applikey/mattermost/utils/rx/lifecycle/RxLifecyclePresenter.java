@@ -34,5 +34,4 @@ public class RxLifecyclePresenter {
                         throw new UnsupportedOperationException("Binding to " + lastEvent + " not yet implemented");
                 }
             };
-
 }
