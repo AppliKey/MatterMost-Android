@@ -2,7 +2,6 @@ package com.applikey.mattermost.storage.db;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
@@ -148,6 +147,9 @@ public class ChannelStorage {
             }
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
+            if (realmPost != null && TextUtils.equals(realmPost.getAuthor().getId(), mPrefs.getCurrentUserId())) {
+                realmChannel.setHasUnreadMessages(false);
+            }
             return true;
         });
     }
@@ -173,6 +175,7 @@ public class ChannelStorage {
             final User author;
             if (TextUtils.equals(lastPost.getUserId(), currentUserId)) {
                 author = currentUser;
+                realmChannel.setHasUnreadMessages(false);
             } else {
                 author = realm.where(User.class)
                         .equalTo(User.FIELD_NAME_ID, lastPost.getUserId())
@@ -190,6 +193,9 @@ public class ChannelStorage {
 
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
+            if (TextUtils.equals(author.getId(), mPrefs.getCurrentUserId())) {
+                realmChannel.setHasUnreadMessages(false);
+            }
         });
     }
 

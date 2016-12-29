@@ -67,19 +67,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
         mTeamId = mPrefs.getCurrentTeamId();
-
         createObservable();
-    }
-
-    @Override
-    public void displayData() {
-        final Subscription subscription = getInitData()
-                .first()
-                .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
-
-        mSubscription.add(subscription);
-
-        listenPostState();
+        displayData();
     }
 
     @Override
@@ -101,18 +90,21 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         mUsersLoadedChannels.add(channel.getId());
 
         final Subscription subscription = mApi.getChannelExtra(mTeamId, channel.getId())
-                        .subscribeOn(Schedulers.io())
-                .map(extraInfo ->  new ChannelExtraResult(channel, extraInfo))
+                .subscribeOn(Schedulers.io())
+                .map(extraInfo -> new ChannelExtraResult(channel, extraInfo))
                 .observeOn(AndroidSchedulers.mainThread())
                 .toObservable()
                 .flatMap(channelExtraResult -> mUserStorage.findUsers(
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
                                 .collect(Collectors.toList())),
-                         (channelExtraResult, users) -> new ChannelWithUsers(channelExtraResult.getChannel(), users)) //TODO replace to rx style
+                         (channelExtraResult, users) -> new ChannelWithUsers(channelExtraResult.getChannel(),
+                                                                             users)) //TODO replace to rx style
                 .first()
                 .toSingle()
-                .subscribe(channelWithUsers -> mChannelStorage.setUsers(channelWithUsers.getChannel().getId(), channelWithUsers.getUsers()), mErrorHandler::handleError);
+                .subscribe(channelWithUsers -> mChannelStorage.setUsers(channelWithUsers.getChannel().getId(),
+                                                                        channelWithUsers.getUsers()),
+                           mErrorHandler::handleError);
 
         mSubscription.add(subscription);
     }
@@ -122,7 +114,8 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
         final Observable<String> channelObservable =
                 Observable.fromEmitter(emitter -> mChannelEmitter = emitter, Emitter.BackpressureMode.BUFFER);
 
-        final Subscription subscribe = channelObservable
+        channelObservable
+                .compose(bindToLifecycle())
                 .observeOn(Schedulers.io())
                 .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId).toObservable(), this::transform)
                 .filter(lastPostDto -> lastPostDto != null)
@@ -130,8 +123,14 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
                 .subscribe(post -> {
                     mChannelStorage.updateLastPosts(post);
                 }, mErrorHandler::handleError);
+    }
 
-        mSubscription.add(subscribe);
+    private void displayData() {
+        getInitData()
+                .compose(bindToLifecycle())
+                .first()
+                .subscribe(getViewState()::displayInitialData, mErrorHandler::handleError);
+        listenPostState();
     }
 
     @Nullable
@@ -148,14 +147,12 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
     }
 
     private void listenPostState() {
-        final Subscription subscription = getInitData()
+        getInitData()
+                .compose(bindToLifecycle())
                 .doOnNext(channels -> getViewState().displayEmptyState(channels.isEmpty()))
                 .map(channels -> Stream.of(channels).filter(Channel::hasUnreadMessages).collect(Collectors.toList()))
-                .subscribe(
-                        channels -> getViewState().showUnreadIndicator(!channels.isEmpty()),
-                        mErrorHandler::handleError);
-
-        mSubscription.add(subscription);
+                .subscribe(channels -> getViewState().showUnreadIndicator(!channels.isEmpty()),
+                           mErrorHandler::handleError);
     }
 }
 

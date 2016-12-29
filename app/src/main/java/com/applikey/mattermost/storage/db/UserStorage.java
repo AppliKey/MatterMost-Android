@@ -61,6 +61,11 @@ public class UserStorage {
         return mDb.getObjectQualified(User.class, User.FIELD_USERNAME, userName);
     }
 
+    public Observable<User> getUserByEmail(String email) {
+        return mDb.getObjectQualifiedNullable(User.class, User.EMAIL, email)
+                .flatMap(user -> user.isValid() ? Observable.just(user) : Observable.just(null));
+    }
+
     public Observable<List<User>> searchUsers(String text) {
         return mDb.listRealmObjectsFilteredSorted(User.class, text,
                                                   new String[] {User.FIRST_NAME, User.LAST_NAME, User.FIELD_USERNAME},

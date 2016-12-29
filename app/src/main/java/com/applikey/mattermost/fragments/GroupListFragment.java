@@ -6,18 +6,14 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
 import com.applikey.mattermost.adapters.channel.GroupChatListAdapter;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.GroupListPresenter;
-import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import io.realm.RealmResults;
 
 import static com.applikey.mattermost.views.TabBehavior.GROUPS;
 
 public class GroupListFragment extends BaseChatListFragment {
-
-    @InjectPresenter
-    GroupListPresenter mPresenter;
 
     public static BaseChatListFragment newInstance() {
         final BaseChatListFragment fragment = new GroupListFragment();
@@ -31,11 +27,8 @@ public class GroupListFragment extends BaseChatListFragment {
     }
 
     @Override
-    protected ChatListPresenter getPresenter() {
-        if (mPresenter == null) {
-            throw new RuntimeException("Presenter is null");
-        }
-        return mPresenter;
+    BaseChatListPresenter providePresenter() {
+        return new GroupListPresenter();
     }
 
     @Override
@@ -51,6 +44,6 @@ public class GroupListFragment extends BaseChatListFragment {
     @Override
     public void onLoadAdditionalData(Channel channel) {
         super.onLoadAdditionalData(channel);
-        getPresenter().getChatUsers(channel);
+        mPresenter.getChatUsers(channel);
     }
 }
