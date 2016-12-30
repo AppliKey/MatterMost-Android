@@ -19,4 +19,6 @@ public interface AddedMembersView extends MvpView {
     void removeInvitedUser(User user);
 
     void showEmptyState();
+
+    void initList(boolean editable);
 }

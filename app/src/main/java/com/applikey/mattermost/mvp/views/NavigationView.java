@@ -10,6 +10,13 @@ public interface NavigationView extends MvpView {
 
     void startChannelCreating();
 
-    void onUserRetrieve(User user);
+    void setUserInfo(User user);
 
+    void setTeamName(String teamName);
+
+    void findMoreChannels();
+
+    void startInviteNewMember();
+
+    void startSettings();
 }
