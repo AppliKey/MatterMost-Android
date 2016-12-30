@@ -17,7 +17,13 @@ public class SplashPresenter extends BasePresenter<SplashView> {
         App.getComponent().inject(this);
     }
 
-    public void isSessionExist() {
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        checkSession();
+    }
+
+    private void checkSession() {
         final boolean isSessionExist = mPrefs.getAuthToken() != null;
         getViewState().isSessionExist(isSessionExist);
     }

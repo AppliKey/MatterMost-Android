@@ -26,8 +26,6 @@ public class SplashActivity extends BaseMvpActivity implements SplashView {
         super.onCreate(savedInstanceState);
 
         startService(RegistrationIntentService.getIntent(this));
-
-        mPresenter.isSessionExist();
     }
 
     @Override
