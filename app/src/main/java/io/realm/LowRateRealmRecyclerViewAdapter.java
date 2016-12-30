@@ -30,8 +30,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
     private OrderedRealmCollection<T> adapterData;
     private LowRateRealmChangeListener listener;
     protected final LayoutInflater inflater;
-    @NonNull
-    protected final Context context;
     private final boolean hasAutoUpdates;
 
     public LowRateRealmRecyclerViewAdapter(@NonNull Context context,
@@ -42,7 +40,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
             throw new IllegalArgumentException("Context can not be null");
         }
 
-        this.context = context;
         this.adapterData = data;
         this.inflater = LayoutInflater.from(context);
         this.hasAutoUpdates = autoUpdate;

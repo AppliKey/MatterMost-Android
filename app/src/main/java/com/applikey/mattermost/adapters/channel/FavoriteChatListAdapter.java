@@ -43,11 +43,12 @@ public class FavoriteChatListAdapter extends BaseChatListAdapter<BaseChatListVie
     public BaseChatListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final View view;
         final BaseChatListViewHolder viewHolder;
+        final Context context = parent.getContext();
         if (viewType == R.layout.list_item_group_chat) {
-            view = LayoutInflater.from(mContext).inflate(R.layout.list_item_group_chat, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_group_chat, parent, false);
             viewHolder = new GroupChatListViewHolder(view, mCurrentUserId);
         } else {
-            view = LayoutInflater.from(mContext).inflate(R.layout.list_item_chat, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.list_item_chat, parent, false);
             viewHolder = new UserChatListViewHolder(view, mCurrentUserId);
         }
 

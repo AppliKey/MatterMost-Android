@@ -24,7 +24,8 @@ public class UserChatListAdapter extends BaseChatListAdapter<UserChatListViewHol
 
     @Override
     public UserChatListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(mContext)
+        final Context context = parent.getContext();
+        final View view = LayoutInflater.from(context)
                 .inflate(R.layout.list_item_chat, parent, false);
 
         final UserChatListViewHolder vh = new UserChatListViewHolder(view, mCurrentUserId);
