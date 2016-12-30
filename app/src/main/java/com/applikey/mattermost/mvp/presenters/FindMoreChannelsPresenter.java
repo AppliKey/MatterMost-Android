@@ -16,7 +16,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Single;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -40,14 +39,20 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
         App.getUserComponent().inject(this);
     }
 
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        requestNotJoinedChannels();
+    }
+
     public void requestNotJoinedChannels() {
         getViewState().showLoading();
-        final Subscription subscription = getNotJoinedChannels()
+        getNotJoinedChannels()
+                .compose(bindToLifecycle().forSingle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(channels -> Stream.of(channels).forEach(channel -> channel.setJoined(false)))
                 .doOnSuccess(mChannelStorage::save)
                 .subscribe(this::showResult, this::handleError);
-        mSubscription.add(subscription);
     }
 
     private Single<List<Channel>> getNotJoinedChannels() {
@@ -67,6 +72,11 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
     private void showResult(List<Channel> result) {
         Timber.d("show result");
         getViewState().hideLoading();
+        if (result.isEmpty()) {
+            getViewState().showEmptyState();
+        } else {
+            getViewState().hideEmptyState();
+        }
         getViewState().showNotJoinedChannels(result);
     }
 }
