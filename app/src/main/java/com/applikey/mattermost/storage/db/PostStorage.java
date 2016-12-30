@@ -101,10 +101,6 @@ public class PostStorage {
                 channelId, Post.FIELD_NAME_CHANNEL_CREATE_AT);
     }
 
-    public void deleteAllByChannel(String channelId) {
-        deleteAllByChannel(channelId, false);
-    }
-
     public void deleteAllByChannel(String channelId, boolean excludeFailed) {
         Log.d("PostStorage ", "deleteAllByChannel: ");
         mDb.doTransactional(realm -> realm.where(Post.class)

@@ -2,6 +2,7 @@ package com.applikey.mattermost.mvp.presenters;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;

@@ -132,7 +132,7 @@ public class Post extends RealmObject {
     }
 
     public void setSent(boolean sent) {
-        sent = sent;
+        this.sent = sent;
     }
 
     @Nullable
