@@ -78,8 +78,6 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
         mEventBus.register(this);
 
         onNewIntent(getIntent());
-
-        mPresenter.loadInitInfo();
     }
 
     @Override
@@ -136,7 +134,8 @@ public class ChatListActivity extends DrawerActivity implements ChatListScreenVi
                 final View customTab = tab.getCustomView();
                 if (customTab != null) {
                     final View notificationIcon = customTab.findViewById(R.id.iv_notification_icon);
-                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(tabIconIndex), (ImageView) notificationIcon);
+                    mTabIndicatorModel.register(TabBehavior.getItemBehavior(tabIconIndex),
+                                                (ImageView) notificationIcon);
                 }
             }
         }
