@@ -17,6 +17,7 @@ import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.PreferenceStorage;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
+import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.storage.preferences.SettingsManager;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -55,6 +56,9 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     PreferenceStorage mPreferenceStorage;
 
     @Inject
+    Prefs mPrefs;
+
+    @Inject
     Api mApi;
 
     @Inject
@@ -69,7 +73,6 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
-
         loadInitInfo();
     }
 
@@ -102,11 +105,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
     }
 
     private void loadInitInfo() {
+        getViewState().setToolbarTitle(mPrefs.getCurrentTeamName());
         mTeamStorage.getChosenTeam()
                 .compose(bindToLifecycle())
-                .doOnNext(team -> getViewState().setToolbarTitle(team.getDisplayName()))
                 .map(Team::getId)
-                .first()
                 .toSingle()
                 .flatMap(this::fetchStartup)
                 .doOnSuccess(this::fetchUserStatus)
