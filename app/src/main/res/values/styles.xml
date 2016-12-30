@@ -27,13 +27,16 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:background">@drawable/round_button</item>
         <item name="android:textSize">@dimen/text_primary_button</item>
+        <item name="android:letterSpacing">0.125</item>
     </style>
 
-    <style name="GrayButton" parent="Button">
+    <style name="GreyButton" parent="Button">
+        <item name="android:minHeight">@dimen/grey_button_min_height</item>
         <item name="android:paddingStart">@dimen/normal</item>
         <item name="android:paddingEnd">@dimen/normal</item>
         <item name="android:minWidth">@dimen/button_width</item>
         <item name="android:background">@drawable/round_button_gray</item>
+        <item name="android:textSize">@dimen/text_heading_size</item>
     </style>
 
     <style name="AppToolbar" parent="Base.ThemeOverlay.AppCompat.Light">

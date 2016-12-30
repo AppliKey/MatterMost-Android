@@ -9,9 +9,8 @@ public interface ChatListPresenter {
 
     Observable<RealmResults<Channel>> getInitData();
 
-    void displayData();
-
     void getLastPost(Channel channel);
 
     void getChatUsers(Channel channel);
+
 }

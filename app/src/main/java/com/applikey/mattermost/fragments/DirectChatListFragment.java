@@ -6,18 +6,14 @@ import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.channel.BaseChatListAdapter;
 import com.applikey.mattermost.adapters.channel.UserChatListAdapter;
 import com.applikey.mattermost.models.channel.Channel;
-import com.applikey.mattermost.mvp.presenters.ChatListPresenter;
+import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
 import com.applikey.mattermost.mvp.presenters.DirectChatListPresenter;
-import com.arellomobile.mvp.presenter.InjectPresenter;
 
 import io.realm.RealmResults;
 
 import static com.applikey.mattermost.views.TabBehavior.DIRECT;
 
 public class DirectChatListFragment extends BaseChatListFragment {
-
-    @InjectPresenter
-    DirectChatListPresenter mPresenter;
 
     public static DirectChatListFragment newInstance() {
         final DirectChatListFragment fragment = new DirectChatListFragment();
@@ -31,11 +27,8 @@ public class DirectChatListFragment extends BaseChatListFragment {
     }
 
     @Override
-    protected ChatListPresenter getPresenter() {
-        if (mPresenter == null) {
-            throw new RuntimeException("Presenter is null");
-        }
-        return mPresenter;
+    BaseChatListPresenter providePresenter() {
+        return new DirectChatListPresenter();
     }
 
     @Override

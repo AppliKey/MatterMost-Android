@@ -133,8 +133,8 @@ dependencies {
     // rx
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.2.2'
-    compile 'com.trello:rxlifecycle:0.4.0'
-    compile 'com.trello:rxlifecycle-components:0.4.0'
+    compile 'com.trello:rxlifecycle:1.0'
+    compile 'com.trello:rxlifecycle-components:1.0'
     compile 'com.github.pwittchen:reactivenetwork:0.2.0'
 
     // eventbus
@@ -151,10 +151,9 @@ dependencies {
     }
 
     // mvp
-    compile 'com.arello-mobile:moxy:0.5.4'
-    compile 'com.arello-mobile:moxy-android:0.5.4'
-    apt 'com.arello-mobile:moxy-compiler:0.5.4'
-    
+    compile 'com.arello-mobile:moxy:1.3.3'
+    compile 'com.arello-mobile:moxy-android:1.3.3'
+    apt 'com.arello-mobile:moxy-compiler:1.3.3'
 
     // stetho
     compile 'com.facebook.stetho:stetho:1.4.1'
@@ -188,7 +187,7 @@ dependencies {
     compile "com.andkulikov:transitionseverywhere:1.6.9"
 
     //sockets
-    compile 'com.neovisionaries:nv-websocket-client:1.30'
+    compile 'com.neovisionaries:nv-websocket-client:1.31'
 
     //emoji
     compile 'com.vanniktech:emoji:0.4.0-SNAPSHOT'
@@ -218,7 +217,7 @@ dependencies {
 }
 android.variantFilter { variant ->
     if(variant.buildType.name.equals('release') && variant.getFlavors().get(0).name.equals('instrumentation')) {
-        variant.setIgnore(true);
+        variant.setIgnore(true)
     }
 }
 

@@ -79,6 +79,12 @@ public class InviteNewMemberActivity extends BaseMvpActivity implements InviteNe
         mEtEmail.setError(getString(R.string.error_invitation_sending_failed));
     }
 
+    @Override
+    public void showUserExistError() {
+        hideLoadingDialog();
+        showToast(R.string.error_user_invited);
+    }
+
     @OnClick(R.id.b_invite_new_member)
     public void onInviteNewMemberClicked() {
         showLoadingDialog();

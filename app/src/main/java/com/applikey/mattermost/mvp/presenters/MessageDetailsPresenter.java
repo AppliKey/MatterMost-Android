@@ -1,8 +1,9 @@
 package com.applikey.mattermost.mvp.presenters;
 
 import com.applikey.mattermost.App;
-import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Message;
+import com.applikey.mattermost.models.post.Post;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.views.MessageDetailsView;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.PostStorage;
@@ -23,24 +24,34 @@ public class MessageDetailsPresenter extends BasePresenter<MessageDetailsView> {
     @Inject
     PostStorage mPostStorage;
 
-    public MessageDetailsPresenter() {
+    private final String mPostId;
+    private Message mMessage;
+
+    public MessageDetailsPresenter(String postId) {
         App.getUserComponent().inject(this);
+        mPostId = postId;
     }
 
-    public void initMessage(String postId) {
-        final MessageDetailsView view = getViewState();
-        mPostStorage.get(postId)
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
+        mPostStorage.get(mPostId)
+                .compose(bindToLifecycle().forSingle())
                 .flatMap(post -> mChannelStorage.getChannel(post.getChannelId())
                         .map(channel -> new Message(post, channel)))
-                .flatMap(message -> mUserStorage.getDirectProfile(message.getPost().getUserId())
-                       .toSingle()
-                        .doOnSuccess(message::setUser)
-                       .map(user -> message))
-                .subscribe(view::initView, Throwable::printStackTrace);
+                .subscribe(this::onMessageLoaded, Throwable::printStackTrace);
     }
 
-    public void onGoToDialogButtonClick(Channel channel) {
-        final MessageDetailsView view = getViewState();
-        view.startChatView(channel);
+    public void onGoToDialogButtonClick() {
+        getViewState().startChatView(mMessage.getChannel());
+    }
+
+    private void onMessageLoaded(Message message) {
+        mMessage = message;
+        final Post post = message.getPost();
+        final User author = post.getAuthor();
+        getViewState().setPostInfo(post);
+        getViewState().setAuthorInfo(author);
+        getViewState().setUserStatus(author);
     }
 }

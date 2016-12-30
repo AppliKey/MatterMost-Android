@@ -66,6 +66,17 @@ public class Db {
                 .first();
     }
 
+    public <T extends RealmObject> Observable<T> getObjectQualifiedNullable(Class<T> tClass,
+                                                                    String fieldName,
+                                                                    String fieldValue) {
+        return mRealm.where(tClass)
+                .equalTo(fieldName, fieldValue)
+                .findFirstAsync()
+                .<T>asObservable()
+                .filter(o -> o.isLoaded())
+                .first();
+    }
+
     // FIXME Duplicated
     public <T extends RealmObject> Observable<T> getObjectAndCopy(Class<T> tClass, String id) {
         return getObject(tClass, id)
@@ -101,7 +112,8 @@ public class Db {
 
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
                                                             String id,
-                                                            Func2<T, Realm, Boolean> update, Realm.Transaction.OnSuccess onSuccess) {
+                                                            Func2<T, Realm, Boolean> update,
+                                                            Realm.Transaction.OnSuccess onSuccess) {
         mRealm.executeTransactionAsync(realm -> {
             final T realmObject = realm.where(tClass).equalTo(FIELD_ID, id).findFirst();
             update.call(realmObject, realm);
@@ -238,6 +250,23 @@ public class Db {
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredExcludedWithEmpty(
+            Class<T> tClass,
+            String fieldName,
+            boolean value,
+            String excludedField,
+            boolean excludedValue,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .equalTo(excludedField, excludedValue)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
     }
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(

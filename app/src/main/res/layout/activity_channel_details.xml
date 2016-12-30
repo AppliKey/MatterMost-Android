@@ -71,7 +71,7 @@
 
         <Button
             android:id="@+id/b_edit_channel"
-            style="@style/Button"
+            style="@style/GreyButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -82,7 +82,7 @@
 
         <Button
             android:id="@+id/btn_leave_channel"
-            style="@style/Button"
+            style="@style/GreyButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

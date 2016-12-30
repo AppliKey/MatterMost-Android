@@ -13,5 +13,7 @@ public interface InviteNewMemberView extends MvpView {
 
     void onSuccessfulInvitationSent();
 
+    void showUserExistError();
+
     void onHttpError();
 }
