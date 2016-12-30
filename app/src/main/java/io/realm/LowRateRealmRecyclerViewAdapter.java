@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 
 /**
  * Copied from {@link io.realm.RealmRecyclerViewAdapter} to extend the access to {@link RealmChangeListener};
@@ -29,7 +28,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
     @Nullable
     private OrderedRealmCollection<T> adapterData;
     private LowRateRealmChangeListener listener;
-    protected final LayoutInflater inflater;
     private final boolean hasAutoUpdates;
 
     public LowRateRealmRecyclerViewAdapter(@NonNull Context context,
@@ -41,7 +39,6 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
         }
 
         this.adapterData = data;
-        this.inflater = LayoutInflater.from(context);
         this.hasAutoUpdates = autoUpdate;
     }
 
@@ -142,11 +139,11 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
 
     private void addListener(@NonNull OrderedRealmCollection<T> data) {
         if (data instanceof RealmResults) {
-            RealmResults realmResults = (RealmResults) data;
+            final RealmResults realmResults = (RealmResults) data;
             //noinspection unchecked
             realmResults.addChangeListener(listener);
         } else if (data instanceof RealmList) {
-            RealmList realmList = (RealmList) data;
+            final RealmList realmList = (RealmList) data;
             //noinspection unchecked
             realmList.realm.handlerController.addChangeListenerAsWeakReference(listener);
         } else {
@@ -156,10 +153,10 @@ public abstract class LowRateRealmRecyclerViewAdapter<T extends RealmModel, VH e
 
     private void removeListener(@NonNull OrderedRealmCollection<T> data) {
         if (data instanceof RealmResults) {
-            RealmResults realmResults = (RealmResults) data;
+            final RealmResults realmResults = (RealmResults) data;
             realmResults.removeChangeListener(listener);
         } else if (data instanceof RealmList) {
-            RealmList realmList = (RealmList) data;
+            final RealmList realmList = (RealmList) data;
             //noinspection unchecked
             realmList.realm.handlerController.removeWeakChangeListener(listener);
         } else {
