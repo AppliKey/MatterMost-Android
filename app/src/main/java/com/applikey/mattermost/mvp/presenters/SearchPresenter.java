@@ -8,7 +8,6 @@ import com.applikey.mattermost.models.SearchItem;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.channel.ChannelResponse;
 import com.applikey.mattermost.models.channel.DirectChannelRequest;
-import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.MemberInfo;
 import com.applikey.mattermost.models.post.Message;
 import com.applikey.mattermost.models.post.PostResponse;
@@ -36,6 +35,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -122,6 +122,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
     protected Observable<List<SearchItem>> getPostsObservable(String text) {
         return mApi.searchPosts(mPrefs.getCurrentTeamId(), new PostSearchRequest(text))
                 .map(PostResponse::getPosts)
+                .toObservable()
                 .filter(postMap -> postMap != null)
                 .map(Map::values)
                 .subscribeOn(Schedulers.io())
@@ -142,14 +143,13 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         final SearchView view = getViewState();
         view.showLoading(true);
 
-        final Subscription subscription = Observable.just(mPrefs.getCurrentTeamId())
+        final Subscription subscription = Single.just(mPrefs.getCurrentTeamId())
                 .observeOn(Schedulers.io())
-                .flatMap(teamId -> mApi.createChannel(teamId, new DirectChannelRequest(user.getId())),
-                         (team, channel) -> channel)
+                .flatMap(teamId -> mApi.createChannel(teamId, new DirectChannelRequest(user.getId())))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(channel -> channel.setDirectCollocutor(user))
-                .doOnNext(channel -> mChannelStorage.save(channel))
-                .doOnNext(channel ->
+                .doOnSuccess(channel -> channel.setDirectCollocutor(user))
+                .doOnSuccess(channel -> mChannelStorage.save(channel))
+                .doOnSuccess(channel ->
                                   mChannelStorage.updateDirectChannelData(channel,
                                                                           Collections.singletonMap(user.getId(), user),
                                                                           mPrefs.getCurrentUserId()))
@@ -194,15 +194,17 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         mUsersLoadedChannels.add(channel.getId());
         final SearchView view = getViewState();
 
-        final Subscription subscription = Observable.just(channel)
-                .flatMap(ignored -> mApi.getChannelExtra(mTeamId, channel.getId())
-                        .subscribeOn(Schedulers.io()), this::transform)
+        final Subscription subscription = mApi.getChannelExtra(mTeamId, channel.getId())
+                        .subscribeOn(Schedulers.io())
+                .map(extraInfo ->  new ChannelExtraResult(channel, extraInfo))
                 .observeOn(AndroidSchedulers.mainThread())
+                .toObservable()
                 .flatMap(channelExtraResult -> mUserStorage.findUsers(
                         Stream.of(channelExtraResult.getExtraInfo().getMembers())
                                 .map(MemberInfo::getId)
                                 .collect(Collectors.toList())), this::transform) //TODO replace to rx style
                 .first()
+                .toSingle()
                 .subscribe(channelWithUsers -> {
                     mChannelStorage.setUsers(channel.getId(), channelWithUsers.getUsers(),
                                              () -> view.notifyItemChanged(position));
@@ -211,9 +213,6 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
         mSubscription.add(subscription);
     }
 
-    private ChannelExtraResult transform(Channel channel, ExtraInfo extraInfo) {
-        return new ChannelExtraResult(channel, extraInfo);
-    }
 
     private ChannelWithUsers transform(ChannelExtraResult channelExtraResult, List<User> users) {
         return new ChannelWithUsers(channelExtraResult.getChannel(), users);

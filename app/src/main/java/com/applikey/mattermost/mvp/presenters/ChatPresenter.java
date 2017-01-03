@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.applikey.mattermost.App;
@@ -19,6 +20,7 @@ import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
@@ -72,7 +74,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         updateLastViewedAt(channelId);
 
-        final Subscription subscribe = mChannelStorage.channelById(channelId)
+        final Subscription subscribe = mChannelStorage.findByIdAndCopy(channelId)
                 .distinctUntilChanged()
                 .doOnNext(channel -> mChannel = channel)
                 .map(channel -> {
@@ -127,15 +129,19 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void deleteMessage(String channelId, Post post) {
+        if (!post.isSent()) {
+            mPostStorage.delete(post);
+            mChannelStorage.updateLastPost(mChannel);
+        } else {
+            final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess(posts -> mPostStorage.delete(post))
+                    .doOnSuccess(posts -> mChannel.setLastPost(null))
+                    .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), mErrorHandler::handleError);
 
-        final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(posts -> mPostStorage.delete(post))
-                .doOnNext(posts -> mChannel.setLastPost(null))
-                .subscribe(posts -> mChannelStorage.updateLastPost(mChannel), mErrorHandler::handleError);
-
-        mSubscription.add(subscribe);
+            mSubscription.add(subscribe);
+        }
     }
 
     public void editMessage(String channelId, Post post, String newMessage) {
@@ -149,7 +155,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mSubscription.add(subscribe);
     }
 
-    public void sendMessage(String channelId, String message) {
+    public void sendMessage(String channelId, String message, @Nullable String postId) {
         if (TextUtils.isEmpty(message.trim())) {
             return;
         }
@@ -169,17 +175,34 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
+                .doOnSuccess(post -> mChannelStorage.setLastPost(mChannel, post))
+                .doOnSuccess(post -> {
+                    if (!TextUtils.isEmpty(postId)) {
+                        mPostStorage.delete(postId);
+                    }
+                })
                 .subscribe(result -> {
                     view.showLoading(mMessageSendingCounter.decrementAndGet() != 0);
                     view.onMessageSent(result.getCreatedAt());
                 }, throwable -> {
+                    final Post post = new Post.Builder().channelId(mChannel.getId())
+                            .createdAt(createdAt)
+                            .id(postId == null ? UUID.randomUUID().toString() : postId)
+                            .message(message)
+                            .userId(currentUserId)
+                            .sent(false)
+                            .build();
+                    mChannelStorage.setLastPost(mChannel, post);
                     mErrorHandler.handleError(throwable);
                     view.showLoading(mMessageSendingCounter.decrementAndGet() != 0);
                 });
 
         mSubscription.add(subscribe);
+    }
+
+    public void sendMessage(String channelId, String messsage) {
+        sendMessage(channelId, messsage, null);
     }
 
     // TODO: Refactor: duplicated code
@@ -200,8 +223,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnNext(post -> mChannelStorage.setLastPost(mChannel, post))
+                .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
+                .doOnSuccess(post -> mChannelStorage.setLastPost(mChannel, post))
                 .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
@@ -223,11 +246,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private void updateLastViewedAt(String channelId) {
         // Does not belong to UI
         final Subscription subscribe = mApi.updateLastViewedAt(mTeamId, channelId)
-                .toCompletable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                }, mErrorHandler::handleError);
+                .toCompletable()
+                .subscribe(() -> {}, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
 
@@ -251,6 +273,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
         final Subscription subscription = mApi.getPostsPage(mTeamId, channelId, totalItems, PAGE_SIZE)
                 .subscribeOn(Schedulers.io())
+                .toObservable()
                 .switchIfEmpty(Observable.empty())
                 .map(postResponse -> postResponse.getPosts().values())
                 .map(ArrayList::new)

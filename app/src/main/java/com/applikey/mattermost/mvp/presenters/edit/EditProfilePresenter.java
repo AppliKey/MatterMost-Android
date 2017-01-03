@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import rx.Observable;
 import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -116,11 +115,11 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
         final EditProfileView view = getViewState();
 
         final Subscription subscription = mApi.editUser(mUser)
-                .flatMap(user -> mImage != null ? uploadImage() : Observable.just(user))
-                .flatMap(v -> mApi.getMe())
+                .flatMap(user -> mImage != null ? uploadImage() : Single.just(user))
+                .flatMap(o -> mApi.getMe())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .compose(RxUtils.applyProgress(view::showLoading, view::hideLoading))
+                .compose(RxUtils.applyProgressSingle(view::showLoading, view::hideLoading))
                 .subscribe(mUserStorage::save, throwable -> {
                     final RequestError requestError = mErrorHandler.getRequestError(throwable);
                     if (requestError != null) {
@@ -139,14 +138,14 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
         mSubscription.add(subscription);
     }
 
-    private Observable<Void> uploadImage() {
+    private Single<Void> uploadImage() {
         MultipartBody.Part imagePart = MultipartBody.
                 Part.createFormData(Api.MULTIPART_IMAGE_TAG, mImage.getName(),
                                     RequestBody.create(MediaType.parse(Constants.MIME_TYPE_IMAGE), mImage));
 
         return mApi.uploadImage(imagePart)
-                .doOnNext(ignored -> mImageLoader.dropMemoryCache())
-                .doOnNext(ignored -> mImageLoader.invalidateCache(mUser.getProfileImage()));
+                .doOnSuccess(ignored -> mImageLoader.dropMemoryCache())
+                .doOnSuccess(ignored -> mImageLoader.invalidateCache(mUser.getProfileImage()));
     }
 
     public static class UserModel {

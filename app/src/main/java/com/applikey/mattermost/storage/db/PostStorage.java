@@ -146,4 +146,8 @@ public class PostStorage {
                 .findAll()
                 .deleteAllFromRealm());
     }
+
+    public void delete(String id) {
+        mDb.deleteTransactionalSync(Post.class, id);
+    }
 }

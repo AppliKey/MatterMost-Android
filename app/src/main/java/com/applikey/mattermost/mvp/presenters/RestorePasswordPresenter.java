@@ -39,7 +39,7 @@ public class RestorePasswordPresenter extends BasePresenter<RestorePasswordView>
         final Subscription subscribe = mApi.sendPasswordReset(new RestorePasswordRequest(email))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxUtils.applyProgress(view::showLoading, view::hideLoading))
+                .compose(RxUtils.applyProgressSingle(view::showLoading, view::hideLoading))
                 .subscribe(v -> view.onPasswordRestoreSent(), throwable -> {
                     view.onFailure(mErrorHandler.get().getErrorMessage(throwable));
                 });

@@ -20,8 +20,6 @@ import butterknife.ButterKnife;
 
 public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
-    private String mCurrentUserId;
-
     @BindView(R.id.iv_notification_icon)
     ImageView mNotificationIcon;
 
@@ -33,6 +31,8 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
     @BindView(R.id.tv_message_preview)
     TextView mMessagePreview;
+
+    private String mCurrentUserId;
 
     public BaseChatListViewHolder(View itemView) {
         super(itemView);
@@ -81,9 +81,20 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         setUnreadStatus(channel);
     }
 
+    // TODO It does not belong here. We use this vh for both Channels and Messages. This is incorrect.
+    // introduce abstraction and use template method for binding. See the example - binding of our messages and
+    // messages of other people
     protected void setMessageDate(Message message) {
         getLastMessageTime().setText(
                 TimeUtil.formatTimeOrDateOnlyChannel(message.getPost().getCreatedAt()));
+    }
+
+    protected String getAuthorPrefix(Context context, Message message) {
+        final Post post = message.getPost();
+        if (mCurrentUserId.equals(post.getUserId())) {
+            return context.getString(R.string.chat_you);
+        }
+        return message.getUser().getUsername() + ":";
     }
 
     private String getMessagePreview(Channel channel, Context context) {
@@ -117,13 +128,5 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
 
     private boolean isMy(Post post) {
         return post.getUserId().equals(mCurrentUserId);
-    }
-
-    protected String getAuthorPrefix(Context context, Message message) {
-        final Post post = message.getPost();
-        if (mCurrentUserId.equals(post.getUserId())) {
-            return context.getString(R.string.chat_you);
-        }
-        return message.getUser().getUsername() + ":";
     }
 }

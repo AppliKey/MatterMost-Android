@@ -80,16 +80,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @BindView(R.id.tv_reply_message)
     TextView mTvReplyMessage;
 
-    @InjectPresenter
-    ChatPresenter mPresenter;
-
-    @Inject
-    @Named(Constants.CURRENT_USER_QUALIFIER)
-    String mCurrentUserId;
-
-    @Inject
-    ImageLoader mImageLoader;
-
     @BindView(R.id.iv_emoji)
     ImageView mIvEmojicon;
 
@@ -114,6 +104,16 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @BindView(R.id.loading_progress_bar)
     MaterialProgressBar mLoadingProgressBar;
 
+    @InjectPresenter
+    ChatPresenter mPresenter;
+
+    @Inject
+    @Named(Constants.CURRENT_USER_QUALIFIER)
+    String mCurrentUserId;
+
+    @Inject
+    ImageLoader mImageLoader;
+
     private String mRootId;
 
     private String mChannelId;
@@ -125,6 +125,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private PostAdapter mAdapter;
 
     private EmojiPopup mEmojiPopup;
+    private boolean mIsJoined;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -150,18 +151,16 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setOnEmojiPopupDismissListener(() -> mIvEmojicon.setSelected(false))
                 .build(mEtMessage);
 
-        final boolean inJoined = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
-        mChannelId = getIntent().getStringExtra(CHANNEL_ID_KEY);
+        initParameters();
         mPresenter.getInitialData(mChannelId);
 
-        if (!inJoined) {
+        if (!mIsJoined) {
             final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
             showJoiningInterface(channelName);
         } else {
             mPresenter.loadMessages(mChannelId);
         }
 
-        initParameters();
         initView();
     }
 
@@ -237,7 +236,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void openChannelDetails(Channel channel) {
-        startActivity(ChannelDetailsActivity.getIntent(this, channel));
+        if (mIsJoined) {
+            startActivity(ChannelDetailsActivity.getIntent(this, channel));
+        }
     }
 
     @Override
@@ -357,6 +358,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final Bundle extras = getIntent().getExtras();
         mChannelType = extras.getString(CHANNEL_TYPE_KEY);
         mChannelLastViewed = extras.getLong(CHANNEL_LAST_VIEWED_KEY);
+        mIsJoined = getIntent().getBooleanExtra(ACTION_JOIN_TO_CHANNEL_KEY, false);
+        mChannelId = getIntent().getStringExtra(CHANNEL_ID_KEY);
     }
 
     private void initView() {
@@ -391,7 +394,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        if (isOwner) {
+        if (!post.isSent()) {
+            dialogBuilder.setItems(R.array.post_own_opinion_fail_array, (dialog, which) -> {
+                if (which == 0) {
+                    mPresenter.sendMessage(mChannelId, post.getMessage(), post.getId());
+                } else if (which == 1) {
+                    deleteMessage(mChannelId, post);
+                }
+            });
+        } else if (isOwner) {
             dialogBuilder.setItems(R.array.post_own_opinion_array, (dialog, which) -> {
                 switch (which) {
                     case 0:

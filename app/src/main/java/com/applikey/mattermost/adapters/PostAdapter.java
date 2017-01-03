@@ -120,8 +120,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         if (isMy(post)) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
         } else {
-            holder.bindOtherPost(mChannelType, post, showAuthor, showTime,
-                                 mImageLoader, mOnLongClickListener);
+            holder.bindOtherPost(mChannelType, post, showAuthor, showTime, mImageLoader, mOnLongClickListener);
         }
     }
 
@@ -188,10 +187,18 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         @BindView(R.id.tv_reply_message)
         TextView mTvReplyMessage;
 
+        @Nullable
+        @BindView(R.id.iv_fail)
+        ImageView mIvFail;
+
         ViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+        }
+
+        void setFailStatusVisible(boolean visible) {
+            mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
 
         void toggleDate(Post post) {
@@ -217,6 +224,8 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
                 return true;
             });
             mTvName.setText(R.string.you);
+
+            setFailStatusVisible(!post.isSent());
         }
 
         void bindOtherPost(Channel.ChannelType channelType,
