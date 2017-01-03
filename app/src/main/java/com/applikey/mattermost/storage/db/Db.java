@@ -62,7 +62,7 @@ public class Db {
                 .map(mRealm::copyFromRealm);
     }
 
-    public  <E extends RealmObject> Observable<List<E>> getCopiedObjects(Func1<Realm, RealmResults<E>> resultsHandler) {
+    public <E extends RealmObject> Observable<List<E>> getCopiedObjects(Func1<Realm, RealmResults<E>> resultsHandler) {
         final HandlerThread handlerThread = new HandlerThread("RealmReadThread", Process.THREAD_PRIORITY_BACKGROUND);
         handlerThread.start();
         final Scheduler scheduler = AndroidSchedulers.from(handlerThread.getLooper());
@@ -79,7 +79,7 @@ public class Db {
                 .doOnUnsubscribe(() -> unsubscribeOnDbThread(handlerThread, realmReference.get()));
     }
 
-    public  <E extends RealmObject> Observable<E> getCopiedObject(Func1<Realm, E> objectHandler) {
+    public <E extends RealmObject> Observable<E> getCopiedObject(Func1<Realm, E> objectHandler) {
         final HandlerThread handlerThread = new HandlerThread("RealmReadThread", Process.THREAD_PRIORITY_BACKGROUND);
         handlerThread.start();
         final Scheduler scheduler = AndroidSchedulers.from(handlerThread.getLooper());
@@ -176,8 +176,8 @@ public class Db {
     }
 
     public <T extends RealmObject, V> void updateMapTransactionalSync(Map<String, V> valuesMap,
-            Class<T> clazz,
-            Action3<T, V, Realm> updateFunc) {
+                                                                      Class<T> clazz,
+                                                                      Action3<T, V, Realm> updateFunc) {
         final Realm realmInstance = Realm.getDefaultInstance();
         realmInstance.executeTransaction(realm -> Stream.of(valuesMap.entrySet())
                 .forEach(entry -> {
