@@ -273,6 +273,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
 
             String files = null;
 
+            //TODO temp
             for (RealmString s : post.getFilenames()) {
                 files += s.getValue();
             }
