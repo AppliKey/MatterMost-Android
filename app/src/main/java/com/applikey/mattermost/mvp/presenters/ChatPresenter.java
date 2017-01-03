@@ -84,7 +84,15 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .first()
-                .subscribe(getViewState()::showTitle, mErrorHandler::handleError);
+                .subscribe(title -> {
+                    getViewState().showTitle(title);
+                    final Subscription sub = mPostStorage.listByChannel(channelId)
+                            .first()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(p -> getViewState().onDataReady(p, false),
+                                    mErrorHandler::handleError);
+                    mSubscription.add(sub);
+                }, mErrorHandler::handleError);
 
         mSubscription.add(subscribe);
     }
@@ -282,21 +290,11 @@ public class ChatPresenter extends BasePresenter<ChatView> {
             }
 
             if (initializeView) {
-                final Subscription sub = mPostStorage.listByChannel(channelId)
-                        .first()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(p -> {
-                            getViewState().hideProgress();
-                            getViewState().onDataReady(p);
-                            listenPostsCount(channelId);
-                            mFirstFetched = true;
-                        }, mErrorHandler::handleError);
-                mSubscription.add(sub);
-            } else {
-                getViewState().hideProgress();
-                listenPostsCount(channelId);
-                mFirstFetched = true;
+                getViewState().subscribeForMessageChanges();
             }
+            listenPostsCount(channelId);
+            getViewState().hideProgress();
+            mFirstFetched = true;
         };
         if (clear) {
             mPostStorage.saveAllWithClear(posts, channelId, callback);

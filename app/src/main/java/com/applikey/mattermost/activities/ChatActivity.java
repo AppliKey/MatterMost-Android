@@ -185,18 +185,24 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    public void onDataReady(RealmResults<Post> posts) {
+    public void onDataReady(RealmResults<Post> posts, boolean listenUpdates) {
         showEmpty(posts.isEmpty());
 
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
+
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
-                channelType, mChannelLastViewed, onPostLongClick);
+                channelType, mChannelLastViewed, onPostLongClick, listenUpdates);
 
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
         mRvMessages.setHasFixedSize(true);
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchNextPage(mAdapter.getItemCount()));
+    }
+
+    @Override
+    public void subscribeForMessageChanges() {
+        mAdapter.enableAutoUpdates();
     }
 
     @Override
