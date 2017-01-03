@@ -27,9 +27,10 @@ public class LinkTextView extends EmojiTextView {
     }
 
     private void init() {
-        if (!isInEditMode()) {
-            setText(getParsedMarkdownText(getText().toString()));
+        if (isInEditMode()) {
+            return;
         }
+        setText(getParsedMarkdownText(getText().toString()));
     }
 
     @Override

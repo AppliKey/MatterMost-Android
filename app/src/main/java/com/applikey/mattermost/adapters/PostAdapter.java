@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
@@ -16,6 +17,7 @@ import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.transitionseverywhere.TransitionManager;
@@ -192,6 +194,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
         @BindView(R.id.iv_fail)
         ImageView mIvFail;
 
+        @BindView(R.id.attachments_container)
+        LinearLayout mAttachmentsContainer;
+
         ViewHolder(View itemView) {
             super(itemView);
 
@@ -271,14 +276,16 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(post.getAuthor()));
 
-            String files = null;
-
-            //TODO temp
-            for (RealmString s : post.getFilenames()) {
-                files += s.getValue();
+            mAttachmentsContainer.removeAllViews();
+            for (RealmString filename : post.getFilenames()) {
+                final TextView attachment = new TextView(itemView.getContext());
+                attachment.setText(StringUtil.extractFileName(filename.getValue()));
+                attachment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_attach_grey, 0, 0, 0);
+                attachment.setTag(filename.getValue());
+                mAttachmentsContainer.addView(attachment);
             }
 
-            mTvMessage.setText(post.getMessage() + files);
+            mTvMessage.setText(post.getMessage());
             mTvMessage.setOnLongClickListener(v -> {
                 itemView.performLongClick();
                 return true;

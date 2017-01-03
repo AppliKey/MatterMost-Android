@@ -1,9 +1,11 @@
 package com.applikey.mattermost.models;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class RealmString extends RealmObject {
 
+    @PrimaryKey
     private String val;
 
     public String getValue() {
