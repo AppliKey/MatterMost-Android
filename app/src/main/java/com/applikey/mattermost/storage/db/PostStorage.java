@@ -2,6 +2,7 @@ package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
 
+import android.util.Log;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -13,6 +14,7 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
+import timber.log.Timber;
 
 public class PostStorage {
 
@@ -27,6 +29,10 @@ public class PostStorage {
     }
 
     public void update(Post post) {
+        if (post.getAuthor() == null) {
+            Timber.e("Trying to save post with null author: %s", post.getId());
+        }
+
         mDb.saveTransactional(post);
     }
 
@@ -40,6 +46,10 @@ public class PostStorage {
                 final User author = realm.where(User.class)
                         .equalTo(User.FIELD_NAME_ID, post.getUserId())
                         .findFirst();
+
+                if (author == null) {
+                    Timber.e("Trying to save post with null user: %s", post.getUserId());
+                }
 
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
                         realm.where(Post.class)
@@ -95,22 +105,22 @@ public class PostStorage {
     public void saveAllSync(List<Post> posts) {
         Realm realm = mDb.getRealm();
         realm.beginTransaction();
-            for (Post post : posts) {
-                final User author = realm.where(User.class)
-                        .equalTo(User.FIELD_NAME_ID, post.getUserId())
-                        .findFirst();
+        for (Post post : posts) {
+            final User author = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                    .findFirst();
 
-                final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
-                        realm.where(Post.class)
-                                .equalTo(Post.FIELD_NAME_ID, post.getRootId())
-                                .findFirst()
-                        : null;
+            final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
+                    realm.where(Post.class)
+                            .equalTo(Post.FIELD_NAME_ID, post.getRootId())
+                            .findFirst()
+                    : null;
 
-                final Post realmPost = realm.copyToRealmOrUpdate(post);
-                realmPost.setAuthor(author);
-                realmPost.setRootPost(rootPost);
-            }
-       realm.commitTransaction();
+            final Post realmPost = realm.copyToRealmOrUpdate(post);
+            realmPost.setAuthor(author);
+            realmPost.setRootPost(rootPost);
+        }
+        realm.commitTransaction();
     }
 
     public void save(Post post) {
