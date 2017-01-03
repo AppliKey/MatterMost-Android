@@ -24,6 +24,7 @@ import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
 import com.applikey.mattermost.utils.PrimitiveConverterFactory;
+import com.google.gson.Gson;
 
 import java.util.Map;
 
@@ -43,12 +44,14 @@ public class ApiDelegate implements Api {
     private final ServerUrlFactory urlFactory;
     private final OkHttpClient okHttpClient;
     private final Object mutex = new Object();
+    private final Gson gson;
     private String serverUrl;
     private Api realApi;
 
-    public ApiDelegate(OkHttpClient okHttpClient, ServerUrlFactory urlFactory) {
+    public ApiDelegate(OkHttpClient okHttpClient, ServerUrlFactory urlFactory, Gson gson) {
         this.urlFactory = urlFactory;
         this.okHttpClient = okHttpClient;
+        this.gson = gson;
     }
 
     @Override
@@ -245,7 +248,7 @@ public class ApiDelegate implements Api {
                             .baseUrl(serverUrl)
                             .client(okHttpClient)
                             .addConverterFactory(PrimitiveConverterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create(gson))
                             .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                             .build();
                     //noinspection UnnecessaryLocalVariable

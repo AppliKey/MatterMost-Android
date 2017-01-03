@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -269,7 +270,14 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(post.getAuthor()));
-            mTvMessage.setText(post.getMessage());
+
+            String files = null;
+
+            for (RealmString s : post.getFilenames()) {
+                files += s.getValue();
+            }
+
+            mTvMessage.setText(post.getMessage() + files);
             mTvMessage.setOnLongClickListener(v -> {
                 itemView.performLongClick();
                 return true;

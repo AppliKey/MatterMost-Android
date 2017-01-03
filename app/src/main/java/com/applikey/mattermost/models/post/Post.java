@@ -2,10 +2,14 @@ package com.applikey.mattermost.models.post;
 
 import android.support.annotation.Nullable;
 
+import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 import com.vdurmont.emoji.EmojiParser;
 
+import java.util.List;
+
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -34,6 +38,8 @@ public class Post extends RealmObject {
     private String userId;
     @SerializedName("message")
     private String message;
+    @SerializedName("filenames")
+    private RealmList<RealmString> filenames;
     // Application-specific fields
     private int priority;
     private User author;
@@ -143,6 +149,14 @@ public class Post extends RealmObject {
         this.rootPost = rootPost;
     }
 
+    public List<RealmString> getFilenames() {
+        return filenames;
+    }
+
+    public void setFilenames(RealmList<RealmString> filenames) {
+        this.filenames = filenames;
+    }
+
     @Override
     public int hashCode() {
         int result = getId().hashCode();
@@ -194,8 +208,6 @@ public class Post extends RealmObject {
                 ? getAuthor().equals(post.getAuthor())
                 : post.getAuthor() == null;
     }
-
-
 
     public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
         return (int) (post1.getCreatedAt() - post2.getCreatedAt());
