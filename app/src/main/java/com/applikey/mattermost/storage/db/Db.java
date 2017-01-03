@@ -122,6 +122,10 @@ public class Db {
         mRealm.executeTransactionAsync(update::call);
     }
 
+    public void doTransactionalWithCallback(Action1<Realm> action, Realm.Transaction.OnSuccess callback) {
+        mRealm.executeTransactionAsync(action::call, callback);
+    }
+
     public <T extends RealmObject> void deleteTransactional(Class<T> tClass, String id) {
         mRealm.executeTransactionAsync(realm -> {
             realm.where(tClass).equalTo(FIELD_ID, id).findFirst().deleteFromRealm();

@@ -9,6 +9,8 @@ import com.vdurmont.emoji.EmojiParser;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.Comparator;
+
 public class Post extends RealmObject {
 
     public static final String FIELD_NAME_ID = "id";
@@ -196,10 +198,12 @@ public class Post extends RealmObject {
     }
 
 
+    public static Comparator<Post> COMPARATOR_BY_CREATE_AT =
+            (post1, post2) -> {
+                final long delta = post1.getCreatedAt() - post2.getCreatedAt();
+                return delta == 0 ? 0 : delta > 0 ? 1 : -1;
+            };
 
-    public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
-        return (int) (post1.getCreatedAt() - post2.getCreatedAt());
-    }
 
     @Override
     public String toString() {
