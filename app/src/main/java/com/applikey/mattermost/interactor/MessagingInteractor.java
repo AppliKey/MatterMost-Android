@@ -13,9 +13,12 @@ import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.web.Api;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_CHANNEL_VIEWED;
@@ -44,16 +47,17 @@ public class MessagingInteractor {
         mApi = api;
     }
 
-    public Observable<Void> pollUserStatuses() {
+    public Single<Map<String, String>> pollUserStatuses() {
         return Observable.interval(Constants.POLLING_PERIOD_SECONDS, TimeUnit.SECONDS)
-                .flatMap(tick -> mUserStorage.getDirectUsers().first())
+                .toSingle()
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(tick -> mUserStorage.listDirectProfiles().first().toSingle())
                 .observeOn(Schedulers.io())
                 .flatMap(users -> mApi.getUserStatusesCompatible(Stream.of(users)
                         .map(User::getId)
                         .collect(Collectors.toList())
                         .toArray(new String[users.size()])))
-                .doOnNext(mUserStorage::updateUsersStatuses)
-                .map(users -> null);
+                .doOnSuccess(mUserStorage::updateUsersStatuses);
     }
 
     public Observable<WebSocketEvent> listenMessagingSocket() {

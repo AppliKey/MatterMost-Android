@@ -6,15 +6,24 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.interactor.MessagingInteractor;
+import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.utils.rx.RetryWhenNetwork;
 import com.applikey.mattermost.web.ErrorHandler;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import java.util.concurrent.TimeUnit;
 
 public class WebSocketService extends Service {
 
@@ -52,16 +61,6 @@ public class WebSocketService extends Service {
     }
 
     private void startPollingUsersStatuses() {
-        final Subscription pollStatusesObservable = Observable.interval(Constants.POLLING_PERIOD_SECONDS,
-                                                                        TimeUnit.SECONDS)
-                .toSingle()
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(tick -> mUserStorage.listDirectProfiles().first().toSingle())
-                .observeOn(Schedulers.io())
-                .flatMap(users -> mApi.getUserStatusesCompatible(Stream.of(users)
-                                                                         .map(User::getId)
-                                                                         .collect(Collectors.toList())
-                                                                         .toArray(new String[users.size()])))
         final Subscription pollStatusesObservable = mMessagingInteractor.pollUserStatuses()
                 .retryWhen(new RetryWhenNetwork(this))
                 .subscribe(updated -> Log.d(TAG, "Users statuses updated"), mErrorHandler::handleError);
