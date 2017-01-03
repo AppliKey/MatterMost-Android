@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.support.annotation.CallSuper;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
@@ -25,6 +26,7 @@ public abstract class BasePresenter<T extends MvpView> extends MvpPresenter<T>
     protected CompositeSubscription mSubscription = new CompositeSubscription();
     private final BehaviorSubject<PresenterEvent> lifecycleSubject = BehaviorSubject.create();
 
+    @CallSuper
     @Override
     protected void onFirstViewAttach() {
         super.onFirstViewAttach();
@@ -52,10 +54,11 @@ public abstract class BasePresenter<T extends MvpView> extends MvpPresenter<T>
         return RxLifecyclePresenter.bindPresenter(lifecycleSubject);
     }
 
+    @CallSuper
     @Override
     public void onDestroy() {
-        super.onDestroy();
         lifecycleSubject.onNext(PresenterEvent.DESTROY);
         mSubscription.clear();
+        super.onDestroy();
     }
 }

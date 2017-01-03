@@ -57,6 +57,7 @@ public class FindMoreChannelsPresenter extends BasePresenter<FindMoreChannelsVie
 
     private Single<List<Channel>> getNotJoinedChannels() {
         return mTeamStorage.getTeamId()
+                .compose(bindToLifecycle().forSingle())
                 .observeOn(Schedulers.io())
                 .flatMap(mApi::getChannelsUserHasNotJoined)
                 .map(ChannelResponse::getChannels);

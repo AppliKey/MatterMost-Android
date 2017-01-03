@@ -109,9 +109,10 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
         mTeamStorage.getChosenTeam()
                 .compose(bindToLifecycle())
                 .map(Team::getId)
+                .first()
                 .toSingle()
                 .flatMap(this::fetchStartup)
-                .doOnSuccess(this::fetchUserStatus)
+                .flatMap(this::fetchUserStatus)
                 .subscribe(v -> {
                 }, mErrorHandler::handleError);
 
@@ -141,19 +142,17 @@ public class ChatListScreenPresenter extends BasePresenter<ChatListScreenView> {
 
     }
 
-    private void fetchUserStatus(StartupFetchResult response) {
+    private Single<Boolean> fetchUserStatus(StartupFetchResult response) {
         final Set<String> keys = response.getDirectProfiles().keySet();
 
         // TODO: Remove v3.3 API support
-        mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
-                .compose(bindToLifecycle().forSingle())
+        return mApi.getUserStatusesCompatible(keys.toArray(new String[] {}))
                 .onErrorResumeNext(throwable -> mApi.getUserStatuses())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(userStatusResponse -> mUserStorage.saveUsersStatuses(
                         response.getDirectProfiles(), userStatusResponse))
-                .subscribe(v -> {
-                }, mErrorHandler::handleError);
+                .map(stringStringMap -> true);
     }
 
     private List<Fragment> initTabs(boolean shouldShowUnreadTab) {
