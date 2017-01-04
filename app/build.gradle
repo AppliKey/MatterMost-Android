@@ -105,6 +105,10 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+configurations.all {
+    resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -214,6 +218,8 @@ dependencies {
 
     //progressbar
     compile 'me.zhanghai.android.materialprogressbar:library:1.3.0'
+    
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
 }
 android.variantFilter { variant ->
     if(variant.buildType.name.equals('release') && variant.getFlavors().get(0).name.equals('instrumentation')) {

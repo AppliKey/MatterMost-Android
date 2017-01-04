@@ -10,6 +10,7 @@ import com.applikey.mattermost.models.user.User;
 
 import java.util.List;
 
+import com.applikey.mattermost.utils.Callback;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -103,6 +104,51 @@ public class PostStorage {
         realmInstance.close();
     }
 
+    public void saveAll(List<Post> posts, Callback callback) {
+        mDb.doTransactionalWithCallback(realm -> {
+            for (Post post : posts) {
+                final User author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                        .findFirst();
+
+                final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
+                        realm.where(Post.class)
+                                .equalTo(Post.FIELD_NAME_ID, post.getRootId())
+                                .findFirst()
+                        : null;
+
+                final Post realmPost = realm.copyToRealmOrUpdate(post);
+                realmPost.setAuthor(author);
+                realmPost.setRootPost(rootPost);
+            }
+        }, callback::execute);
+    }
+
+    public void saveAllWithClear(List<Post> posts, String channelId, Callback callback) {
+        mDb.doTransactionalWithCallback(realm -> {
+            realm.where(Post.class)
+                    .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
+                    .findAll()
+                    .deleteAllFromRealm();
+
+            for (Post post : posts) {
+                final User author = realm.where(User.class)
+                        .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                        .findFirst();
+
+                final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
+                        realm.where(Post.class)
+                                .equalTo(Post.FIELD_NAME_ID, post.getRootId())
+                                .findFirst()
+                        : null;
+
+                final Post realmPost = realm.copyToRealmOrUpdate(post);
+                realmPost.setAuthor(author);
+                realmPost.setRootPost(rootPost);
+            }
+        }, callback::execute);
+    }
+
     public void saveAllSync(List<Post> posts) {
         Realm realm = mDb.getRealm();
         realm.beginTransaction();
@@ -158,6 +204,13 @@ public class PostStorage {
                 .equalTo(Post.FIELD_NAME_SENT, excludeFailed)
                 .findAll()
                 .deleteAllFromRealm());
+    }
+
+    public void deleteAllByChannel(String channelId, Realm.Transaction.OnSuccess callback) {
+        mDb.doTransactionalWithCallback(realm -> realm.where(Post.class)
+                .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
+                .findAll()
+                .deleteAllFromRealm(), callback);
     }
 
     public void delete(String id) {

@@ -21,10 +21,10 @@ import com.transitionseverywhere.TransitionManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
+import io.realm.SubscribeableRealmRecyclerViewAdapter;
 
-public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.ViewHolder> {
+public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, PostAdapter.ViewHolder> {
 
     private static final int MY_POST_VIEW_TYPE = 0;
     private static final int OTHERS_POST_VIEW_TYPE = 1;
@@ -43,8 +43,9 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
                        ImageLoader imageLoader,
                        Channel.ChannelType channelType,
                        long lastViewed,
-                       OnLongClickListener onLongClickListener) {
-        super(context, posts, true);
+                       OnLongClickListener onLongClickListener,
+                       boolean autoUpdate) {
+        super(context, posts, autoUpdate);
         mCurrentUserId = currentUserId;
         mImageLoader = imageLoader;
         mChannelType = channelType;

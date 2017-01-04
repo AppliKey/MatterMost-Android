@@ -154,13 +154,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         initParameters();
         mPresenter.getInitialData(mChannelId);
 
-        if (!mIsJoined) {
-            final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
-            showJoiningInterface(channelName);
-        } else {
-            mPresenter.loadMessages(mChannelId);
-        }
-
         initView();
     }
 
@@ -168,6 +161,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     public void onStart() {
         super.onStart();
         mPresenter.fetchAfterRestart();
+
+        if (!mIsJoined) {
+            final String channelName = getIntent().getStringExtra(CHANNEL_NAME);
+            showJoiningInterface(channelName);
+        } else {
+            mPresenter.loadMessages(mChannelId);
+        }
     }
 
     public void showJoiningInterface(String channelName) {
@@ -185,15 +185,22 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
-    public void onDataReady(RealmResults<Post> posts) {
+    public void onDataReady(RealmResults<Post> posts, boolean listenUpdates) {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
+
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
-                                   channelType, mChannelLastViewed, onPostLongClick);
+                channelType, mChannelLastViewed, onPostLongClick, listenUpdates);
 
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
+        mRvMessages.setHasFixedSize(true);
 
         mSrlChat.setOnRefreshListener(() -> mPresenter.fetchNextPage(mAdapter.getItemCount()));
+    }
+
+    @Override
+    public void subscribeForMessageChanges() {
+        mAdapter.enableAutoUpdates();
     }
 
     @Override
@@ -275,12 +282,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @OnClick(R.id.btn_join_channel)
-    public void onClickJoinChat() {
-        mPresenter.joinToChannel(mChannelId);
+    void onClickJoinChat() {
+        mPresenter.joinChannel(mChannelId);
     }
 
     @OnClick(R.id.iv_emoji)
-    public void onClickEmoji() {
+    void onClickEmoji() {
         mEmojiPopup.toggle();
     }
 
@@ -343,8 +350,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.delete, (dialog1, which1) -> mPresenter.deleteMessage(channelId, post))
                 .setPositiveButton(R.string.delete,
-                                   (dialog1, which1) -> mPresenter.deleteMessage(
-                                           channelId, post))
+                        (dialog1, which1) -> mPresenter.deleteMessage(
+                                channelId, post))
                 .show();
     }
 
@@ -370,7 +377,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_shevron);
             mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-            mToolbar.setOnClickListener(v -> mPresenter.channelNameClick());
+            mToolbar.setOnClickListener(v -> mPresenter.openChannelDetails());
         }
         mRvMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
