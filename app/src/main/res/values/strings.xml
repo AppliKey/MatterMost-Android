@@ -156,5 +156,7 @@
     <string name="message_delete_title">Message Delete</string>
     <string name="error_user_invited">User already invited</string>
 
+    <string name="url">url</string>
+
 
 </resources>

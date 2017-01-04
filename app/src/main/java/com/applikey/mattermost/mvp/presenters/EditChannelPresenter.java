@@ -47,7 +47,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
         mSubscription.add(subscription);
     }
 
-    public void updateChannel(String channelName, String channelDescription) {
+    public void updateChannel(String channelName, String channelDescription, String channelLink) {
         if (TextUtils.isEmpty(channelName)) {
             getViewState().showEmptyChannelNameError(
                     mChannel.getType().equals(Channel.ChannelType.PUBLIC.getRepresentation()));
@@ -56,6 +56,7 @@ public class EditChannelPresenter extends BaseEditChannelPresenter<EditChannelVi
 
         final ChannelTitleRequest channelTitleRequest = new ChannelTitleRequest(mChannel);
         channelTitleRequest.setDisplayName(channelName);
+        channelTitleRequest.setName(channelLink);
         channelTitleRequest.setTeamId(mPrefs.getCurrentTeamId());
         final ChannelPurposeRequest channelPurposeRequest = new ChannelPurposeRequest(
                 mChannel.getId(), channelDescription);
