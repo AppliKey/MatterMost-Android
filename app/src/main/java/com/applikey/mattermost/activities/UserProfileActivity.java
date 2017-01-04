@@ -18,6 +18,7 @@ import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.UserProfilePresenter;
 import com.applikey.mattermost.mvp.views.UserProfileView;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.arellomobile.mvp.presenter.ProvidePresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,6 +60,11 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
         return intent;
     }
 
+    @ProvidePresenter
+    UserProfilePresenter providePresenter() {
+        return new UserProfilePresenter(getIntent().getStringExtra(USER_ID_KEY));
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +79,7 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
                 .setIcon(R.drawable.ic_favorite_uncheck)
                 .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         mMenu = menu;
-        initParameters();
+        mPresenter.onMenuSet();
         return true;
     }
 
@@ -121,12 +127,6 @@ public class UserProfileActivity extends BaseMvpActivity implements UserProfileV
             actionBar.setTitle(null);
         }
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-    }
-
-    private void initParameters() {
-        final Bundle extras = getIntent().getExtras();
-        final String userId = extras.getString(USER_ID_KEY);
-        mPresenter.getInitialData(userId);
     }
 
     private void setStatusIcon(User user) {

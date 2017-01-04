@@ -56,14 +56,7 @@ public class FindMoreChannelsActivity extends BaseMvpActivity
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.requestNotJoinedChannels();
-    }
-
-    @Override
     public void showNotJoinedChannels(List<Channel> notJoinedChannels) {
-        hideEmptyState();
         mAdapter.setChannels(notJoinedChannels);
     }
 

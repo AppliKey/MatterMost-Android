@@ -11,7 +11,6 @@ import com.arellomobile.mvp.InjectViewState;
 
 import javax.inject.Inject;
 
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 @InjectViewState
@@ -30,26 +29,12 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
     @Inject
     ErrorHandler mErrorHandler;
 
-    private String mUserId;
+    private final String mUserId;
     private Channel mChannel;
 
-    public UserProfilePresenter() {
+    public UserProfilePresenter(String userId) {
         App.getUserComponent().inject(this);
-    }
-
-    public void getInitialData(String userId) {
         mUserId = userId;
-        final UserProfileView view = getViewState();
-
-        final Subscription subscribe = mUserStorage.getDirectProfile(userId)
-                .doOnNext(view::showBaseDetails)
-                .flatMap(user -> mChannelStorage.directChannel(userId))
-                .doOnNext(channel -> mChannel = channel)
-                .map(Channel::isFavorite)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onMakeFavorite, mErrorHandler::handleError);
-
-        mSubscription.add(subscribe);
     }
 
     @Override
@@ -62,9 +47,23 @@ public class UserProfilePresenter extends BasePresenter<UserProfileView>
 
     //TODO Create direct chat
     public void sendDirectMessage() {
-        final Subscription subscribe = mChannelStorage.directChannel(mUserId)
+        mChannelStorage.directChannel(mUserId)
+                .compose(bindToLifecycle())
                 .subscribe(channel -> getViewState().openDirectChannel(channel), mErrorHandler::handleError);
+    }
 
-        mSubscription.add(subscribe);
+    public void onMenuSet() {
+        setInitialData();
+    }
+
+    private void setInitialData() {
+        mUserStorage.getDirectProfile(mUserId)
+                .compose(bindToLifecycle())
+                .doOnNext(user -> getViewState().showBaseDetails(user))
+                .flatMap(user -> mChannelStorage.directChannel(mUserId))
+                .doOnNext(channel -> mChannel = channel)
+                .map(Channel::isFavorite)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(favorite -> getViewState().onMakeFavorite(favorite), mErrorHandler::handleError);
     }
 }

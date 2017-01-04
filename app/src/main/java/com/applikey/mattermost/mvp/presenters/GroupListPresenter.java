@@ -9,10 +9,6 @@ import rx.Observable;
 @InjectViewState
 public class GroupListPresenter extends BaseChatListPresenter {
 
-    public GroupListPresenter() {
-        super();
-    }
-
     @Override
     public Observable<RealmResults<Channel>> getInitData() {
         return mChannelStorage.listClosed();

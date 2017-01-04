@@ -120,9 +120,7 @@ public abstract class BaseChatListPresenter extends BasePresenter<ChatListView> 
                 .flatMap(channelId -> mApi.getLastPost(mTeamId, channelId).toObservable(), this::transform)
                 .filter(lastPostDto -> lastPostDto != null)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(post -> {
-                    mChannelStorage.updateLastPosts(post);
-                }, mErrorHandler::handleError);
+                .subscribe(post -> mChannelStorage.updateLastPosts(post), mErrorHandler::handleError);
     }
 
     private void displayData() {
