@@ -186,4 +186,4 @@
 -keep class **$$JsonObjectMapper { *; }
 
 #Dagger
--keep dagger.** { *; }
+-keep class dagger.** { *; }
