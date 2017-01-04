@@ -186,8 +186,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void onDataReady(RealmResults<Post> posts, boolean listenUpdates) {
-        showEmpty(posts.isEmpty());
-
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
 
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
