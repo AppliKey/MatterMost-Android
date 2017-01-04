@@ -24,34 +24,24 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
     @Inject
     ErrorHandler mErrorHandler;
 
+    private final List<String> mAlreadyAddedUsersIds;
+    private final boolean mEditable;
+
     private List<User> mAlreadyAddedUsers;
     private List<User> mPendingUsers;
 
-    public AddedMembersPresenter() {
+    public AddedMembersPresenter(List<String> alreadyAddedUsers, boolean editable) {
         App.getUserComponent().inject(this);
+        mEditable = editable;
+        mAlreadyAddedUsersIds = alreadyAddedUsers;
     }
 
-    public void setData(List<String> alreadyAddedUsers) {
-        mSubscription.add(mUserStorage.findUsers(alreadyAddedUsers)
-                .doOnNext(Collections::sort)
-                .doOnNext(users -> {
-                    mAlreadyAddedUsers = users;
-                    mPendingUsers = new ArrayList<>(mAlreadyAddedUsers);
-                })
-                .subscribe(users -> {
-                    getViewState().showUsers(mAlreadyAddedUsers);
-                    getViewState().showAddedMembers(mAlreadyAddedUsers);
-                }, mErrorHandler::handleError));
-    }
+    @Override
+    protected void onFirstViewAttach() {
+        super.onFirstViewAttach();
 
-    private void addUser(User user) {
-        mAlreadyAddedUsers.add(user);
-        getViewState().addInvitedUser(user);
-    }
-
-    private void removeUser(User user) {
-        mAlreadyAddedUsers.remove(user);
-        getViewState().removeInvitedUser(user);
+        setData(mAlreadyAddedUsersIds);
+        getViewState().initList(mEditable);
     }
 
     public List<User> getInvitedUsers() {
@@ -74,5 +64,29 @@ public class AddedMembersPresenter extends BasePresenter<AddedMembersView> {
         } else {
             addUser(user);
         }
+    }
+
+    private void setData(List<String> alreadyAddedUsers) {
+        mUserStorage.findUsers(alreadyAddedUsers)
+                .compose(bindToLifecycle())
+                .doOnNext(Collections::sort)
+                .doOnNext(users -> {
+                    mAlreadyAddedUsers = users;
+                    mPendingUsers = new ArrayList<>(mAlreadyAddedUsers);
+                })
+                .subscribe(users -> {
+                    getViewState().showUsers(mAlreadyAddedUsers);
+                    getViewState().showAddedMembers(mAlreadyAddedUsers);
+                }, mErrorHandler::handleError);
+    }
+
+    private void addUser(User user) {
+        mAlreadyAddedUsers.add(user);
+        getViewState().addInvitedUser(user);
+    }
+
+    private void removeUser(User user) {
+        mAlreadyAddedUsers.remove(user);
+        getViewState().removeInvitedUser(user);
     }
 }

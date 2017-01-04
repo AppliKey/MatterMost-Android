@@ -2,7 +2,6 @@ package com.applikey.mattermost.storage.db;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.annimon.stream.Stream;
 import com.applikey.mattermost.models.channel.Channel;
@@ -18,6 +17,7 @@ import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
 
@@ -32,6 +32,66 @@ public class ChannelStorage {
     public ChannelStorage(final Db db, final Prefs prefs) {
         mDb = db;
         mPrefs = prefs;
+    }
+
+    public Observable<Channel> findById(String id) {
+        return mDb.getObject(Channel.class, id);
+    }
+
+    public Observable<Channel> get(String id) {
+        return mDb.getCopiedObject(realm -> realm.where(Channel.class).equalTo("id", id).findFirst());
+    }
+
+    public void updateLastPost(String channelId, Post post) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post persistedPost = realm.copyToRealmOrUpdate(post);
+            final Channel channel = realm.where(Channel.class).equalTo("id", channelId).findFirst();
+            if (channel == null) {
+                return;
+            }
+            channel.setLastPost(persistedPost);
+        });
+        realmInstance.close();
+    }
+
+    public void updateLastPost(String channelId) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post lastPost = realm.where(Post.class)
+                    .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
+                    .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING)
+                    .first();
+
+            if (lastPost == null) {
+                return;
+            }
+
+            final Channel channel = realm.where(Channel.class)
+                    .equalTo(Channel.FIELD_ID, channelId)
+                    .findFirst();
+
+            if (channel == null) {
+                return;
+            }
+
+            channel.setLastPost(lastPost);
+
+        });
+        realmInstance.close();
+    }
+
+    public void updateViewedAt(String channelId) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Channel channel = realm.where(Channel.class).equalTo("id", channelId).findFirst();
+            if (channel == null) {
+                return;
+            }
+            channel.setHasUnreadMessages(false);
+            channel.setLastViewedAt(channel.getLastActivityTime());
+        });
+        realmInstance.close();
     }
 
     // TODO Duplicate
@@ -62,10 +122,10 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.PUBLIC.getRepresentation(),
+                                                      Channel.ChannelType.PUBLIC.getRepresentation(),
                                                       Channel.FIELD_NAME_IS_JOINED,
                                                       true,
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                                                      Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
@@ -89,9 +149,11 @@ public class ChannelStorage {
     }
 
     public Observable<RealmResults<Channel>> listUnread() {
-        return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                                                             true,
-                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+        return mDb.resultRealmObjectsFilteredExcludedWithEmpty(Channel.class, Channel.FIELD_UNREAD_TYPE,
+                                                               true,
+                                                               Channel.FIELD_NAME_IS_JOINED,
+                                                               true,
+                                                               Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<Channel> channelById(String id) {
@@ -129,7 +191,7 @@ public class ChannelStorage {
     public void setLastPost(@NonNull Channel channel, Post lastPost) {
         mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
             Post realmPost = null;
-            if(lastPost != null) {
+            if (lastPost != null) {
                 realmPost = realm.copyToRealmOrUpdate(lastPost);
 
                 final User author = realm.where(User.class)
@@ -146,6 +208,9 @@ public class ChannelStorage {
             }
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
+            if (realmPost != null && TextUtils.equals(realmPost.getAuthor().getId(), mPrefs.getCurrentUserId())) {
+                realmChannel.setHasUnreadMessages(false);
+            }
             return true;
         });
     }
@@ -171,6 +236,7 @@ public class ChannelStorage {
             final User author;
             if (TextUtils.equals(lastPost.getUserId(), currentUserId)) {
                 author = currentUser;
+                realmChannel.setHasUnreadMessages(false);
             } else {
                 author = realm.where(User.class)
                         .equalTo(User.FIELD_NAME_ID, lastPost.getUserId())
@@ -188,6 +254,9 @@ public class ChannelStorage {
 
             realmChannel.setLastPost(realmPost);
             realmChannel.updateLastActivityTime();
+            if (TextUtils.equals(author.getId(), mPrefs.getCurrentUserId())) {
+                realmChannel.setHasUnreadMessages(false);
+            }
         });
     }
 
@@ -217,7 +286,7 @@ public class ChannelStorage {
         });
     }
 
-    public void setUsers(String id, List<User> users, Realm.Transaction.OnSuccess onSuccess){
+    public void setUsers(String id, List<User> users, Realm.Transaction.OnSuccess onSuccess) {
         mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
             realmChannel.setUsers(users);
             realm.copyToRealmOrUpdate(realmChannel);

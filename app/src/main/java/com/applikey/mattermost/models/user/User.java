@@ -26,6 +26,8 @@ public class User extends RealmObject
 
     public static final String LAST_NAME = "lastName";
 
+    public static final String EMAIL = "email";
+
     @PrimaryKey
     @SerializedName(FIELD_NAME_ID)
     private String id;
@@ -33,7 +35,7 @@ public class User extends RealmObject
     @SerializedName(FIELD_USERNAME)
     private String username;
 
-    @SerializedName("email")
+    @SerializedName(EMAIL)
     private String email;
 
     @SerializedName("first_name")

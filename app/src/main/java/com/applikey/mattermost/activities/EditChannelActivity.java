@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.applikey.mattermost.Constants;
@@ -39,6 +40,8 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     @InjectPresenter
     EditChannelPresenter mPresenter;
     @BindView(R.id.scroll_view) NestedScrollView mScrollView;
+    @BindView(R.id.et_link_name) EditText mEtLinkName;
+    @BindView(R.id.members_text) TextView mMembersText;
 
     private boolean mOpenAsInviteNewMember;
 
@@ -67,6 +70,7 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
     @Override
     public void showChannelData(Channel channel) {
         mEtChannelName.setText(channel.getDisplayName());
+        mEtLinkName.setText(channel.getName());
         mEtChannelDescription.setText(channel.getPurpose());
         final boolean isPrivate = channel.getType()
                 .equals(Channel.ChannelType.PRIVATE.getRepresentation());
@@ -155,6 +159,7 @@ public class EditChannelActivity extends BaseEditChannelActivity implements Edit
         showLoadingDialog();
         final String channelName = mEtChannelName.getText().toString().trim();
         final String channelDescription = mEtChannelDescription.getText().toString().trim();
-        mPresenter.updateChannel(channelName, channelDescription);
+        final String channelLink = mEtLinkName.getText().toString().trim();
+        mPresenter.updateChannel(channelName, channelDescription, channelLink);
     }
 }

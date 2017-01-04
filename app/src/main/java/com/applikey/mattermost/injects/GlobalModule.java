@@ -6,6 +6,8 @@ import android.support.v4.app.NotificationManagerCompat;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.BuildConfig;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.models.socket.Props;
+import com.applikey.mattermost.models.socket.WebSocketEvent;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.PersistentPrefs;
@@ -15,10 +17,15 @@ import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ServerUrlFactory;
+import com.applikey.mattermost.web.adapter.PropsTypeAdapter;
+import com.applikey.mattermost.web.adapter.SocketEventTypeAdapter;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.applikey.mattermost.web.images.PicassoImageLoader;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -29,6 +36,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmObject;
 import okhttp3.Cache;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -159,7 +167,29 @@ public class GlobalModule {
     @Provides
     @PerApp
     Gson provideGson() {
-        return new Gson();
+        final PropsTypeAdapter propsTypeAdapter = new PropsTypeAdapter();
+        final SocketEventTypeAdapter socketEventTypeAdapter = new SocketEventTypeAdapter();
+
+        final Gson gson = new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .registerTypeAdapter(Props.class, propsTypeAdapter)
+                .registerTypeAdapter(WebSocketEvent.class, socketEventTypeAdapter)
+                .create();
+
+        propsTypeAdapter.setGson(gson);
+        socketEventTypeAdapter.setGson(gson);
+
+        return gson;
     }
 
     @Provides

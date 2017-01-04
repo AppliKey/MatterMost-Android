@@ -16,11 +16,9 @@ import com.neovisionaries.ws.client.WebSocketFrame;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.URI;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Emitter;
 import rx.Observable;
-
 
 public class MessagingSocket implements Socket {
 
@@ -30,7 +28,6 @@ public class MessagingSocket implements Socket {
     private final Gson mGson;
     private final URI mURI;
     private WebSocket mWebSocket;
-    private AtomicBoolean mIsDisconnectingFired = new AtomicBoolean(false);
 
     public MessagingSocket(BearerTokenFactory bearerTokenFactory, Gson gson, Uri endpoint) {
         mBearerTokenFactory = bearerTokenFactory;
@@ -41,7 +38,6 @@ public class MessagingSocket implements Socket {
     @Override
     public Observable<WebSocketEvent> listen() {
         return Observable.fromEmitter(emitter -> {
-            mIsDisconnectingFired.set(false);
             try {
                 final WebSocketAdapter socketListener = new WebSocketAdapter() {
 
@@ -52,7 +48,7 @@ public class MessagingSocket implements Socket {
 
                     @Override
                     public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-                        Log.e(TAG, "WebSocket Error: ", cause);
+                        Log.e(TAG, "WebSocket Error: " + cause.getMessage());
                         switch (cause.getError()) {
                             case SOCKET_CONNECT_ERROR:
                                 emitter.onError(new ConnectException("Unable to establish connection"));
@@ -70,29 +66,27 @@ public class MessagingSocket implements Socket {
 
                     @Override
                     public void onDisconnected(WebSocket websocket,
-                            WebSocketFrame serverCloseFrame,
-                            WebSocketFrame clientCloseFrame,
-                            boolean closedByServer)
+                                               WebSocketFrame serverCloseFrame,
+                                               WebSocketFrame clientCloseFrame,
+                                               boolean closedByServer)
                             throws Exception {
-                        if (mIsDisconnectingFired.get()) {
-                            Log.d(TAG, "Socket disconnected!");
-                            emitter.onCompleted();
-                        } else {
-                            Log.w(TAG, "Socket connection interrupted.");
-                            emitter.onError(new SocketException("Connection interrupted"));
-                        }
+                        Log.d(TAG, "Socket disconnected!");
+                        emitter.onError(new SocketException("Connection interrupted"));
                     }
                 };
                 mWebSocket = new WebSocketFactory()
-                        .setConnectionTimeout(Constants.WEB_SOCKET_TIMEOUT)
-                        .createSocket(mURI);
+                        .createSocket(mURI, Constants.WEB_SOCKET_TIMEOUT);
                 mWebSocket.addListener(socketListener);
                 mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mBearerTokenFactory.getBearerTokenString());
-                emitter.setCancellation(() -> mWebSocket.removeListener(socketListener));
+                emitter.setCancellation(() -> {
+                    mWebSocket.removeListener(socketListener);
+                    mWebSocket.sendClose();
+                    mWebSocket.disconnect();
+                });
                 mWebSocket.connect();
                 Log.d(TAG, "Socket connected!");
             } catch (Exception e) {
-                Log.e(TAG, "Socket error: ", e);
+                Log.e(TAG, "Socket error: " + e.getMessage());
                 emitter.onError(e);
             }
         }, Emitter.BackpressureMode.BUFFER);
@@ -100,15 +94,7 @@ public class MessagingSocket implements Socket {
 
     @Override
     public boolean isOpen() {
-        return mWebSocket != null && mWebSocket.isOpen() && !mIsDisconnectingFired.get();
+        return mWebSocket != null && mWebSocket.isOpen();
     }
 
-    @Override
-    public void close() {
-        mIsDisconnectingFired.set(true);
-        if (mWebSocket != null) {
-            mWebSocket.sendClose();
-            mWebSocket.disconnect();
-        }
-    }
 }
