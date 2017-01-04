@@ -1,6 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import android.util.Log;
 import com.applikey.mattermost.models.channel.Channel;
@@ -150,9 +151,11 @@ public class PostStorage {
                 channelId, Post.FIELD_NAME_CHANNEL_CREATE_AT);
     }
 
-    public void deleteAllByChannel(String channelId) {
+    public void deleteAllByChannel(String channelId, boolean excludeFailed) {
+        Log.d("PostStorage ", "deleteAllByChannel: ");
         mDb.doTransactional(realm -> realm.where(Post.class)
                 .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
+                .equalTo(Post.FIELD_NAME_SENT, excludeFailed)
                 .findAll()
                 .deleteAllFromRealm());
     }

@@ -14,6 +14,7 @@ public class Post extends RealmObject {
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
+    public static final String FIELD_NAME_SENT = "sent";
 
     @PrimaryKey
     @SerializedName("id")
@@ -37,7 +38,7 @@ public class Post extends RealmObject {
     // Application-specific fields
     private int priority;
     private User author;
-    private boolean mSent = true;
+    private boolean sent = true;
 
     public Post() {
 
@@ -127,11 +128,11 @@ public class Post extends RealmObject {
     }
 
     public boolean isSent() {
-        return mSent;
+        return sent;
     }
 
     public void setSent(boolean sent) {
-        mSent = sent;
+        this.sent = sent;
     }
 
     @Nullable
