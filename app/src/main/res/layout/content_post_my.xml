@@ -60,13 +60,14 @@
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_item_chat_text_size"
                 app:emojiSize="@dimen/emoji_size"
-                tools:text="Some message" />
+                tools:text="S" />
 
             <LinearLayout
                 android:id="@+id/attachments_container"
-                android:layout_width="match_parent"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:visibility="gone" />
 
         </LinearLayout>
 

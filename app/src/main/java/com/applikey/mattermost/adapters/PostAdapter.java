@@ -120,7 +120,10 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
 
         holder.bindHeader(showNewMessageIndicator, showDate);
 
-        if (isMy(post)) {
+        final boolean isMy = isMy(post);
+        holder.bindAttachments(post, isMy);
+
+        if (isMy) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
         } else {
             holder.bindOtherPost(mChannelType, post, showAuthor, showTime, mImageLoader, mOnLongClickListener);
@@ -268,6 +271,18 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
 
+        private void bindAttachments(Post post, boolean isMy) {
+            mAttachmentsContainer.removeAllViews();
+            mAttachmentsContainer.setVisibility(post.getFilenames().isEmpty() ? View.GONE : View.VISIBLE);
+            for (RealmString filename : post.getFilenames()) {
+                final TextView attachment = new TextView(itemView.getContext());
+                attachment.setText(StringUtil.extractFileName(filename.getValue()));
+                attachment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_attach_grey, 0, 0, 0);
+                attachment.setTag(filename.getValue());
+                mAttachmentsContainer.addView(attachment);
+            }
+        }
+
         private void bind(Channel.ChannelType channelType,
                           Post post,
                           boolean showAuthor,
@@ -276,15 +291,7 @@ public class PostAdapter extends RealmRecyclerViewAdapter<Post, PostAdapter.View
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(post.getAuthor()));
 
-            mAttachmentsContainer.removeAllViews();
-            for (RealmString filename : post.getFilenames()) {
-                final TextView attachment = new TextView(itemView.getContext());
-                attachment.setText(StringUtil.extractFileName(filename.getValue()));
-                attachment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_attach_grey, 0, 0, 0);
-                attachment.setTag(filename.getValue());
-                mAttachmentsContainer.addView(attachment);
-            }
-
+            mTvMessage.setVisibility(TextUtils.isEmpty(post.getMessage()) ? View.GONE : View.VISIBLE);
             mTvMessage.setText(post.getMessage());
             mTvMessage.setOnLongClickListener(v -> {
                 itemView.performLongClick();
