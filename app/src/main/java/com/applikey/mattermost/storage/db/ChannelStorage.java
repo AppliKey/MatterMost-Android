@@ -17,6 +17,7 @@ import java.util.Map;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
 
@@ -31,6 +32,66 @@ public class ChannelStorage {
     public ChannelStorage(final Db db, final Prefs prefs) {
         mDb = db;
         mPrefs = prefs;
+    }
+
+    public Observable<Channel> findById(String id) {
+        return mDb.getObject(Channel.class, id);
+    }
+
+    public Observable<Channel> get(String id) {
+        return mDb.getCopiedObject(realm -> realm.where(Channel.class).equalTo("id", id).findFirst());
+    }
+
+    public void updateLastPost(String channelId, Post post) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post persistedPost = realm.copyToRealmOrUpdate(post);
+            final Channel channel = realm.where(Channel.class).equalTo("id", channelId).findFirst();
+            if (channel == null) {
+                return;
+            }
+            channel.setLastPost(persistedPost);
+        });
+        realmInstance.close();
+    }
+
+    public void updateLastPost(String channelId) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post lastPost = realm.where(Post.class)
+                    .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
+                    .findAllSorted(Post.FIELD_NAME_CHANNEL_CREATE_AT, Sort.DESCENDING)
+                    .first();
+
+            if (lastPost == null) {
+                return;
+            }
+
+            final Channel channel = realm.where(Channel.class)
+                    .equalTo(Channel.FIELD_ID, channelId)
+                    .findFirst();
+
+            if (channel == null) {
+                return;
+            }
+
+            channel.setLastPost(lastPost);
+
+        });
+        realmInstance.close();
+    }
+
+    public void updateViewedAt(String channelId) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Channel channel = realm.where(Channel.class).equalTo("id", channelId).findFirst();
+            if (channel == null) {
+                return;
+            }
+            channel.setHasUnreadMessages(false);
+            channel.setLastViewedAt(channel.getLastActivityTime());
+        });
+        realmInstance.close();
     }
 
     // TODO Duplicate

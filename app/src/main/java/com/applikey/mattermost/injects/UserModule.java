@@ -3,6 +3,7 @@ package com.applikey.mattermost.injects;
 import android.net.Uri;
 
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.interactor.MessagingInteractor;
 import com.applikey.mattermost.platform.socket.MessagingSocket;
 import com.applikey.mattermost.platform.socket.Socket;
 import com.applikey.mattermost.storage.db.ChannelStorage;
@@ -10,10 +11,10 @@ import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.PreferenceStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
-import com.applikey.mattermost.storage.preferences.PersistentPrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.utils.kissUtils.utils.UrlUtil;
+import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.BearerTokenFactory;
 import com.google.gson.Gson;
 
@@ -65,6 +66,18 @@ public class UserModule {
         baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
         baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
         return new MessagingSocket(bearerTokenFactory, gson, Uri.parse(baseUrl));
+    }
+
+    @Provides
+    @PerUser
+    MessagingInteractor provideMessagingInteractor(ChannelStorage channelStorage,
+            UserStorage userStorage,
+            PostStorage postStorage,
+            Socket messagingSocket, Api api) {
+        return new MessagingInteractor(
+                channelStorage,
+                userStorage,
+                postStorage, messagingSocket, api);
     }
 
 }
