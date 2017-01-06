@@ -145,4 +145,8 @@
     <dimen name="grey_button_min_height">34dp</dimen>
 
     <dimen name="channel_list_item_height">106dp</dimen>
+
+    <dimen name="attachment_icon_size">48dp</dimen>
+    <dimen name="attachment_icon_padding">8dp</dimen>
+
 </resources>

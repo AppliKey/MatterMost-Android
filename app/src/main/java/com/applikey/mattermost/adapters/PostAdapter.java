@@ -2,15 +2,14 @@ package com.applikey.mattermost.adapters;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.models.RealmString;
@@ -77,8 +76,8 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
         final View itemView = inflater.inflate(layoutId, parent, false);
         final ViewHolder viewHolder = new ViewHolder(itemView);
         viewHolder.mTvTimestamp.setOnClickListener(v ->
-                                                           viewHolder.toggleDate(
-                                                                   getItem(viewHolder.getAdapterPosition())));
+                viewHolder.toggleDate(
+                        getItem(viewHolder.getAdapterPosition())));
         return viewHolder;
     }
 
@@ -122,7 +121,7 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
         holder.bindHeader(showNewMessageIndicator, showDate);
 
         final boolean isMy = isMy(post);
-        holder.bindAttachments(post, isMy);
+        holder.bindAttachments(context, post, isMy);
 
         if (isMy) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
@@ -208,7 +207,9 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
         }
 
         void setFailStatusVisible(boolean visible) {
-            mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
+            if (mIvFail != null) {
+                mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
+            }
         }
 
         void toggleDate(Post post) {
@@ -272,15 +273,36 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
             mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
 
-        private void bindAttachments(Post post, boolean isMy) {
+        private void bindAttachments(Context context, Post post, boolean isMy) {
             mAttachmentsContainer.removeAllViews();
             mAttachmentsContainer.setVisibility(post.getFilenames().isEmpty() ? View.GONE : View.VISIBLE);
             for (RealmString filename : post.getFilenames()) {
-                final TextView attachment = new TextView(itemView.getContext());
-                attachment.setText(StringUtil.extractFileName(filename.getValue()));
-                attachment.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_attach_grey, 0, 0, 0);
-                attachment.setTag(filename.getValue());
-                mAttachmentsContainer.addView(attachment);
+                final LinearLayout container = new LinearLayout(itemView.getContext());
+                final LinearLayout.LayoutParams containerParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                container.setOrientation(LinearLayout.HORIZONTAL);
+                final ImageView thumbnail = new ImageView(container.getContext());
+                final int iconSize = (int) context.getResources().getDimension(R.dimen.attachment_icon_size);
+                final int iconPadding = (int) context.getResources().getDimension(R.dimen.attachment_icon_padding);
+                final LinearLayout.LayoutParams thumbnailParams =
+                        new LinearLayout.LayoutParams(iconSize, iconSize);
+                thumbnail.setLayoutParams(thumbnailParams);
+                thumbnail.setPadding(iconPadding, iconPadding, iconPadding, iconPadding);
+                thumbnail.setImageDrawable(ContextCompat.getDrawable(thumbnail.getContext(),
+                        R.drawable.ic_attach_grey));
+                container.addView(thumbnail);
+                final TextView name = new TextView(container.getContext());
+                final LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                name.setTextColor(ContextCompat.getColor(name.getContext(), isMy ? R.color.colorDisabled :
+                        R.color.textPrimary));
+                name.setText(StringUtil.extractFileName(filename.getValue()));
+                name.setTag(filename.getValue());
+                nameParams.gravity = Gravity.CENTER_VERTICAL;
+                name.setLayoutParams(nameParams);
+                container.addView(name);
+                container.setLayoutParams(containerParams);
+                mAttachmentsContainer.addView(container);
             }
         }
 
