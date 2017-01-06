@@ -13,11 +13,14 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+import java.util.Comparator;
+
 public class Post extends RealmObject {
 
     public static final String FIELD_NAME_ID = "id";
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
+    public static final String FIELD_NAME_SENT = "sent";
 
     @PrimaryKey
     @SerializedName("id")
@@ -43,7 +46,7 @@ public class Post extends RealmObject {
     // Application-specific fields
     private int priority;
     private User author;
-    private boolean mSent = true;
+    private boolean sent = true;
 
     public Post() {
 
@@ -133,11 +136,11 @@ public class Post extends RealmObject {
     }
 
     public boolean isSent() {
-        return mSent;
+        return sent;
     }
 
     public void setSent(boolean sent) {
-        mSent = sent;
+        this.sent = sent;
     }
 
     @Nullable
@@ -209,9 +212,13 @@ public class Post extends RealmObject {
                 : post.getAuthor() == null;
     }
 
-    public static int COMPARATOR_BY_CREATE_AT(Post post1, Post post2) {
-        return (int) (post1.getCreatedAt() - post2.getCreatedAt());
-    }
+
+    public static Comparator<Post> COMPARATOR_BY_CREATE_AT =
+            (post1, post2) -> {
+                final long delta = post1.getCreatedAt() - post2.getCreatedAt();
+                return delta == 0 ? 0 : delta > 0 ? 1 : -1;
+            };
+
 
     @Override
     public String toString() {

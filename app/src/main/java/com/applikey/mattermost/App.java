@@ -2,6 +2,7 @@ package com.applikey.mattermost;
 
 import android.app.Application;
 import android.support.multidex.MultiDex;
+import android.content.Intent;
 import android.util.Log;
 
 import com.applikey.mattermost.activities.ChatActivity;
@@ -68,17 +69,22 @@ public class App extends Application {
                         .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
                         .build());
 
+        manageMessagingService();
+    }
+
+    private void manageMessagingService() {
+        final Intent serviceIntent = WebSocketService.getIntent(this);
         RxForeground.with(this)
                 .observeForeground(ChatListActivity.class, ChatActivity.class)
                 .doOnNext(observe -> Log.d(TAG, "Chat activities are on " + (observe ? "foreground" : "background")))
                 .switchMap(foreground -> Observable.timer(
-                        foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MILLISECONDS)
+                        foreground ? 0 : Constants.SOCKET_SERVICE_SHUTDOWN_THRESHOLD_MINUTES, TimeUnit.MINUTES)
                         .map(tick -> foreground))
                 .subscribe(foreground -> {
                     if (foreground) {
-                        startService(WebSocketService.getIntent(this));
+                        startService(serviceIntent);
                     } else {
-                        stopService(WebSocketService.getIntent(this));
+                        stopService(serviceIntent);
                     }
                 }, Throwable::printStackTrace);
     }

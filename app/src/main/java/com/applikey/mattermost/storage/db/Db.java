@@ -1,5 +1,9 @@
 package com.applikey.mattermost.storage.db;
 
+import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Process;
 import android.util.Log;
 
 import com.annimon.stream.Stream;
@@ -7,6 +11,7 @@ import com.annimon.stream.Stream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -14,7 +19,9 @@ import io.realm.RealmQuery;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
+import rx.Scheduler;
 import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Action3;
 import rx.functions.Func1;
@@ -53,6 +60,56 @@ public class Db {
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty())
                 .map(mRealm::copyFromRealm);
+    }
+
+    public <E extends RealmObject> Observable<List<E>> getCopiedObjects(Func1<Realm, RealmResults<E>> resultsHandler) {
+        final HandlerThread handlerThread = new HandlerThread("RealmReadThread", Process.THREAD_PRIORITY_BACKGROUND);
+        handlerThread.start();
+        final Scheduler scheduler = AndroidSchedulers.from(handlerThread.getLooper());
+        final AtomicReference<Realm> realmReference = new AtomicReference<>(null);
+        return Observable.defer(() -> {
+            final Realm realm = Realm.getDefaultInstance();
+            realmReference.set(realm);
+            return resultsHandler.call(realm).asObservable();
+        })
+                .filter(results -> results.isLoaded() && results.isValid())
+                .map(results -> realmReference.get().copyFromRealm(results))
+                .subscribeOn(scheduler)
+                .unsubscribeOn(scheduler)
+                .doOnUnsubscribe(() -> unsubscribeOnDbThread(handlerThread, realmReference.get()));
+    }
+
+    public <E extends RealmObject> Observable<E> getCopiedObject(Func1<Realm, E> objectHandler) {
+        final HandlerThread handlerThread = new HandlerThread("RealmReadThread", Process.THREAD_PRIORITY_BACKGROUND);
+        handlerThread.start();
+        final Scheduler scheduler = AndroidSchedulers.from(handlerThread.getLooper());
+        final AtomicReference<Realm> realmReference = new AtomicReference<>(null);
+        return Observable.defer(() -> {
+            final Realm realm = Realm.getDefaultInstance();
+            realmReference.set(realm);
+            final E object = objectHandler.call(realm);
+            return object == null ? Observable.empty() : object.asObservable();
+        })
+                .filter(realmObject -> realmObject.isLoaded() && realmObject.isValid())
+                .map(realmObject -> {
+                    //noinspection unchecked
+                    return realmReference.get().copyFromRealm((E) realmObject);
+                })
+                .subscribeOn(scheduler)
+                .unsubscribeOn(scheduler)
+                .doOnUnsubscribe(() -> unsubscribeOnDbThread(handlerThread, realmReference.get()));
+    }
+
+    private void unsubscribeOnDbThread(HandlerThread handlerThread, Realm realm) {
+        final Handler handler = new Handler(handlerThread.getLooper());
+        handler.post(() -> {
+            realm.close();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                handlerThread.quitSafely();
+            } else {
+                handlerThread.quit();
+            }
+        });
     }
 
     public <T extends RealmObject> Observable<T> getObjectQualified(Class<T> tClass,
@@ -130,8 +187,24 @@ public class Db {
                 }));
     }
 
+    public <T extends RealmObject, V> void updateMapTransactionalSync(Map<String, V> valuesMap,
+                                                                      Class<T> clazz,
+                                                                      Action3<T, V, Realm> updateFunc) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> Stream.of(valuesMap.entrySet())
+                .forEach(entry -> {
+                    final T object = realm.where(clazz).equalTo("id", entry.getKey()).findFirst();
+                    updateFunc.call(object, entry.getValue(), realm);
+                }));
+        realmInstance.close();
+    }
+
     public void doTransactional(Action1<Realm> update) {
         mRealm.executeTransactionAsync(update::call);
+    }
+
+    public void doTransactionalWithCallback(Action1<Realm> action, Realm.Transaction.OnSuccess callback) {
+        mRealm.executeTransactionAsync(action::call, callback);
     }
 
     public <T extends RealmObject> void deleteTransactional(Class<T> tClass, String id) {

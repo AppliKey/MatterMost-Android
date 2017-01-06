@@ -12,7 +12,9 @@ import io.realm.RealmResults;
 @StateStrategyType(SkipStrategy.class)
 public interface ChatView extends MvpView {
 
-    void onDataReady(RealmResults<Post> posts);
+    void onDataReady(RealmResults<Post> posts, boolean listenUpdates);
+
+    void subscribeForMessageChanges();
 
     void showProgress();
 
