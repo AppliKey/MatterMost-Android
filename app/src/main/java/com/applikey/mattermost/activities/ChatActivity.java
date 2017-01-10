@@ -26,6 +26,8 @@ import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
+import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.utils.view.ViewUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -114,6 +116,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     ImageLoader mImageLoader;
 
+    @Inject
+    ImagePathHelper mImagePathHelper;
+
+    @Inject
+    Prefs mPrefs;
+
     private String mRootId;
 
     private String mChannelId;
@@ -188,7 +196,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     public void onDataReady(RealmResults<Post> posts, boolean listenUpdates) {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
 
-        mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
+        final String currentTeamId = mPrefs.getCurrentTeamId();
+
+        mAdapter = new PostAdapter(this, posts, mCurrentUserId, currentTeamId, mImageLoader, mImagePathHelper,
                 channelType, mChannelLastViewed, onPostLongClick, listenUpdates);
 
         mRvMessages.addOnScrollListener(mPaginationListener);

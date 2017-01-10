@@ -20,6 +20,8 @@ public interface ImageLoader {
 
     void displayCircularImage(@NonNull String url, @NonNull ImageView imageView);
 
+    void displayThumbnailImage(@NonNull String url, @NonNull ImageView imageView);
+
     void dropMemoryCache();
 
 }

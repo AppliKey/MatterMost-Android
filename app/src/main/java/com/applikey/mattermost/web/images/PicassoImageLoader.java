@@ -57,6 +57,11 @@ public class PicassoImageLoader implements ImageLoader {
     }
 
     @Override
+    public void displayThumbnailImage(@NonNull String url, @NonNull ImageView imageView) {
+        picasso.load(url).resize(100, 100).into(imageView);
+    }
+
+    @Override
     public void dropMemoryCache() {
         PicassoTools.clearCache(picasso);
     }

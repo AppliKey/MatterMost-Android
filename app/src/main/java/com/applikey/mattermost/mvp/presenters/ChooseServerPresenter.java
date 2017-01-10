@@ -17,12 +17,17 @@ import okhttp3.HttpUrl;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @InjectViewState
 public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
     private static final String HTTP_PREFIX = "http://";
     private static final String HTTPS_PREFIX = "https://";
     private static final String URL_END_DELIMITER = "/";
+    private static final String VERSION_PATTERN = "v(\\d+)[.](\\d+)";
+    private final Pattern mVersionPattern = Pattern.compile(VERSION_PATTERN);
 
     @Inject
     Api mApi;
@@ -73,6 +78,15 @@ public class ChooseServerPresenter extends BasePresenter<ChooseServerView> {
 
         mSubscription.add(mApi.ping()
                                   .subscribeOn(Schedulers.io())
+                                  .doOnSuccess(pingResponse -> {
+                                      final String version = pingResponse.getVersion();
+                                      final Matcher matcher = mVersionPattern.matcher(version);
+                                      final int major = Integer.parseInt(matcher.group(1));
+                                      final int minor = Integer.parseInt(matcher.group(2));
+                                      mPrefs.setServerVersion(version);
+                                      mPrefs.setServerVersionMajor(major);
+                                      mPrefs.setServerVersionMinor(minor);
+                                  })
                                   .flatMap(response -> mPersistentPrefs.saveServerUrl(url))
                                   .flatMap(s -> mPersistentPrefs.getServerUrls())
                                   .observeOn(AndroidSchedulers.mainThread())

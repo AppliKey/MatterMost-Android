@@ -16,6 +16,7 @@ import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
@@ -32,7 +33,9 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
     private static final int OTHERS_POST_VIEW_TYPE = 1;
 
     private final String mCurrentUserId;
+    private final String mCurrentTeamId;
     private final ImageLoader mImageLoader;
+    private final ImagePathHelper mImagePathHelper;
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
 
@@ -42,14 +45,18 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
     public PostAdapter(Context context,
                        RealmResults<Post> posts,
                        String currentUserId,
+                       String currentTeamId,
                        ImageLoader imageLoader,
+                       ImagePathHelper imagePathHelper,
                        Channel.ChannelType channelType,
                        long lastViewed,
                        OnLongClickListener onLongClickListener,
                        boolean autoUpdate) {
         super(context, posts, autoUpdate);
         mCurrentUserId = currentUserId;
+        mCurrentTeamId = currentTeamId;
         mImageLoader = imageLoader;
+        mImagePathHelper = imagePathHelper;
         mChannelType = channelType;
         mLastViewed = lastViewed;
         mOnLongClickListener = onLongClickListener;
@@ -121,7 +128,7 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
         holder.bindHeader(showNewMessageIndicator, showDate);
 
         final boolean isMy = isMy(post);
-        holder.bindAttachments(context, post, isMy);
+        holder.bindAttachments(context, post, isMy, mCurrentTeamId, mImageLoader, mImagePathHelper);
 
         if (isMy) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
@@ -273,7 +280,8 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
             mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
 
-        private void bindAttachments(Context context, Post post, boolean isMy) {
+        private void bindAttachments(Context context, Post post, boolean isMy, String currentTeamId,
+                                     ImageLoader imageLoader, ImagePathHelper imagePathHelper) {
             mAttachmentsContainer.removeAllViews();
             mAttachmentsContainer.setVisibility(post.getFilenames().isEmpty() ? View.GONE : View.VISIBLE);
             for (RealmString filename : post.getFilenames()) {
@@ -296,13 +304,22 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
                         LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 name.setTextColor(ContextCompat.getColor(name.getContext(), isMy ? R.color.colorDisabled :
                         R.color.textPrimary));
-                name.setText(StringUtil.extractFileName(filename.getValue()));
-                name.setTag(filename.getValue());
+                final String filenameValue = filename.getValue();
+                final String extractedFileName = StringUtil.extractFileName(filenameValue);
+                name.setText(extractedFileName);
+                name.setTag(filenameValue);
                 nameParams.gravity = Gravity.CENTER_VERTICAL;
                 name.setLayoutParams(nameParams);
                 container.addView(name);
                 container.setLayoutParams(containerParams);
                 mAttachmentsContainer.addView(container);
+
+                if (imagePathHelper.isImage(extractedFileName)) {
+                    final String imagePath = imagePathHelper.getAttachmentImageUrl(currentTeamId, filenameValue);
+                    if (imagePath != null) {
+                        imageLoader.displayThumbnailImage(imagePath, thumbnail);
+                    }
+                }
             }
         }
 

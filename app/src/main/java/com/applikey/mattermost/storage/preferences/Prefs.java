@@ -20,6 +20,9 @@ public class Prefs {
     private static final String KEY_AUTH_TOKEN = Constants.PACKAGE_NAME + ".AUTH_TOKEN";
     private static final String KEY_GCM_TOKEN = Constants.PACKAGE_NAME + ".GCM_TOKEN";
     private static final String KEY_TEAM_NAME = Constants.PACKAGE_NAME + ".TEAM_NAME";
+    private static final String KEY_SERVER_VERSION = Constants.PACKAGE_NAME + ".SERVER_VERSION";
+    private static final String KEY_SERVER_VERSION_MAJOR = Constants.PACKAGE_NAME + ".SERVER_VERSION_MAJOR";
+    private static final String KEY_SERVER_VERSION_MINOR = Constants.PACKAGE_NAME + ".SERVER_VERSION_MINOR";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -78,6 +81,30 @@ public class Prefs {
 
     public void setGcmToken(@Nullable String gcmToken) {
         mSharedPreferences.edit().putString(KEY_GCM_TOKEN, gcmToken).apply();
+    }
+
+    public String getServerVersion() {
+        return mSharedPreferences.getString(KEY_SERVER_VERSION, null);
+    }
+
+    public void setServerVersion(String version) {
+        mSharedPreferences.edit().putString(KEY_SERVER_VERSION, version).apply();
+    }
+
+    public int getServerVersionMajor() {
+        return mSharedPreferences.getInt(KEY_SERVER_VERSION_MAJOR, 0);
+    }
+
+    public void setServerVersionMajor(int version) {
+        mSharedPreferences.edit().putInt(KEY_SERVER_VERSION_MAJOR, version).apply();
+    }
+
+    public int getServerVersionMinor() {
+        return mSharedPreferences.getInt(KEY_SERVER_VERSION_MINOR, 0);
+    }
+
+    public void setServerVersionMinor(int version) {
+        mSharedPreferences.edit().putInt(KEY_SERVER_VERSION_MINOR, version).apply();
     }
 
     public void setValue(String key, String value) {

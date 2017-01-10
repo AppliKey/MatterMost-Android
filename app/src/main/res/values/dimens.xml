@@ -146,7 +146,7 @@
 
     <dimen name="channel_list_item_height">106dp</dimen>
 
-    <dimen name="attachment_icon_size">48dp</dimen>
+    <dimen name="attachment_icon_size">100dp</dimen>
     <dimen name="attachment_icon_padding">8dp</dimen>
 
 </resources>

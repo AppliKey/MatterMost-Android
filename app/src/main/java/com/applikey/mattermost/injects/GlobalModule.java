@@ -158,8 +158,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory) {
-        return new ImagePathHelper(serverUrlFactory);
+    ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory, Prefs prefs) {
+        return new ImagePathHelper(serverUrlFactory, prefs);
     }
 
     @Provides
