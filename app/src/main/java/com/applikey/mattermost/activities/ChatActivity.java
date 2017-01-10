@@ -21,6 +21,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
+import com.applikey.mattermost.fragments.ImageAttachmentDialogFragment;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -54,6 +55,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
     private static final String CHANNEL_NAME = "channel-name";
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
+
+    private static final String DIALOG_TAG_IMAGE_ATTACHMENT = "dialog-attachment-image";
+    private static final String DIALOG_TAG_DEFAULT_ATTACHMENT = "dialog-attachment-default";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -199,7 +203,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final String currentTeamId = mPrefs.getCurrentTeamId();
 
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, currentTeamId, mImageLoader, mImagePathHelper,
-                channelType, mChannelLastViewed, onPostLongClick, listenUpdates);
+                channelType, mChannelLastViewed, mOnPostLongClick, mDefaultAttachmentClickListener,
+                mImageAttachmentClickListener, listenUpdates);
 
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
@@ -402,6 +407,23 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mIvReplyClose.setOnClickListener(v -> hideReply());
     }
 
+    private final View.OnClickListener mImageAttachmentClickListener = v -> {
+        final String url = (String) v.getTag();
+
+        if (url != null) {
+            ImageAttachmentDialogFragment.newInstance(url).show(getSupportFragmentManager(),
+                    DIALOG_TAG_IMAGE_ATTACHMENT);
+        }
+    };
+
+    private final View.OnClickListener mDefaultAttachmentClickListener = v -> {
+        final String url = (String) v.getTag();
+
+        if (url != null) {
+            // TODO Implement
+        }
+    };
+
     private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override
         public void onLoad() {
@@ -409,7 +431,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         }
     };
 
-    private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
+    private final PostAdapter.OnLongClickListener mOnPostLongClick = (post, isOwner) -> {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         if (!post.isSent()) {
             dialogBuilder.setItems(R.array.post_own_opinion_fail_array, (dialog, which) -> {

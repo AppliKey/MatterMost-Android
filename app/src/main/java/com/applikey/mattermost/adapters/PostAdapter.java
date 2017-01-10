@@ -39,6 +39,9 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
 
+    private final View.OnClickListener mDefaultAttachmentClickListener;
+    private final View.OnClickListener mImageAttachmentClickListener;
+
     private long mLastViewed;
     private String mNewMessageIndicatorId = "";
 
@@ -51,6 +54,8 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
                        Channel.ChannelType channelType,
                        long lastViewed,
                        OnLongClickListener onLongClickListener,
+                       View.OnClickListener attachmentClickListener,
+                       View.OnClickListener imageAttachmentClickListener,
                        boolean autoUpdate) {
         super(context, posts, autoUpdate);
         mCurrentUserId = currentUserId;
@@ -60,6 +65,8 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
         mChannelType = channelType;
         mLastViewed = lastViewed;
         mOnLongClickListener = onLongClickListener;
+        mDefaultAttachmentClickListener = attachmentClickListener;
+        mImageAttachmentClickListener = imageAttachmentClickListener;
         setHasStableIds(true);
     }
 
@@ -81,7 +88,8 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
                 ? R.layout.list_item_post_my : R.layout.list_item_post_other;
 
         final View itemView = inflater.inflate(layoutId, parent, false);
-        final ViewHolder viewHolder = new ViewHolder(itemView);
+        final ViewHolder viewHolder = new ViewHolder(itemView, mDefaultAttachmentClickListener,
+                mImageAttachmentClickListener);
         viewHolder.mTvTimestamp.setOnClickListener(v ->
                 viewHolder.toggleDate(
                         getItem(viewHolder.getAdapterPosition())));
@@ -207,10 +215,17 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
         @BindView(R.id.attachments_container)
         LinearLayout mAttachmentsContainer;
 
-        ViewHolder(View itemView) {
+        private final View.OnClickListener mDefaultAttachmentClickListener;
+        private final View.OnClickListener mImageAttachmentClickListener;
+
+        ViewHolder(View itemView, View.OnClickListener defaultAttachmentClickListener,
+                   View.OnClickListener imageAttachmentClickListener) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+
+            mDefaultAttachmentClickListener = defaultAttachmentClickListener;
+            mImageAttachmentClickListener = imageAttachmentClickListener;
         }
 
         void setFailStatusVisible(boolean visible) {
@@ -314,11 +329,17 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
                 container.setLayoutParams(containerParams);
                 mAttachmentsContainer.addView(container);
 
+                final String attachmentUrl = imagePathHelper.getAttachmentImageUrl(currentTeamId, filenameValue);
+                container.setTag(attachmentUrl);
+
                 if (imagePathHelper.isImage(extractedFileName)) {
-                    final String imagePath = imagePathHelper.getAttachmentImageUrl(currentTeamId, filenameValue);
-                    if (imagePath != null) {
-                        imageLoader.displayThumbnailImage(imagePath, thumbnail);
+                    if (attachmentUrl != null) {
+                        imageLoader.displayThumbnailImage(attachmentUrl, thumbnail);
                     }
+
+                    container.setOnClickListener(mImageAttachmentClickListener);
+                } else {
+                    container.setOnClickListener(mDefaultAttachmentClickListener);
                 }
             }
         }
