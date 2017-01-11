@@ -24,14 +24,21 @@ import butterknife.ButterKnife;
 
 public class EditProfileActivity extends BaseMvpActivity implements EditProfileView {
 
-    @InjectPresenter EditProfilePresenter mPresenter;
+    @InjectPresenter
+    EditProfilePresenter mPresenter;
 
-    @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.iv_avatar) ImageView mIvAvatar;
-    @BindView(R.id.et_first_name) EditText mEtFirstName;
-    @BindView(R.id.et_last_name) EditText mEtLastName;
-    @BindView(R.id.et_username) EditText mEtUsername;
-    @BindView(R.id.et_email) EditText mEtEmail;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.iv_avatar)
+    ImageView mIvAvatar;
+    @BindView(R.id.et_first_name)
+    EditText mEtFirstName;
+    @BindView(R.id.et_last_name)
+    EditText mEtLastName;
+    @BindView(R.id.et_username)
+    EditText mEtUsername;
+    @BindView(R.id.et_email)
+    EditText mEtEmail;
 
     public static Intent getIntent(Context context) {
         return new Intent(context, EditProfileActivity.class);
@@ -73,7 +80,7 @@ public class EditProfileActivity extends BaseMvpActivity implements EditProfileV
 
     @Override
     public void onUserAttached(User user) {
-        mImageLoader.displayCircularImage(user.getProfileImage(), mIvAvatar);
+        mImageLoader.displayCircularImageWithoutCache(user.getProfileImage(), mIvAvatar);
         mEtFirstName.setText(user.getFirstName());
         mEtLastName.setText(user.getLastName());
         mEtUsername.setText(user.getUsername());
