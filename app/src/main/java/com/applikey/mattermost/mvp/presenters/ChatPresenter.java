@@ -1,10 +1,12 @@
 package com.applikey.mattermost.mvp.presenters;
 
+import android.app.DownloadManager;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.applikey.mattermost.App;
+import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.PendingPost;
@@ -15,8 +17,10 @@ import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.Callback;
+import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.utils.rx.RxUtils;
 import com.applikey.mattermost.web.Api;
+import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
@@ -56,6 +60,9 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     @Inject
     NotificationManager mNotificationManager;
+
+    @Inject
+    BearerTokenFactory mBearerTokenFactory;
 
     @Inject
     ErrorHandler mErrorHandler;
@@ -241,6 +248,20 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                 }, mErrorHandler::handleError);
 
         mSubscription.add(subscription);
+    }
+
+    public void requestDownload(String url) {
+        final String token = mBearerTokenFactory.getBearerTokenString();
+
+        final DownloadManager.Request request = new DownloadManager.Request(
+                Uri.parse(url));
+        final String name = StringUtil.extractFileName(url);
+        request.setVisibleInDownloadsUi(true);
+        request.setTitle(name);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.addRequestHeader(Constants.AUTHORIZATION_HEADER, token);
+
+        getViewState().downloadFile(request, name);
     }
 
     private void updateLastViewedAt(String channelId) {

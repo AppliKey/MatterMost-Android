@@ -1,8 +1,10 @@
 package com.applikey.mattermost.activities;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -10,12 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -31,8 +28,10 @@ import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.utils.view.ViewUtil;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 
@@ -57,7 +56,6 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
 
     private static final String DIALOG_TAG_IMAGE_ATTACHMENT = "dialog-attachment-image";
-    private static final String DIALOG_TAG_DEFAULT_ATTACHMENT = "dialog-attachment-default";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -126,6 +124,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Inject
     Prefs mPrefs;
 
+    @Inject
+    ErrorHandler mErrorHandler;
+
     private String mRootId;
 
     private String mChannelId;
@@ -137,7 +138,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private PostAdapter mAdapter;
 
     private EmojiPopup mEmojiPopup;
+
     private boolean mIsJoined;
+
+    private RxPermissions mRxPermissions;
+
+    private DownloadManager mDownloadManager;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -155,6 +161,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         setContentView(R.layout.activity_chat);
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
+        mRxPermissions = RxPermissions.getInstance(this);
 
         mEmojiPopup = EmojiPopup.Builder
                 .fromRootView(rootView)
@@ -166,6 +173,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         initParameters();
         mPresenter.getInitialData(mChannelId);
 
+        mDownloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         initView();
     }
 
@@ -327,6 +335,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mToolbar.setTitle(title);
     }
 
+    @Override
+    public void downloadFile(DownloadManager.Request downloadRequest, String fileName) {
+        downloadRequest.setDestinationInExternalFilesDir(this,
+                Environment.DIRECTORY_DOWNLOADS, fileName);
+        mDownloadManager.enqueue(downloadRequest);
+    }
+
     private void deleteMessage(String channelId, Post post) {
         showDeletionDialog(channelId, post);
     }
@@ -420,7 +435,16 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final String url = (String) v.getTag();
 
         if (url != null) {
-            // TODO Implement
+            mRxPermissions.request(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .subscribe(granted -> {
+                        if (!granted) {
+                            // notify user
+                            Toast.makeText(this, R.string.please_grant_permission, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        mPresenter.requestDownload(url);
+                    }, mErrorHandler::handleError);
         }
     };
 

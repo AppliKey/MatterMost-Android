@@ -1,5 +1,6 @@
 package com.applikey.mattermost.mvp.views;
 
+import android.app.DownloadManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -37,4 +38,6 @@ public interface ChatView extends MvpView {
     void showJoiningInterface(String channelName);
 
     void showLoading(boolean show);
+
+    void downloadFile(DownloadManager.Request downloadRequest, String fileName);
 }
