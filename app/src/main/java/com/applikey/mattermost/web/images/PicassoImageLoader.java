@@ -58,7 +58,7 @@ public class PicassoImageLoader implements ImageLoader {
 
     @Override
     public void displayThumbnailImage(@NonNull String url, @NonNull ImageView imageView) {
-        picasso.load(url).resize(100, 100).into(imageView);
+        picasso.load(url).resize(100, 100).centerInside().into(imageView);
     }
 
     @Override
