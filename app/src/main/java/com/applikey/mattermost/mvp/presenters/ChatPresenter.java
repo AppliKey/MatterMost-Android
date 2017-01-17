@@ -17,6 +17,7 @@ import com.applikey.mattermost.storage.db.PostStorage;
 import com.applikey.mattermost.storage.db.UserStorage;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.Callback;
+import com.applikey.mattermost.utils.kissUtils.utils.FileUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.utils.rx.RxUtils;
 import com.applikey.mattermost.web.Api;
@@ -26,6 +27,7 @@ import com.arellomobile.mvp.InjectViewState;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,6 +37,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 @InjectViewState
 public class ChatPresenter extends BasePresenter<ChatView> {
@@ -70,6 +73,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private Channel mChannel;
     private String mTeamId;
     private AtomicInteger mMessageSendingCounter = new AtomicInteger(0);
+
+    private List<String> currentlyAddedAttachments = new ArrayList<>();
 
     private boolean mFirstFetched = false;
 
@@ -262,6 +267,20 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         request.addRequestHeader(Constants.AUTHORIZATION_HEADER, token);
 
         getViewState().downloadFile(request, name);
+    }
+
+    public void pickAttachment(String filePath) {
+        Timber.d("SHOULD PICK ATTACHMENT: %s", filePath);
+
+        currentlyAddedAttachments.add(filePath);
+
+        final String fileName = FileUtil.getName(filePath);
+
+        getViewState().showAddingAttachment(filePath, fileName);
+    }
+
+    public void removePickedAttachment(String filePath) {
+        currentlyAddedAttachments.remove(filePath);
     }
 
     private void updateLastViewedAt(String channelId) {

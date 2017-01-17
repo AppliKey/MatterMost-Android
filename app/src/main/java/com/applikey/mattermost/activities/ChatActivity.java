@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -43,6 +44,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmResults;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -56,6 +58,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
 
     private static final String DIALOG_TAG_IMAGE_ATTACHMENT = "dialog-attachment-image";
+
+    private static final int PICK_FILE_REQUEST_CODE = 451;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -107,6 +111,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @BindView(R.id.loading_progress_bar)
     MaterialProgressBar mLoadingProgressBar;
+
+    @BindView(R.id.hsv_attachments)
+    HorizontalScrollView mAttachmentsRoot;
+
+    @BindView(R.id.ll_attachments)
+    LinearLayout mAttachmentsLayout;
 
     @InjectPresenter
     ChatPresenter mPresenter;
@@ -180,6 +190,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Override
     public void onStart() {
         super.onStart();
+
+        Timber.w("ChatActivity onStart");
+
         mPresenter.fetchAfterRestart();
 
         if (!mIsJoined) {
@@ -295,6 +308,34 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         return false;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
+            final String filePath = data.getDataString();
+            mPresenter.pickAttachment(filePath);
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void showAddingAttachment(String filePath, String fileName) {
+        final LayoutInflater inflater = getLayoutInflater();
+        final View root = inflater.inflate(R.layout.list_item_attachment, null);
+
+        final ImageView closeButton = (ImageView) root.findViewById(R.id.iv_attachment_close_button);
+        final TextView name = (TextView) root.findViewById(R.id.tv_attachment_name);
+
+        name.setText(fileName);
+
+        closeButton.setOnClickListener(v -> {
+            mPresenter.removePickedAttachment(filePath);
+            ((ViewGroup) root.getParent()).removeView(root);
+        });
+
+        mAttachmentsLayout.addView(root);
+    }
+
     @OnClick(R.id.iv_send_message)
     void onSend() {
         if (mRootId == null) {
@@ -302,6 +343,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         } else {
             mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
         }
+    }
+
+    @OnClick(R.id.iv_attach)
+    void onAttach() {
+        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("file/*");
+        startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
     }
 
     @OnClick(R.id.btn_join_channel)

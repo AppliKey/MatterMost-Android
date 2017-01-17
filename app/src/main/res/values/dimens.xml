@@ -148,5 +148,10 @@
 
     <dimen name="attachment_icon_size">100dp</dimen>
     <dimen name="attachment_icon_padding">8dp</dimen>
+    <dimen name="attachment_thumbnail_size">48dp</dimen>
+    <dimen name="attachment_thumbnail_padding">8dp</dimen>
+    <dimen name="attachment_text_max_width">160dp</dimen>
+    <dimen name="attachment_remove_margin">4dp</dimen>
+    <dimen name="attachment_item_margin">8dp</dimen>
 
 </resources>
