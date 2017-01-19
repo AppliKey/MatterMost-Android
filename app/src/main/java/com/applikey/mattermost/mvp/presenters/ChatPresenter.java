@@ -3,6 +3,7 @@ package com.applikey.mattermost.mvp.presenters;
 import android.app.DownloadManager;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
 import android.webkit.MimeTypeMap;
@@ -10,6 +11,7 @@ import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
 import com.applikey.mattermost.models.channel.Channel;
+import com.applikey.mattermost.models.file.UploadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.mvp.views.ChatView;
@@ -137,10 +139,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         fetchPage(0, mChannel.getId(), true, false);
     }
 
-    private void fetchFirstPage(String channelId) {
-        fetchPage(0, channelId, true, true);
-    }
-
     public void fetchNextPage(int totalItems) {
         if (!mFirstFetched) {
             return;
@@ -215,52 +213,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     public void sendMessage(String channelId, String message, String rootPostId) {
         sendMessage(channelId, message, rootPostId, null);
-    }
-
-    private boolean isMessageEmpty(String message) {
-        return TextUtils.isEmpty(message.trim()) && mCurrentlyAddedAttachments.size() == 0;
-    }
-
-    private void clearUserInput() {
-        getViewState().clearMessageInput();
-        getViewState().clearAttachmentsInput();
-        getViewState().showLoading(true);
-        mMessageSendingCounter.incrementAndGet();
-    }
-
-    private Single<Post> createPost(List<String> attachmentFileNames, String channelId,
-                                    String message, @Nullable String rootMessageId) {
-        final String currentUserId = mPrefs.getCurrentUserId();
-        final long createdAt = System.currentTimeMillis();
-        final String pendingId = currentUserId + ":" + createdAt;
-
-        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
-                message, "", pendingId, attachmentFileNames, rootMessageId, rootMessageId);
-
-        return mApi.<Post>createPost(mTeamId, channelId, pendingPost);
-    }
-
-    private Single<List<String>> uploadAttachmentFiles() {
-        return Observable.from(mCurrentlyAddedAttachments)
-                .flatMap(pathName -> {
-                    mCurrentlyAddedAttachments.clear();
-                    final File file = new File(pathName);
-                    final String clientId = UUID.randomUUID().toString();
-                    final String mime = MimeTypeMap.getSingleton()
-                            .getMimeTypeFromExtension(FileUtil.getExtension(pathName));
-                    final RequestBody fileBody = RequestBody.create(MediaType.parse(mime), file);
-                    final MultipartBody.Part filePart = MultipartBody.Part.createFormData("files",
-                            file.getName(), fileBody);
-                    final RequestBody clientIdBody = RequestBody.create(MediaType.parse("text/plain"), clientId);
-                    final RequestBody channelIdBody = RequestBody.create(MediaType.parse("text/plain"),
-                            mChannel.getId());
-                    return mApi.uploadFile(filePart, clientIdBody, channelIdBody, mTeamId).toObservable();
-                })
-                .map(Response::body)
-                .map(response -> response.getFileName().get(0))
-                .toList()
-                .first()
-                .toSingle();
     }
 
     public void joinChannel(String channelId) {
@@ -343,6 +295,10 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mSubscription.add(subscription);
     }
 
+    private void fetchFirstPage(String channelId) {
+        fetchPage(0, channelId, true, true);
+    }
+
     private void savePosts(String channelId, int totalItems, ArrayList<Post> posts,
                            boolean initializeView, boolean clear) {
         final Callback callback = () -> {
@@ -363,5 +319,54 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         } else {
             mPostStorage.saveAll(posts, callback);
         }
+    }
+
+    private boolean isMessageEmpty(String message) {
+        return TextUtils.isEmpty(message.trim()) && mCurrentlyAddedAttachments.size() == 0;
+    }
+
+    private void clearUserInput() {
+        getViewState().clearMessageInput();
+        getViewState().clearAttachmentsInput();
+        getViewState().showLoading(true);
+        mMessageSendingCounter.incrementAndGet();
+    }
+
+    private Single<Post> createPost(List<String> attachmentFileNames, String channelId,
+                                    String message, @Nullable String rootMessageId) {
+        final String currentUserId = mPrefs.getCurrentUserId();
+        final long createdAt = System.currentTimeMillis();
+        final String pendingId = currentUserId + ":" + createdAt;
+
+        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
+                message, "", pendingId, attachmentFileNames, rootMessageId, rootMessageId);
+
+        return mApi.<Post>createPost(mTeamId, channelId, pendingPost);
+    }
+
+    private Single<List<String>> uploadAttachmentFiles() {
+        return Observable.from(mCurrentlyAddedAttachments)
+                .flatMap(this::uploadAttachment)
+                .map(Response::body)
+                .map(response -> response.getFileName().get(0))
+                .toList()
+                .first()
+                .toSingle();
+    }
+
+    @WorkerThread
+    private Observable<? extends Response<UploadResponse>> uploadAttachment(String pathName) {
+        mCurrentlyAddedAttachments.clear();
+        final File file = new File(pathName);
+        final String clientId = UUID.randomUUID().toString();
+        final String mime = MimeTypeMap.getSingleton()
+                .getMimeTypeFromExtension(FileUtil.getExtension(pathName));
+        final RequestBody fileBody = RequestBody.create(MediaType.parse(mime), file);
+        final MultipartBody.Part filePart = MultipartBody.Part.createFormData("files",
+                file.getName(), fileBody);
+        final RequestBody clientIdBody = RequestBody.create(MediaType.parse("text/plain"), clientId);
+        final RequestBody channelIdBody = RequestBody.create(MediaType.parse("text/plain"),
+                mChannel.getId());
+        return mApi.uploadFile(filePart, clientIdBody, channelIdBody, mTeamId).toObservable();
     }
 }
