@@ -113,9 +113,9 @@ public class GlobalModule {
             }
             return chain.proceed(request);
         });
-        final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        okClientBuilder.addInterceptor(httpLoggingInterceptor);
+//        final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+//        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        okClientBuilder.addInterceptor(httpLoggingInterceptor);
 
         // TODO: 07.12.16 CACHE DISABLED IN DEBUG BUILD TO ALLOW DEBUG BY STETHO.
         // (WITH CACHE WE HAVE " 304 NOT MODIFIED" IN RESPONSE)

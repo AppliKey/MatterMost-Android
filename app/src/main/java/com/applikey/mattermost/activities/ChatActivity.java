@@ -1,8 +1,10 @@
 package com.applikey.mattermost.activities;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -27,6 +29,7 @@ import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
 import com.applikey.mattermost.storage.preferences.Prefs;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
+import com.applikey.mattermost.utils.kissUtils.utils.FileUtil;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.utils.view.ViewUtil;
 import com.applikey.mattermost.web.ErrorHandler;
@@ -268,6 +271,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void clearAttachmentsInput() {
+        mAttachmentsLayout.removeAllViews();
+    }
+
+    @Override
     public void onChannelJoined() {
         mSrlChat.setVisibility(VISIBLE);
         mJoinLayout.setVisibility(View.GONE);
@@ -311,7 +319,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
-            final String filePath = data.getDataString();
+            final String uri = data.getDataString();
+            final String filePath = FileUtil.getPath(this, Uri.parse(uri));
+
             mPresenter.pickAttachment(filePath);
             return;
         }
@@ -338,18 +348,22 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @OnClick(R.id.iv_send_message)
     void onSend() {
-        if (mRootId == null) {
-            mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
-        } else {
-            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
-        }
+        mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
     }
 
     @OnClick(R.id.iv_attach)
     void onAttach() {
-        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("file/*");
-        startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+        mRxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(granted -> {
+                    if (!granted) {
+                        // notify user
+                        Toast.makeText(this, R.string.please_grant_permission, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+                }, mErrorHandler::handleError);
     }
 
     @OnClick(R.id.btn_join_channel)
@@ -508,7 +522,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         if (!post.isSent()) {
             dialogBuilder.setItems(R.array.post_own_opinion_fail_array, (dialog, which) -> {
                 if (which == 0) {
-                    mPresenter.sendMessage(mChannelId, post.getMessage(), post.getId());
+                    mPresenter.sendMessage(mChannelId, post.getMessage(), null, post.getId());
                 } else if (which == 1) {
                     deleteMessage(mChannelId, post);
                 }

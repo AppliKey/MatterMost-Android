@@ -15,6 +15,7 @@ import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.commands.InviteNewMembersRequest;
+import com.applikey.mattermost.models.file.UploadResponse;
 import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
@@ -27,13 +28,9 @@ import com.applikey.mattermost.models.web.PingResponse;
 import java.util.Map;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Response;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.Multipart;
-import retrofit2.http.POST;
-import retrofit2.http.Part;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 import rx.Single;
 
 public interface Api {
@@ -70,13 +67,13 @@ public interface Api {
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/{postId}/delete")
     Single<Void> deletePost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Path("postId") String postId);
+                            @Path("channelId") String channelId,
+                            @Path("postId") String postId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/update")
     Single<Post> updatePost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Body Post post);
+                            @Path("channelId") String channelId,
+                            @Body Post post);
 
     // Lists all joined channels and private groups, aswell as their metadata as "Memberships"
     @GET("/api/v3/teams/{teamId}/channels/")
@@ -84,7 +81,7 @@ public interface Api {
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}")
     Single<Channel> getChannelById(@Path("teamId") String teamId,
-                                       @Path("channelId") String channelId);
+                                   @Path("channelId") String channelId);
 
     //This url is not containing "/" symbol at the start
     //In this case it build full url in the next way :
@@ -100,45 +97,45 @@ public interface Api {
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/{offset}/{limit}")
     Single<PostResponse> getPostsPage(@Path("teamId") String teamId,
-                                          @Path("channelId") String channelId,
-                                          @Path("offset") int offset,
-                                          @Path("limit") int limit);
+                                      @Path("channelId") String channelId,
+                                      @Path("offset") int offset,
+                                      @Path("limit") int limit);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/posts/page/0/1")
     Single<PostResponse> getLastPost(@Path("teamId") String teamId,
-                                         @Path("channelId") String channelId);
+                                     @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{teamId}/channels/{channelId}/extra_info")
     Single<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
-                                          @Path("channelId") String channelId);
+                                      @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/posts/create")
     Single<Post> createPost(@Path("teamId") String teamId,
-                                @Path("channelId") String channelId,
-                                @Body PendingPost request);
+                            @Path("channelId") String channelId,
+                            @Body PendingPost request);
 
     @POST("/api/v3/teams/{teamId}/channels/{channelId}/update_last_viewed_at")
     Single<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
-                                                    @Path("channelId") String channelId);
+                                                @Path("channelId") String channelId);
 
     @POST("/api/v3/teams/{team_id}/channels/create")
     Single<Channel> createChannel(@Path("team_id") String teamId, @Body ChannelRequest request);
 
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/add")
     Single<Membership> addUserToChannel(@Path("team_id") String teamId,
-                                            @Path("channel_id") String channelId,
-                                            @Body RequestUserId userId);
+                                        @Path("channel_id") String channelId,
+                                        @Body RequestUserId userId);
 
     @POST("/api/v3/users/attach_device")
     Single<Response<AttachDeviceRequest>> attachDevice(@Body AttachDeviceRequest request);
 
     @POST("/api/v3/teams/{team_id}/channels/create_direct")
     Single<Channel> createChannel(@Path("team_id") String teamId,
-                                      @Body DirectChannelRequest request);
+                                  @Body DirectChannelRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/{channelId}/delete")
     Single<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
-                                                    @Path("channelId") String channelId);
+                                                @Path("channelId") String channelId);
 
     @GET("/api/v3/teams/{team_id}/channels/more")
     Single<ChannelResponse> getChannelsUserHasNotJoined(@Path("team_id") String teamId);
@@ -148,11 +145,11 @@ public interface Api {
 
     @POST("api/v3/teams/{teamId}/channels/update")
     Single<Channel> updateChannelTitle(@Path("teamId") String teamId,
-                                           @Body ChannelTitleRequest request);
+                                       @Body ChannelTitleRequest request);
 
     @POST("api/v3/teams/{teamId}/channels/update_purpose")
     Single<Channel> updateChannelPurpose(@Path("teamId") String teamId,
-                                             @Body ChannelPurposeRequest request);
+                                         @Body ChannelPurposeRequest request);
 
     @POST("/api/v3/teams/{team_id}/posts/search")
     Single<PostResponse> searchPosts(@Path("team_id") String teamId, @Body PostSearchRequest request);
@@ -170,4 +167,9 @@ public interface Api {
     @POST("/api/v3/teams/{team_id}/channels/{channel_id}/leave")
     Single<Void> leaveChannel(@Path("team_id") String teamId, @Path("channel_id") String channelId);
 
+    @Multipart
+    @POST("/api/v3/teams/{team_id}/files/upload")
+    Single<Response<UploadResponse>> uploadFile(@Part MultipartBody.Part file,
+                                      @Part("clients_id") RequestBody clientId,
+                                      @Part("channel_id") RequestBody channelId, @Path("team_id") String teamId);
 }

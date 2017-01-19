@@ -2,6 +2,8 @@ package com.applikey.mattermost.models.post;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class PendingPost {
 
     @SerializedName("id")
@@ -31,22 +33,26 @@ public class PendingPost {
     @SerializedName("root_id")
     private String rootId;
 
+    @SerializedName("filenames")
+    private List<String> fileNames;
+
     public PendingPost() {
     }
 
     public PendingPost(long createdAt, String userId, String channelId, String message, String type,
-            String pendingPostId) {
+            String pendingPostId, List<String> fileNames) {
         this.createdAt = createdAt;
         this.userId = userId;
         this.channelId = channelId;
         this.message = message;
         this.type = type;
         this.pendingPostId = pendingPostId;
+        this.fileNames = fileNames;
     }
 
     public PendingPost(long createdAt, String userId, String channelId, String message, String type,
-            String pendingPostId, String parentId, String rootId) {
-        this(createdAt, userId, channelId, message, type, pendingPostId);
+            String pendingPostId, List<String> fileNames, String parentId, String rootId) {
+        this(createdAt, userId, channelId, message, type, pendingPostId, fileNames);
         this.parentId = parentId;
         this.rootId = rootId;
     }
@@ -107,13 +113,11 @@ public class PendingPost {
         this.pendingPostId = pendingPostId;
     }
 
-    public Post toPost() {
-        final Post post = new Post();
-        post.setId(id);
-        post.setChannelId(channelId);
-        post.setCreatedAt(createdAt);
-        post.setMessage(message);
-        post.setUserId(userId);
-        return post;
+    public List<String> getFileNames() {
+        return fileNames;
+    }
+
+    public void setFileNames(List<String> fileNames) {
+        this.fileNames = fileNames;
     }
 }

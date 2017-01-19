@@ -59,6 +59,13 @@ public class Post extends RealmObject {
         setUserId(builder.userId);
         setMessage(builder.message);
         setSent(builder.sent);
+
+        final RealmList<RealmString> attachments = new RealmList<>();
+        for (String attachment : builder.attachments) {
+            attachments.add(new RealmString(attachment));
+        }
+
+        setFilenames(attachments);
     }
 
     public String getId() {
@@ -212,7 +219,6 @@ public class Post extends RealmObject {
                 : post.getAuthor() == null;
     }
 
-
     public static Comparator<Post> COMPARATOR_BY_CREATE_AT =
             (post1, post2) -> {
                 final long delta = post1.getCreatedAt() - post2.getCreatedAt();
@@ -244,6 +250,7 @@ public class Post extends RealmObject {
         private String userId;
         private String message;
         private boolean sent;
+        private List<String> attachments;
 
         public Builder() {
         }
@@ -275,6 +282,11 @@ public class Post extends RealmObject {
 
         public Builder sent(boolean val) {
             sent = val;
+            return this;
+        }
+
+        public Builder attachments(List<String> val) {
+            attachments = val;
             return this;
         }
 

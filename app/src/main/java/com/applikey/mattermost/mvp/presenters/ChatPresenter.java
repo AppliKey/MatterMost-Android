@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import android.webkit.MimeTypeMap;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.manager.notitifcation.NotificationManager;
@@ -25,6 +26,7 @@ import com.applikey.mattermost.web.BearerTokenFactory;
 import com.applikey.mattermost.web.ErrorHandler;
 import com.arellomobile.mvp.InjectViewState;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +35,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Response;
 import rx.Observable;
+import rx.Single;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -74,7 +81,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     private String mTeamId;
     private AtomicInteger mMessageSendingCounter = new AtomicInteger(0);
 
-    private List<String> currentlyAddedAttachments = new ArrayList<>();
+    private List<String> mCurrentlyAddedAttachments = new ArrayList<>();
 
     private boolean mFirstFetched = false;
 
@@ -168,23 +175,16 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         mSubscription.add(subscribe);
     }
 
-    public void sendMessage(String channelId, String message, @Nullable String postId) {
-        if (TextUtils.isEmpty(message.trim())) {
+    public void sendMessage(String channelId, String message, String rootPostId, @Nullable String postId) {
+        if (isMessageEmpty(message)) {
             return;
         }
 
-        getViewState().clearMessageInput();
-        getViewState().showLoading(true);
-        mMessageSendingCounter.incrementAndGet();
+        clearUserInput();
 
-        final String currentUserId = mPrefs.getCurrentUserId();
-        final long createdAt = System.currentTimeMillis();
-        final String pendingId = currentUserId + ":" + createdAt;
-
-        final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
-                message, "", pendingId);
-
-        final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
+        final Subscription sub = uploadAttachmentFiles()
+                .flatMap(attachmentFileNames ->
+                        createPost(attachmentFileNames, channelId, message, rootPostId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
@@ -198,48 +198,69 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                     getViewState().showLoading(mMessageSendingCounter.decrementAndGet() != 0);
                     getViewState().onMessageSent(result.getCreatedAt());
                 }, throwable -> {
+                    // Currently we lose attachments if the internet connection went down while sending message
                     final Post post = new Post.Builder().channelId(mChannel.getId())
-                            .createdAt(createdAt)
+                            .createdAt(System.currentTimeMillis())
                             .id(postId == null ? UUID.randomUUID().toString() : postId)
                             .message(message)
-                            .userId(currentUserId)
+                            .userId(mPrefs.getCurrentUserId())
                             .sent(false)
                             .build();
                     mChannelStorage.setLastPost(mChannel, post);
                     mErrorHandler.handleError(throwable);
                     getViewState().showLoading(mMessageSendingCounter.decrementAndGet() != 0);
                 });
-
-        mSubscription.add(subscribe);
+        mSubscription.add(sub);
     }
 
-    public void sendMessage(String channelId, String messsage) {
-        sendMessage(channelId, messsage, null);
+    public void sendMessage(String channelId, String message, String rootPostId) {
+        sendMessage(channelId, message, rootPostId, null);
     }
 
-    // TODO: Refactor: duplicated code
-    public void sendReplyMessage(String channelId, String message, String mRootId) {
-        if (TextUtils.isEmpty(message.trim())) {
-            return;
-        }
+    private boolean isMessageEmpty(String message) {
+        return TextUtils.isEmpty(message.trim()) && mCurrentlyAddedAttachments.size() == 0;
+    }
 
+    private void clearUserInput() {
         getViewState().clearMessageInput();
+        getViewState().clearAttachmentsInput();
+        getViewState().showLoading(true);
+        mMessageSendingCounter.incrementAndGet();
+    }
 
+    private Single<Post> createPost(List<String> attachmentFileNames, String channelId,
+                                    String message, @Nullable String rootMessageId) {
         final String currentUserId = mPrefs.getCurrentUserId();
         final long createdAt = System.currentTimeMillis();
         final String pendingId = currentUserId + ":" + createdAt;
 
         final PendingPost pendingPost = new PendingPost(createdAt, currentUserId, channelId,
-                message, "", pendingId, mRootId, mRootId);
+                message, "", pendingId, attachmentFileNames, rootMessageId, rootMessageId);
 
-        final Subscription subscribe = mApi.createPost(mTeamId, channelId, pendingPost)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnSuccess(post -> mChannelStorage.setLastPost(mChannel, post))
-                .subscribe(result -> getViewState().onMessageSent(result.getCreatedAt()), mErrorHandler::handleError);
+        return mApi.<Post>createPost(mTeamId, channelId, pendingPost);
+    }
 
-        mSubscription.add(subscribe);
+    private Single<List<String>> uploadAttachmentFiles() {
+        return Observable.from(mCurrentlyAddedAttachments)
+                .flatMap(pathName -> {
+                    mCurrentlyAddedAttachments.clear();
+                    final File file = new File(pathName);
+                    final String clientId = UUID.randomUUID().toString();
+                    final String mime = MimeTypeMap.getSingleton()
+                            .getMimeTypeFromExtension(FileUtil.getExtension(pathName));
+                    final RequestBody fileBody = RequestBody.create(MediaType.parse(mime), file);
+                    final MultipartBody.Part filePart = MultipartBody.Part.createFormData("files",
+                            file.getName(), fileBody);
+                    final RequestBody clientIdBody = RequestBody.create(MediaType.parse("text/plain"), clientId);
+                    final RequestBody channelIdBody = RequestBody.create(MediaType.parse("text/plain"),
+                            mChannel.getId());
+                    return mApi.uploadFile(filePart, clientIdBody, channelIdBody, mTeamId).toObservable();
+                })
+                .map(Response::body)
+                .map(response -> response.getFileName().get(0))
+                .toList()
+                .first()
+                .toSingle();
     }
 
     public void joinChannel(String channelId) {
@@ -272,7 +293,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     public void pickAttachment(String filePath) {
         Timber.d("SHOULD PICK ATTACHMENT: %s", filePath);
 
-        currentlyAddedAttachments.add(filePath);
+        mCurrentlyAddedAttachments.add(filePath);
 
         final String fileName = FileUtil.getName(filePath);
 
@@ -280,7 +301,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void removePickedAttachment(String filePath) {
-        currentlyAddedAttachments.remove(filePath);
+        mCurrentlyAddedAttachments.remove(filePath);
     }
 
     private void updateLastViewedAt(String channelId) {
