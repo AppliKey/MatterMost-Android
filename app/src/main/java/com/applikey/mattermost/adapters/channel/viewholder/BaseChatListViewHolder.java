@@ -2,6 +2,7 @@ package com.applikey.mattermost.adapters.channel.viewholder;
 
 import android.content.Context;
 import android.support.annotation.CallSuper;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -102,17 +103,24 @@ public abstract class BaseChatListViewHolder extends ClickableViewHolder {
         final String messagePreview;
         if (lastPost == null) {
             messagePreview = context.getString(R.string.channel_preview_message_placeholder);
-        } else if (isMy(lastPost)) {
-            messagePreview = context.getString(R.string.channel_post_author_name_format, "You") +
-                    lastPost.getMessage();
-        } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
-            final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
-            messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
-                    +
-                    lastPost.getMessage();
         } else {
-            messagePreview = lastPost.getMessage();
+            String message = lastPost.getMessage();
+            if (message == null || message.isEmpty()) {
+                message = context.getString(R.string.attachment);
+            }
+            if (isMy(lastPost)) {
+                messagePreview = context.getString(R.string.channel_post_author_name_format,
+                        context.getString(R.string.you)) + message;
+            } else if (!channel.getType().equals(Channel.ChannelType.DIRECT.getRepresentation())) {
+                final String postAuthor = User.getDisplayableName(lastPost.getAuthor());
+                messagePreview = context.getString(R.string.channel_post_author_name_format, postAuthor)
+                        +
+                        message;
+            } else {
+                messagePreview = message;
+            }
         }
+
         return messagePreview;
     }
 

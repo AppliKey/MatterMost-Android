@@ -27,10 +27,10 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_fail"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/list_item_chat_time_margin"
             android:layout_marginStart="@dimen/large"
@@ -44,9 +44,9 @@
 
             <com.applikey.mattermost.views.ContentTextView
                 android:id="@+id/tv_reply_message"
+                style="@style/ReplyMessageStyleMy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/ReplyMessageStyleMy"
                 app:emojiSize="@dimen/emoji_size"
                 tools:text="User Message"
                 tools:visibility="visible" />
@@ -60,7 +60,14 @@
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/list_item_chat_text_size"
                 app:emojiSize="@dimen/emoji_size"
-                tools:text="Some message" />
+                tools:text="S" />
+
+            <LinearLayout
+                android:id="@+id/attachments_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" />
 
         </LinearLayout>
 

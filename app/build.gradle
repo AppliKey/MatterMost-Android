@@ -98,6 +98,7 @@ android {
 }
 
 repositories {
+    jcenter()
     maven { url "https://jitpack.io" }
     maven {
         url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
@@ -164,6 +165,7 @@ dependencies {
     compile 'com.facebook.stetho:stetho:1.4.1'
     compile 'com.uphyca:stetho_realm:2.0.0'
     compile 'com.facebook.stetho:stetho-okhttp3:1.4.1'
+
     //logging
     compile 'com.jakewharton.timber:timber:4.3.1'
 

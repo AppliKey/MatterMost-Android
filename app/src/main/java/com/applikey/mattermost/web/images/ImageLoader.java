@@ -18,7 +18,11 @@ public interface ImageLoader {
 
     void displayCircularImage(@NonNull File file, @NonNull ImageView imageView);
 
+    void displayCircularImageWithoutCache(@NonNull String url, @NonNull ImageView imageView);
+
     void displayCircularImage(@NonNull String url, @NonNull ImageView imageView);
+
+    void displayThumbnailImage(@NonNull String url, @NonNull ImageView imageView);
 
     void dropMemoryCache();
 

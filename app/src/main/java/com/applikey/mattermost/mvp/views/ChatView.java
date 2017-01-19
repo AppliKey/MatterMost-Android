@@ -1,9 +1,11 @@
 package com.applikey.mattermost.mvp.views;
 
+import android.app.DownloadManager;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.arellomobile.mvp.MvpView;
+import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.SkipStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 
@@ -24,6 +26,8 @@ public interface ChatView extends MvpView {
 
     void clearMessageInput();
 
+    void clearAttachmentsInput();
+
     void onChannelJoined();
 
     void openChannelDetails(Channel channel);
@@ -37,4 +41,9 @@ public interface ChatView extends MvpView {
     void showJoiningInterface(String channelName);
 
     void showLoading(boolean show);
+
+    void downloadFile(DownloadManager.Request downloadRequest, String fileName);
+
+    @StateStrategyType(AddToEndStrategy.class)
+    void showAddingAttachment(String filePath, String fileName);
 }

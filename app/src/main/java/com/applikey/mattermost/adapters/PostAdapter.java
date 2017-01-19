@@ -2,19 +2,22 @@ package com.applikey.mattermost.adapters;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.applikey.mattermost.R;
+import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
+import com.applikey.mattermost.utils.image.ImagePathHelper;
+import com.applikey.mattermost.utils.kissUtils.utils.StringUtil;
 import com.applikey.mattermost.utils.kissUtils.utils.TimeUtil;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.transitionseverywhere.TransitionManager;
@@ -30,9 +33,14 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
     private static final int OTHERS_POST_VIEW_TYPE = 1;
 
     private final String mCurrentUserId;
+    private final String mCurrentTeamId;
     private final ImageLoader mImageLoader;
+    private final ImagePathHelper mImagePathHelper;
     private final OnLongClickListener mOnLongClickListener;
     private final Channel.ChannelType mChannelType;
+
+    private final View.OnClickListener mDefaultAttachmentClickListener;
+    private final View.OnClickListener mImageAttachmentClickListener;
 
     private long mLastViewed;
     private String mNewMessageIndicatorId = "";
@@ -40,17 +48,25 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
     public PostAdapter(Context context,
                        RealmResults<Post> posts,
                        String currentUserId,
+                       String currentTeamId,
                        ImageLoader imageLoader,
+                       ImagePathHelper imagePathHelper,
                        Channel.ChannelType channelType,
                        long lastViewed,
                        OnLongClickListener onLongClickListener,
+                       View.OnClickListener attachmentClickListener,
+                       View.OnClickListener imageAttachmentClickListener,
                        boolean autoUpdate) {
         super(context, posts, autoUpdate);
         mCurrentUserId = currentUserId;
+        mCurrentTeamId = currentTeamId;
         mImageLoader = imageLoader;
+        mImagePathHelper = imagePathHelper;
         mChannelType = channelType;
         mLastViewed = lastViewed;
         mOnLongClickListener = onLongClickListener;
+        mDefaultAttachmentClickListener = attachmentClickListener;
+        mImageAttachmentClickListener = imageAttachmentClickListener;
         setHasStableIds(true);
     }
 
@@ -72,10 +88,11 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
                 ? R.layout.list_item_post_my : R.layout.list_item_post_other;
 
         final View itemView = inflater.inflate(layoutId, parent, false);
-        final ViewHolder viewHolder = new ViewHolder(itemView);
+        final ViewHolder viewHolder = new ViewHolder(itemView, mDefaultAttachmentClickListener,
+                mImageAttachmentClickListener);
         viewHolder.mTvTimestamp.setOnClickListener(v ->
-                                                           viewHolder.toggleDate(
-                                                                   getItem(viewHolder.getAdapterPosition())));
+                viewHolder.toggleDate(
+                        getItem(viewHolder.getAdapterPosition())));
         return viewHolder;
     }
 
@@ -118,7 +135,10 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
 
         holder.bindHeader(showNewMessageIndicator, showDate);
 
-        if (isMy(post)) {
+        final boolean isMy = isMy(post);
+        holder.bindAttachments(context, post, isMy, mCurrentTeamId, mImageLoader, mImagePathHelper);
+
+        if (isMy) {
             holder.bindOwnPost(mChannelType, post, showAuthor, showTime, mOnLongClickListener);
         } else {
             holder.bindOtherPost(mChannelType, post, showAuthor, showTime, mImageLoader, mOnLongClickListener);
@@ -192,14 +212,26 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
         @BindView(R.id.iv_fail)
         ImageView mIvFail;
 
-        ViewHolder(View itemView) {
+        @BindView(R.id.attachments_container)
+        LinearLayout mAttachmentsContainer;
+
+        private final View.OnClickListener mDefaultAttachmentClickListener;
+        private final View.OnClickListener mImageAttachmentClickListener;
+
+        ViewHolder(View itemView, View.OnClickListener defaultAttachmentClickListener,
+                   View.OnClickListener imageAttachmentClickListener) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+
+            mDefaultAttachmentClickListener = defaultAttachmentClickListener;
+            mImageAttachmentClickListener = imageAttachmentClickListener;
         }
 
         void setFailStatusVisible(boolean visible) {
-            mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
+            if (mIvFail != null) {
+                mIvFail.setVisibility(visible ? View.VISIBLE : View.GONE);
+            }
         }
 
         void toggleDate(Post post) {
@@ -263,6 +295,55 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
             mTvNewMessage.setVisibility(showNewMessageIndicator ? View.VISIBLE : View.GONE);
         }
 
+        private void bindAttachments(Context context, Post post, boolean isMy, String currentTeamId,
+                                     ImageLoader imageLoader, ImagePathHelper imagePathHelper) {
+            mAttachmentsContainer.removeAllViews();
+            mAttachmentsContainer.setVisibility(post.getFilenames().isEmpty() ? View.GONE : View.VISIBLE);
+            for (RealmString filename : post.getFilenames()) {
+                final LinearLayout container = new LinearLayout(itemView.getContext());
+                final LinearLayout.LayoutParams containerParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                container.setOrientation(LinearLayout.HORIZONTAL);
+                final ImageView thumbnail = new ImageView(container.getContext());
+                final int iconSize = (int) context.getResources().getDimension(R.dimen.attachment_icon_size);
+                final int iconPadding = (int) context.getResources().getDimension(R.dimen.attachment_icon_padding);
+                final LinearLayout.LayoutParams thumbnailParams =
+                        new LinearLayout.LayoutParams(iconSize, iconSize);
+                thumbnail.setLayoutParams(thumbnailParams);
+                thumbnail.setPadding(iconPadding, iconPadding, iconPadding, iconPadding);
+                thumbnail.setImageDrawable(ContextCompat.getDrawable(thumbnail.getContext(),
+                        R.drawable.ic_attach_grey));
+                container.addView(thumbnail);
+                final TextView name = new TextView(container.getContext());
+                final LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                name.setTextColor(ContextCompat.getColor(name.getContext(), isMy ? R.color.colorDisabled :
+                        R.color.textPrimary));
+                final String filenameValue = filename.getValue();
+                final String extractedFileName = StringUtil.extractFileName(filenameValue);
+                name.setText(extractedFileName);
+                name.setTag(filenameValue);
+                nameParams.gravity = Gravity.CENTER_VERTICAL;
+                name.setLayoutParams(nameParams);
+                container.addView(name);
+                container.setLayoutParams(containerParams);
+                mAttachmentsContainer.addView(container);
+
+                final String attachmentUrl = imagePathHelper.getAttachmentImageUrl(currentTeamId, filenameValue);
+                container.setTag(attachmentUrl);
+
+                if (imagePathHelper.isImage(extractedFileName)) {
+                    if (attachmentUrl != null) {
+                        imageLoader.displayThumbnailImage(attachmentUrl, thumbnail);
+                    }
+
+                    container.setOnClickListener(mImageAttachmentClickListener);
+                } else {
+                    container.setOnClickListener(mDefaultAttachmentClickListener);
+                }
+            }
+        }
+
         private void bind(Channel.ChannelType channelType,
                           Post post,
                           boolean showAuthor,
@@ -270,6 +351,8 @@ public class PostAdapter extends SubscribeableRealmRecyclerViewAdapter<Post, Pos
             mTvDate.setText(TimeUtil.formatDateOnly(post.getCreatedAt()));
             mTvTimestamp.setText(TimeUtil.formatTimeOnly(post.getCreatedAt()));
             mTvName.setText(User.getDisplayableName(post.getAuthor()));
+
+            mTvMessage.setVisibility(TextUtils.isEmpty(post.getMessage()) ? View.GONE : View.VISIBLE);
             mTvMessage.setText(post.getMessage());
             mTvMessage.setOnLongClickListener(v -> {
                 itemView.performLongClick();

@@ -53,7 +53,16 @@ public class PicassoImageLoader implements ImageLoader {
     @Override
     public void displayCircularImage(@NonNull String url, @NonNull ImageView imageView) {
         picasso.load(url).transform(transformation).into(imageView);
-//        picasso.load(url).networkPolicy(NetworkPolicy.NO_CACHE).transform(transformation).into(imageView);
+    }
+
+    @Override
+    public void displayCircularImageWithoutCache(@NonNull String url, @NonNull ImageView imageView) {
+        picasso.load(url).networkPolicy(NetworkPolicy.NO_CACHE).transform(transformation).into(imageView);
+    }
+
+    @Override
+    public void displayThumbnailImage(@NonNull String url, @NonNull ImageView imageView) {
+        picasso.load(url).resize(100, 100).centerInside().into(imageView);
     }
 
     @Override

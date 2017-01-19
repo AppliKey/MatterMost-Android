@@ -15,6 +15,7 @@ import com.applikey.mattermost.models.channel.ExtraInfo;
 import com.applikey.mattermost.models.channel.Membership;
 import com.applikey.mattermost.models.channel.RequestUserId;
 import com.applikey.mattermost.models.commands.InviteNewMembersRequest;
+import com.applikey.mattermost.models.file.UploadResponse;
 import com.applikey.mattermost.models.init.InitLoadResponse;
 import com.applikey.mattermost.models.post.PendingPost;
 import com.applikey.mattermost.models.post.Post;
@@ -24,11 +25,13 @@ import com.applikey.mattermost.models.team.Team;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.models.web.PingResponse;
 import com.applikey.mattermost.utils.PrimitiveConverterFactory;
+import com.google.gson.Gson;
 
 import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -43,12 +46,14 @@ public class ApiDelegate implements Api {
     private final ServerUrlFactory urlFactory;
     private final OkHttpClient okHttpClient;
     private final Object mutex = new Object();
+    private final Gson gson;
     private String serverUrl;
     private Api realApi;
 
-    public ApiDelegate(OkHttpClient okHttpClient, ServerUrlFactory urlFactory) {
+    public ApiDelegate(OkHttpClient okHttpClient, ServerUrlFactory urlFactory, Gson gson) {
         this.urlFactory = urlFactory;
         this.okHttpClient = okHttpClient;
+        this.gson = gson;
     }
 
     @Override
@@ -99,15 +104,15 @@ public class ApiDelegate implements Api {
 
     @Override
     public Single<Void> deletePost(@Path("teamId") String teamId,
-                                       @Path("channelId") String channelId,
-                                       @Path("channelId") String postId) {
+                                   @Path("channelId") String channelId,
+                                   @Path("channelId") String postId) {
         return getRealApi().deletePost(teamId, channelId, postId);
     }
 
     @Override
     public Single<Post> updatePost(@Path("teamId") String teamId,
-                                       @Path("channelId") String channelId,
-                                       @Body Post post) {
+                                   @Path("channelId") String channelId,
+                                   @Body Post post) {
         return getRealApi().updatePost(teamId, channelId, post);
     }
 
@@ -118,7 +123,7 @@ public class ApiDelegate implements Api {
 
     @Override
     public Single<Channel> getChannelById(@Path("teamId") String teamId,
-                                              @Path("channelId") String channelId) {
+                                          @Path("channelId") String channelId) {
         return getRealApi().getChannelById(teamId, channelId);
     }
 
@@ -129,34 +134,34 @@ public class ApiDelegate implements Api {
 
     @Override
     public Single<PostResponse> getPostsPage(@Path("teamId") String teamId,
-                                                 @Path("channelId") String channelId,
-                                                 @Path("offset") int offset,
-                                                 @Path("limit") int limit) {
+                                             @Path("channelId") String channelId,
+                                             @Path("offset") int offset,
+                                             @Path("limit") int limit) {
         return getRealApi().getPostsPage(teamId, channelId, offset, limit);
     }
 
     @Override
     public Single<PostResponse> getLastPost(@Path("teamId") String teamId,
-                                                @Path("channelId") String channelId) {
+                                            @Path("channelId") String channelId) {
         return getRealApi().getLastPost(teamId, channelId);
     }
 
     @Override
     public Single<ExtraInfo> getChannelExtra(@Path("teamId") String teamId,
-                                                 @Path("channelId") String channelId) {
+                                             @Path("channelId") String channelId) {
         return getRealApi().getChannelExtra(teamId, channelId);
     }
 
     @Override
     public Single<Post> createPost(@Path("teamId") String teamId,
-                                       @Path("channelId") String channelId,
-                                       @Body PendingPost request) {
+                                   @Path("channelId") String channelId,
+                                   @Body PendingPost request) {
         return getRealApi().createPost(teamId, channelId, request);
     }
 
     @Override
     public Single<Response<String>> updateLastViewedAt(@Path("teamId") String teamId,
-                                                           @Path("channelId") String channelId) {
+                                                       @Path("channelId") String channelId) {
         return getRealApi().updateLastViewedAt(teamId, channelId);
     }
 
@@ -168,8 +173,8 @@ public class ApiDelegate implements Api {
 
     @Override
     public Single<Membership> addUserToChannel(@Path("team_id") String teamId,
-                                                   @Path("channel_id") String channelId,
-                                                   @Body RequestUserId userId) {
+                                               @Path("channel_id") String channelId,
+                                               @Body RequestUserId userId) {
         return getRealApi().addUserToChannel(teamId, channelId, userId);
     }
 
@@ -180,13 +185,13 @@ public class ApiDelegate implements Api {
 
     @Override
     public Single<Channel> createChannel(@Path("team_id") String teamId,
-                                             @Body DirectChannelRequest request) {
+                                         @Body DirectChannelRequest request) {
         return getRealApi().createChannel(teamId, request);
     }
 
     @Override
     public Single<DeleteChannelResponse> deleteChannel(@Path("teamId") String teamId,
-            @Path("channelId") String channelId) {
+                                                       @Path("channelId") String channelId) {
         return getRealApi().deleteChannel(teamId, channelId);
     }
 
@@ -219,20 +224,26 @@ public class ApiDelegate implements Api {
 
     @Override
     public Single<Void> leaveChannel(@Path("team_id") String teamId,
-                                         @Path("channel_id") String channelId) {
+                                     @Path("channel_id") String channelId) {
         return getRealApi().leaveChannel(teamId, channelId);
     }
 
     @Override
     public Single<Channel> updateChannelTitle(@Path("teamId") String teamId,
-                                                  @Body ChannelTitleRequest request) {
+                                              @Body ChannelTitleRequest request) {
         return getRealApi().updateChannelTitle(teamId, request);
     }
 
     @Override
     public Single<Channel> updateChannelPurpose(@Path("teamId") String teamId,
-                                                    @Body ChannelPurposeRequest request) {
+                                                @Body ChannelPurposeRequest request) {
         return getRealApi().updateChannelPurpose(teamId, request);
+    }
+
+    @Override
+    public Single<Response<UploadResponse>> uploadFile(MultipartBody.Part file, RequestBody clientId,
+                                             RequestBody channelId, String teamId) {
+        return getRealApi().uploadFile(file, clientId, channelId, teamId);
     }
 
     private Api getRealApi() {
@@ -245,7 +256,7 @@ public class ApiDelegate implements Api {
                             .baseUrl(serverUrl)
                             .client(okHttpClient)
                             .addConverterFactory(PrimitiveConverterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create(gson))
                             .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                             .build();
                     //noinspection UnnecessaryLocalVariable

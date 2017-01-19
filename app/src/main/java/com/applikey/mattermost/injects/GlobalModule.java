@@ -8,10 +8,12 @@ import com.applikey.mattermost.BuildConfig;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
+import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.PersistentPrefs;
 import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.typeadapters.RealmListStringTypeAdapter;
 import com.applikey.mattermost.utils.image.ImagePathHelper;
 import com.applikey.mattermost.web.Api;
 import com.applikey.mattermost.web.ApiDelegate;
@@ -26,6 +28,7 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,6 +39,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import okhttp3.Cache;
 import okhttp3.Headers;
@@ -109,9 +113,9 @@ public class GlobalModule {
             }
             return chain.proceed(request);
         });
-        final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        okClientBuilder.addInterceptor(httpLoggingInterceptor);
+//        final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+//        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        okClientBuilder.addInterceptor(httpLoggingInterceptor);
 
         // TODO: 07.12.16 CACHE DISABLED IN DEBUG BUILD TO ALLOW DEBUG BY STETHO.
         // (WITH CACHE WE HAVE " 304 NOT MODIFIED" IN RESPONSE)
@@ -130,8 +134,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    Api provideApi(OkHttpClient okHttpClient, ServerUrlFactory serverUrlFactory) {
-        return new ApiDelegate(okHttpClient, serverUrlFactory);
+    Api provideApi(OkHttpClient okHttpClient, ServerUrlFactory serverUrlFactory, Gson gson) {
+        return new ApiDelegate(okHttpClient, serverUrlFactory, gson);
     }
 
     @Provides
@@ -154,8 +158,8 @@ public class GlobalModule {
 
     @Provides
     @PerApp
-    ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory) {
-        return new ImagePathHelper(serverUrlFactory);
+    ImagePathHelper provideImagePathHelper(ServerUrlFactory serverUrlFactory, Prefs prefs) {
+        return new ImagePathHelper(serverUrlFactory, prefs);
     }
 
     @Provides
@@ -184,6 +188,8 @@ public class GlobalModule {
                 })
                 .registerTypeAdapter(Props.class, propsTypeAdapter)
                 .registerTypeAdapter(WebSocketEvent.class, socketEventTypeAdapter)
+                .registerTypeAdapter(new TypeToken<RealmList<RealmString>>() {
+                }.getType(), new RealmListStringTypeAdapter())
                 .create();
 
         propsTypeAdapter.setGson(gson);

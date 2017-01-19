@@ -3,6 +3,7 @@ package com.applikey.mattermost.injects;
 import com.applikey.mattermost.activities.ChatActivity;
 import com.applikey.mattermost.activities.DrawerActivity;
 import com.applikey.mattermost.fragments.BaseChatListFragment;
+import com.applikey.mattermost.fragments.ImageAttachmentDialogFragment;
 import com.applikey.mattermost.fragments.SearchFragment;
 import com.applikey.mattermost.mvp.presenters.AddedMembersPresenter;
 import com.applikey.mattermost.mvp.presenters.BaseChatListPresenter;
@@ -91,6 +92,8 @@ public interface UserComponent {
     void inject(MessageDetailsPresenter presenter);
 
     void inject(InviteNewMemberPresenter presenter);
+
+    void inject(ImageAttachmentDialogFragment dialog);
 
     @Subcomponent.Builder
     interface Builder {

@@ -139,7 +139,7 @@ public class EditProfilePresenter extends BasePresenter<EditProfileView> {
     }
 
     private Single<Void> uploadImage() {
-        MultipartBody.Part imagePart = MultipartBody.
+        final MultipartBody.Part imagePart = MultipartBody.
                 Part.createFormData(Api.MULTIPART_IMAGE_TAG, mImage.getName(),
                                     RequestBody.create(MediaType.parse(Constants.MIME_TYPE_IMAGE), mImage));
 

@@ -2,10 +2,14 @@ package com.applikey.mattermost.models.post;
 
 import android.support.annotation.Nullable;
 
+import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 import com.vdurmont.emoji.EmojiParser;
 
+import java.util.List;
+
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -37,6 +41,8 @@ public class Post extends RealmObject {
     private String userId;
     @SerializedName("message")
     private String message;
+    @SerializedName("filenames")
+    private RealmList<RealmString> filenames;
     // Application-specific fields
     private int priority;
     private User author;
@@ -53,6 +59,13 @@ public class Post extends RealmObject {
         setUserId(builder.userId);
         setMessage(builder.message);
         setSent(builder.sent);
+
+        final RealmList<RealmString> attachments = new RealmList<>();
+        for (String attachment : builder.attachments) {
+            attachments.add(new RealmString(attachment));
+        }
+
+        setFilenames(attachments);
     }
 
     public String getId() {
@@ -146,6 +159,14 @@ public class Post extends RealmObject {
         this.rootPost = rootPost;
     }
 
+    public List<RealmString> getFilenames() {
+        return filenames;
+    }
+
+    public void setFilenames(RealmList<RealmString> filenames) {
+        this.filenames = filenames;
+    }
+
     @Override
     public int hashCode() {
         int result = getId().hashCode();
@@ -198,7 +219,6 @@ public class Post extends RealmObject {
                 : post.getAuthor() == null;
     }
 
-
     public static Comparator<Post> COMPARATOR_BY_CREATE_AT =
             (post1, post2) -> {
                 final long delta = post1.getCreatedAt() - post2.getCreatedAt();
@@ -230,6 +250,7 @@ public class Post extends RealmObject {
         private String userId;
         private String message;
         private boolean sent;
+        private List<String> attachments;
 
         public Builder() {
         }
@@ -261,6 +282,11 @@ public class Post extends RealmObject {
 
         public Builder sent(boolean val) {
             sent = val;
+            return this;
+        }
+
+        public Builder attachments(List<String> val) {
+            attachments = val;
             return this;
         }
 

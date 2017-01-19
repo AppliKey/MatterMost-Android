@@ -158,6 +158,8 @@
     <string name="error_user_invited">User already invited</string>
 
     <string name="url">url</string>
+    <string name="attachment">Attachment</string>
 
+    <string name="please_grant_permission">Please grant the permission</string>
 
 </resources>

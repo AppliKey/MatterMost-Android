@@ -19,7 +19,6 @@ public abstract class LowRateRealmChangeListener<T> implements RealmChangeListen
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(v -> {
                     if (mShouldCallBack) {
-                        Log.d(LowRateRealmChangeListener.class.getSimpleName(), "Data set change");
                         onChangeCallback();
                         mShouldCallBack = false;
                     }

@@ -1,35 +1,41 @@
 package com.applikey.mattermost.activities;
 
+import android.Manifest;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.R;
 import com.applikey.mattermost.adapters.PostAdapter;
+import com.applikey.mattermost.fragments.ImageAttachmentDialogFragment;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
 import com.applikey.mattermost.mvp.presenters.ChatPresenter;
 import com.applikey.mattermost.mvp.views.ChatView;
+import com.applikey.mattermost.storage.preferences.Prefs;
+import com.applikey.mattermost.utils.image.ImagePathHelper;
+import com.applikey.mattermost.utils.kissUtils.utils.FileUtil;
 import com.applikey.mattermost.utils.pagination.PaginationScrollListener;
 import com.applikey.mattermost.utils.view.ViewUtil;
+import com.applikey.mattermost.web.ErrorHandler;
 import com.applikey.mattermost.web.images.ImageLoader;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 
@@ -41,6 +47,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.RealmResults;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -52,6 +59,10 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private static final String CHANNEL_LAST_VIEWED_KEY = "channel-last-viewed";
     private static final String CHANNEL_NAME = "channel-name";
     private static final String ACTION_JOIN_TO_CHANNEL_KEY = "join-to-channel";
+
+    private static final String DIALOG_TAG_IMAGE_ATTACHMENT = "dialog-attachment-image";
+
+    private static final int PICK_FILE_REQUEST_CODE = 451;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -104,6 +115,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @BindView(R.id.loading_progress_bar)
     MaterialProgressBar mLoadingProgressBar;
 
+    @BindView(R.id.hsv_attachments)
+    HorizontalScrollView mAttachmentsRoot;
+
+    @BindView(R.id.ll_attachments)
+    LinearLayout mAttachmentsLayout;
+
     @InjectPresenter
     ChatPresenter mPresenter;
 
@@ -113,6 +130,15 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Inject
     ImageLoader mImageLoader;
+
+    @Inject
+    ImagePathHelper mImagePathHelper;
+
+    @Inject
+    Prefs mPrefs;
+
+    @Inject
+    ErrorHandler mErrorHandler;
 
     private String mRootId;
 
@@ -125,7 +151,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     private PostAdapter mAdapter;
 
     private EmojiPopup mEmojiPopup;
+
     private boolean mIsJoined;
+
+    private RxPermissions mRxPermissions;
+
+    private DownloadManager mDownloadManager;
 
     public static Intent getIntent(Context context, Channel channel) {
         final Intent intent = new Intent(context, ChatActivity.class);
@@ -143,6 +174,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         setContentView(R.layout.activity_chat);
         App.getUserComponent().inject(this);
         ButterKnife.bind(this);
+        mRxPermissions = RxPermissions.getInstance(this);
 
         mEmojiPopup = EmojiPopup.Builder
                 .fromRootView(rootView)
@@ -154,12 +186,16 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         initParameters();
         mPresenter.getInitialData(mChannelId);
 
+        mDownloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         initView();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+
+        Timber.w("ChatActivity onStart");
+
         mPresenter.fetchAfterRestart();
 
         if (!mIsJoined) {
@@ -188,8 +224,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     public void onDataReady(RealmResults<Post> posts, boolean listenUpdates) {
         final Channel.ChannelType channelType = Channel.ChannelType.fromRepresentation(mChannelType);
 
-        mAdapter = new PostAdapter(this, posts, mCurrentUserId, mImageLoader,
-                channelType, mChannelLastViewed, onPostLongClick, listenUpdates);
+        final String currentTeamId = mPrefs.getCurrentTeamId();
+
+        mAdapter = new PostAdapter(this, posts, mCurrentUserId, currentTeamId, mImageLoader, mImagePathHelper,
+                channelType, mChannelLastViewed, mOnPostLongClick, mDefaultAttachmentClickListener,
+                mImageAttachmentClickListener, listenUpdates);
 
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
@@ -229,6 +268,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Override
     public void clearMessageInput() {
         mEtMessage.getText().clear();
+    }
+
+    @Override
+    public void clearAttachmentsInput() {
+        mAttachmentsLayout.removeAllViews();
     }
 
     @Override
@@ -272,13 +316,54 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         return false;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
+            final String uri = data.getDataString();
+            final String filePath = FileUtil.getPath(this, Uri.parse(uri));
+
+            mPresenter.pickAttachment(filePath);
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void showAddingAttachment(String filePath, String fileName) {
+        final LayoutInflater inflater = getLayoutInflater();
+        final View root = inflater.inflate(R.layout.list_item_attachment, null);
+
+        final ImageView closeButton = (ImageView) root.findViewById(R.id.iv_attachment_close_button);
+        final TextView name = (TextView) root.findViewById(R.id.tv_attachment_name);
+
+        name.setText(fileName);
+
+        closeButton.setOnClickListener(v -> {
+            mPresenter.removePickedAttachment(filePath);
+            ((ViewGroup) root.getParent()).removeView(root);
+        });
+
+        mAttachmentsLayout.addView(root);
+    }
+
     @OnClick(R.id.iv_send_message)
     void onSend() {
-        if (mRootId == null) {
-            mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString());
-        } else {
-            mPresenter.sendReplyMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
-        }
+        mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString(), mRootId);
+    }
+
+    @OnClick(R.id.iv_attach)
+    void onAttach() {
+        mRxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(granted -> {
+                    if (!granted) {
+                        // notify user
+                        Toast.makeText(this, R.string.please_grant_permission, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+                }, mErrorHandler::handleError);
     }
 
     @OnClick(R.id.btn_join_channel)
@@ -310,6 +395,13 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Override
     public void showTitle(String title) {
         mToolbar.setTitle(title);
+    }
+
+    @Override
+    public void downloadFile(DownloadManager.Request downloadRequest, String fileName) {
+        downloadRequest.setDestinationInExternalFilesDir(this,
+                Environment.DIRECTORY_DOWNLOADS, fileName);
+        mDownloadManager.enqueue(downloadRequest);
     }
 
     private void deleteMessage(String channelId, Post post) {
@@ -392,6 +484,32 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mIvReplyClose.setOnClickListener(v -> hideReply());
     }
 
+    private final View.OnClickListener mImageAttachmentClickListener = v -> {
+        final String url = (String) v.getTag();
+
+        if (url != null) {
+            ImageAttachmentDialogFragment.newInstance(url).show(getSupportFragmentManager(),
+                    DIALOG_TAG_IMAGE_ATTACHMENT);
+        }
+    };
+
+    private final View.OnClickListener mDefaultAttachmentClickListener = v -> {
+        final String url = (String) v.getTag();
+
+        if (url != null) {
+            mRxPermissions.request(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .subscribe(granted -> {
+                        if (!granted) {
+                            // notify user
+                            Toast.makeText(this, R.string.please_grant_permission, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        mPresenter.requestDownload(url);
+                    }, mErrorHandler::handleError);
+        }
+    };
+
     private final RecyclerView.OnScrollListener mPaginationListener = new PaginationScrollListener() {
         @Override
         public void onLoad() {
@@ -399,12 +517,12 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         }
     };
 
-    private final PostAdapter.OnLongClickListener onPostLongClick = (post, isOwner) -> {
+    private final PostAdapter.OnLongClickListener mOnPostLongClick = (post, isOwner) -> {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         if (!post.isSent()) {
             dialogBuilder.setItems(R.array.post_own_opinion_fail_array, (dialog, which) -> {
                 if (which == 0) {
-                    mPresenter.sendMessage(mChannelId, post.getMessage(), post.getId());
+                    mPresenter.sendMessage(mChannelId, post.getMessage(), null, post.getId());
                 } else if (which == 1) {
                     deleteMessage(mChannelId, post);
                 }
