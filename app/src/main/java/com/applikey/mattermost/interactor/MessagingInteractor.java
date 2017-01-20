@@ -20,6 +20,7 @@ import rx.Observable;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_CHANNEL_VIEWED;
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_DELETED;
@@ -27,8 +28,6 @@ import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_ED
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_POSTED;
 
 public class MessagingInteractor {
-
-    private static final String TAG = "MessagingInteractor";
 
     private final ChannelStorage mChannelStorage;
     private final UserStorage mUserStorage;
@@ -67,8 +66,11 @@ public class MessagingInteractor {
                     final Post post = event.getProps().getPost();
                     final String socketEvent = event.getEvent();
                     if (EVENT_POST_POSTED.equals(socketEvent)) {
+                        mPostStorage.loadAuthor(post);
+                        mPostStorage.saveSync(post);
                         mChannelStorage.updateLastPost(event.getChannelId(), post);
                     } else if (EVENT_POST_EDITED.equals(socketEvent)) {
+                        mPostStorage.loadAuthor(post);
                         mPostStorage.saveSync(post);
                     } else if (EVENT_CHANNEL_VIEWED.equals(socketEvent)) {
                         mChannelStorage.updateViewedAt(event.getChannelId());
