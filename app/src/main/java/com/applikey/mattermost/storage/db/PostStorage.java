@@ -1,9 +1,7 @@
 package com.applikey.mattermost.storage.db;
 
 import android.text.TextUtils;
-import android.util.Log;
 
-import android.util.Log;
 import com.applikey.mattermost.models.channel.Channel;
 import com.applikey.mattermost.models.post.Post;
 import com.applikey.mattermost.models.user.User;
@@ -16,7 +14,6 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 import rx.Observable;
 import rx.Single;
-import timber.log.Timber;
 
 public class PostStorage {
 
@@ -32,7 +29,7 @@ public class PostStorage {
 
     public void update(Post post) {
         if (post.getAuthor() == null) {
-            Timber.e("Trying to save post with null author: %s", post.getId());
+            throw new RuntimeException("null post");
         }
 
         mDb.saveTransactional(post);
@@ -50,7 +47,7 @@ public class PostStorage {
                         .findFirst();
 
                 if (author == null) {
-                    Timber.e("Trying to save post with null user: %s", post.getUserId());
+                    throw new RuntimeException("null post");
                 }
 
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
@@ -111,6 +108,10 @@ public class PostStorage {
                         .equalTo(User.FIELD_NAME_ID, post.getUserId())
                         .findFirst();
 
+                if (author == null) {
+                    throw new RuntimeException("NULL AUTHOR CAUGHT");
+                }
+
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
                         realm.where(Post.class)
                                 .equalTo(Post.FIELD_NAME_ID, post.getRootId())
@@ -136,6 +137,10 @@ public class PostStorage {
                         .equalTo(User.FIELD_NAME_ID, post.getUserId())
                         .findFirst();
 
+                if (author == null) {
+                    throw new RuntimeException("NULL AUTHOR CAUGHT");
+                }
+
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
                         realm.where(Post.class)
                                 .equalTo(Post.FIELD_NAME_ID, post.getRootId())
@@ -157,6 +162,10 @@ public class PostStorage {
                     .equalTo(User.FIELD_NAME_ID, post.getUserId())
                     .findFirst();
 
+            if (author == null) {
+                throw new RuntimeException("NULL AUTHOR CAUGHT");
+            }
+
             final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
                     realm.where(Post.class)
                             .equalTo(Post.FIELD_NAME_ID, post.getRootId())
@@ -176,6 +185,10 @@ public class PostStorage {
                     .equalTo(User.FIELD_NAME_ID, post.getUserId())
                     .findFirst();
 
+            if (author == null) {
+                throw new RuntimeException("NULL AUTHOR CAUGHT");
+            }
+
             final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
                     realm.where(Post.class)
                             .equalTo(Post.FIELD_NAME_ID, post.getRootId())
@@ -188,6 +201,28 @@ public class PostStorage {
         });
     }
 
+    public void save(Post post, Callback callback) {
+        mDb.doTransactionalWithCallback(realm -> {
+            final User author = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                    .findFirst();
+
+            if (author == null) {
+                throw new RuntimeException("NULL AUTHOR CAUGHT");
+            }
+
+            final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
+                    realm.where(Post.class)
+                            .equalTo(Post.FIELD_NAME_ID, post.getRootId())
+                            .findFirst()
+                    : null;
+
+            final Post realmPost = realm.copyToRealmOrUpdate(post);
+            realmPost.setAuthor(author);
+            realmPost.setRootPost(rootPost);
+        }, callback::execute);
+    }
+
     public Post copyFromDb(Post post) {
         return mDb.copyFromRealm(post);
     }
@@ -198,7 +233,6 @@ public class PostStorage {
     }
 
     public void deleteAllByChannel(String channelId, boolean excludeFailed) {
-        Log.d("PostStorage ", "deleteAllByChannel: ");
         mDb.doTransactional(realm -> realm.where(Post.class)
                 .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
                 .equalTo(Post.FIELD_NAME_SENT, excludeFailed)
@@ -215,5 +249,17 @@ public class PostStorage {
 
     public void delete(String id) {
         mDb.deleteTransactionalSync(Post.class, id);
+    }
+
+    public void loadAuthor(Post post) {
+        final Realm realmInstance = Realm.getDefaultInstance();
+
+        realmInstance.executeTransaction(realm -> {
+            final User author = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, post.getUserId())
+                    .findFirst();
+
+            post.setAuthor(author);
+        });
     }
 }

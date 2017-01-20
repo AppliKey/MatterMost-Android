@@ -51,6 +51,7 @@ public class ChannelStorage {
                 return;
             }
             channel.setLastPost(persistedPost);
+            channel.setLastActivityTime(persistedPost.getCreatedAt());
         });
         realmInstance.close();
     }
