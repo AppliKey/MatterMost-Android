@@ -80,7 +80,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         if (searchType.equals(SearchItem.Type.CHANNEL)) {
             final Channel channel = searchItem.getChannel();
-            uploadUsersForChannel(channel, position);
+            loadUsersForChannel(channel, position);
             final GroupChatListViewHolder viewHolder = (GroupChatListViewHolder) vh;
             viewHolder.bind(mImageLoader, channel);
             viewHolder.setClickListener(this);
@@ -90,16 +90,16 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((ChatListViewHolder) vh).bind(mImageLoader, this, searchItem.getMessage(), mSearchText);
         } else if (searchType.equals(SearchItem.Type.MESSAGE_CHANNEL)) {
             final Channel channel = searchItem.getMessage().getChannel();
-            uploadUsersForChannel(channel, position);
+            loadUsersForChannel(channel, position);
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
-                                                 searchItem.getMessage(), mSearchText);
+                    searchItem.getMessage(), mSearchText);
         }
 
     }
 
-    private void uploadUsersForChannel(Channel channel, int position) {
+    private void loadUsersForChannel(Channel channel, int position) {
         final List<User> users = channel.getUsers();
-        if(users == null || users.isEmpty()) {
+        if (users == null || users.isEmpty()) {
             mOnLoadAdditionalDataListener.onLoadAdditionalData(channel, position);
         }
     }
