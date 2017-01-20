@@ -29,7 +29,7 @@ public class PostStorage {
 
     public void update(Post post) {
         if (post.getAuthor() == null) {
-            throw new RuntimeException("null post");
+            throw new RuntimeException("Trying to save post with null author");
         }
 
         mDb.saveTransactional(post);
@@ -47,7 +47,7 @@ public class PostStorage {
                         .findFirst();
 
                 if (author == null) {
-                    throw new RuntimeException("null post");
+                    throw new RuntimeException("Trying to save post with null author");
                 }
 
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
@@ -109,7 +109,7 @@ public class PostStorage {
                         .findFirst();
 
                 if (author == null) {
-                    throw new RuntimeException("NULL AUTHOR CAUGHT");
+                    throw new RuntimeException("Trying to save post with null author");
                 }
 
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
@@ -138,7 +138,7 @@ public class PostStorage {
                         .findFirst();
 
                 if (author == null) {
-                    throw new RuntimeException("NULL AUTHOR CAUGHT");
+                    throw new RuntimeException("Trying to save post with null author");
                 }
 
                 final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
@@ -163,7 +163,7 @@ public class PostStorage {
                     .findFirst();
 
             if (author == null) {
-                throw new RuntimeException("NULL AUTHOR CAUGHT");
+                throw new RuntimeException("Trying to save post with null author");
             }
 
             final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
@@ -186,7 +186,7 @@ public class PostStorage {
                     .findFirst();
 
             if (author == null) {
-                throw new RuntimeException("NULL AUTHOR CAUGHT");
+                throw new RuntimeException("Trying to save post with null author");
             }
 
             final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
@@ -208,7 +208,7 @@ public class PostStorage {
                     .findFirst();
 
             if (author == null) {
-                throw new RuntimeException("NULL AUTHOR CAUGHT");
+                throw new RuntimeException("Trying to save post with null author");
             }
 
             final Post rootPost = !TextUtils.isEmpty(post.getRootId()) ?
