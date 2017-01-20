@@ -227,7 +227,8 @@ public class Db {
 
     public void deleteTransactionalSync(final RealmObject realmObject) {
         mRealm.executeTransaction(realm -> {
-            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
+            realmObject.deleteFromRealm();
+//            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
         });
     }
 
