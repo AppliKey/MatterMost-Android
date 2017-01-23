@@ -22,10 +22,7 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Action3;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 
 public class Db {
 
@@ -201,6 +198,12 @@ public class Db {
 
     public void doTransactional(Action1<Realm> update) {
         mRealm.executeTransactionAsync(update::call);
+    }
+
+    public void doTransactionSync(Action1<Realm> update) {
+        mRealm.beginTransaction();
+        update.call(mRealm);
+        mRealm.commitTransaction();
     }
 
     public void doTransactionalWithCallback(Action1<Realm> action, Realm.Transaction.OnSuccess callback) {
