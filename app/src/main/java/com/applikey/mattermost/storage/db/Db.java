@@ -227,7 +227,8 @@ public class Db {
 
     public void deleteTransactionalSync(final RealmObject realmObject) {
         mRealm.executeTransaction(realm -> {
-            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
+            realmObject.deleteFromRealm();
+//            realm.copyToRealmOrUpdate(realmObject).deleteFromRealm();
         });
     }
 
@@ -365,6 +366,23 @@ public class Db {
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedWithEmpty(
+            Class<T> tClass,
+            String fieldName1,
+            String value1,
+            String fieldName2,
+            boolean value2,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName1, value1)
+                .equalTo(fieldName2, value2)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());

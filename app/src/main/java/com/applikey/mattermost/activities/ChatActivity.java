@@ -346,6 +346,11 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         mAttachmentsLayout.addView(root);
     }
 
+    @Override
+    public void refreshMessagesList() {
+        mAdapter.notifyDataSetChanged();
+    }
+
     @OnClick(R.id.iv_send_message)
     void onSend() {
         mPresenter.sendMessage(mChannelId, mEtMessage.getText().toString(), mRootId);

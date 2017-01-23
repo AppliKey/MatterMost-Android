@@ -46,4 +46,6 @@ public interface ChatView extends MvpView {
 
     @StateStrategyType(AddToEndStrategy.class)
     void showAddingAttachment(String filePath, String fileName);
+
+    void refreshMessagesList();
 }

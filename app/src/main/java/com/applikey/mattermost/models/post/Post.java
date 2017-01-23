@@ -21,6 +21,7 @@ public class Post extends RealmObject {
     public static final String FIELD_NAME_CHANNEL_ID = "channelId";
     public static final String FIELD_NAME_CHANNEL_CREATE_AT = "createdAt";
     public static final String FIELD_NAME_SENT = "sent";
+    public static final String FIELD_NAME_DELETED = "deleted";
 
     @PrimaryKey
     @SerializedName("id")
@@ -47,6 +48,7 @@ public class Post extends RealmObject {
     private int priority;
     private User author;
     private boolean sent = true;
+    private boolean deleted = false;
 
     public Post() {
 
@@ -59,6 +61,7 @@ public class Post extends RealmObject {
         setUserId(builder.userId);
         setMessage(builder.message);
         setSent(builder.sent);
+        setDeleted(builder.deleted);
 
         final RealmList<RealmString> attachments = new RealmList<>();
         for (String attachment : builder.attachments) {
@@ -148,6 +151,14 @@ public class Post extends RealmObject {
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Nullable
@@ -250,6 +261,7 @@ public class Post extends RealmObject {
         private String userId;
         private String message;
         private boolean sent;
+        private boolean deleted;
         private List<String> attachments;
 
         public Builder() {
@@ -282,6 +294,11 @@ public class Post extends RealmObject {
 
         public Builder sent(boolean val) {
             sent = val;
+            return this;
+        }
+
+        public Builder deleted(boolean val) {
+            deleted = val;
             return this;
         }
 
