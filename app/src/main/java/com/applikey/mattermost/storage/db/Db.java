@@ -373,6 +373,23 @@ public class Db {
 
     public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedWithEmpty(
             Class<T> tClass,
+            String fieldName1,
+            String value1,
+            String fieldName2,
+            boolean value2,
+            String sortBy) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName1, value1)
+                .equalTo(fieldName2, value2)
+                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid());
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSortedWithEmpty(
+            Class<T> tClass,
             String fieldName,
             boolean value,
             String sortBy) {
