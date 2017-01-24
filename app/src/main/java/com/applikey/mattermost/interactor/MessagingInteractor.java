@@ -20,7 +20,6 @@ import rx.Observable;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_CHANNEL_VIEWED;
 import static com.applikey.mattermost.models.socket.WebSocketEvent.EVENT_POST_DELETED;
@@ -62,6 +61,7 @@ public class MessagingInteractor {
     public Observable<WebSocketEvent> listenMessagingSocket() {
         return mMessagingSocket.listen()
                 .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .doOnNext(event -> {
                     final Post post = event.getProps().getPost();
                     final String socketEvent = event.getEvent();

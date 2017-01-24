@@ -65,7 +65,7 @@ public abstract class SubscribeableRealmRecyclerViewAdapter<T extends RealmModel
         // types of listeners until RealmList is properly supported.
         // See https://github.com/realm/realm-java/issues/989
         this.listener = results -> {
-            if (hasAutoUpdates) {
+            if (this.hasAutoUpdates) {
                 notifyDataSetChanged();
             }
         };
@@ -74,7 +74,7 @@ public abstract class SubscribeableRealmRecyclerViewAdapter<T extends RealmModel
     @Override
     public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-        if (hasAutoUpdates && isDataValid()) {
+        if (isDataValid()) {
             //noinspection ConstantConditions
             addListener(adapterData);
         }
@@ -83,7 +83,7 @@ public abstract class SubscribeableRealmRecyclerViewAdapter<T extends RealmModel
     @Override
     public void onDetachedFromRecyclerView(final RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
-        if (hasAutoUpdates && isDataValid()) {
+        if (isDataValid()) {
             //noinspection ConstantConditions
             removeListener(adapterData);
         }

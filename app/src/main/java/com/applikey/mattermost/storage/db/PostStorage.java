@@ -223,12 +223,13 @@ public class PostStorage {
         }, callback::execute);
     }
 
-    public void markDeleted(Post post, Callback callback) {
+    public void markDeleted(Post post) {
         final String id = post.getId();
-        mDb.doTransactionalWithCallback(realm -> {
+
+        mDb.doTransactionSync(realm -> {
             final Post realmPost = realm.where(Post.class).equalTo(Post.FIELD_NAME_ID, id).findFirst();
             realmPost.setDeleted(true);
-        }, callback::execute);
+        });
     }
 
     public Post copyFromDb(Post post) {
@@ -241,21 +242,6 @@ public class PostStorage {
                 Post.FIELD_NAME_CHANNEL_ID, channelId,
                 Post.FIELD_NAME_DELETED, false,
                 Post.FIELD_NAME_CHANNEL_CREATE_AT);
-    }
-
-    public void deleteAllByChannel(String channelId, boolean excludeFailed) {
-        mDb.doTransactional(realm -> realm.where(Post.class)
-                .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
-                .equalTo(Post.FIELD_NAME_SENT, excludeFailed)
-                .findAll()
-                .deleteAllFromRealm());
-    }
-
-    public void deleteAllByChannel(String channelId, Realm.Transaction.OnSuccess callback) {
-        mDb.doTransactionalWithCallback(realm -> realm.where(Post.class)
-                .equalTo(Post.FIELD_NAME_CHANNEL_ID, channelId)
-                .findAll()
-                .deleteAllFromRealm(), callback);
     }
 
     public void delete(String id) {

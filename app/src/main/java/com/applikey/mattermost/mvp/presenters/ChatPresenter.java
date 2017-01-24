@@ -151,7 +151,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
             mPostStorage.delete(post);
             mChannelStorage.updateLastPost(mChannel);
         } else {
-            mPostStorage.markDeleted(post, getViewState()::refreshMessagesList);
+            mPostStorage.markDeleted(post);
             final Subscription subscribe = mApi.deletePost(mTeamId, channelId, post.getId())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
