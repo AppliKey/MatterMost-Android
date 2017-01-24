@@ -94,7 +94,6 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((MessageChannelViewHolder) vh).bind(mImageLoader, this,
                     searchItem.getMessage(), mSearchText);
         }
-
     }
 
     private void loadUsersForChannel(Channel channel, int position) {

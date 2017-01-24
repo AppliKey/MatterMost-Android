@@ -339,6 +339,10 @@ public class ChannelStorage {
         return mDb.getObject(Channel.class, Channel.FIELD_ID, id);
     }
 
+    public Single<Channel> getDirectChannelByCollocutorId(String userId) {
+        return mDb.getObject(Channel.class, Channel.FIELD_NAME_COLLOCUTOR_ID, userId);
+    }
+
     public void delete(String channelId) {
         mDb.deleteTransactional(Channel.class, channelId);
     }

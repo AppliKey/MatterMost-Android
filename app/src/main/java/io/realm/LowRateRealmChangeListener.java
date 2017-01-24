@@ -22,7 +22,7 @@ public abstract class LowRateRealmChangeListener<T> implements RealmChangeListen
                         onChangeCallback();
                         mShouldCallBack = false;
                     }
-                }, e -> Log.e(LowRateRealmChangeListener.class.getSimpleName(), e.getMessage()));
+                }, e -> Log.e(LowRateRealmChangeListener.class.getSimpleName(), "Message: " + e.getMessage()));
     }
 
     @Override
