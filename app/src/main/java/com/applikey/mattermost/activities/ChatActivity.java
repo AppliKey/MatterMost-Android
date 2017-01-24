@@ -347,6 +347,18 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     }
 
     @Override
+    public void onMessageDeleted(String messageId) {
+        if (mRootId == null) {
+            return;
+        }
+
+        if (mRootId.equals(messageId)) {
+            hideReply();
+            mRootId = null;
+        }
+    }
+
+    @Override
     public void refreshMessagesList() {
         mAdapter.notifyDataSetChanged();
     }

@@ -147,6 +147,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
     }
 
     public void deleteMessage(String channelId, Post post) {
+        getViewState().onMessageDeleted(post.getId());
+
         if (!post.isSent()) {
             mPostStorage.delete(post);
             mChannelStorage.updateLastPost(mChannel);
