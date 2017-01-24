@@ -107,7 +107,7 @@ public abstract class SearchPresenter<T extends SearchView> extends BasePresente
                 break;
             case USER:
                 final User user = (item.getUser());
-                mSubscription.add(mChannelStorage.getChannel(user.getId())
+                mSubscription.add(mChannelStorage.getDirectChannelByCollocutorId(user.getId())
                                           .toObservable()
                                           .doOnError(t -> createChannel(user))
                                           .onErrorResumeNext(t -> Observable.empty())
