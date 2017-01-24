@@ -201,9 +201,7 @@ public class Db {
     }
 
     public void doTransactionSync(Action1<Realm> update) {
-        mRealm.beginTransaction();
-        update.call(mRealm);
-        mRealm.commitTransaction();
+        mRealm.executeTransaction(update::call);
     }
 
     public void doTransactionalWithCallback(Action1<Realm> action, Realm.Transaction.OnSuccess callback) {
