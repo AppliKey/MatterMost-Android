@@ -24,6 +24,8 @@ public interface ChatView extends MvpView {
 
     void onMessageSent(long createdAt);
 
+    void onMessageDeleted(String messageId);
+
     void clearMessageInput();
 
     void clearAttachmentsInput();
