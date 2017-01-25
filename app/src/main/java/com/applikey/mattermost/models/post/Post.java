@@ -7,6 +7,7 @@ import com.applikey.mattermost.models.user.User;
 import com.google.gson.annotations.SerializedName;
 import com.vdurmont.emoji.EmojiParser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -262,7 +263,7 @@ public class Post extends RealmObject {
         private String message;
         private boolean sent;
         private boolean deleted;
-        private List<String> attachments;
+        private List<String> attachments = new ArrayList<>();
 
         public Builder() {
         }

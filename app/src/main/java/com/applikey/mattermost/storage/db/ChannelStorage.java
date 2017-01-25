@@ -190,30 +190,38 @@ public class ChannelStorage {
     }
 
     public void setLastPost(@NonNull Channel channel, Post lastPost) {
-        mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) -> {
-            Post realmPost = null;
-            if (lastPost != null) {
-                realmPost = realm.copyToRealmOrUpdate(lastPost);
+        mDb.updateTransactional(Channel.class, channel.getId(), (realmChannel, realm) ->
+                performSetLastPost(realm, realmChannel, lastPost));
+    }
 
-                final User author = realm.where(User.class)
-                        .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
-                        .findFirst();
+    public void setLastPostSync(@NonNull Channel channel, Post lastPost) {
+        mDb.updateTransactionalSync(Channel.class, channel.getId(), (realmChannel, realm) ->
+                performSetLastPost(realm, realmChannel, lastPost));
+    }
 
-                final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
-                        realm.where(Post.class)
-                                .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
-                                .findFirst() : null;
+    private boolean performSetLastPost(Realm realm, Channel channel, Post lastPost) {
+        Post realmPost = null;
+        if (lastPost != null) {
+            realmPost = realm.copyToRealmOrUpdate(lastPost);
 
-                realmPost.setAuthor(author);
-                realmPost.setRootPost(rootPost);
-            }
-            realmChannel.setLastPost(realmPost);
-            realmChannel.updateLastActivityTime();
-            if (realmPost != null && TextUtils.equals(realmPost.getAuthor().getId(), mPrefs.getCurrentUserId())) {
-                realmChannel.setHasUnreadMessages(false);
-            }
-            return true;
-        });
+            final User author = realm.where(User.class)
+                    .equalTo(User.FIELD_NAME_ID, realmPost.getUserId())
+                    .findFirst();
+
+            final Post rootPost = !TextUtils.isEmpty(realmPost.getRootId()) ?
+                    realm.where(Post.class)
+                            .equalTo(Post.FIELD_NAME_ID, realmPost.getRootId())
+                            .findFirst() : null;
+
+            realmPost.setAuthor(author);
+            realmPost.setRootPost(rootPost);
+        }
+        channel.setLastPost(realmPost);
+        channel.updateLastActivityTime();
+        if (realmPost != null && TextUtils.equals(realmPost.getAuthor().getId(), mPrefs.getCurrentUserId())) {
+            channel.setHasUnreadMessages(false);
+        }
+        return true;
     }
 
     public void updateLastPosts(LastPostDto lastPostDto) {
@@ -272,7 +280,7 @@ public class ChannelStorage {
     }
 
     public void setLastViewedAt(String id, long lastViewAt) {
-        mDb.updateTransactional(Channel.class, id, (realmChannel, realm) -> {
+        mDb.updateTransactionalSync(Channel.class, id, (realmChannel, realm) -> {
             realmChannel.setHasUnreadMessages(false);
             realmChannel.setLastViewedAt(lastViewAt);
             return true;
