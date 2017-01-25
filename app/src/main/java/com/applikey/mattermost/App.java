@@ -66,7 +66,9 @@ public class App extends Application {
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this)
+                                .withLimit(2000)
+                                .build())
                         .build());
 
         manageMessagingService();
