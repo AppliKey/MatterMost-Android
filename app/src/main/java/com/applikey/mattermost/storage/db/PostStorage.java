@@ -259,4 +259,21 @@ public class PostStorage {
             post.setAuthor(author);
         });
     }
+
+    public void loadRootPost(Post post) {
+        final String rootId = post.getRootId();
+        if (rootId == null) {
+            return;
+        }
+        final Realm realmInstance = Realm.getDefaultInstance();
+        realmInstance.executeTransaction(realm -> {
+            final Post root = realm.where(Post.class)
+                    .equalTo(User.FIELD_NAME_ID, rootId)
+                    .findFirst();
+
+            if (root != null) {
+                post.setRootPost(root);
+            }
+        });
+    }
 }

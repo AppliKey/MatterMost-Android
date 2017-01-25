@@ -114,47 +114,47 @@ public class ChannelStorage {
 
     public Observable<RealmResults<Channel>> listUndirected(String name) {
         return mDb.resultRealmObjectsFilteredSortedExcluded(Channel.class, Channel.FIELD_NAME,
-                                                            name,
-                                                            Channel.FIELD_NAME_TYPE,
-                                                            Channel.ChannelType.DIRECT
-                                                                    .getRepresentation(),
-                                                            Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                name,
+                Channel.FIELD_NAME_TYPE,
+                Channel.ChannelType.DIRECT
+                        .getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listOpen() {
         return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                      Channel.ChannelType.PUBLIC.getRepresentation(),
-                                                      Channel.FIELD_NAME_IS_JOINED,
-                                                      true,
-                                                      Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.ChannelType.PUBLIC.getRepresentation(),
+                Channel.FIELD_NAME_IS_JOINED,
+                true,
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listClosed() {
         return mDb.resultRealmObjectsFilteredExcluded(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                      Channel.ChannelType.PRIVATE.getRepresentation(),
-                                                      Channel.FIELD_NAME_IS_JOINED,
-                                                      true,
-                                                      Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.ChannelType.PRIVATE.getRepresentation(),
+                Channel.FIELD_NAME_IS_JOINED,
+                true,
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
-                                                    Channel.ChannelType.DIRECT.getRepresentation(),
-                                                    Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.ChannelType.DIRECT.getRepresentation(),
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listFavorite() {
         return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class,
-                                                             Channel.IS_FAVORITE, true,
-                                                             Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                Channel.IS_FAVORITE, true,
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listUnread() {
         return mDb.resultRealmObjectsFilteredExcludedWithEmpty(Channel.class, Channel.FIELD_UNREAD_TYPE,
-                                                               true,
-                                                               Channel.FIELD_NAME_IS_JOINED,
-                                                               true,
-                                                               Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
+                true,
+                Channel.FIELD_NAME_IS_JOINED,
+                true,
+                Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<Channel> channelById(String id) {
@@ -349,14 +349,14 @@ public class ChannelStorage {
 
     private List<Channel> restoreChannels(List<Channel> channels) {
         return mDb.restoreIfExist(channels, Channel.class, Channel::getId,
-                                  (channel, storedChannel) -> {
-                                      channel.setUsers(storedChannel.getUsers());
-                                      channel.setLastPost(storedChannel.getLastPost());
-                                      channel.updateLastActivityTime();
-                                      channel.setFavorite(storedChannel.isFavorite());
-                                      channel.setJoined(storedChannel.isJoined());
-                                      return true;
-                                  });
+                (channel, storedChannel) -> {
+                    channel.setUsers(storedChannel.getUsers());
+                    channel.setLastPost(storedChannel.getLastPost());
+                    channel.updateLastActivityTime();
+                    channel.setFavorite(storedChannel.isFavorite());
+                    channel.setJoined(storedChannel.isJoined());
+                    return true;
+                });
     }
 
     public void updateDirectChannelData(Channel channel,

@@ -35,9 +35,9 @@ public class MessagingInteractor {
     private final Api mApi;
 
     public MessagingInteractor(ChannelStorage channelStorage,
-            UserStorage userStorage,
-            PostStorage postStorage,
-            Socket messagingSocket, Api api) {
+                               UserStorage userStorage,
+                               PostStorage postStorage,
+                               Socket messagingSocket, Api api) {
         mChannelStorage = channelStorage;
         mUserStorage = userStorage;
         mPostStorage = postStorage;
@@ -67,6 +67,7 @@ public class MessagingInteractor {
                     final String socketEvent = event.getEvent();
                     if (EVENT_POST_POSTED.equals(socketEvent)) {
                         mPostStorage.loadAuthor(post);
+                        mPostStorage.loadRootPost(post);
                         mPostStorage.saveSync(post);
                         mChannelStorage.updateLastPost(event.getChannelId(), post);
                     } else if (EVENT_POST_EDITED.equals(socketEvent)) {
