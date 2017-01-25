@@ -179,16 +179,19 @@ public class ChatPresenter extends BasePresenter<ChatView> {
             return;
         }
 
+        final List<String> attachments = new ArrayList<>();
+        attachments.addAll(mCurrentlyAddedAttachments);
+
         clearUserInput();
 
-        final Subscription sub = uploadAttachmentFiles()
+        final Subscription sub = uploadAttachmentFiles(attachments)
                 .flatMap(attachmentFileNames ->
                         createPost(attachmentFileNames, channelId, message, rootPostId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(post -> mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt()))
-                .doOnSuccess(post -> mChannelStorage.setLastPost(mChannel, post))
-                .doOnSuccess(post -> {
+                .doOnSuccess(post ->  {
+                    mChannelStorage.setLastViewedAt(channelId, post.getCreatedAt());
+                    mChannelStorage.setLastPostSync(mChannel, post);
                     if (!TextUtils.isEmpty(postId)) {
                         mPostStorage.delete(postId);
                     }
@@ -197,13 +200,13 @@ public class ChatPresenter extends BasePresenter<ChatView> {
                     getViewState().showLoading(mMessageSendingCounter.decrementAndGet() != 0);
                     getViewState().onMessageSent(result.getCreatedAt());
                 }, throwable -> {
-                    // Currently we lose attachments if the internet connection went down while sending message
                     final Post post = new Post.Builder().channelId(mChannel.getId())
                             .createdAt(System.currentTimeMillis())
                             .id(postId == null ? UUID.randomUUID().toString() : postId)
                             .message(message)
                             .userId(mPrefs.getCurrentUserId())
                             .sent(false)
+                            .attachments(attachments)
                             .deleted(false)
                             .build();
                     mChannelStorage.setLastPost(mChannel, post);
@@ -332,6 +335,7 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         getViewState().clearAttachmentsInput();
         getViewState().showLoading(true);
         mMessageSendingCounter.incrementAndGet();
+        mCurrentlyAddedAttachments.clear();
     }
 
     private Single<Post> createPost(List<String> attachmentFileNames, String channelId,
@@ -346,8 +350,8 @@ public class ChatPresenter extends BasePresenter<ChatView> {
         return mApi.<Post>createPost(mTeamId, channelId, pendingPost);
     }
 
-    private Single<List<String>> uploadAttachmentFiles() {
-        return Observable.from(mCurrentlyAddedAttachments)
+    private Single<List<String>> uploadAttachmentFiles(List<String> attachments) {
+        return Observable.from(attachments)
                 .flatMap(this::uploadAttachment)
                 .map(Response::body)
                 .map(response -> response.getFileName().get(0))
@@ -358,7 +362,6 @@ public class ChatPresenter extends BasePresenter<ChatView> {
 
     @WorkerThread
     private Observable<? extends Response<UploadResponse>> uploadAttachment(String pathName) {
-        mCurrentlyAddedAttachments.clear();
         final File file = new File(pathName);
         final String clientId = UUID.randomUUID().toString();
         final String mime = MimeTypeMap.getSingleton()

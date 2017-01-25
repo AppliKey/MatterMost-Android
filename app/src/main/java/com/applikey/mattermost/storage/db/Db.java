@@ -164,6 +164,17 @@ public class Db {
         });
     }
 
+
+    @SuppressWarnings("unchecked")
+    public <T extends RealmObject> void updateTransactionalSync(Class<T> tClass,
+                                                            String id,
+                                                            Func2<T, Realm, Boolean> update) {
+        mRealm.executeTransaction(realm -> {
+            final T realmObject = realm.where(tClass).equalTo(FIELD_ID, id).findFirst();
+            update.call(realmObject, realm);
+        });
+    }
+
     public <T extends RealmObject> void updateTransactional(Class<T> tClass,
                                                             String id,
                                                             Func2<T, Realm, Boolean> update,
