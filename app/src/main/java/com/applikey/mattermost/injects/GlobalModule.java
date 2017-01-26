@@ -6,9 +6,9 @@ import android.support.v4.app.NotificationManagerCompat;
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.BuildConfig;
 import com.applikey.mattermost.Constants;
+import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.models.socket.Props;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
-import com.applikey.mattermost.models.RealmString;
 import com.applikey.mattermost.storage.db.Db;
 import com.applikey.mattermost.storage.db.TeamStorage;
 import com.applikey.mattermost.storage.preferences.PersistentPrefs;
@@ -113,9 +113,9 @@ public class GlobalModule {
             }
             return chain.proceed(request);
         });
-//        final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-//        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//        okClientBuilder.addInterceptor(httpLoggingInterceptor);
+        final HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        okClientBuilder.addInterceptor(httpLoggingInterceptor);
 
         // TODO: 07.12.16 CACHE DISABLED IN DEBUG BUILD TO ALLOW DEBUG BY STETHO.
         // (WITH CACHE WE HAVE " 304 NOT MODIFIED" IN RESPONSE)

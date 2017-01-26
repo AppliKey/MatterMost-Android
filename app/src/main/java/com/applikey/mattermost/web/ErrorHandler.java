@@ -68,7 +68,7 @@ public final class ErrorHandler {
         final AtomicInteger attemptCount = new AtomicInteger(0);
         return errors
                 .doOnNext(error -> Log.e(TAG, "Socket error: " + error.getMessage()))
-                .debounce(10, TimeUnit.SECONDS, Schedulers.immediate())
+                .debounce(10, TimeUnit.SECONDS, Schedulers.io())
                 .doOnNext(next -> Log.d(TAG, "Socket reconnect attempt #" + attemptCount.incrementAndGet()
                         + ", start listening to network status"))
                 .switchMap(error -> ConnectivityUtils.getConnectivityObservable(mContext).takeFirst(status -> status))

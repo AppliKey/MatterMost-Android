@@ -16,6 +16,8 @@ public class Constants {
 
     public static final String WEB_SOCKET_ENDPOINT = "api/v3/users/websocket";
 
+    public static final String WEB_SOCKET_PORT = ":8080";
+
     public static final int WEB_SOCKET_TIMEOUT = 5000;
 
     public static final long INPUT_REQUEST_TIMEOUT_MILLISEC = 500;
