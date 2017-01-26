@@ -1,10 +1,12 @@
 package com.applikey.mattermost.injects;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.interactor.MessagingInteractor;
 import com.applikey.mattermost.platform.socket.MessagingSocket;
+import com.applikey.mattermost.platform.socket.OkHttpMessagingSocket;
 import com.applikey.mattermost.platform.socket.Socket;
 import com.applikey.mattermost.storage.db.ChannelStorage;
 import com.applikey.mattermost.storage.db.Db;
@@ -22,6 +24,7 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.OkHttpClient;
 
 @Module
 @PerUser
@@ -60,12 +63,12 @@ public class UserModule {
 
     @Provides
     @PerUser
-    Socket provideMessagingSocket(BearerTokenFactory bearerTokenFactory, Prefs prefs, Gson gson) {
+    Socket provideMessagingSocket(OkHttpClient okHttpClient, BearerTokenFactory bearerTokenFactory, Prefs prefs, Gson gson) {
         String baseUrl = prefs.getCurrentServerUrl();
         baseUrl = UrlUtil.removeProtocol(baseUrl);
         baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
         baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
-        return new MessagingSocket(bearerTokenFactory, gson, Uri.parse(baseUrl));
+        return new OkHttpMessagingSocket(okHttpClient, gson, bearerTokenFactory, baseUrl);
     }
 
     @Provides

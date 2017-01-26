@@ -1,6 +1,5 @@
 package com.applikey.mattermost.platform.socket;
 
-import android.net.Uri;
 import android.util.Log;
 
 import com.applikey.mattermost.Constants;
@@ -15,24 +14,24 @@ import com.neovisionaries.ws.client.WebSocketFrame;
 
 import java.net.ConnectException;
 import java.net.SocketException;
-import java.net.URI;
 
 import rx.Emitter;
 import rx.Observable;
 
+@Deprecated
 public class MessagingSocket implements Socket {
 
     private static final String TAG = "MessagingSocket";
 
     private final BearerTokenFactory mBearerTokenFactory;
     private final Gson mGson;
-    private final URI mURI;
+    private final String mUrl;
     private WebSocket mWebSocket;
 
-    public MessagingSocket(BearerTokenFactory bearerTokenFactory, Gson gson, Uri endpoint) {
+    public MessagingSocket(BearerTokenFactory bearerTokenFactory, Gson gson, String endpoint) {
         mBearerTokenFactory = bearerTokenFactory;
         mGson = gson;
-        mURI = URI.create(endpoint.toString());
+        mUrl = endpoint;
     }
 
     @Override
@@ -68,14 +67,12 @@ public class MessagingSocket implements Socket {
                     public void onDisconnected(WebSocket websocket,
                                                WebSocketFrame serverCloseFrame,
                                                WebSocketFrame clientCloseFrame,
-                                               boolean closedByServer)
-                            throws Exception {
+                                               boolean closedByServer) throws Exception {
                         Log.d(TAG, "Socket disconnected!");
                         emitter.onError(new SocketException("Connection interrupted"));
                     }
                 };
-                mWebSocket = new WebSocketFactory()
-                        .createSocket(mURI, Constants.WEB_SOCKET_TIMEOUT);
+                mWebSocket = new WebSocketFactory().createSocket(mUrl, Constants.WEB_SOCKET_TIMEOUT);
                 mWebSocket.addListener(socketListener);
                 mWebSocket.addHeader(Constants.AUTHORIZATION_HEADER, mBearerTokenFactory.getBearerTokenString());
                 emitter.setCancellation(() -> {
@@ -84,7 +81,6 @@ public class MessagingSocket implements Socket {
                     mWebSocket.disconnect();
                 });
                 mWebSocket.connect();
-                Log.d(TAG, "Socket connected!");
             } catch (Exception e) {
                 Log.e(TAG, "Socket error: " + e.getMessage());
                 emitter.onError(e);

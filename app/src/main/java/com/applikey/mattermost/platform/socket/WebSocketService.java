@@ -56,7 +56,8 @@ public class WebSocketService extends Service {
     private void listenSocket() {
         final Subscription socketSubscription = mMessagingInteractor.listenMessagingSocket()
                 .retryWhen(mErrorHandler::tryReconnectSocket)
-                .subscribe(event -> Log.d(TAG, "Socket event received: " + event.getEvent()), mErrorHandler::handleError);
+                .subscribe(event -> Log.d(TAG, "Socket event received: " + event.getEvent()),
+                           mErrorHandler::handleError);
         mSubscriptions.add(socketSubscription);
     }
 
