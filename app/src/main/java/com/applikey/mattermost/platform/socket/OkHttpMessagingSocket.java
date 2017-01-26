@@ -36,8 +36,8 @@ public class OkHttpMessagingSocket implements Socket {
                 }
 
                 @Override
-                public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                    emitter.onError(t);
+                public void onFailure(WebSocket webSocket, Throwable throwable, Response response) {
+                    emitter.onError(throwable);
                 }
             };
 

@@ -15,7 +15,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.applikey.mattermost.App;
 import com.applikey.mattermost.Constants;
@@ -227,8 +234,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
         final String currentTeamId = mPrefs.getCurrentTeamId();
 
         mAdapter = new PostAdapter(this, posts, mCurrentUserId, currentTeamId, mImageLoader, mImagePathHelper,
-                channelType, mChannelLastViewed, mOnPostLongClick, mDefaultAttachmentClickListener,
-                mImageAttachmentClickListener, listenUpdates);
+                                   channelType, mChannelLastViewed, mOnPostLongClick, mDefaultAttachmentClickListener,
+                                   mImageAttachmentClickListener, listenUpdates);
 
         mRvMessages.addOnScrollListener(mPaginationListener);
         mRvMessages.setAdapter(mAdapter);
@@ -239,7 +246,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void subscribeForMessageChanges() {
-        mAdapter.enableAutoUpdates();
+        if (mAdapter != null) {
+            mAdapter.enableAutoUpdates();
+        }
     }
 
     @Override
@@ -417,7 +426,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
     @Override
     public void downloadFile(DownloadManager.Request downloadRequest, String fileName) {
         downloadRequest.setDestinationInExternalFilesDir(this,
-                Environment.DIRECTORY_DOWNLOADS, fileName);
+                                                         Environment.DIRECTORY_DOWNLOADS, fileName);
         mDownloadManager.enqueue(downloadRequest);
     }
 
@@ -459,8 +468,8 @@ public class ChatActivity extends DrawerActivity implements ChatView {
                 .setNegativeButton(R.string.cancel, null)
                 .setPositiveButton(R.string.delete, (dialog1, which1) -> mPresenter.deleteMessage(channelId, post))
                 .setPositiveButton(R.string.delete,
-                        (dialog1, which1) -> mPresenter.deleteMessage(
-                                channelId, post))
+                                   (dialog1, which1) -> mPresenter.deleteMessage(
+                                           channelId, post))
                 .show();
     }
 
@@ -506,7 +515,7 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
         if (url != null) {
             ImageAttachmentDialogFragment.newInstance(url).show(getSupportFragmentManager(),
-                    DIALOG_TAG_IMAGE_ATTACHMENT);
+                                                                DIALOG_TAG_IMAGE_ATTACHMENT);
         }
     };
 
