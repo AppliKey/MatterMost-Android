@@ -63,12 +63,10 @@ public class UserModule {
 
     @Provides
     @PerUser
-    Socket provideMessagingSocket(OkHttpClient okHttpClient, BearerTokenFactory bearerTokenFactory, Prefs prefs, Gson gson) {
+    Socket provideMessagingSocket(OkHttpClient okHttpClient, Prefs prefs, Gson gson) {
         String baseUrl = prefs.getCurrentServerUrl();
-        baseUrl = UrlUtil.removeProtocol(baseUrl);
-        baseUrl = UrlUtil.WEB_SERVICE_PROTOCOL_PREFIX + baseUrl;
         baseUrl = baseUrl + Constants.WEB_SOCKET_ENDPOINT;
-        return new OkHttpMessagingSocket(okHttpClient, gson, bearerTokenFactory, baseUrl);
+        return new OkHttpMessagingSocket(okHttpClient, gson, baseUrl);
     }
 
     @Provides

@@ -1,8 +1,6 @@
 package com.applikey.mattermost.platform.socket;
 
-import com.applikey.mattermost.Constants;
 import com.applikey.mattermost.models.socket.WebSocketEvent;
-import com.applikey.mattermost.web.BearerTokenFactory;
 import com.google.gson.Gson;
 
 import okhttp3.OkHttpClient;
@@ -17,18 +15,13 @@ public class OkHttpMessagingSocket implements Socket {
 
     private final OkHttpClient mOkHttpClient;
     private final Gson mGson;
-    private final BearerTokenFactory mBearerTokenFactory;
     private final String mUrl;
 
     private WebSocket mWebSocket;
 
-    public OkHttpMessagingSocket(final OkHttpClient okHttpClient,
-                                 final Gson gson,
-                                 final BearerTokenFactory bearerTokenFactory,
-                                 final String endpoint) {
+    public OkHttpMessagingSocket(final OkHttpClient okHttpClient, final Gson gson, final String endpoint) {
         mOkHttpClient = okHttpClient;
         mGson = gson;
-        mBearerTokenFactory = bearerTokenFactory;
         mUrl = endpoint;
     }
 
@@ -48,15 +41,10 @@ public class OkHttpMessagingSocket implements Socket {
                 }
             };
 
-            final Request request = new Request.Builder()
-                    .addHeader(Constants.AUTHORIZATION_HEADER, mBearerTokenFactory.getBearerTokenString())
-                    .url(mUrl)
-                    .build();
-
+            final Request request = new Request.Builder().url(mUrl).build();
             mWebSocket = mOkHttpClient.newWebSocket(request, webSocketListener);
 
             emitter.setCancellation(() -> mWebSocket.close(0, ""));
-
         }, Emitter.BackpressureMode.BUFFER);
     }
 
