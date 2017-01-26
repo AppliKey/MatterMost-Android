@@ -30,6 +30,7 @@ public class Channel extends RealmObject {
     public static final String FIELD_NAME_LAST_ACTIVITY_TIME = "lastActivityTime";
     public static final String FIELD_NAME_IS_JOINED = "isJoined";
     public static final String FIELD_NAME_COLLOCUTOR_ID = "directCollocutor." + User.FIELD_NAME_ID;
+    public static final String FIELD_NAME_HAS_UNREAD = "hasUnreadMessages";
 
     private static final String TAG = Channel.class.getSimpleName();
 
@@ -357,6 +358,27 @@ public class Channel extends RealmObject {
 
         @Override
         public int compare(Channel o1, Channel o2) {
+            final long o1time = o1.getLastPostAt() != 0 ? o1.getLastPostAt() : o1.getCreatedAt();
+            final long o2time = o2.getLastPostAt() != 0 ? o2.getLastPostAt() : o2.getCreatedAt();
+
+            if (o1time > o2time) {
+                return -1;
+            }
+            if (o1time == o2time) {
+                return 0;
+            }
+            return 1;
+        }
+    }
+
+    private static class ComparatorByDateAndUnreadStatus implements Comparator<Channel> {
+
+        @Override
+        public int compare(Channel o1, Channel o2) {
+            if (o1.hasUnreadMessages() ^ o2.hasUnreadMessages()) {
+                return o1.hasUnreadMessages() ? -1 : 1;
+            }
+
             final long o1time = o1.getLastPostAt() != 0 ? o1.getLastPostAt() : o1.getCreatedAt();
             final long o2time = o2.getLastPostAt() != 0 ? o2.getLastPostAt() : o2.getCreatedAt();
 

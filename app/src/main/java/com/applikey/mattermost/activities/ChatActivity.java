@@ -239,7 +239,9 @@ public class ChatActivity extends DrawerActivity implements ChatView {
 
     @Override
     public void subscribeForMessageChanges() {
-        mAdapter.enableAutoUpdates();
+        if (mAdapter != null) {
+            mAdapter.enableAutoUpdates();
+        }
     }
 
     @Override

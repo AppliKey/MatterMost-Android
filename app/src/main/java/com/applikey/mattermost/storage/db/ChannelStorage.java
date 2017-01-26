@@ -126,6 +126,7 @@ public class ChannelStorage {
                 Channel.ChannelType.PUBLIC.getRepresentation(),
                 Channel.FIELD_NAME_IS_JOINED,
                 true,
+                Channel.FIELD_NAME_HAS_UNREAD,
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
@@ -134,18 +135,21 @@ public class ChannelStorage {
                 Channel.ChannelType.PRIVATE.getRepresentation(),
                 Channel.FIELD_NAME_IS_JOINED,
                 true,
+                Channel.FIELD_NAME_HAS_UNREAD,
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listDirect() {
         return mDb.resultRealmObjectsFilteredSorted(Channel.class, Channel.FIELD_NAME_TYPE,
                 Channel.ChannelType.DIRECT.getRepresentation(),
+                Channel.FIELD_NAME_HAS_UNREAD,
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
     public Observable<RealmResults<Channel>> listFavorite() {
         return mDb.resultRealmObjectsFilteredSortedWithEmpty(Channel.class,
                 Channel.IS_FAVORITE, true,
+                Channel.FIELD_NAME_HAS_UNREAD,
                 Channel.FIELD_NAME_LAST_ACTIVITY_TIME);
     }
 
