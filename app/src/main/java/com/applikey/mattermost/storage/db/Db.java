@@ -121,8 +121,8 @@ public class Db {
     }
 
     public <T extends RealmObject> Observable<T> getObjectQualifiedNullable(Class<T> tClass,
-                                                                    String fieldName,
-                                                                    String fieldValue) {
+                                                                            String fieldName,
+                                                                            String fieldValue) {
         return mRealm.where(tClass)
                 .equalTo(fieldName, fieldValue)
                 .findFirstAsync()
@@ -167,8 +167,8 @@ public class Db {
 
     @SuppressWarnings("unchecked")
     public <T extends RealmObject> void updateTransactionalSync(Class<T> tClass,
-                                                            String id,
-                                                            Func2<T, Realm, Boolean> update) {
+                                                                String id,
+                                                                Func2<T, Realm, Boolean> update) {
         mRealm.executeTransaction(realm -> {
             final T realmObject = realm.where(tClass).equalTo(FIELD_ID, id).findFirst();
             update.call(realmObject, realm);
@@ -327,13 +327,14 @@ public class Db {
             String value,
             String excludedField,
             boolean excludedValue,
-            String sortBy) {
+            String sortBy1,
+            String sortBy2) {
 
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .equalTo(excludedField, excludedValue)
-                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .findAllSortedAsync(new String[] {sortBy1, sortBy2}, new Sort[] {Sort.DESCENDING, Sort.DESCENDING})
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
@@ -365,6 +366,21 @@ public class Db {
                 .where(tClass)
                 .equalTo(fieldName, value)
                 .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .asObservable()
+                .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
+    }
+
+    public <T extends RealmObject> Observable<RealmResults<T>> resultRealmObjectsFilteredSorted(
+            Class<T> tClass,
+            String fieldName,
+            String value,
+            String sortBy1,
+            String sortBy2) {
+
+        return mRealm
+                .where(tClass)
+                .equalTo(fieldName, value)
+                .findAllSortedAsync(new String[]{sortBy1, sortBy2}, new Sort[]{Sort.DESCENDING, Sort.DESCENDING})
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid() && !o.isEmpty());
     }
@@ -404,12 +420,13 @@ public class Db {
             Class<T> tClass,
             String fieldName,
             boolean value,
-            String sortBy) {
+            String sortBy1,
+            String sortBy2) {
 
         return mRealm
                 .where(tClass)
                 .equalTo(fieldName, value)
-                .findAllSortedAsync(sortBy, Sort.DESCENDING)
+                .findAllSortedAsync(new String[] {sortBy1, sortBy2}, new Sort[] {Sort.DESCENDING, Sort.DESCENDING})
                 .asObservable()
                 .filter(o -> o.isLoaded() && o.isValid());
     }
