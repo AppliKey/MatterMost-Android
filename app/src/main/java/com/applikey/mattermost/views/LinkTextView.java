@@ -21,11 +21,6 @@ public class LinkTextView extends EmojiTextView {
         init();
     }
 
-    public LinkTextView(final Context context, final AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
-        init();
-    }
-
     private void init() {
         if (isInEditMode()) {
             return;

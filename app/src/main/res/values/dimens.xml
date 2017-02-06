@@ -108,7 +108,9 @@
     <dimen name="chat_group_list_photo_size">30dp</dimen>
     <dimen name="chat_group_list_photo_padding">2dp</dimen>
 
+    <dimen name="status_indicator_bg_size">16dp</dimen>
     <dimen name="status_indicator_size">12dp</dimen>
+    <dimen name="status_indicator_margin">2dp</dimen>
     <dimen name="avatar_large_size">100dp</dimen>
 
     <!--drawer-->
@@ -154,4 +156,7 @@
     <dimen name="attachment_remove_margin">4dp</dimen>
     <dimen name="attachment_item_margin">8dp</dimen>
 
+    <dimen name="primary_button_margin">36dp</dimen>
+    <dimen name="message_details_gradient_size">240dp</dimen>
+    <dimen name="message_details_bottom_padding">110dp</dimen>
 </resources>
