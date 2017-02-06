@@ -18,11 +18,6 @@ public class ContentTextView extends EmojiTextView {
         init();
     }
 
-    public ContentTextView(final Context context, final AttributeSet attrs, final int defStyle) {
-        super(context, attrs, defStyle);
-        init();
-    }
-
     private void init() {
         if (!isInEditMode()) {
             setText(getParsedMarkdownText(getText().toString()));

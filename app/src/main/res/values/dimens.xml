@@ -154,4 +154,7 @@
     <dimen name="attachment_remove_margin">4dp</dimen>
     <dimen name="attachment_item_margin">8dp</dimen>
 
+    <dimen name="primary_button_margin">36dp</dimen>
+    <dimen name="message_details_gradient_size">240dp</dimen>
+    <dimen name="message_details_bottom_padding">110dp</dimen>
 </resources>
