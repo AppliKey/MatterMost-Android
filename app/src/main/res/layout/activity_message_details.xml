@@ -28,7 +28,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <ScrollView android:layout_width="match_parent" android:layout_height="wrap_content">
+        <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
             <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -45,17 +47,17 @@
 
                 <ImageView
                         android:id="@+id/iv_status_bg"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="@dimen/status_indicator_bg_size"
+                        android:layout_height="@dimen/status_indicator_bg_size"
                         android:src="@drawable/no_resource_round_white"
                         android:visibility="gone"
                         tools:visibility="visible"/>
 
                 <ImageView
                         android:id="@+id/iv_status"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:layout_margin="2dp"
+                        android:layout_width="@dimen/status_indicator_size"
+                        android:layout_height="@dimen/status_indicator_size"
+                        android:layout_margin="@dimen/status_indicator_margin"
                         android:src="@drawable/no_resource_round"
                         android:visibility="gone"
                         tools:visibility="visible"/>
